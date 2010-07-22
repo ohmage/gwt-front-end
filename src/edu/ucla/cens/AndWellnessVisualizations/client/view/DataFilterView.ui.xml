@@ -1,0 +1,22 @@
+<ui:UiBinder
+  xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+  <ui:style>
+    .dataFilterViewButtonHPanel {
+      margin: 5px 0px 0x 5px;
+    }
+    .dataFilterViewEntryFlexTable {
+      margin: 5px 0px 5px 0px;
+    }
+  </ui:style>
+
+  <g:SimplePanel>
+    <g:VerticalPanel>
+      <g:FlexTable ui:field="entryTable" addStyleNames="{style.dataFilterViewEntryFlexTable}"/>
+    </g:VerticalPanel>
+    <g:HorizontalPanel addStyleNames="{style.dataFilterViewButtonHPanel}">
+      <g:Button ui:field="goButton">Go</g:Button>
+    </g:HorizontalPanel>
+  </g:SimplePanel>
+</ui:UiBinder>

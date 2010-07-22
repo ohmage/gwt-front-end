@@ -12,11 +12,11 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.DataFilterService;
-import edu.ucla.cens.AndWellnessVisualizations.client.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToUploadViewEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToUploadViewEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToGraphViewEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToGraphViewEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.model.UserInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;

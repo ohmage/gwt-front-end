@@ -10,7 +10,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToGraphViewEve
 import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToUploadViewEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.Presenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataFilterPresenter;
-import edu.ucla.cens.AndWellnessVisualizations.client.view.DataFilterView;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.DataFilterViewImpl;
 
 /**
  * The main controller for the GWT application.  Holds the event bus,
@@ -61,7 +61,7 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
             Presenter presenter = null;
 
             if (token.equals("datafilter")) {
-                presenter = new DataFilterPresenter(rpcService, eventBus, new DataFilterView());
+                presenter = new DataFilterPresenter(rpcService, eventBus, new DataFilterViewImpl());
             }
           
             if (presenter != null) {

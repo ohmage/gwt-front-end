@@ -8,6 +8,7 @@ import com.google.gwt.http.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.data.HoursSinceLastSurveyAwData;
+import edu.ucla.cens.AndWellnessVisualizations.model.UserInfo;
 
 /**
  * Implements service calls needed for the DataFilterPresenter.  Asks the server
