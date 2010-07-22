@@ -3,7 +3,14 @@ package edu.ucla.cens.AndWellnessVisualizations.client.data;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
-
+/**
+ * Data class that represents the number of hours since since the last
+ * survey has been received per user.  Serves as a wrapper over the
+ * JSON returned from the server.
+ * 
+ * @author jhicks
+ *
+ */
 public class HoursSinceLastSurveyAwData extends JavaScriptObject {
 
     // Overlay types always have protected, zero-arg ctors

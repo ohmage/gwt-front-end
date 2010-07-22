@@ -12,6 +12,14 @@ import edu.ucla.cens.AndWellnessVisualizations.client.presenter.Presenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataFilterPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DataFilterView;
 
+/**
+ * The main controller for the GWT application.  Holds the event bus,
+ * the rpc service, and the main container.  Also initializes and launches
+ * presenters and their associated views.
+ * 
+ * @author jhicks
+ *
+ */
 public class AppController implements Presenter, ValueChangeHandler<String> {
     private final HandlerManager eventBus;
     private final DataFilterService rpcService; 

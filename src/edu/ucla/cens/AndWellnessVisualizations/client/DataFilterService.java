@@ -9,6 +9,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.data.HoursSinceLastSurveyAwData;
 
+/**
+ * Implements service calls needed for the DataFilterPresenter.  Asks the server
+ * for user information and data based on user input.
+ * 
+ * @author jhicks
+ *
+ */
 public class DataFilterService {
     // The URL of the server API
     private final String userListApiUrl = "/app/q/hours-since-last-update";

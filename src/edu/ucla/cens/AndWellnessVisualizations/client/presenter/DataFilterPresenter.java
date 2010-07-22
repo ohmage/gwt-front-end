@@ -23,9 +23,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Handles events from the DataFilterView.  Passes new data to the DataFItlerView.
+ * Hides/shows various fields from the DataFilterView based on application state.
+ * 
+ * @author jhicks
+ *
+ */
 public class DataFilterPresenter implements Presenter {
-    private String loggedInUserName;
-    private String loggedInUserPrivileges;
     private List<String> users;
     private UserInfo userInfo;
     

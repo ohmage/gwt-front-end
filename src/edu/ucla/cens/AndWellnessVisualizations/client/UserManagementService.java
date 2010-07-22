@@ -1,6 +1,12 @@
 package edu.ucla.cens.AndWellnessVisualizations.client;
 
-// Handles user management services such as logging in, editing users, etc.
+/**
+ * Contacts the server for management services such as creating, editing, deleting
+ * users, editing campaign properties, etc.
+ * 
+ * @author jhicks
+ *
+ */
 public class UserManagementService {
     public UserManagementService() {};
     

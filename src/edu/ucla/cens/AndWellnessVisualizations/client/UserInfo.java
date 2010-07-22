@@ -1,5 +1,11 @@
 package edu.ucla.cens.AndWellnessVisualizations.client;
 
+/**
+ * Storage class to hold basic user information.
+ * 
+ * @author jhicks
+ *
+ */
 public class UserInfo {
     public String userName;
     public int privileges;

@@ -18,6 +18,12 @@ import com.google.gwt.user.datepicker.client.DatePicker;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataFilterPresenter;
 
+/**
+ * Widget that displays a data selection filter.
+ * 
+ * @author jhicks
+ *
+ */
 public class DataFilterView extends Composite implements DataFilterPresenter.Display {
     private final DatePicker endDate;
     private ListBox numDays;
