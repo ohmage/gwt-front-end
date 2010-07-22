@@ -1,0 +1,13 @@
+Welcome to the AndWellness Frontend code!  
+
+The majority of this code is written in Java and compiled to
+JavaScript using the included GWT libraries.  To compile the code,
+make sure java and javac are installed and run ant build.  The
+compiled code will be placed into war/andwellnessvisualizations.  The
+.js file and every cache file must be copied into the AndWellness
+Server codebase into the web/js/gwt subdirectory.  A simple script is
+included.  Feel free to run: scripts/deploy_gwt.sh <andwellness server
+base dir> to automatically copy the files.  Once the files are in the
+andwellness server codebase, change to the andwellness server base
+directory and run 'ant clean dist'.  The GWT files will be zipped into
+a deployable war file.
