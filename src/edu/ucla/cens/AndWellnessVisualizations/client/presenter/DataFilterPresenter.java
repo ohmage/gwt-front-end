@@ -175,9 +175,12 @@ public class DataFilterPresenter implements Presenter {
         // All calls to the server use the ISO format for dates
         DateTimeFormat fmt = DateTimeFormat.getFormat("yyyy-MM-dd");
         
-        // Subtract numDays from the date
-        endTime = endDate.getTime();
+        // We have to actually ask the API for one day later to get the correct time period
+        endTime = endDate.getTime() + 1000 * 60 * 60 * 24;
+        // Update endDate with the new time
+        endDate = new Date(endTime);
         numDaysInMilliseconds = numDays * 1000 * 60 * 60 * 24;
+        // Calculate the start of the time period asked for
         startDate = new Date(endTime - numDaysInMilliseconds);
         
         
