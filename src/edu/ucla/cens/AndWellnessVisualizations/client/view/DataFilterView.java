@@ -2,19 +2,28 @@ package edu.ucla.cens.AndWellnessVisualizations.client.view;
 
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.AndWellnessVisualizations.client.common.ColumnDefinition;
+
+import java.util.Date;
 import java.util.List;
 
 public interface DataFilterView<T> {
-
-  public interface Presenter<T> {
-    void onGoButtonClicked();
-    void onItemClicked(T clickedItem);
-    void onItemSelected(T selectedItem);
-  }
+    // Any Presenter that uses this View must implement these functions to
+    // handle events from the View
+    public interface Presenter<T> {
+        void onGoButtonClicked();
+        void onEndDateSelected(Date selectedEndDate);
+        void onNumDaysSelected(Integer numDays);
+        void onUserSelected(T selectedUser);
+    }
   
-  void setPresenter(Presenter<T> presenter);
-  void setColumnDefinitions(List<ColumnDefinition<T>> columnDefinitions);
-  void setRowData(List<T> rowData);
-  Widget asWidget();
+    // Sets the presenter so the view can call the presenter in response to events
+    void setPresenter(Presenter<T> presenter);
+    void setColumnDefinitions(List<ColumnDefinition<T>> columnDefinitions);
+    // Update the list of displayed users
+    void setRowData(List<T> rowData);
+    // Hide/show the user list
+    void enableUserList(boolean enable);
+    Widget asWidget();
 }
 

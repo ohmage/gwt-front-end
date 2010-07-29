@@ -1,22 +1,50 @@
 <ui:UiBinder
   xmlns:ui="urn:ui:com.google.gwt.uibinder"
-  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
 
   <ui:style>
-    .dataFilterViewButtonHPanel {
-      margin: 5px 0px 0x 5px;
-    }
-    .dataFilterViewEntryFlexTable {
-      margin: 5px 0px 5px 0px;
+  	.dataFilterLabel {
+  		font-size: 0.85em;
+  	}
+    .dataFilterViewHPanel {
+      margin: 3px 0px 3px 0px;
+      width: 100%;
+      line-height: 150%;
     }
   </ui:style>
 
   <g:SimplePanel>
-    <g:VerticalPanel>
-      <g:FlexTable ui:field="entryTable" addStyleNames="{style.dataFilterViewEntryFlexTable}"/>
-    </g:VerticalPanel>
-    <g:HorizontalPanel addStyleNames="{style.dataFilterViewButtonHPanel}">
-      <g:Button ui:field="goButton">Go</g:Button>
-    </g:HorizontalPanel>
+    <g:VerticalPanel ui:field="dataEntryPanel">
+      <g:HorizontalPanel addStyleNames="{style.dataFilterViewHPanel}">
+      	<dp:DatePicker ui:field="endDatePicker" />
+      </g:HorizontalPanel>
+      <g:HorizontalPanel addStyleNames="{style.dataFilterViewHPanel}">
+        <!-- Use cells for specific table cell alignment -->
+      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
+      		<g:Label addStyleNames="{style.dataFilterLabel}">Num Days</g:Label>
+      	</g:cell>
+      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
+      	  <g:ListBox ui:field='numDaysListBox' visibleItemCount='1' selectedIndex="1">
+            <g:item value='7'>1 week</g:item>
+            <g:item value='14'>2 weeks</g:item>
+            <g:item value='21'>3 weeks</g:item>
+            <g:item value='28'>4 weeks</g:item>
+      	  </g:ListBox>
+      	</g:cell>
+      </g:HorizontalPanel>
+      <!-- Start hidden, the Presenter can hide or unhide as it requires -->
+      <g:HorizontalPanel ui:field='userListBoxHPanel' visible='false' addStyleNames="{style.dataFilterViewHPanel}">
+      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
+      	  <g:Label addStyleNames="{style.dataFilterLabel}">User</g:Label>
+      	  </g:cell>
+      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
+      	  <g:ListBox ui:field='userListBox' visibleItemCount='1' />
+      	  </g:cell>
+      </g:HorizontalPanel>
+	  <g:HorizontalPanel addStyleNames="{style.dataFilterViewHPanel}">
+	    <g:Button ui:field="goButton">Go</g:Button>
+	  </g:HorizontalPanel>
+	</g:VerticalPanel>
   </g:SimplePanel>
 </ui:UiBinder>

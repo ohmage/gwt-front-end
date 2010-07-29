@@ -1,22 +1,17 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.DataFilterService;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToUploadViewEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToUploadViewEventHandler;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToGraphViewEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToGraphViewEventHandler;
-import edu.ucla.cens.AndWellnessVisualizations.model.UserInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.ColumnDefinition;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.SelectionModel;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchViewEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchViewEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.DataFilterView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,73 +25,62 @@ import java.util.List;
  * @author jhicks
  *
  */
-public class DataFilterPresenter implements Presenter {
+public class DataFilterPresenter implements Presenter,
+        DataFilterView.Presenter<UserInfo> {
     private List<String> users;
     private UserInfo userInfo;
-    
-    // Bogus fields for javascript usage
-    private String startDate;
-    private String endDate;
-    private String userName;
-    private int numDays;
-    
-    public interface Display {
-        HasValue<Date> getEndDate();
-        String getNumDays();
-        String getSelectedUser();
-        HasClickHandlers getSendButton();
-        void hideUserList(boolean toHide);
-        void setData(List<String> data);
-        void setSelectedUser(String user);
-        Widget asWidget();
-    }
-
     private final DataFilterService rpcService;   // Used to make calls to the server for data
     private final HandlerManager eventBus;  
-    private final Display display;  // Pass new data to the views
+    private final DataFilterView<UserInfo> view;
+    // SelectionModels to hold state from the View
+    private final SelectionModel<UserInfo> userSelectionModel;
+    private final SelectionModel<Date> endDateSelectionModel;
+    private final SelectionModel<Integer> numDaysSelectionModel;
     
-    public DataFilterPresenter(DataFilterService rpcService, HandlerManager eventBus, Display view) {
+    // Bogus fields for javascript usage, since these are only used from 
+    // javascript code we need to suppress the compiler warnings
+    @SuppressWarnings("unused")
+    private String startDate;
+    @SuppressWarnings("unused")
+    private String endDate;
+    @SuppressWarnings("unused")
+    private String userName;
+    @SuppressWarnings("unused")
+    private int numDays;
+    
+    public DataFilterPresenter(DataFilterService rpcService, 
+            HandlerManager eventBus, DataFilterView<UserInfo> view,
+            List<ColumnDefinition<UserInfo>> columnDefinitions) {
         this.rpcService = rpcService;
         this.eventBus = eventBus;
-        this.display = view;
-        this.userInfo = new UserInfo();
+        this.view = view;
+        this.userSelectionModel = new SelectionModel<UserInfo>();
+        this.endDateSelectionModel = new SelectionModel<Date>();
+        this.numDaysSelectionModel = new SelectionModel<Integer>();
+        this.view.setPresenter(this);
+        this.view.setColumnDefinitions(columnDefinitions);
     }    
     
-    public DataFilterPresenter(DataFilterService rpcService, HandlerManager eventBus, Display view, UserInfo userInfo) {
-        this.rpcService = rpcService;
-        this.eventBus = eventBus;
-        this.display = view;
-        this.userInfo = userInfo;
-    }    
+    // Fetch new data when asked
+    public void onGoButtonClicked() {
+        doFetch();
+    }
     
     public void bind() {
-        // Listen for send button clicks from the View
-        display.getSendButton().addClickHandler(new ClickHandler() {   
-            public void onClick(ClickEvent event) {
-                doFetch();
-            } 
-        });
-        
         // Handle switching to various Views
-        eventBus.addHandler(SwitchToUploadViewEvent.TYPE,
-                new SwitchToUploadViewEventHandler() {
-                    public void onSwitch(SwitchToUploadViewEvent event) {
-                        doSwitchToUploadView();
-                }
-        }); 
-        eventBus.addHandler(SwitchToGraphViewEvent.TYPE,
-                new SwitchToGraphViewEventHandler() {
-                    public void onSwitch(SwitchToGraphViewEvent event) {
-                        doSwitchToGraphView();
-                }
-        }); 
+        eventBus.addHandler(SwitchViewEvent.TYPE,
+                new SwitchViewEventHandler() {
+                    public void onSwitch(SwitchViewEvent event) {
+                        //view.setState(event.getAppState());
+                    }
+                }); 
     }
     
     @Override
     public void go(HasWidgets container) {
         bind();
         container.clear();
-        container.add(display.asWidget());
+        container.add(view.asWidget());
         
         // Fetch user info for display
         fetchUserInfo();
@@ -125,7 +109,7 @@ public class DataFilterPresenter implements Presenter {
             public void onSuccess(ArrayList<String> result) {
                 users = result;
                 sortUserList();
-                display.setData(users);
+                //display.setData(users);
             }
             
             public void onFailure(Throwable caught) {
@@ -136,17 +120,6 @@ public class DataFilterPresenter implements Presenter {
     
     // Called to setup display state when we receive a new UserInfo
     private void handleUserInfo() {
-        // set selected user and show/hide user list based on privileges
-        /*
-        if (userInfo.isAdmin() || userInfo.isResearcher()) {
-            display.hideUserList(false);
-            display.setSelectedUser(userInfo.getUserName());
-        }
-        else {
-            display.hideUserList(true);
-        }
-        */
-        
         // TODO: Remove this javascripty hack later
         this.userName = userInfo.getUserName();
     }
@@ -155,23 +128,24 @@ public class DataFilterPresenter implements Presenter {
         Collections.sort(users);
     }
     
+    // Never show the user list when in the upload view
     private void doSwitchToUploadView() {
-        // Never show the user list when the upload view is selected
-        display.hideUserList(true);
+        view.enableUserList(false);
     }
     
+    // Only show user list if the user is an admin or researcher
     private void doSwitchToGraphView() {
-        // If this is an admin or researcher, show the user list
         if (userInfo.isAdmin() || userInfo.isResearcher()) {
-            display.hideUserList(false);
+            view.enableUserList(true);
         }
         else {
-            display.hideUserList(true);
+            view.enableUserList(false);
         }
     }
 
     // Ask for new data from the server using the inputs from the view
-    private void doFetch() { 
+    private void doFetch() {
+        /*
         Date startDate;
         long endTime, numDaysInMilliseconds;
         Date endDate = display.getEndDate().getValue();
@@ -193,7 +167,7 @@ public class DataFilterPresenter implements Presenter {
         this.numDays = numDays;
         
         doFetchJavascript();
-
+*/
         /*
         rpcService.fetchDateRange(endDate, numDays, new AsyncCallback<ArrayList<Object>>() {
 
@@ -249,4 +223,22 @@ public class DataFilterPresenter implements Presenter {
         params['u'] = userName;
         $wnd.DataSourceJson.requestData($wnd.DataSourceJson.DATA_EMA, params);
     }-*/;
+
+    @Override
+    public void onEndDateSelected(Date selectedEndDate) {
+        Window.alert("Selected date: " + selectedEndDate.toString());
+        
+    }
+
+    @Override
+    public void onNumDaysSelected(Integer numDays) {
+        Window.alert("Selected num days: " + numDays.toString());
+        
+    }
+
+    @Override
+    public void onUserSelected(UserInfo selectedUser) {
+        Window.alert("Selected user: " + selectedUser.getUserName());
+        
+    }
 }
