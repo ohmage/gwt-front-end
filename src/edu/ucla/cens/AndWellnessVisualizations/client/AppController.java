@@ -6,8 +6,10 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.HasWidgets;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToGraphViewEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchToUploadViewEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.DataFilterDropDownDefinitionsFactory;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchViewEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.MainViewState;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.Presenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataFilterPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DataFilterViewImpl;
@@ -24,6 +26,7 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
     private final HandlerManager eventBus;
     private final DataFilterService rpcService; 
     private HasWidgets container;
+    private DataFilterViewImpl<UserInfo> dataFilterView = null;
   
     
     public AppController(DataFilterService rpcService, HandlerManager eventBus) {
@@ -61,7 +64,13 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
             Presenter presenter = null;
 
             if (token.equals("datafilter")) {
-                presenter = new DataFilterPresenter(rpcService, eventBus, new DataFilterViewImpl());
+                if (dataFilterView == null) {
+                    dataFilterView = new DataFilterViewImpl<UserInfo>();
+                }
+                new DataFilterPresenter(rpcService, eventBus, dataFilterView, 
+                        DataFilterDropDownDefinitionsFactory
+                        .getDataFilterColumnDefinitions())
+                    .go(container);
             }
           
             if (presenter != null) {
@@ -71,11 +80,11 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
     }
     
     public static void triggerSwitchToUploadViewEventJS() {
-        DataFilter.eventBus.fireEvent(new SwitchToUploadViewEvent());
+        DataFilter.eventBus.fireEvent(new SwitchViewEvent(MainViewState.UPLOADVIEW));
     }
     
     public static void triggerSwitchToGraphViewEventJS() {
-        DataFilter.eventBus.fireEvent(new SwitchToGraphViewEvent());
+        DataFilter.eventBus.fireEvent(new SwitchViewEvent(MainViewState.GRAPHVIEW));
     }
     
     private native void initEventsJS () /*-{
