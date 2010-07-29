@@ -1,4 +1,4 @@
-package edu.ucla.cens.AndWellnessVisualizations.model;
+package edu.ucla.cens.AndWellnessVisualizations.client.model;
 
 /**
  * Storage class to hold basic user information.
