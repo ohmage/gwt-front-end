@@ -8,6 +8,6 @@ import com.google.gwt.event.shared.EventHandler;
  * @author jhicks
  *
  */
-public interface SwitchToGraphViewEventHandler extends EventHandler {
-    void onSwitch(SwitchToGraphViewEvent event);
+public interface SwitchViewEventHandler extends EventHandler {
+    void onSwitch(SwitchViewEvent event);
 }
