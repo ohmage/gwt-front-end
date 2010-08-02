@@ -6,7 +6,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 
 @SuppressWarnings("serial")
 public class DataFilterDropDownDefinitionsImpl extends 
-    ArrayList<ColumnDefinition<UserInfo>> {
+    ArrayList<DropDownDefinition<UserInfo>> {
   
   private static DataFilterDropDownDefinitionsImpl instance = null;
   
@@ -19,9 +19,9 @@ public class DataFilterDropDownDefinitionsImpl extends
   }
   
   protected DataFilterDropDownDefinitionsImpl() {
-      this.add(new ColumnDefinition<UserInfo>() {
+      this.add(new DropDownDefinition<UserInfo>() {
           public void render(UserInfo c, StringBuilder sb) {        
-              sb.append("<option value='" + c.getUserName() + "'>" + c.getUserName() + "</option>");
+              sb.append(c.getUserName());
           }
       });
   }

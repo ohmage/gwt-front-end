@@ -1,15 +1,17 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.DataFilterService;
-import edu.ucla.cens.AndWellnessVisualizations.client.common.ColumnDefinition;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.DropDownDefinition;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.SelectionModel;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchViewEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchViewEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.MainViewState;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DataFilterView;
 
@@ -27,7 +29,7 @@ import java.util.List;
  */
 public class DataFilterPresenter implements Presenter,
         DataFilterView.Presenter<UserInfo> {
-    private List<String> users;
+    private List<UserInfo> users;
     private UserInfo userInfo;
     private final DataFilterService rpcService;   // Used to make calls to the server for data
     private final HandlerManager eventBus;  
@@ -50,7 +52,7 @@ public class DataFilterPresenter implements Presenter,
     
     public DataFilterPresenter(DataFilterService rpcService, 
             HandlerManager eventBus, DataFilterView<UserInfo> view,
-            List<ColumnDefinition<UserInfo>> columnDefinitions) {
+            List<DropDownDefinition<UserInfo>> dropDownDefinitions) {
         this.rpcService = rpcService;
         this.eventBus = eventBus;
         this.view = view;
@@ -58,7 +60,7 @@ public class DataFilterPresenter implements Presenter,
         this.endDateSelectionModel = new SelectionModel<Date>();
         this.numDaysSelectionModel = new SelectionModel<Integer>();
         this.view.setPresenter(this);
-        this.view.setColumnDefinitions(columnDefinitions);
+        this.view.setDropDownDefinitions(dropDownDefinitions);
     }    
     
     // Fetch new data when asked
@@ -69,11 +71,27 @@ public class DataFilterPresenter implements Presenter,
     public void bind() {
         // Handle switching to various Views
         eventBus.addHandler(SwitchViewEvent.TYPE,
-                new SwitchViewEventHandler() {
-                    public void onSwitch(SwitchViewEvent event) {
-                        //view.setState(event.getAppState());
+            new SwitchViewEventHandler() {
+                public void onSwitch(SwitchViewEvent event) {
+                    MainViewState mvs = event.getAppState();
+                    
+                    // Check to see to which view we are switching
+                    if (mvs == MainViewState.UPLOADVIEW) {
+                        // Turn off the user list in upload view
+                        view.enableUserList(false);
                     }
-                }); 
+                    else if (mvs == MainViewState.GRAPHVIEW) {
+                        // If we are an admin or researcher, enable the user list
+                        if (userInfo.isAdmin() || userInfo.isResearcher()) {
+                            view.enableUserList(true);
+                        }
+                    }
+                    else {
+                        throw new Error("SwitchViewEventHandler:onSwitch - Switching to an unknown view!");
+                    }
+                    
+                }
+            }); 
     }
     
     @Override
@@ -81,6 +99,11 @@ public class DataFilterPresenter implements Presenter,
         bind();
         container.clear();
         container.add(view.asWidget());
+        
+        // Set default Date and num days in the selectionModels
+        // TODO: Hacky to put these here
+        endDateSelectionModel.addSelection(new Date());
+        numDaysSelectionModel.addSelection(new Integer(14));
         
         // Fetch user info for display
         fetchUserInfo();
@@ -98,22 +121,26 @@ public class DataFilterPresenter implements Presenter,
             }
             // Log this and fail as well as possible
             public void onFailure(Throwable caught) {
-              Window.alert("Error fetching UserInfo!");
+                Window.alert("Error fetching UserInfo!");
             }
         });
     }
     
     // Ask for a list of users from the server
     private void fetchUserList() {
-        rpcService.fetchUserList(new AsyncCallback<ArrayList<String>>() {
-            public void onSuccess(ArrayList<String> result) {
+        rpcService.fetchUserList(new AsyncCallback<ArrayList<UserInfo>>() {
+            public void onSuccess(ArrayList<UserInfo> result) {
+                // Reset the userSelectionModel
+                userSelectionModel.clear();
+                
+                // handle the response
                 users = result;
                 sortUserList();
-                //display.setData(users);
+                view.setRowData(users);
             }
             
             public void onFailure(Throwable caught) {
-              Window.alert("Error fetching contact details");
+                Window.alert("Error fetching user list");
             }
           });
     }
@@ -129,11 +156,15 @@ public class DataFilterPresenter implements Presenter,
     }
     
     // Never show the user list when in the upload view
+    // Only called from javascript so need to suppress unused
+    @SuppressWarnings("unused")
     private void doSwitchToUploadView() {
         view.enableUserList(false);
     }
     
     // Only show user list if the user is an admin or researcher
+    // Only called from javascript so need to suppress unused
+    @SuppressWarnings("unused")
     private void doSwitchToGraphView() {
         if (userInfo.isAdmin() || userInfo.isResearcher()) {
             view.enableUserList(true);
@@ -143,13 +174,24 @@ public class DataFilterPresenter implements Presenter,
         }
     }
 
-    // Ask for new data from the server using the inputs from the view
+    // Ask for new data from the server using selections from the view
     private void doFetch() {
-        /*
         Date startDate;
         long endTime, numDaysInMilliseconds;
-        Date endDate = display.getEndDate().getValue();
-        int numDays = Integer.parseInt(display.getNumDays());
+        // make
+        Date endDate;
+        int numDays;
+        
+        // Make sure something is selected!
+        if (endDateSelectionModel.getSelectedItems().size() == 0 ||
+                numDaysSelectionModel.getSelectedItems().size() == 0) {
+            // TODO: Throw an error here
+            return;
+        }
+        
+        // There should not be more than one selection
+        endDate = endDateSelectionModel.getSelectedItems().get(0);
+        numDays = numDaysSelectionModel.getSelectedItems().get(0).intValue();
 
         // All calls to the server use the ISO format for dates
         DateTimeFormat fmt = DateTimeFormat.getFormat("yyyy-MM-dd");
@@ -163,11 +205,18 @@ public class DataFilterPresenter implements Presenter,
         // Hack these into Strings for javascript calls
         this.endDate = fmt.format(endDate);
         this.startDate = fmt.format(startDate);
-        this.userName = display.getSelectedUser();
         this.numDays = numDays;
         
+        // If there is a selected userName, set it, else use hte current user name
+        if (userSelectionModel.getSelectedItems().size() == 0) {
+            this.userName = userInfo.getUserName();
+        }
+        else {
+            this.userName = userSelectionModel.getSelectedItems().get(0).getUserName();
+        }
+        
         doFetchJavascript();
-*/
+        
         /*
         rpcService.fetchDateRange(endDate, numDays, new AsyncCallback<ArrayList<Object>>() {
 
@@ -220,25 +269,28 @@ public class DataFilterPresenter implements Presenter,
         $wnd.DataSourceJson.requestData($wnd.DataSourceJson.DATA_MOBILITY_MODE_PER_DAY, params);
         
         // Grab EMA data from the server 
-        params['u'] = userName;
+        if (userName != "")
+            params['u'] = userName;
         $wnd.DataSourceJson.requestData($wnd.DataSourceJson.DATA_EMA, params);
     }-*/;
 
+    
     @Override
     public void onEndDateSelected(Date selectedEndDate) {
-        Window.alert("Selected date: " + selectedEndDate.toString());
-        
+        // Update the selection model with the new selected date
+        endDateSelectionModel.clear();
+        endDateSelectionModel.addSelection(selectedEndDate);
     }
 
     @Override
     public void onNumDaysSelected(Integer numDays) {
-        Window.alert("Selected num days: " + numDays.toString());
-        
+        numDaysSelectionModel.clear();
+        numDaysSelectionModel.addSelection(numDays);
     }
 
     @Override
     public void onUserSelected(UserInfo selectedUser) {
-        Window.alert("Selected user: " + selectedUser.getUserName());
-        
+        userSelectionModel.clear();
+        userSelectionModel.addSelection(selectedUser);
     }
 }

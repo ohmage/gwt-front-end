@@ -6,13 +6,13 @@ import java.util.List;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 
 public class DataFilterDropDownDefinitionsFactory<T> {
-  public static List<ColumnDefinition<UserInfo>> 
-      getDataFilterColumnDefinitions() {
+  public static List<DropDownDefinition<UserInfo>> 
+      getDataFilterDropDownDefinitions() {
     return DataFilterDropDownDefinitionsImpl.getInstance();
   }
 
-  public static List<ColumnDefinition<UserInfo>>
-      getTestDataFilterColumnDefinitions() {
-    return new ArrayList<ColumnDefinition<UserInfo>>();
+  public static List<DropDownDefinition<UserInfo>>
+      getTestDataFilterDropDownDefinitions() {
+    return new ArrayList<DropDownDefinition<UserInfo>>();
   }
 }

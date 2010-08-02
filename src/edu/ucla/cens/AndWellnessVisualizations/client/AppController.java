@@ -61,20 +61,14 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
         String token = event.getValue();
         
         if (token != null) {
-            Presenter presenter = null;
-
             if (token.equals("datafilter")) {
                 if (dataFilterView == null) {
                     dataFilterView = new DataFilterViewImpl<UserInfo>();
                 }
                 new DataFilterPresenter(rpcService, eventBus, dataFilterView, 
                         DataFilterDropDownDefinitionsFactory
-                        .getDataFilterColumnDefinitions())
+                        .getDataFilterDropDownDefinitions())
                     .go(container);
-            }
-          
-            if (presenter != null) {
-                presenter.go(container);
             }
         }
     }

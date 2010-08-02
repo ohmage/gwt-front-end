@@ -2,7 +2,7 @@ package edu.ucla.cens.AndWellnessVisualizations.client.view;
 
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.common.ColumnDefinition;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.DropDownDefinition;
 
 import java.util.Date;
 import java.util.List;
@@ -19,7 +19,7 @@ public interface DataFilterView<T> {
   
     // Sets the presenter so the view can call the presenter in response to events
     void setPresenter(Presenter<T> presenter);
-    void setColumnDefinitions(List<ColumnDefinition<T>> columnDefinitions);
+    void setDropDownDefinitions(List<DropDownDefinition<T>> dropDownDefinitions);
     // Update the list of displayed users
     void setRowData(List<T> rowData);
     // Hide/show the user list

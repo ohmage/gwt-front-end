@@ -21,4 +21,8 @@ public class SelectionModel<T> {
   public boolean isSelected(T item) {
     return selectedItems.contains(item);
   }
+  
+  public void clear() {
+      selectedItems.clear();
+  }
 }

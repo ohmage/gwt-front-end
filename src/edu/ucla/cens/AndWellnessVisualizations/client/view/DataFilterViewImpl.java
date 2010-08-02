@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DatePicker;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.common.ColumnDefinition;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.DropDownDefinition;
 
 /**
  * Widget that displays a data selection filter.
@@ -44,7 +44,7 @@ public class DataFilterViewImpl<T> extends Composite implements DataFilterView<T
     // Call the presenter in response to events (user clicks)
     private Presenter<T> presenter;
     // Defines the structure of the columns in the entryTable
-    private List<ColumnDefinition<T>> columnDefinitions;
+    private List<DropDownDefinition<T>> dropDownDefinitions;
     // Defines the contents of the entryTable
     private List<T> rowData;
     
@@ -54,22 +54,37 @@ public class DataFilterViewImpl<T> extends Composite implements DataFilterView<T
       
       // Init the default datepicker date to today
       endDatePicker.setValue(new Date());
-      
-      // TODO: Set presenter with default selected date and num days
     }
     
     public void setPresenter(Presenter<T> presenter) {
         this.presenter = presenter;
     }
     
-    public void setColumnDefinitions(List<ColumnDefinition<T>> columnDefinitions) {
-        this.columnDefinitions = columnDefinitions;    
+    public void setDropDownDefinitions(List<DropDownDefinition<T>> dropDownDefinitions) {
+        this.dropDownDefinitions = dropDownDefinitions;    
     }
     
     // Update the data displayed by the entryTable
     public void setRowData(List<T> rowData) {
-        // TODO Auto-generated method stub
+        this.rowData = rowData;
+        // Clear the current data
+        userListBox.clear();
         
+        // Possible future TODO, make this completely HTML, no ListBox widget
+        // for performance reasons, for now leave (not many users anyway)
+        for (int i = 0; i < rowData.size(); ++i) {
+            T t = rowData.get(i);
+            
+            // Doesn't really make sense for dropDownDefinition to have a size
+            // greater than 1, but do this for generality
+            for (int j = 0; j < dropDownDefinitions.size(); ++j) {
+                StringBuilder sb = new StringBuilder();
+                dropDownDefinitions.get(j).render(t, sb);
+                
+                // Add the string to the listbox
+                userListBox.addItem(sb.toString());
+            }
+        }
     }
     
     // When the "Go" button is clicked, send notification to the presenter
@@ -101,42 +116,19 @@ public class DataFilterViewImpl<T> extends Composite implements DataFilterView<T
         }
     }
     
-/*    
-    // Functionality from the Display interface needed by the Presenter.
-    @Override
-    public HasValue<Date> getEndDate() {
-        return endDate;
-    }
-
-    @Override
-    public String getNumDays() {
-        return numDays.getValue(numDays.getSelectedIndex());
-    }
-    
-    @Override
-    public HasClickHandlers getSendButton() {
-        return sendButton;
-    }
-    
-    // Update the user list with a new list of users to display
-    @Override
-    public void setData(List<String> data) {
-        // Run through the new data, add into the user list
-        userList.clear();
+    // Whenever a new user is selected, notify the Presenter
+    @UiHandler("userListBox")
+    void onUserListBoxChanged(ChangeEvent event) {
+        int selectedIndex = userListBox.getSelectedIndex();
         
-        for (int i = 0; i < data.size(); ++i) {
-          userList.addItem(data.get(i));
-        }  
+        // If the selected index is -1, nothing is selected, do not notify the presenter
+        if (presenter != null || selectedIndex != -1) {
+            // Grab the item from the rowData and return
+            T selectedItem = rowData.get(selectedIndex);
+            presenter.onUserSelected(selectedItem);
+        }
     }
     
-    @Override
-    public String getSelectedUser() {
-        // -1 if no user is selected
-        return userList.getValue(userList.getSelectedIndex());
-    }
-    */
-   
-
     // Show or hide the user list
     public void enableUserList(boolean enable) {
         if (enable) {

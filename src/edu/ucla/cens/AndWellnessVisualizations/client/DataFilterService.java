@@ -61,7 +61,7 @@ public class DataFilterService {
         }
     }
     
-    public void fetchUserList(final AsyncCallback<ArrayList<String>> callback) {
+    public void fetchUserList(final AsyncCallback<ArrayList<UserInfo>> callback) {
         // Build the server request, implement callbacks to handle returned json
         try {
             userListBuilder.sendRequest(null, new RequestCallback() {
@@ -70,7 +70,9 @@ public class DataFilterService {
                     // Couldn't connect to server (could be timeout, SOP violation, etc.)   
                     callback.onFailure(exception);
                 }
-
+                
+                // Translate response into an internally known Model.  If the server API changes,
+                // we only have to change this translation and no other code
                 public void onResponseReceived(Request request, Response response) {
                     if (200 == response.getStatusCode()) {
                         // TODO Check for redirect response or other json error codes
@@ -79,12 +81,12 @@ public class DataFilterService {
                         String responseText = response.getText();
                         // Parse into JSON
                         JsArray<HoursSinceLastSurveyAwData> userDataJson = HoursSinceLastSurveyAwData.fromJSONString(responseText);
-                        // The callback expects an ArrayList of user names, make it now
-                        ArrayList<String> userList = new ArrayList<String>();
+                        // The callback expects an ArrayList of UserInfos, make it now
+                        ArrayList<UserInfo> userList = new ArrayList<UserInfo>();
                         
                         // Loop over the array of data, add all users into the list to return
                         for (int i = 0; i < userDataJson.length(); ++i) {
-                            userList.add(userDataJson.get(i).getUserName());
+                            userList.add(new UserInfo(userDataJson.get(i).getUserName()));
                         }
                         // Pass the new list back to the requesting function
                         callback.onSuccess(userList);

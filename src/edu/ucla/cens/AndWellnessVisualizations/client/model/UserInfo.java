@@ -1,16 +1,23 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.model;
 
+
 /**
  * Storage class to hold basic user information.
  * 
  * @author jhicks
  *
  */
-public class UserInfo {
+public class UserInfo implements Comparable<UserInfo> {
     public String userName;
     public int privileges;
     
     public UserInfo() {};
+    
+    public UserInfo(String userName) {
+        this.userName = userName;
+        // We do not know the privileges, set to invalid
+        this.privileges = -1;
+    }
     
     public UserInfo(String userName, int privileges) {
         this.userName = userName;
@@ -40,4 +47,10 @@ public class UserInfo {
     public void setUserName(String userName) { this.userName = userName; }
     public int getPrivileges() { return privileges; }
     public void setPrivileges(int privileges) { this.privileges = privileges; }
+
+    // Allows this model to be sorted by Collections.sort() (be userName only)
+    @Override
+    public int compareTo(UserInfo arg0) {
+        return this.userName.compareTo(arg0.userName);
+    }
 }
