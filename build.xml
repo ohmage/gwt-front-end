@@ -44,6 +44,9 @@
       <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
       <arg line="${gwt.args}"/>
       <arg value="edu.ucla.cens.AndWellnessVisualizations.AndWellnessVisualizations"/>
+      <arg value="-localWorkers" />
+      <arg value="2" />
+
     </java>
   </target>
 
