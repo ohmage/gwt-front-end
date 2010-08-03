@@ -49,7 +49,6 @@ public class UserInfo implements Comparable<UserInfo> {
     public void setPrivileges(int privileges) { this.privileges = privileges; }
 
     // Allows this model to be sorted by Collections.sort() (be userName only)
-    @Override
     public int compareTo(UserInfo arg0) {
         return this.userName.compareTo(arg0.userName);
     }

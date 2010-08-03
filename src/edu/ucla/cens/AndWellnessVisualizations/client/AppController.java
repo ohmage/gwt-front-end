@@ -44,7 +44,6 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
         initEventsJS();
     }
     
-    @Override
     public void go(HasWidgets container) {
         this.container = container;
         
@@ -56,7 +55,6 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
         }
     }
 
-    @Override
     public void onValueChange(ValueChangeEvent<String> event) {
         String token = event.getValue();
         

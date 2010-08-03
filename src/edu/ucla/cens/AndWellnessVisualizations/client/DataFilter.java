@@ -16,7 +16,6 @@ public class DataFilter implements EntryPoint {
     // TODO: Remove when the javascript code disappears
     public static HandlerManager eventBus;
     
-    @Override
     public void onModuleLoad() {
         DataFilterService rpcService = new DataFilterService();
         eventBus = new HandlerManager(null);

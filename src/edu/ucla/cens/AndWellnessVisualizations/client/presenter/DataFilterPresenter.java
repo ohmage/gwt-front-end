@@ -41,13 +41,9 @@ public class DataFilterPresenter implements Presenter,
     
     // Bogus fields for javascript usage, since these are only used from 
     // javascript code we need to suppress the compiler warnings
-    @SuppressWarnings("unused")
     private String startDate;
-    @SuppressWarnings("unused")
     private String endDate;
-    @SuppressWarnings("unused")
     private String userName;
-    @SuppressWarnings("unused")
     private int numDays;
     
     public DataFilterPresenter(DataFilterService rpcService, 
@@ -94,7 +90,6 @@ public class DataFilterPresenter implements Presenter,
             }); 
     }
     
-    @Override
     public void go(HasWidgets container) {
         bind();
         container.clear();
@@ -157,14 +152,12 @@ public class DataFilterPresenter implements Presenter,
     
     // Never show the user list when in the upload view
     // Only called from javascript so need to suppress unused
-    @SuppressWarnings("unused")
     private void doSwitchToUploadView() {
         view.enableUserList(false);
     }
     
     // Only show user list if the user is an admin or researcher
     // Only called from javascript so need to suppress unused
-    @SuppressWarnings("unused")
     private void doSwitchToGraphView() {
         if (userInfo.isAdmin() || userInfo.isResearcher()) {
             view.enableUserList(true);
@@ -275,20 +268,17 @@ public class DataFilterPresenter implements Presenter,
     }-*/;
 
     
-    @Override
     public void onEndDateSelected(Date selectedEndDate) {
         // Update the selection model with the new selected date
         endDateSelectionModel.clear();
         endDateSelectionModel.addSelection(selectedEndDate);
     }
 
-    @Override
     public void onNumDaysSelected(Integer numDays) {
         numDaysSelectionModel.clear();
         numDaysSelectionModel.addSelection(numDays);
     }
 
-    @Override
     public void onUserSelected(UserInfo selectedUser) {
         userSelectionModel.clear();
         userSelectionModel.addSelection(selectedUser);
