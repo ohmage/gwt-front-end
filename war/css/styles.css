@@ -1,0 +1,151 @@
+/* CSS reset */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+
+/* General */
+body {
+	padding-top: 20px;	
+}
+
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+h1 {
+  font-family: "Arial Black", Arial, Helvetica, sans-serif;
+  font-size: 3em;
+}
+
+h2 {
+  color: #002D4B;
+  font-size: 1.5em;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
+h3 {
+  font: bold;
+  color: #002D4B;
+  font-size: 1.3em;
+}
+
+p {
+  line-height: 140%;
+  margin-left: 100px;
+  margin-right: 50px;
+  margin-bottom: 10px;
+}
+
+/* Classes */
+
+
+
+
+#main_wrapper {
+    width: 1000px;
+    margin: 0px auto 15px auto;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: #333;
+    background: #FFF;
+}
+
+
+
+/* Header */
+#header {
+	padding-bottom: 10px;
+}
+
+/* Title */
+#title {
+	float: left;	
+}
+
+/* Navigation */
+#navigation {
+	float: right;
+	margin: 15px 0;
+	font-size: 93.75%;
+	line-height: 1;
+}
+	
+#navigation ul {
+	margin: 0;
+	padding: 0;
+}
+	
+#navigation li {
+	margin: 0;
+	padding: 0;
+	display: inline;
+	list-style-type: none;
+}
+	
+#navigation a {
+	display: block;
+	float: left;
+	margin: 0 0 0 2px;
+	padding: 6px 10px;
+	font-weight: bold;
+	-webkit-border-radius:  5px;
+	-moz-border-radius:  5px;
+	border-radius:  5px;
+}
+
+.home  #home-nav a,
+.page-id-500 #about-nav a {
+	text-decoration: none;
+	color: black;
+}
+	
+#navigation a:focus {
+	background: #000;
+}
+
+
+/* Contents */
+#contents {
+	border: 1px solid #E8E8E8;
+	padding: 5px 15px 5px 15px;
+}
+
+/* Footer */
+#footer {
+	padding-top: 5px;
+    color: #505050;
+}
+
+#footer a {
+	text-decoration: none;	
+}
+
+/* Page specific properties */
+.home p {
+	font-size: 1.7em;	
+}
+
+/* General properties */
+.clear-line { clear: both; }
+.float-right { float: right; }

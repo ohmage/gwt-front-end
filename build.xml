@@ -52,6 +52,14 @@
 
   <target name="build" depends="gwtc" description="Build this project" />
 
+  <target name="war" depends="build" description="Create a war file">
+	<zip destfile="AndWellnessFrontend.war" basedir="war"/>
+  </target>
+	
+  <target name="war-nobuild" description="Create a war file">
+    <zip destfile="AndWellnessFrontend.war" basedir="war"/>
+  </target>
+	
   <target name="clean" description="Cleans this project">
     <delete dir="war/WEB-INF/classes" failonerror="false" />
     <delete dir="war/andwellnessvisualizations" failonerror="false" />
