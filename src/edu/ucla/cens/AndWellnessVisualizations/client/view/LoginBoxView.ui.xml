@@ -1,0 +1,44 @@
+<ui:UiBinder
+  xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  
+  <ui:style>
+    .loginBoxLabel {
+  		font-size: 0.85em;
+  	}
+    .loginBoxHPanel {
+      margin: 3px 0px 3px 0px;
+      width: 100%;
+      line-height: 150%;
+    }
+  </ui:style>
+
+  <g:SimplePanel>
+    <g:VerticalPanel ui:field="dataEntryPanel">
+      <g:HorizontalPanel addStyleNames="{style.loginBoxHPanel}">
+        <!-- Use cells for specific table cell alignment -->
+      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
+      		<g:Label addStyleNames="{style.loginBoxLabel}">User:</g:Label>
+      	</g:cell>
+      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
+      	  <g:TextBox ui:field='userLoginBox'></g:TextBox>
+      	</g:cell>
+      </g:HorizontalPanel>
+      
+      <g:HorizontalPanel addStyleNames="{style.loginBoxHPanel}">
+        <!-- Use cells for specific table cell alignment -->
+      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
+      		<g:Label addStyleNames="{style.loginBoxLabel}">Password:</g:Label>
+      	</g:cell>
+      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
+      	  <g:TextBox ui:field='userPasswordBox'></g:TextBox>
+      	</g:cell>
+      </g:HorizontalPanel>
+      
+	  <g:HorizontalPanel addStyleNames="{style.loginBoxHPanel}">
+	    <g:Button ui:field="goButton">Go</g:Button>
+	  </g:HorizontalPanel>
+	  
+	</g:VerticalPanel>
+  </g:SimplePanel>
+</ui:UiBinder>
