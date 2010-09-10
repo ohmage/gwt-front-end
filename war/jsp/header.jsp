@@ -9,7 +9,7 @@
 		<ul>
 			<li id="home-nav"><a href="/">Home</a></li>
 			<li id="about-nav"><a href="/about/">About</a></li>
-			<li id="dashboard-nav"><a href="/dashboard/">Dashboard</a></li>
+			<li id="help-nav"><a href="/help/">Help</a></li>
 			<li id="login-nav"><a href="/login/">Login</a></li>
 		</ul>
 	</div>

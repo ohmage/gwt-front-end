@@ -41,19 +41,31 @@ h2 {
   text-transform: uppercase;
   margin-bottom: 10px;
   margin-left: 10px;
+  margin-top: 5px;
+  border-bottom: 1px solid lightgrey;
 }
 
 h3 {
   font: bold;
   color: #002D4B;
   font-size: 1.3em;
+  margin-left: 20px;
 }
 
 p {
-  line-height: 140%;
-  margin-left: 100px;
+  font-size: 1.1em;
+  line-height: 120%;
+  margin-left: 75px;
   margin-right: 50px;
-  margin-bottom: 10px;
+  margin-bottom: 7px;
+}
+
+ul {
+	font-size: 1.1em;
+	line-height: 120%;
+	margin-left: 100px;
+	margin-right: 50px;
+	margin-bottom: 7px;
 }
 
 /* Classes */
@@ -115,7 +127,8 @@ p {
 }
 
 .home  #home-nav a,
-.page-id-500 #about-nav a {
+.page-id-500 #about-nav a, 
+.page-id-501 #help-nav a {
 	text-decoration: none;
 	color: black;
 }
