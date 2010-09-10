@@ -5,7 +5,7 @@
 		</a>
 	</div>
 	
-	<div id="navigation">
+	<div id="navigation" class="blue">
 		<ul>
 			<li id="home-nav"><a href="/">Home</a></li>
 			<li id="about-nav"><a href="/about/">About</a></li>

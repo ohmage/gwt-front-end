@@ -126,9 +126,12 @@ ul {
 	border-radius:  5px;
 }
 
+.blue a { color: #3690C0; }
+
 .home  #home-nav a,
 .page-id-500 #about-nav a, 
-.page-id-501 #help-nav a {
+.page-id-501 #help-nav a,
+.page-id-502 #login-nav a {
 	text-decoration: none;
 	color: black;
 }
@@ -162,3 +165,4 @@ ul {
 /* General properties */
 .clear-line { clear: both; }
 .float-right { float: right; }
+
