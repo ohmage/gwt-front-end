@@ -1,0 +1,12 @@
+<ui:UiBinder
+  xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
+
+  <ui:style>
+  </ui:style>
+
+  <g:SimplePanel>
+    <dp:DatePicker ui:field="calendarVisualizationDatePicker" />
+  </g:SimplePanel>
+</ui:UiBinder>
