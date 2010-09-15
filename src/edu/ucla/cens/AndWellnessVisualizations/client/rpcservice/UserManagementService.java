@@ -1,4 +1,4 @@
-package edu.ucla.cens.AndWellnessVisualizations.client;
+package edu.ucla.cens.AndWellnessVisualizations.client.rpcservice;
 
 /**
  * Contacts the server for management services such as creating, editing, deleting

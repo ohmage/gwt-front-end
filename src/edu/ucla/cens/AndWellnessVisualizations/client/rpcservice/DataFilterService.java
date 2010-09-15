@@ -1,4 +1,4 @@
-package edu.ucla.cens.AndWellnessVisualizations.client;
+package edu.ucla.cens.AndWellnessVisualizations.client.rpcservice;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,7 +7,7 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.http.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.data.HoursSinceLastSurveyAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.HoursSinceLastSurveyAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 
 /**
@@ -120,7 +120,7 @@ public class DataFilterService {
 
     // Grab javascript values and put into this object
     private native void doGrabJavaScriptValues() /*-{
-        this.@edu.ucla.cens.AndWellnessVisualizations.client.DataFilterService::userNameJS = $wnd.userName;
-        this.@edu.ucla.cens.AndWellnessVisualizations.client.DataFilterService::userPrivilegesJS = $wnd.isResearcher;
+        this.@edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.DataFilterService::userNameJS = $wnd.userName;
+        this.@edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.DataFilterService::userPrivilegesJS = $wnd.isResearcher;
     }-*/;
 }

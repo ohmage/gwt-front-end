@@ -4,6 +4,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.RootPanel;
 
+import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.DataFilterService;
+
 /**
  * For now the main entry point into the GWT code.  Creates a new service
  * and event bus, and passes them into a new AppController.

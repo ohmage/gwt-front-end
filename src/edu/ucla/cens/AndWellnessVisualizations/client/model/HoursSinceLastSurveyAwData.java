@@ -1,4 +1,4 @@
-package edu.ucla.cens.AndWellnessVisualizations.client.data;
+package edu.ucla.cens.AndWellnessVisualizations.client.model;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;

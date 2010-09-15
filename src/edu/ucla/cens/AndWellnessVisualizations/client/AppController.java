@@ -12,6 +12,8 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.MainViewState;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.Presenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataFilterPresenter;
+import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.DataFilterService;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.DataFilterView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DataFilterViewImpl;
 
 /**
@@ -26,7 +28,7 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
     private final HandlerManager eventBus;
     private final DataFilterService rpcService; 
     private HasWidgets container;
-    private DataFilterViewImpl<UserInfo> dataFilterView = null;
+    private DataFilterView<UserInfo> dataFilterView = null;
   
     
     public AppController(DataFilterService rpcService, HandlerManager eventBus) {

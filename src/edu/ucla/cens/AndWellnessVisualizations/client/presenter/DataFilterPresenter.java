@@ -6,13 +6,13 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.DataFilterService;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.DropDownDefinition;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.SelectionModel;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchViewEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchViewEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.MainViewState;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.DataFilterService;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DataFilterView;
 
 import java.util.ArrayList;
