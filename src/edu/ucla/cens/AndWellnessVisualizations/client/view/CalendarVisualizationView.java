@@ -2,6 +2,8 @@ package edu.ucla.cens.AndWellnessVisualizations.client.view;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.gwt.user.client.ui.Widget;
 
@@ -15,7 +17,12 @@ public interface CalendarVisualizationView<T> {
     // Sets the presenter so the view can call the presenter in response to events
     void setPresenter(Presenter<T> presenter);
     //void setDropDownDefinitions(List<DropDownDefinition<T>> dropDownDefinitions);
+    
     // Update the days with opacity values
-    void setDayData(List<T> dayData);
+    void setDayData(Map<Date, Double> dayData);
+    
+    // Update the current displayed month
+    void setCurrentMonth(Date month);
+    
     Widget asWidget();
 }

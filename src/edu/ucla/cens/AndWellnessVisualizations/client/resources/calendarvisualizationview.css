@@ -27,32 +27,68 @@ td.datePickerMonth {
 /* the label over weekdays */
 /* the label over weekends */
 .datePickerWeekdayLabel, .datePickerWeekendLabel {
-	background-color:white;
+	background: white;
 	height: 30px;
 	vertical-align: bottom;
 	font-size: 1.0em;
 }
 /* a single day */
 .datePickerDay {
-	color: lightgrey;
+	color: black;
 	background: lightgrey;
 	padding: 0;
 	border: 5px solid white;
+	font-size:1.2em;
 }
 /* today's date */
 .datePickerDayIsToday {}
 /* a weekend day */
 .datePickerDayIsWeekend {}
 /* a day in another month, turn these off */
-.datePickerDayIsFiller {
-	color: white;
-	background-color: white;
+td .datePickerDayIsFiller {
+	color: white !important;
+	background: white !important;
+	cursor: default !important;
 }
+
+/* a disabled day, should not be clickable */
+td .datePickerDayIsDisabled {
+	color: black;
+	cursor: default;	
+}
+
 /* the selected day */
 .datePickerDayIsValue {}
-/* a disabled day */
-.datePickerDayIsDisabled {}
+
 /* the currently highlighted day */
-.datePickerDayIsHighlighted {}
+td .datePickerDayIsHighlighted {
+	color: black;
+	background: grey;
+}
 /* the highlighted day if it is also selected */
 .datePickerDayIsValueAndHighlighted {}
+
+/* Opacities to set an individual day's opacity */
+.opacity5 {}
+.opacity10 {}
+.opacity15 {}
+.opacity20 {}
+.opacity25 {}
+.opacity30 {}
+.opacity35 {}
+.opacity40 {}
+.opacity45 {}
+.opacity50 {}
+.opacity55 {}
+.opacity60 {}
+.opacity65 {}
+.opacity70 {}
+.opacity75 {}
+.opacity80 {}
+.opacity85 {}
+.opacity90 {}
+.opacity95 {}
+.opacity100 { 
+	background: #0a1681; 
+	color: white;	
+}
