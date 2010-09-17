@@ -10,20 +10,20 @@ import com.google.gwt.core.client.JsArray;
  * @author jhicks
  *
  */
-public class AuthorizationInformationAwData extends AwData {
+public class AuthorizationTokenQueryAwData extends QueryAwData {
 
-    protected AuthorizationInformationAwData() {};
+    protected AuthorizationTokenQueryAwData() {};
     
     // Grab the authorization token from the JSON
-    public final native String getAuthorizationToken() /*-{ return this.token; }-*/;
+    public final native String getAuthorizationToken() /*-{ return this.data.token; }-*/;
     
     // Grab the List of campaign names
     public final native JsArray<CampaignNameAwData> getCampaignNameList() /*-{ 
-        return this.campaigns; 
+        return this.data.campaigns; 
     }-*/;
     
-    // Create an AuthorizationInformationAwData from a JSON string
-    public static native AuthorizationInformationAwData fromJsonString(String jsonString) /*-{
+    // Create an AuthorizationTokenQueryAwData from a JSON string
+    public static native AuthorizationTokenQueryAwData fromJsonString(String jsonString) /*-{
         return eval('(' + jsonString + ')'); 
     }-*/;
 }
