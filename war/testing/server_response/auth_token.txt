@@ -1,0 +1,7 @@
+{
+    "result": "success",
+    "data": {
+    	"token": "1234567890",
+    	"campaigns": ["campaign1", "campaign2", "campaign3"]
+    }
+}
