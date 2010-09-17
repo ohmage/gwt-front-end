@@ -19,7 +19,7 @@ public class CalendarVisualizationTest implements EntryPoint {
      * Creates the ValendarVisualizationView on the RootPanel
      */
     public void onModuleLoad() {
-        CalendarVisualizationView<Object> calViz = new CalendarVisualizationViewImpl<Object>();
+        CalendarVisualizationView calViz = new CalendarVisualizationViewImpl();
         
         RootPanel.get("test_calendar_visualization").add(calViz.asWidget());
     }

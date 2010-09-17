@@ -68,27 +68,33 @@ td .datePickerDayIsHighlighted {
 /* the highlighted day if it is also selected */
 .datePickerDayIsValueAndHighlighted {}
 
+
 /* Opacities to set an individual day's opacity */
-.opacity5 {}
-.opacity10 {}
-.opacity15 {}
-.opacity20 {}
-.opacity25 {}
-.opacity30 {}
-.opacity35 {}
-.opacity40 {}
-.opacity45 {}
-.opacity50 {}
-.opacity55 {}
-.opacity60 {}
-.opacity65 {}
-.opacity70 {}
-.opacity75 {}
-.opacity80 {}
-.opacity85 {}
-.opacity90 {}
-.opacity95 {}
-.opacity100 { 
-	background: #0a1681; 
-	color: white;	
-}
+.opacity5  { background: rgba(0a,16,81,0.05); }
+.opacity10 { background: rgba(0a,16,81,0.10); }
+.opacity15 { background: rgba(0a,16,81,0.15); }
+.opacity20 { background: rgba(0a,16,81,0.20); }
+.opacity25 { background: rgba(0a,16,81,0.25); }
+.opacity30 { background: rgba(0a,16,81,0.30); }
+.opacity35 { background: rgba(0a,16,81,0.35); }
+.opacity40 { background: rgba(0a,16,81,0.40); }
+.opacity45 { background: rgba(0a,16,81,0.45); }
+.opacity50 { background: rgba(0a,16,81,0.50); }
+.opacity55 { background: rgba(0a,16,81,0.55); }
+.opacity60 { background: rgba(0a,16,81,0.60); }
+.opacity65 { background: rgba(0a,16,81,0.65);
+             color: white; }
+.opacity70 { background: rgba(0a,16,81,0.70); 
+             color: white; }
+.opacity75 { background: rgba(0a,16,81,0.75); 
+             color: white; }
+.opacity80 { background: rgba(0a,16,81,0.80); 
+             color: white; }
+.opacity85 { background: rgba(0a,16,81,0.85); 
+             color: white; }
+.opacity90 { background: rgba(0a,16,81,0.90); 
+             color: white; }
+.opacity95 { background: rgba(0a,16,81,0.95); 
+             color: white; }
+.opacity100 { background: rgba(0a,16,81,1.0); 
+	          color: white; }
