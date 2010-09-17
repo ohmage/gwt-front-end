@@ -1,8 +1,11 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.rpcservice;
 
+import java.util.Date;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationInformationAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
 
 
 /**
@@ -27,5 +30,8 @@ public interface AndWellnessRpcService {
      * @param callback Callback to call when the server responds.
      */
     public void fetchAuthorizationToken(String userName, String password, 
-            final AsyncCallback<AuthorizationInformationAwData> callback);
+            final AsyncCallback<AuthorizationTokenQueryAwData> callback);
+    
+    public void fetchDataPoints(Date startDate, Date endDate, String userName, String dataId, String campaignId, String clientName,
+            final AsyncCallback<DataPointQueryAwData> callback);
 }
