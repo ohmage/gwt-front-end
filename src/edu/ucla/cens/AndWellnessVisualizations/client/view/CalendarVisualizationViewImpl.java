@@ -2,7 +2,6 @@ package edu.ucla.cens.AndWellnessVisualizations.client.view;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -58,17 +57,17 @@ public class CalendarVisualizationViewImpl extends Composite implements
     }
     
     /**
-     * Changes the View to a new month, outdate the old data
+     * Changes the calendar display to a new month.
      */
     public void updateMonth(Date month) {
         calendarVisualizationDatePicker.setCurrentMonth(month);
     }
 
     /**
-     * Updates the dayData with new data, clears the old data out.
+     * Updates the calendar display with new opacity data.
      * 
-     * @param dayData The data to updates.  Needs to be in the View's current month or it
-     *                will be ignored.
+     * @param dayData The data to updates.  Needs to be in the calendar display's 
+     *        current month or it will be ignored.
      */
     public void updateDayData(Map<Date, Double> dayData) {
         Set<Date> days;  // Used to iterate through the days
@@ -89,7 +88,6 @@ public class CalendarVisualizationViewImpl extends Composite implements
                 calendarVisualizationDatePicker.setTransientEnabledOnDates(true, day);
                 
                 // Set the opacity of the day
-                calendarVisualizationDatePicker.addTransientStyleToDates("datePickerBlue", day);
                 calendarVisualizationDatePicker.addTransientStyleToDates(getOpacityStyleName(dayData.get(day)), day);
             }
         }
@@ -103,14 +101,15 @@ public class CalendarVisualizationViewImpl extends Composite implements
     // Private utility functions
     
     /**
-     * Translates the incoming opacity to an opacity style name from calendarvisualizationview.css
+     * Translates the incoming opacity to an opacity style name from calendarvisualizationview.css.
      * 
-     * @param opacity Ranges from 0 to 1.0.
+     * @param opacity Ranges from 0.0 to 1.0.
      * @return The style name to use.
      */
     private String getOpacityStyleName(Double opacityDouble) {
         // Hacky, we have a bunch of styles defined in the style sheet, return the closest
         // one here.  Can we instead change the opacity on the fly?
+        // TODO: Implement a new DatePickerView that can do this, not worth the time investment right now
         double opacity = opacityDouble.doubleValue();
         
         // Round up to the nearest 5

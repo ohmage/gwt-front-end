@@ -1,6 +1,7 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.rpcservice;
 
 import java.util.Date;
+import java.util.List;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.http.client.Request;
@@ -31,7 +32,6 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
     // Locations of the text files to read
     private final String authorizationData = "/testing/server_response/auth_token.txt";
     private final String dataPoint = "/testing/server_response/data_point.txt";
-    
         
     /**
      * Initializes the various RequestBuilders to read the JSON files.
@@ -103,7 +103,7 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
      * and endDate.
      */
     public void fetchDataPoints(Date startDate, Date endDate, String userName,
-            String dataId, String campaignId, String clientName,
+            List<String> dataIds, String campaignId, String clientName,
             final AsyncCallback<DataPointQueryAwData> callback) {
         // First grab our credentials to authorize with the server
         String authToken = getAuthTokenCookie();

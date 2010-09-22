@@ -1,32 +1,50 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
+import com.google.code.p.gwtchismes.client.GWTCSimpleDatePicker;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.common.DropDownDefinition;
-import edu.ucla.cens.AndWellnessVisualizations.client.common.SelectionModel;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchViewEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.SwitchViewEventHandler;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.MainViewState;
+import edu.ucla.cens.AndWellnessVisualizations.client.ClientInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
-import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.DataFilterService;
+import edu.ucla.cens.AndWellnessVisualizations.client.utils.CollectionUtils;
+import edu.ucla.cens.AndWellnessVisualizations.client.utils.Predicate;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationView;
-import edu.ucla.cens.AndWellnessVisualizations.client.view.DataFilterView;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * The Presenter for the CalendarViaulizationView.  Handles any Events from the View.
- * Parses any necessary data into the CalendarVisualizationModel and passes the Model
- * to the View.
+ * The CalendarVisualizationPresenter handles the the CalendarVisualizationView which is
+ * the display of a months worth of data on a calendar.  Each day of the calendar is either grey
+ * for no data, or a shade of blue whose opacity is determined by the relative amount of data
+ * for that day.  
+ * 
+ * The Presenter is part of a larger calendar data display presenter which handles the entire
+ * calendar display, including this visualization presenter, and various other data input presenters
+ * to take in feedback from the user.
+ * 
+ * This presenter listens for two events: a month selection event and an incoming data event.  The month
+ * selection event will trigger the presenter to change the displayed month, and an incoming data event
+ * will trigger the presenter to update the view with the new data.
+ * 
+ * The presenter sends one event: a day selection event.  The event is not handled here.
  * 
  * @author jhicks
  *
@@ -34,8 +52,11 @@ import java.util.Map;
 public class CalendarVisualizationPresenter implements Presenter,
         CalendarVisualizationView.Presenter {
    
+    private UserInfo currentUserInfo;
+    private CampaignInfo currentCampaignInfo;
     private Date currentMonth;
     private Map<Date, Double> currentDayData;
+    private String currentDataPointLabel;  // Assume we only use one label for now
     private final AndWellnessRpcService rpcService;   // Used to make calls to the server for data
     private final HandlerManager eventBus;  
     private final CalendarVisualizationView view;
@@ -46,32 +67,54 @@ public class CalendarVisualizationPresenter implements Presenter,
         this.eventBus = eventBus;
         this.view = view;
         this.view.setPresenter(this);
+        
+        // Setup some default data
+        currentMonth = new Date();
+        currentDayData = new HashMap<Date, Double>();
+        
+        // Now initialize the default view
+        view.updateMonth(currentMonth);
     }    
     
+    /**
+     * Binds this presenter to listen for various events on the event bus.
+     */
     public void bind() {
-        // Handle switching to various Views
-        eventBus.addHandler(SwitchViewEvent.TYPE,
-            new SwitchViewEventHandler() {
-                public void onSwitch(SwitchViewEvent event) {
-                    MainViewState mvs = event.getAppState();
+        // Listen for a new data point label selection
+        eventBus.addHandler(DataPointLabelSelectionEvent.TYPE,
+            new DataPointLabelSelectionEventHandler() {
+                public void onSelection(DataPointLabelSelectionEvent event) {
+                    currentDataPointLabel = event.getDataPointLabelSelection();
+                }            
+        });
+        
+        // Listen for a new month selection.  Change to the new month and fetch new data from
+        // the server.
+        eventBus.addHandler(MonthSelectionEvent.TYPE,
+            new MonthSelectionEventHandler() {
+                public void onSelection(MonthSelectionEvent event) {
+                    currentMonth = event.getMonthSelection();
                     
-                    // Check to see to which view we are switching
-                    if (mvs == MainViewState.UPLOADVIEW) {
-                        // Turn off the user list in upload view
-                        view.enableUserList(false);
+                    if (view != null) {
+                        view.updateMonth(currentMonth);
                     }
-                    else if (mvs == MainViewState.GRAPHVIEW) {
-                        // If we are an admin or researcher, enable the user list
-                        if (userInfo.isAdmin() || userInfo.isResearcher()) {
-                            view.enableUserList(true);
-                        }
-                    }
-                    else {
-                        throw new Error("SwitchViewEventHandler:onSwitch - Switching to an unknown view!");
-                    }
-                    
                 }
-            }); 
+        });
+        
+        // Listen for any incoming data, process and pass to the view
+        eventBus.addHandler(NewDataPointAwDataEvent.TYPE,
+            new NewDataPointAwDataEventHandler() {
+                public void onNewData(NewDataPointAwDataEvent event) {
+                    // reset the current data
+                    currentDayData.clear();
+                    currentDayData = processNewDataPointAwData(event.getData());
+                    
+                    // Make sure the view exists
+                    if (view != null) {
+                        view.updateDayData(currentDayData);
+                    }
+                }
+        });
     }
     
     public void go(HasWidgets container) {
@@ -79,181 +122,163 @@ public class CalendarVisualizationPresenter implements Presenter,
         container.clear();
         container.add(view.asWidget());
     }
-    
-    private void fetchUserInfo() {
-        // Grab user info for display
-        rpcService.fetchUserInfo(new AsyncCallback<UserInfo>() {
-            public void onSuccess(UserInfo result) {
-                userInfo = result;
-                handleUserInfo();
-            }
-            // Log this and fail as well as possible
-            public void onFailure(Throwable caught) {
-                Window.alert("Error fetching UserInfo!");
-            }
+
+    /**
+     * Processes incoming server data into a model the view understands.
+     * 
+     * @param data The data to process.
+     * @return The processed data.
+     */
+    private Map<Date, Double> processNewDataPointAwData(List<DataPointAwData> data) {
+        Map<Date,Double> processedData;
+        String displayType = "";
+        Collection<DataPointAwData> filteredData;
+        
+        // Filter out data points that are not the current label
+        filteredData = CollectionUtils.filter(data, new Predicate<DataPointAwData>() {
+            public boolean apply(DataPointAwData type) {
+                return type.getLabel().equals(currentDataPointLabel);
+            } 
         });
-    }
-    
-    // Ask for a list of users from the server
-    private void fetchUserList() {
-        rpcService.fetchUserList(new AsyncCallback<ArrayList<UserInfo>>() {
-            public void onSuccess(ArrayList<UserInfo> result) {
-                // Reset the userSelectionModel
-                userSelectionModel.clear();
+        
+        // Filter out data points that are not in the current month
+        final Date startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
+        final Date endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
+        final DateTimeFormat dateFormat = DateTimeFormat.getFormat(ClientInfo.timeStampFormat);
+        filteredData = CollectionUtils.filter(filteredData, new Predicate<DataPointAwData>() {
+            public boolean apply(DataPointAwData type) {
+                Date dataPointDate = dateFormat.parse(type.getTimeStamp());
                 
-                // handle the response
-                users = result;
-                sortUserList();
-                view.setRowData(users);
-            }
-            
-            public void onFailure(Throwable caught) {
-                Window.alert("Error fetching user list");
-            }
-          });
-    }
-    
-    // Called to setup display state when we receive a new UserInfo
-    private void handleUserInfo() {
-        // TODO: Remove this javascripty hack later
-        this.userName = userInfo.getUserName();
-    }
-    
-    private void sortUserList() {
-        Collections.sort(users);
-    }
-    
-    // Never show the user list when in the upload view
-    // Only called from javascript so need to suppress unused
-    private void doSwitchToUploadView() {
-        view.enableUserList(false);
-    }
-    
-    // Only show user list if the user is an admin or researcher
-    // Only called from javascript so need to suppress unused
-    private void doSwitchToGraphView() {
-        if (userInfo.isAdmin() || userInfo.isResearcher()) {
-            view.enableUserList(true);
+                // Check to make sure this is within the correct date range
+                return (dataPointDate.after(startDate) && dataPointDate.before(endDate));
+            } 
+        });
+        
+        // Check to see if we found any data
+        if (filteredData.size() == 0) {
+            // If no data, return an empty map
+            return new HashMap<Date,Double>();
+        }
+        
+        // Process the data based on the display type
+        if ("count".equals(displayType)) {
+            processedData = processCountData(filteredData);
+        }
+        else if ("measurement".equals(displayType)) {
+            processedData = processMeasurementData(filteredData);
+        }
+        else if ("event".equals(displayType)) {
+            processedData = processEventData(filteredData);
+        }
+        else if ("category".equals(displayType)) {
+            processedData = processCategoryData(filteredData);
         }
         else {
-            view.enableUserList(false);
+            processedData = new HashMap<Date,Double>();
         }
+        
+        return processedData;
+    }
+    
+    /**
+     * Processes a collection of DataPointAwData into a Map of dates and opacities.
+     * Works day by day, adds up all counts from the day, then inserts into the processed
+     * data.  Days that have no data are not inserted into the processed data.
+     * 
+     * @param filteredData
+     * @return
+     */
+    private Map<Date, Double> processCountData(
+            Collection<DataPointAwData> countData) {
+        Map<Date, Double> processedData = new HashMap<Date, Double>();
+        
+        Date startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
+        Date endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
+        
+        // A for loop that increases one day at a time
+        int maximumCountPerDay = 0;
+        for (Date i = startDate; i.before(endDate); i = GWTCSimpleDatePicker.increaseMonth(i, 1)) {
+            // Let's implement this as N^2 for now, if this is a problem we can optimize in
+            // the future
+            Collection<DataPointAwData> singleDayAwData = CollectionUtils.filter(countData, new Predicate<DataPointAwData>() {
+                public boolean apply(DataPointAwData type) {
+                    
+                }
+            });
+        }
+        
+        return null;
     }
 
-    // Ask for new data from the server using selections from the view
-    private void doFetch() {
-        Date startDate;
-        long endTime, numDaysInMilliseconds;
-        // make
-        Date endDate;
-        int numDays;
+    private Map<Date, Double> processMeasurementData(
+            Collection<DataPointAwData> filteredData) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Map<Date, Double> processEventData(
+            Collection<DataPointAwData> filteredData) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Map<Date, Double> processCategoryData(
+            Collection<DataPointAwData> filteredData) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * Fetches new data points based on the locally stored fields.  Checks to be sure
+     * we have all the necessary data before sending the request.
+     */
+    private void fetchDataPoints() {
+        // Data for the rpc request
+        Date startDate, endDate;
+        String userName, campaignId, clientName;
         
-        // Make sure something is selected!
-        if (endDateSelectionModel.getSelectedItems().size() == 0 ||
-                numDaysSelectionModel.getSelectedItems().size() == 0) {
-            // TODO: Throw an error here
+        // If we have no data to fetch, don't bother
+        if (currentDayData.size() == 0) {
             return;
         }
         
-        // There should not be more than one selection
-        endDate = endDateSelectionModel.getSelectedItems().get(0);
-        numDays = numDaysSelectionModel.getSelectedItems().get(0).intValue();
-
-        // All calls to the server use the ISO format for dates
-        DateTimeFormat fmt = DateTimeFormat.getFormat("yyyy-MM-dd");
+        // Find the first and last day of the requested month
+        startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
+        endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
+        userName = currentUserInfo.getUserName();
+        campaignId = currentCampaignInfo.getCampaignId();
+        clientName = ClientInfo.getClientName();
         
-        // Subtract numDays from the date
-        endTime = endDate.getTime();
-        numDaysInMilliseconds = numDays * 1000 * 60 * 60 * 24;
-        startDate = new Date(endTime - numDaysInMilliseconds);
-        
-        
-        // Hack these into Strings for javascript calls
-        this.endDate = fmt.format(endDate);
-        this.startDate = fmt.format(startDate);
-        this.numDays = numDays;
-        
-        // If there is a selected userName, set it, else use hte current user name
-        if (userSelectionModel.getSelectedItems().size() == 0) {
-            this.userName = userInfo.getUserName();
-        }
-        else {
-            this.userName = userSelectionModel.getSelectedItems().get(0).getUserName();
-        }
-        
-        doFetchJavascript();
-        
-        /*
-        rpcService.fetchDateRange(endDate, numDays, new AsyncCallback<ArrayList<Object>>() {
-
-            @Override
-            public void onFailure(Throwable caught) {
+        // Send our request to the rpcService and handle the result
+        rpcService.fetchDataPoints(startDate, endDate, userName, currentDataPointLabel, campaignId, clientName, new AsyncCallback<DataPointQueryAwData>() {
+            
+            /**
+             * Called when the server successfully transmits back data.  Save the data in local models
+             * and send the updated models to the view for display.
+             * 
+             * @param awData The data returned from the server.
+             */
+            public void onSuccess(DataPointQueryAwData awData) {
                 // TODO Auto-generated method stub
                 
             }
-
+            
             @Override
-            public void onSuccess(ArrayList<Object> result) {
+            public void onFailure(Throwable error) {
                 // TODO Auto-generated method stub
                 
             }
-         
+            
         });
-        */
+    }
+
+    /**
+     * Is called whenever a day is clicked in the registered view.  Sends out
+     * a day clicked event in response, but is otherwise not handled here.
+     */
+    public void onDayClicked(Date selectedDate) {
+        // TODO Auto-generated method stub
+        
     }
     
-    // Send the request for data through DataSource in the javascript code
-    private native void doFetchJavascript() /*-{
-        var startDateString = this.@edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataFilterPresenter::startDate;
-        var endDateString = this.@edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataFilterPresenter::endDate;
-        var userName = this.@edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataFilterPresenter::userName;
-        var numDays = this.@edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataFilterPresenter::numDays;
-        
-        // TODO Hack these into the dashboard until we get events working
-        $wnd.dashBoard.startDate = $wnd.Date.parseDate(startDateString, "Y-m-d");
-        $wnd.dashBoard.numDays = numDays;
-        $wnd.dashBoard.setUserName(userName);
-        
-        var params = {
-                's': startDateString,
-                'e': endDateString,
-        }; 
-        
-        // Grab hours since last survey information
-        $wnd.DataSourceJson.requestData($wnd.DataSourceJson.DATA_HOURS_SINCE_LAST_SURVEY);
-
-        // Grab percentage good location updates
-        $wnd.DataSourceJson.requestData($wnd.DataSourceJson.DATA_LOCATION_UPDATES);
-        
-        // Grab hours since last location update
-        $wnd.DataSourceJson.requestData($wnd.DataSourceJson.DATA_HOURS_SINCE_LAST_UPDATE);
-
-        // Grab number of completed surveys per day from server
-        $wnd.DataSourceJson.requestData($wnd.DataSourceJson.DATA_SURVEYS_PER_DAY, params);
-        
-        // Grab number of mobilities from the survey per day
-        $wnd.DataSourceJson.requestData($wnd.DataSourceJson.DATA_MOBILITY_MODE_PER_DAY, params);
-        
-        // Grab EMA data from the server 
-        if (userName != "")
-            params['u'] = userName;
-        $wnd.DataSourceJson.requestData($wnd.DataSourceJson.DATA_EMA, params);
-    }-*/;
-
-    
-    public void onEndDateSelected(Date selectedEndDate) {
-        // Update the selection model with the new selected date
-        endDateSelectionModel.clear();
-        endDateSelectionModel.addSelection(selectedEndDate);
-    }
-
-    public void onNumDaysSelected(Integer numDays) {
-        numDaysSelectionModel.clear();
-        numDaysSelectionModel.addSelection(numDays);
-    }
-
-    public void onUserSelected(UserInfo selectedUser) {
-        userSelectionModel.clear();
-        userSelectionModel.addSelection(selectedUser);
-    }
 }
