@@ -14,9 +14,11 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ErrorAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ErrorQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.utils.JsArrayUtils;
 
 /**
  * An implementation of the AndWellnessRpcService that reads data locally from text files
@@ -104,7 +106,7 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
      */
     public void fetchDataPoints(Date startDate, Date endDate, String userName,
             List<String> dataIds, String campaignId, String clientName,
-            final AsyncCallback<DataPointQueryAwData> callback) {
+            final AsyncCallback<List<DataPointAwData>> callback) {
         // First grab our credentials to authorize with the server
         String authToken = getAuthTokenCookie();
         
@@ -139,9 +141,13 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                         if (! "success".equals(serverResponse.getResult())) {
                             callback.onFailure(new RpcServiceException("Server returned malformed JSON."));
                         }
-                       
+                        
+                        // Translate into a List of DataPointAwData
+                        JsArray<DataPointAwData> dataPointAwDataArray = serverResponse.getData();
+                        List<DataPointAwData> dataPointList = JsArrayUtils.translateToList(dataPointAwDataArray);
+                        
                         // Success, return the response!
-                        callback.onSuccess(serverResponse);
+                        callback.onSuccess(dataPointList);
                         
                     } else {
                         // We are reading a local file, this shouldn't happen!

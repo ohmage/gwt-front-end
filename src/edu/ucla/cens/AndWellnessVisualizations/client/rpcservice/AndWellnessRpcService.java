@@ -6,7 +6,7 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 
 
 /**
@@ -34,5 +34,5 @@ public interface AndWellnessRpcService {
             final AsyncCallback<AuthorizationTokenQueryAwData> callback);
     
     public void fetchDataPoints(Date startDate, Date endDate, String userName, List<String> dataId, String campaignId, String clientName,
-            final AsyncCallback<DataPointQueryAwData> callback);
+            final AsyncCallback<List<DataPointAwData>> callback);
 }

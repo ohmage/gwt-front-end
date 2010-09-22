@@ -14,7 +14,7 @@ public class DataPointAwData extends JavaScriptObject {
     public final native String getLabel() /*-{ return this.label; }-*/;
     public final native String getValue() /*-{ return this.value; }-*/;
     public final native String getUnit() /*-{ return this.unit; }-*/;
-    public final native String getTimeStamp() /*-{ return this.timestamp; }-*/;
+    public final native String getTimeStamp() /*-{ return this.datetime; }-*/;
     public final native String getTz() /*-{ return this.tz; }-*/;
     public final native LocationAwData getLocation() /*-{ return this.location; }-*/;
     public final native String getText() /*-{ return this.text; }-*/;

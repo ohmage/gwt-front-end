@@ -27,13 +27,31 @@ public class DateUtils {
     }
     
     /**
-     *  Checks to see if a Date is within a given Day.
+     *  Checks to see if a Date is within a given Day.  Uses deprecated Date functionality,
+     *  but GWT does not yet include the replacement functionality in Calendar.
      * 
      * @param date The date to check.
      * @param day The day that the date should be in.
      * @return True/false.
      */
+    @SuppressWarnings("deprecation")
     public static boolean isDateInDay(Date date, Date day) {
-        
+        return (date.getYear() == day.getYear() &&
+                date.getMonth() == day.getMonth() &&
+                date.getDate() == day.getDate());
+    }
+    
+    /**
+     * Checks to see if a Date is within a given month.  Uses deprecated Date functionality,
+     * but GWT does not yet include the replacement functionality in Calendar.
+     * 
+     * @param date The Date to check.
+     * @param month The month the date should be in.
+     * @return True/false.
+     */
+    @SuppressWarnings("deprecation")
+    public static boolean isDateInMonth(Date date, Date month) {
+        return (date.getYear() == month.getYear() &&
+                date.getMonth() == month.getMonth());
     }
 }

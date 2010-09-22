@@ -1,9 +1,7 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
 import com.google.code.p.gwtchismes.client.GWTCSimpleDatePicker;
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 
@@ -20,6 +18,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.CollectionUtils;
+import edu.ucla.cens.AndWellnessVisualizations.client.utils.DateUtils;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.Predicate;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationView;
 
@@ -29,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * The CalendarVisualizationPresenter handles the the CalendarVisualizationView which is
@@ -61,6 +61,9 @@ public class CalendarVisualizationPresenter implements Presenter,
     private final HandlerManager eventBus;  
     private final CalendarVisualizationView view;
     
+    // Nice logging utility
+    private static Logger _logger = Logger.getLogger(CalendarVisualizationPresenter.class.getName());
+    
     public CalendarVisualizationPresenter(AndWellnessRpcService rpcService, 
             HandlerManager eventBus, CalendarVisualizationView view) {
         this.rpcService = rpcService;
@@ -71,9 +74,6 @@ public class CalendarVisualizationPresenter implements Presenter,
         // Setup some default data
         currentMonth = new Date();
         currentDayData = new HashMap<Date, Double>();
-        
-        // Now initialize the default view
-        view.updateMonth(currentMonth);
     }    
     
     /**
@@ -84,7 +84,9 @@ public class CalendarVisualizationPresenter implements Presenter,
         eventBus.addHandler(DataPointLabelSelectionEvent.TYPE,
             new DataPointLabelSelectionEventHandler() {
                 public void onSelection(DataPointLabelSelectionEvent event) {
-                    currentDataPointLabel = event.getDataPointLabelSelection();
+                    _logger.fine("Receveived a data point label selection event with label " + currentDataPointLabel);
+                    
+                    currentDataPointLabel = event.getDataPointLabelSelection();                   
                 }            
         });
         
@@ -93,6 +95,8 @@ public class CalendarVisualizationPresenter implements Presenter,
         eventBus.addHandler(MonthSelectionEvent.TYPE,
             new MonthSelectionEventHandler() {
                 public void onSelection(MonthSelectionEvent event) {
+                    _logger.fine("Received a month selection event with month " + currentMonth);
+                    
                     currentMonth = event.getMonthSelection();
                     
                     if (view != null) {
@@ -105,6 +109,8 @@ public class CalendarVisualizationPresenter implements Presenter,
         eventBus.addHandler(NewDataPointAwDataEvent.TYPE,
             new NewDataPointAwDataEventHandler() {
                 public void onNewData(NewDataPointAwDataEvent event) {
+                    _logger.fine("Received a new data point event");
+                    
                     // reset the current data
                     currentDayData.clear();
                     currentDayData = processNewDataPointAwData(event.getData());
@@ -137,28 +143,47 @@ public class CalendarVisualizationPresenter implements Presenter,
         // Filter out data points that are not the current label
         filteredData = CollectionUtils.filter(data, new Predicate<DataPointAwData>() {
             public boolean apply(DataPointAwData type) {
+                _logger.finer("Checking data point with label " + type.getLabel() + " and value " + type.getValue());
+                
+                // Check to be sure the label exists
+                if (type.getLabel() == null) {
+                    _logger.warning("Label field does not exist in data type");
+                    return false;
+                }
+                
                 return type.getLabel().equals(currentDataPointLabel);
             } 
         });
         
         // Filter out data points that are not in the current month
-        final Date startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
-        final Date endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
-        final DateTimeFormat dateFormat = DateTimeFormat.getFormat(ClientInfo.timeStampFormat);
         filteredData = CollectionUtils.filter(filteredData, new Predicate<DataPointAwData>() {
             public boolean apply(DataPointAwData type) {
-                Date dataPointDate = dateFormat.parse(type.getTimeStamp());
+                _logger.finer("Checking data point with timestamp " + type.getTimeStamp());
+                
+                // Check to be sure the timestamp exists
+                if (type.getTimeStamp() == null) {
+                    _logger.warning("Timestamp field does not exist in data type.");
+                    return false;
+                }
+                
+                Date dataPointDate = DateUtils.translateFromServerFormat(type.getTimeStamp());
                 
                 // Check to make sure this is within the correct date range
-                return (dataPointDate.after(startDate) && dataPointDate.before(endDate));
+                return (DateUtils.isDateInMonth(dataPointDate, currentMonth));
             } 
         });
         
         // Check to see if we found any data
         if (filteredData.size() == 0) {
+            _logger.warning("Found no data in month " + currentMonth + " with data label " + currentDataPointLabel);
+            
             // If no data, return an empty map
             return new HashMap<Date,Double>();
         }
+        
+        // Find the display type of the data
+        //displayType = CampaignInfo.getDisplayType(currentDataPointLabel);
+        displayType = "count";
         
         // Process the data based on the display type
         if ("count".equals(displayType)) {
@@ -183,35 +208,71 @@ public class CalendarVisualizationPresenter implements Presenter,
     /**
      * Processes a collection of DataPointAwData into a Map of dates and opacities.
      * Works day by day, adds up all counts from the day, then inserts into the processed
-     * data.  Days that have no data are not inserted into the processed data.
+     * data.  Days that have no data are left out of the processed data.
      * 
      * @param filteredData
      * @return
      */
     private Map<Date, Double> processCountData(
             Collection<DataPointAwData> countData) {
+        _logger.fine("processCountData(): Processing count data.");
+        
         Map<Date, Double> processedData = new HashMap<Date, Double>();
         
         Date startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
         Date endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
         
-        // A for loop that increases one day at a time
         int maximumCountPerDay = 0;
-        for (Date i = startDate; i.before(endDate); i = GWTCSimpleDatePicker.increaseMonth(i, 1)) {
-            // Let's implement this as N^2 for now, if this is a problem we can optimize in
-            // the future
-            Collection<DataPointAwData> singleDayAwData = CollectionUtils.filter(countData, new Predicate<DataPointAwData>() {
-                public boolean apply(DataPointAwData type) {
-                    
+        // A for loop that increases one day at a time
+        for (Date i = startDate; i.before(endDate); i = GWTCSimpleDatePicker.increaseDate(i, 1)) {
+            // For every Date in the month, check all Dates in the collection to see if any are in the day.
+            // This is fairly inefficient (O(days_in_month * Dates_in_Collection)) and if this is a problem
+            // we can rework is later
+            List<DataPointAwData> singleDayAwData = new ArrayList<DataPointAwData>();
+            for (DataPointAwData singleCountDataPoint: countData) {
+                Date dataPointDate = DateUtils.translateFromServerFormat(singleCountDataPoint.getTimeStamp());
+                if (DateUtils.isDateInDay(dataPointDate, i)) {
+                    // Since we are a count, this must be greater than 0 to make a difference (what's a count of 0 mean?)
+                    if (Integer.parseInt(singleCountDataPoint.getValue()) > 0) {                    
+                        singleDayAwData.add(singleCountDataPoint);
+                        
+                        _logger.finer("processCountData(): Found date " + dataPointDate + " in day " + i + " with value " + singleCountDataPoint.getValue());
+                    }
                 }
-            });
+            }
+            
+            // If we found at any datapoints for this day
+            if (singleDayAwData.size() > 0) {
+                // Now add up all the values in the singleDayList and add it into the processedData Map
+                int totalValue = 0;
+                for (DataPointAwData day: singleDayAwData) {
+                    totalValue += Integer.parseInt(day.getValue());
+                }
+                
+                // See if we have a new maximum count in a single day for later normalization
+                if (totalValue > maximumCountPerDay) {
+                    maximumCountPerDay = totalValue;
+                }
+                
+                // Add the data to the Map
+                processedData.put(i, (double)totalValue);
+            }
         }
         
-        return null;
+        // Now normalize if necessary
+        if (maximumCountPerDay > 1) {
+            for (Date day: processedData.keySet()) {
+                processedData.put(day, processedData.get(day) / (double) maximumCountPerDay);
+            }
+        }
+        
+        return processedData;
     }
 
     private Map<Date, Double> processMeasurementData(
             Collection<DataPointAwData> filteredData) {
+        _logger.fine("processMeasurementData(): Processing measurement data.");
+        
         // TODO Auto-generated method stub
         return null;
     }
@@ -236,6 +297,7 @@ public class CalendarVisualizationPresenter implements Presenter,
         // Data for the rpc request
         Date startDate, endDate;
         String userName, campaignId, clientName;
+        List<String> dataPointLabels = new ArrayList<String>();
         
         // If we have no data to fetch, don't bother
         if (currentDayData.size() == 0) {
@@ -248,9 +310,10 @@ public class CalendarVisualizationPresenter implements Presenter,
         userName = currentUserInfo.getUserName();
         campaignId = currentCampaignInfo.getCampaignId();
         clientName = ClientInfo.getClientName();
+        dataPointLabels.add(currentDataPointLabel);
         
         // Send our request to the rpcService and handle the result
-        rpcService.fetchDataPoints(startDate, endDate, userName, currentDataPointLabel, campaignId, clientName, new AsyncCallback<DataPointQueryAwData>() {
+        rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, new AsyncCallback<List<DataPointAwData>>() {
             
             /**
              * Called when the server successfully transmits back data.  Save the data in local models
@@ -258,7 +321,7 @@ public class CalendarVisualizationPresenter implements Presenter,
              * 
              * @param awData The data returned from the server.
              */
-            public void onSuccess(DataPointQueryAwData awData) {
+            public void onSuccess(List<DataPointAwData> awData) {
                 // TODO Auto-generated method stub
                 
             }

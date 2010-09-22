@@ -2,6 +2,7 @@
 
 <web-app>
 
+<!--
     <servlet>
         <servlet-name>default</servlet-name>
         <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
@@ -35,7 +36,7 @@
         <servlet-name>jsp</servlet-name>
         <url-pattern>*.jsp</url-pattern>
     </servlet-mapping>
-
+-->
 
   <!-- Default page to serve -->
   <welcome-file-list>

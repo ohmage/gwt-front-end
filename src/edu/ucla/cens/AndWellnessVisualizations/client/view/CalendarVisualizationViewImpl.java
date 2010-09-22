@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -26,6 +27,9 @@ public class CalendarVisualizationViewImpl extends Composite implements
     interface CalendarVisualizationViewUiBinder extends UiBinder<Widget, CalendarVisualizationViewImpl> {}
     private static CalendarVisualizationViewUiBinder uiBinder =
       GWT.create(CalendarVisualizationViewUiBinder.class);
+    
+    // Logging capability
+    private static Logger _logger = Logger.getLogger(CalendarVisualizationViewImpl.class.getName());
     
     // Fields defined in the ui XML
     @UiField DatePicker calendarVisualizationDatePicker;
@@ -51,6 +55,8 @@ public class CalendarVisualizationViewImpl extends Composite implements
     // Whenever a new date is selected, notify the Presenter
     @UiHandler("calendarVisualizationDatePicker")
     void calendarVisualizationDatePickerValueChanged(ValueChangeEvent<Date> event) {
+        _logger.fine("Detected click on date " + event.getValue());
+        
         if (presenter != null) {
             presenter.onDayClicked(event.getValue());
         }
@@ -60,6 +66,8 @@ public class CalendarVisualizationViewImpl extends Composite implements
      * Changes the calendar display to a new month.
      */
     public void updateMonth(Date month) {
+        _logger.finer("Setting current month to " + month);
+        
         calendarVisualizationDatePicker.setCurrentMonth(month);
     }
 
@@ -89,6 +97,8 @@ public class CalendarVisualizationViewImpl extends Composite implements
                 
                 // Set the opacity of the day
                 calendarVisualizationDatePicker.addTransientStyleToDates(getOpacityStyleName(dayData.get(day)), day);
+                
+                _logger.finer("Setting " + day + " to opacity " + dayData.get(day));
             }
         }
     }
@@ -116,6 +126,13 @@ public class CalendarVisualizationViewImpl extends Composite implements
         opacity *= 100;
         opacity += 5 - (opacity % 5);
         
+        // If we get higher than 100, change back to 100
+        if (opacity > 100) {
+            opacity = 100;
+        }
+        
+        _logger.finer("opacity " + opacityDouble + " returns style name opacity" + (int) opacity);
+        
         // Return the style name
         return "opacity" + (int) opacity;
     }
@@ -133,6 +150,8 @@ public class CalendarVisualizationViewImpl extends Composite implements
         List<Date> datesToDisable = new ArrayList<Date>();
         for (Date i = (Date)firstVisibleDate.clone(); i.before(lastVisibleDate); i.setTime(i.getTime() + 1 * 24 * 60 * 60 * 1000)) {
             datesToDisable.add((Date)i.clone());
+            
+            _logger.finest("Disabling date " + i.toString());
         }
         
         // Disable all the dates
