@@ -51,7 +51,7 @@ public class CalendarVisualizationTest implements EntryPoint {
         CalendarVisualizationPresenter calPres = new CalendarVisualizationPresenter(rpcService, eventBus, calViz);
         
         // Tell the presenter to GO
-        calPres.go(RootPanel.get("test_calendar_visualization"));
+        calPres.go(RootPanel.get("calendarVisualizationView"));
         
         // Now call some testing functions to see if everything works
         //testMonthSwitch();

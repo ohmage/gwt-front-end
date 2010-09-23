@@ -30,7 +30,7 @@
     <script type="text/javascript" language="javascript" src="/calendarvisualization/calendarvisualization.nocache.js"></script>
   </head>
 
-  <body>
+  <body class="calendarView">
 
     <!-- OPTIONAL: include this if you want history support -->
     <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
@@ -51,7 +51,22 @@
 <jsp:include page="/jsp/header.jsp"/>
 		
 		<div id="contents">
-				<div id="test_calendar_visualization"></div>
+				<!-- Month selector div -->
+				<div id="monthSelectorView" class="border-color-standard"></div>
+		
+				<!-- Main calendar data view -->
+				<div id="calendarVisualizationView" class="float-left"></div>
+				
+				<!-- Day detail view -->
+				<div id ="calendarDayDetailView"></div>
+				
+				<div id="visualizationSelectionView" class="float-right border-color-standard"></div>
+				
+				<div id="dataLabelSelectionView" class="float-right border-color-standard"></div>
+				
+				<div id="dataCategorySelectionView" class="float-right border-color-standard"></div>
+				
+				<div class="clear-line"></div>
 		</div>
 		
 <jsp:include page="/jsp/footer.jsp"/>
