@@ -70,10 +70,6 @@ public class CalendarVisualizationPresenter implements Presenter,
         this.eventBus = eventBus;
         this.view = view;
         this.view.setPresenter(this);
-        
-        // Setup some default data
-        currentMonth = new Date();
-        currentDayData = new HashMap<Date, Double>();
     }    
     
     /**
@@ -127,6 +123,12 @@ public class CalendarVisualizationPresenter implements Presenter,
         bind();
         container.clear();
         container.add(view.asWidget());
+        
+        // Setup some default data
+        currentMonth = new Date();
+        currentDayData = new HashMap<Date, Double>();
+        
+        view.updateMonth(currentMonth);
     }
 
     /**

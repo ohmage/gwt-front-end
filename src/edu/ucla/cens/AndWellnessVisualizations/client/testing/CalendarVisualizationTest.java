@@ -18,9 +18,12 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQu
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.CalendarVisualizationPresenter;
+import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MonthSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.LocalAndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationViewImpl;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionView;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionViewImpl;
 
 /**
  * Test of the CalendarVisualization.  For now only initializes the View and attaches
@@ -46,12 +49,18 @@ public class CalendarVisualizationTest implements EntryPoint {
         rpcService = new LocalAndWellnessRpcService();
         eventBus = new HandlerManager(null);
         
+        MonthSelectionView monthView = new MonthSelectionViewImpl();
+        MonthSelectionPresenter monthPres = new MonthSelectionPresenter(rpcService, eventBus, monthView);
+        monthPres.go(RootPanel.get("monthSelectionView"));
+        
         // Create a new view and presenter
         CalendarVisualizationView calViz = new CalendarVisualizationViewImpl();
         CalendarVisualizationPresenter calPres = new CalendarVisualizationPresenter(rpcService, eventBus, calViz);
         
         // Tell the presenter to GO
         calPres.go(RootPanel.get("calendarVisualizationView"));
+        
+        
         
         // Now call some testing functions to see if everything works
         //testMonthSwitch();

@@ -43,9 +43,6 @@ public class CalendarVisualizationViewImpl extends Composite implements
       
         // Inject the CSS
         FrontendResources.INSTANCE.calendarVisualizationViewCss().ensureInjected();
-      
-        // The default state should be all days disabled, only enable days that have data
-        disableAllVisibleDates();
     }
     
     public void setPresenter(Presenter presenter) {
@@ -69,6 +66,7 @@ public class CalendarVisualizationViewImpl extends Composite implements
         _logger.finer("Setting current month to " + month);
         
         calendarVisualizationDatePicker.setCurrentMonth(month);
+        disableAllVisibleDates();
     }
 
     /**

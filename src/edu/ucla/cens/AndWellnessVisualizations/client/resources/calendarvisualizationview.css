@@ -2,11 +2,13 @@
 .gwt-DatePicker { 
 	width: 100%;
 	height: 500px;
+	border: none;
 }
 
 /* the month selector widget */
 .datePickerMonthSelector { 
 	background: white;
+	display: none;
 }
 /* the month in the month selector widget */
 td.datePickerMonth {  
