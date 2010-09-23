@@ -52,7 +52,7 @@
 		
 		<div id="contents">
 				<!-- Month selector div -->
-				<div id="monthSelectorView" class="border-color-standard"></div>
+				<div id="monthSelectionView" class="border-color-standard"></div>
 		
 				<!-- Main calendar data view -->
 				<div id="calendarVisualizationView" class="float-left"></div>

@@ -1,0 +1,38 @@
+<ui:UiBinder
+  xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  
+  <ui:style>
+  	.monthSelectionLink {
+  		padding-left: 7px;
+  		padding-right: 7px;
+  	}
+  	.monthSelectionLink:hover {
+  		cursor: pointer;
+  		text-decoration: underline;
+  	}
+  	.monthSelectionCurrentMonth {
+  		font-size: 1.3em;
+  		width: 150px;
+  		border-left: 2px solid #E8E8E8;
+  		border-right: 2px solid #E8E8E8;
+  	}
+  	.monthSelectionFullHeight {
+  		height: 100%;	
+  	}
+  </ui:style>
+
+  <g:SimplePanel addStyleNames="{style.monthSelectionFullHeight}">
+  	<g:HorizontalPanel addStyleNames="{style.monthSelectionFullHeight}">
+  		<g:cell horizontalAlignment='ALIGN_RIGHT' verticalAlignment='ALIGN_MIDDLE'>
+  			<g:Label addStyleNames="{style.monthSelectionLink}" ui:field="previousMonthLabel">Previous Month</g:Label>
+  		</g:cell>
+  		<g:cell horizontalAlignment='ALIGN_CENTER' verticalAlignment='ALIGN_MIDDLE'>
+  			<g:Label addStyleNames="{style.monthSelectionCurrentMonth}" ui:field="currentMonthLabel"></g:Label>
+  		</g:cell>
+  		<g:cell horizontalAlignment='ALIGN_LEFT' verticalAlignment='ALIGN_MIDDLE'>
+  			<g:Label addStyleNames="{style.monthSelectionLink}" ui:field="nextMonthLabel">Next Month</g:Label>
+  		</g:cell>
+  	</g:HorizontalPanel>
+  </g:SimplePanel>
+</ui:UiBinder>
