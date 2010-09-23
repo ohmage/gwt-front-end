@@ -15,6 +15,7 @@ import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
+import edu.ucla.cens.AndWellnessVisualizations.client.CalendarAppController;
 import edu.ucla.cens.AndWellnessVisualizations.client.ClientInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
@@ -54,21 +55,13 @@ public class CalendarVisualizationTest implements EntryPoint {
         rpcService = new LocalAndWellnessRpcService();
         eventBus = new HandlerManager(null);
         
-        MonthSelectionView monthView = new MonthSelectionViewImpl();
-        MonthSelectionPresenter monthPres = new MonthSelectionPresenter(rpcService, eventBus, monthView);
-        monthPres.go(RootPanel.get("monthSelectionView"));
-        
-        // Create a new view and presenter
-        CalendarVisualizationView calViz = new CalendarVisualizationViewImpl();
-        CalendarVisualizationPresenter calPres = new CalendarVisualizationPresenter(rpcService, eventBus, calViz);
-        
-        // Tell the presenter to GO
-        calPres.go(RootPanel.get("calendarVisualizationView"));
-        
-        
-        setDataPointLabel();
-        
-        testDataFetch();
+        // First login to get the rpcService ready
+        doLogin();
+    }
+    
+    private void initAppController() {
+        CalendarAppController calAppController = new CalendarAppController(rpcService, eventBus);
+        calAppController.go();
     }
 
     
@@ -76,7 +69,7 @@ public class CalendarVisualizationTest implements EntryPoint {
         eventBus.fireEvent(new DataPointLabelSelectionEvent(currentDataLabel));
     }
     
-    private void testDataFetch() {
+    private void doLogin() {
         _logger.info("Attempting to login...");
         
         // First login
@@ -91,8 +84,11 @@ public class CalendarVisualizationTest implements EntryPoint {
             public void onSuccess(AuthorizationTokenQueryAwData result) {
                 _logger.info("Successfully logged in");
                 
-                fetchData();
-                testXMLParse();
+                // Init the app controller
+                initAppController();
+                
+                // Get started by selection a data point
+                eventBus.fireEvent(new DataPointLabelSelectionEvent("alcoholNumberOfDrinks"));
             }
             
         });

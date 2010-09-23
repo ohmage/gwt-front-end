@@ -80,7 +80,7 @@ public class CalendarVisualizationPresenter implements Presenter,
         eventBus.addHandler(DataPointLabelSelectionEvent.TYPE,
             new DataPointLabelSelectionEventHandler() {
                 public void onSelection(DataPointLabelSelectionEvent event) {
-                    _logger.fine("Receveived a data point label selection event with label " + currentDataPointLabel);
+                    _logger.fine("Receveived a data point label selection event with label " + event.getDataPointLabelSelection());
                     
                     currentDataPointLabel = event.getDataPointLabelSelection();                   
                 }            
@@ -97,6 +97,8 @@ public class CalendarVisualizationPresenter implements Presenter,
                     
                     if (view != null) {
                         view.updateMonth(currentMonth);
+                        // Also update the data in case there is something new
+                        view.updateDayData(currentDayData);
                     }
                 }
         });
@@ -238,7 +240,7 @@ public class CalendarVisualizationPresenter implements Presenter,
                     if (Integer.parseInt(singleCountDataPoint.getValue()) > 0) {                    
                         singleDayAwData.add(singleCountDataPoint);
                         
-                        _logger.finer("processCountData(): Found date " + dataPointDate + " in day " + i + " with value " + singleCountDataPoint.getValue());
+                        _logger.finest("processCountData(): Found date " + dataPointDate + " in day " + i + " with value " + singleCountDataPoint.getValue());
                     }
                 }
             }
@@ -289,52 +291,6 @@ public class CalendarVisualizationPresenter implements Presenter,
             Collection<DataPointAwData> filteredData) {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    /**
-     * Fetches new data points based on the locally stored fields.  Checks to be sure
-     * we have all the necessary data before sending the request.
-     */
-    private void fetchDataPoints() {
-        // Data for the rpc request
-        Date startDate, endDate;
-        String userName, campaignId, clientName;
-        List<String> dataPointLabels = new ArrayList<String>();
-        
-        // If we have no data to fetch, don't bother
-        if (currentDayData.size() == 0) {
-            return;
-        }
-        
-        // Find the first and last day of the requested month
-        startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
-        endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
-        userName = currentUserInfo.getUserName();
-        campaignId = currentCampaignInfo.getCampaignId();
-        clientName = ClientInfo.getClientName();
-        dataPointLabels.add(currentDataPointLabel);
-        
-        // Send our request to the rpcService and handle the result
-        rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, new AsyncCallback<List<DataPointAwData>>() {
-            
-            /**
-             * Called when the server successfully transmits back data.  Save the data in local models
-             * and send the updated models to the view for display.
-             * 
-             * @param awData The data returned from the server.
-             */
-            public void onSuccess(List<DataPointAwData> awData) {
-                // TODO Auto-generated method stub
-                
-            }
-            
-            @Override
-            public void onFailure(Throwable error) {
-                // TODO Auto-generated method stub
-                
-            }
-            
-        });
     }
 
     /**

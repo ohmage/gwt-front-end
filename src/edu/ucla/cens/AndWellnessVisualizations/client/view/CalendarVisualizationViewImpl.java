@@ -37,6 +37,10 @@ public class CalendarVisualizationViewImpl extends Composite implements
     // Call the presenter in response to events (user clicks)
     private Presenter presenter;
     
+    // Keep the data around so we can switch months
+    private Map<Date, Double> dayData;
+    private Date currentMonth;
+    
     // Very simple constructor now that the UI is defined in XML
     public CalendarVisualizationViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -63,10 +67,16 @@ public class CalendarVisualizationViewImpl extends Composite implements
      * Changes the calendar display to a new month.
      */
     public void updateMonth(Date month) {
+        this.currentMonth = month;
+        
         _logger.finer("Setting current month to " + month);
         
         calendarVisualizationDatePicker.setCurrentMonth(month);
-        disableAllVisibleDates();
+        
+        // If we have data, display it
+        if (dayData != null) {
+            refreshCalendar();
+        }
     }
 
     /**
@@ -76,12 +86,35 @@ public class CalendarVisualizationViewImpl extends Composite implements
      *        current month or it will be ignored.
      */
     public void updateDayData(Map<Date, Double> dayData) {
+        this.dayData = dayData;
+
+        // Even if the month does not change, this will force the calendar
+        // to refresh and drop all the old style names.  Eventually we should
+        // implement our own datepickerview so we don't have to do this.
+        calendarVisualizationDatePicker.setCurrentMonth(currentMonth);
+        
+        refreshCalendar();
+    }
+
+    public Widget asWidget() {
+        return this;
+    }
+
+    
+    // Private utility functions
+
+    private void refreshCalendar() {
         Set<Date> days;  // Used to iterate through the days
         Iterator<Date> daysIterator;
-        
+       
         // Start by disabling all the days, then enable the ones in the data
         disableAllVisibleDates();
 
+        if (dayData == null) {
+            _logger.warning("The view has no data, cannot refresh!");
+            return;
+        }
+        
         // Enable the days, and set the opacity based on the day data
         days = dayData.keySet();
         daysIterator = days.iterator();
@@ -96,17 +129,10 @@ public class CalendarVisualizationViewImpl extends Composite implements
                 // Set the opacity of the day
                 calendarVisualizationDatePicker.addTransientStyleToDates(getOpacityStyleName(dayData.get(day)), day);
                 
-                _logger.finer("Setting " + day + " to opacity " + dayData.get(day));
+                _logger.finest("Setting " + day + " to opacity " + dayData.get(day));
             }
         }
     }
-
-    public Widget asWidget() {
-        return this;
-    }
-
-    
-    // Private utility functions
     
     /**
      * Translates the incoming opacity to an opacity style name from calendarvisualizationview.css.
@@ -129,7 +155,7 @@ public class CalendarVisualizationViewImpl extends Composite implements
             opacity = 100;
         }
         
-        _logger.finer("opacity " + opacityDouble + " returns style name opacity" + (int) opacity);
+        _logger.finest("opacity " + opacityDouble + " returns style name opacity" + (int) opacity);
         
         // Return the style name
         return "opacity" + (int) opacity;
