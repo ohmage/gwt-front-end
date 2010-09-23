@@ -10,11 +10,16 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.XMLParser;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.ClientInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.CalendarVisualizationPresenter;
@@ -61,19 +66,11 @@ public class CalendarVisualizationTest implements EntryPoint {
         calPres.go(RootPanel.get("calendarVisualizationView"));
         
         
-        
-        // Now call some testing functions to see if everything works
-        //testMonthSwitch();
-        
         setDataPointLabel();
         
         testDataFetch();
     }
-    
-    private void testMonthSwitch() {
-        // Send out a monthselection event
-        
-    }
+
     
     private void setDataPointLabel() {
         eventBus.fireEvent(new DataPointLabelSelectionEvent(currentDataLabel));
@@ -95,6 +92,7 @@ public class CalendarVisualizationTest implements EntryPoint {
                 _logger.info("Successfully logged in");
                 
                 fetchData();
+                testXMLParse();
             }
             
         });
@@ -122,7 +120,7 @@ public class CalendarVisualizationTest implements EntryPoint {
         rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, new AsyncCallback<List<DataPointAwData>>() {
 
             public void onSuccess(List<DataPointAwData> data) {
-                _logger.fine("Received " + data.size() + " data points, sending to event bus.");
+                _logger.finer("Received " + data.size() + " data points, sending to event bus.");
                 
                 eventBus.fireEvent(new NewDataPointAwDataEvent(data));
             }
@@ -131,5 +129,45 @@ public class CalendarVisualizationTest implements EntryPoint {
                 _logger.warning("fetchDataPoints called onFailure with reason " + error.getMessage());
             }
         });
+    }
+    
+    private void testXMLParse() {   
+        _logger.info("Sending out a request for the campaign configuration information.");
+        
+        rpcService.fetchConfigData(new AsyncCallback<ConfigAwData>() {
+            public void onFailure(Throwable caught) {
+                _logger.warning("testXMLParse called onFailure with reason " + caught.getMessage());
+            }
+
+            public void onSuccess(ConfigAwData result) {
+                _logger.finer("Received configuration information.");
+                
+                parseXml(result.getConfigurationXML());                
+            }
+        });
+    }
+    
+    private void parseXml(String xml) {
+        _logger.finer(xml);
+        
+        Document xmlDocument = XMLParser.parse(xml);
+        NodeList nodes = xmlDocument.getElementsByTagName("prompt");
+        
+        _logger.fine("Found " + nodes.getLength() + " prompt nodes");
+        
+        for (int i = 0; i < nodes.getLength(); ++i) {
+            NodeList childNodes = nodes.item(i).getChildNodes();
+            
+            for (int j = 0; j < childNodes.getLength(); ++j) {
+                Node childNode = childNodes.item(j);
+                
+                _logger.fine(childNode.getNodeName() + ": " + childNode.getChildNodes().item(0).getNodeValue());
+               
+            }
+        }
+        
+        Node campaignNameNode = xmlDocument.getElementsByTagName("campaignName").item(0);
+        
+        _logger.fine("Found campaignName: " + campaignNameNode.getChildNodes().item(0).getNodeValue());
     }
 }

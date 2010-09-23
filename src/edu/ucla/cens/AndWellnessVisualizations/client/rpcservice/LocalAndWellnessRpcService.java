@@ -14,6 +14,8 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ErrorAwData;
@@ -30,10 +32,12 @@ import edu.ucla.cens.AndWellnessVisualizations.client.utils.JsArrayUtils;
 public class LocalAndWellnessRpcService implements AndWellnessRpcService {
     RequestBuilder authorizationDataLocalService;
     RequestBuilder dataPointLocalService;
+    RequestBuilder configLocalService;
     
     // Locations of the text files to read
     private final String authorizationData = "/testing/server_response/auth_token.txt";
     private final String dataPoint = "/testing/server_response/data_point.txt";
+    private final String configData = "/testing/server_response/config_nowhite.txt";
         
     /**
      * Initializes the various RequestBuilders to read the JSON files.
@@ -41,6 +45,7 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
     public LocalAndWellnessRpcService() {
         authorizationDataLocalService = new RequestBuilder(RequestBuilder.POST, URL.encode(authorizationData));
         dataPointLocalService = new RequestBuilder(RequestBuilder.POST, URL.encode(dataPoint));
+        configLocalService = new RequestBuilder(RequestBuilder.POST, URL.encode(configData));
     }
     
     /**
@@ -161,6 +166,67 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
         }
         
     }
+    
+    
+    /**
+     * Fetches the configuration information from the local file system.
+     * Parses into a javascript overlay object and passes back to the callback.
+     * 
+     * @param callback The callback to accept the config data.
+     */
+    public void fetchConfigData(final AsyncCallback<ConfigAwData> callback) {
+        // First grab our credentials to authorize with the server
+        String authToken = getAuthTokenCookie();
+        
+        // Check to be sure the token has been set
+        if (authToken == null) {
+            throw new AuthorizationRpcServiceException("Need to login.");
+        }
+        
+     // Grab the data
+        try {
+            configLocalService.sendRequest(null, new RequestCallback() {
+                // Error occured, handle it here
+                public void onError(Request request, Throwable exception) {
+                    // Couldn't connect to server (could be timeout, SOP violation, etc.)   
+                    callback.onFailure(new RpcServiceException("Request to server timed out."));
+                }
+                
+                // Eval the JSON into an overlay class and return
+                public void onResponseReceived(Request request, Response response) {
+                    if (200 == response.getStatusCode()) {
+                        // Eval the response into JSON
+                        // (Hope this doesn't contain malicious JavaScript!)
+                        String responseText = response.getText();
+                        ConfigQueryAwData serverResponse = ConfigQueryAwData.fromJsonString(responseText);
+                        
+                        // Check for errors
+                        if ("failure".equals(serverResponse.getResult())) {
+                            callback.onFailure(new AuthorizationRpcServiceException("Invalid username and/or password."));
+                        }
+                        
+                        // Make sure this is a success
+                        if (! "success".equals(serverResponse.getResult())) {
+                            callback.onFailure(new RpcServiceException("Server returned malformed JSON."));
+                        }                    
+                        
+                        // Success, return the response!
+                        callback.onSuccess(serverResponse.getData());
+                        
+                    } else {
+                        // We are reading a local file, this shouldn't happen!
+                        callback.onFailure(new RpcServiceException("Cannot find file " + dataPoint));
+                    }
+                }       
+            });
+        // Big error occured, handle it here
+        } catch (RequestException e) {
+            throw new RpcServiceException("Cannot contact server.");     
+        }
+        
+    }
+    
+    
     
     /**
      * Throws various RpcServiceExceptions based on the error codes.
