@@ -66,6 +66,8 @@ public class CalendarVisualizationTest implements EntryPoint {
 
     
     private void setDataPointLabel() {
+        _logger.info("New data point label selection: " + currentDataLabel);
+        
         eventBus.fireEvent(new DataPointLabelSelectionEvent(currentDataLabel));
     }
     
@@ -87,8 +89,7 @@ public class CalendarVisualizationTest implements EntryPoint {
                 // Init the app controller
                 initAppController();
                 
-                // Get started by selection a data point
-                eventBus.fireEvent(new DataPointLabelSelectionEvent("alcoholNumberOfDrinks"));
+                setDataPointLabel();
             }
             
         });
@@ -116,7 +117,7 @@ public class CalendarVisualizationTest implements EntryPoint {
         rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, new AsyncCallback<List<DataPointAwData>>() {
 
             public void onSuccess(List<DataPointAwData> data) {
-                _logger.finer("Received " + data.size() + " data points, sending to event bus.");
+                _logger.info("Received " + data.size() + " data points from the server");
                 
                 eventBus.fireEvent(new NewDataPointAwDataEvent(data));
             }
@@ -136,7 +137,7 @@ public class CalendarVisualizationTest implements EntryPoint {
             }
 
             public void onSuccess(ConfigAwData result) {
-                _logger.finer("Received configuration information.");
+                _logger.info("Received configuration information from the server.");
                 
                 parseXml(result.getConfigurationXML());                
             }
@@ -144,12 +145,10 @@ public class CalendarVisualizationTest implements EntryPoint {
     }
     
     private void parseXml(String xml) {
-        _logger.finer(xml);
-        
         Document xmlDocument = XMLParser.parse(xml);
         NodeList nodes = xmlDocument.getElementsByTagName("prompt");
         
-        _logger.fine("Found " + nodes.getLength() + " prompt nodes");
+        _logger.finer("Found " + nodes.getLength() + " prompt nodes");
         
         for (int i = 0; i < nodes.getLength(); ++i) {
             NodeList childNodes = nodes.item(i).getChildNodes();
@@ -157,13 +156,13 @@ public class CalendarVisualizationTest implements EntryPoint {
             for (int j = 0; j < childNodes.getLength(); ++j) {
                 Node childNode = childNodes.item(j);
                 
-                _logger.fine(childNode.getNodeName() + ": " + childNode.getChildNodes().item(0).getNodeValue());
+                _logger.finer(childNode.getNodeName() + ": " + childNode.getChildNodes().item(0).getNodeValue());
                
             }
         }
         
         Node campaignNameNode = xmlDocument.getElementsByTagName("campaignName").item(0);
         
-        _logger.fine("Found campaignName: " + campaignNameNode.getChildNodes().item(0).getNodeValue());
+        _logger.finer("Found campaignName: " + campaignNameNode.getChildNodes().item(0).getNodeValue());
     }
 }

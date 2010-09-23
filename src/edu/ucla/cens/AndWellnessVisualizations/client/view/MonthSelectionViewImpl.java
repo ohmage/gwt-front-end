@@ -54,7 +54,7 @@ public class MonthSelectionViewImpl extends Composite implements MonthSelectionV
     public void setCurrentMonth(Date month) {
         DateTimeFormat monthFormat = DateTimeFormat.getFormat("MMMM yyyy");
         
-        _logger.finer("Setting current month to " + monthFormat.format(month));
+        _logger.fine("Setting current month to " + monthFormat.format(month));
         
         currentMonthLabel.setText(monthFormat.format(month));
     }
@@ -62,6 +62,8 @@ public class MonthSelectionViewImpl extends Composite implements MonthSelectionV
     // Handlers for clicks
     @UiHandler("previousMonthLabel")
     void onPreviousMonthLabelClicked(ClickEvent event) {
+        _logger.info("User clicked on previous month link.");
+        
         if (presenter != null) {
             presenter.onPreviousMonthSelected();
         }
@@ -69,6 +71,8 @@ public class MonthSelectionViewImpl extends Composite implements MonthSelectionV
     
     @UiHandler("nextMonthLabel")
     void onNextMonthLabelClicked(ClickEvent event) {
+        _logger.info("User clicked on next month link.");
+        
         if (presenter != null) {
             presenter.onNextMonthSelected();
         }

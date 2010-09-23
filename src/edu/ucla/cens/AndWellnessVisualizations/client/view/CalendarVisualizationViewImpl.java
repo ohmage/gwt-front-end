@@ -56,7 +56,7 @@ public class CalendarVisualizationViewImpl extends Composite implements
     // Whenever a new date is selected, notify the Presenter
     @UiHandler("calendarVisualizationDatePicker")
     void calendarVisualizationDatePickerValueChanged(ValueChangeEvent<Date> event) {
-        _logger.fine("Detected click on date " + event.getValue());
+        _logger.info("User clicked on date " + event.getValue());
         
         if (presenter != null) {
             presenter.onDayClicked(event.getValue());
@@ -69,7 +69,7 @@ public class CalendarVisualizationViewImpl extends Composite implements
     public void updateMonth(Date month) {
         this.currentMonth = month;
         
-        _logger.finer("Setting current month to " + month);
+        _logger.fine("Setting current month to " + month);
         
         calendarVisualizationDatePicker.setCurrentMonth(month);
         

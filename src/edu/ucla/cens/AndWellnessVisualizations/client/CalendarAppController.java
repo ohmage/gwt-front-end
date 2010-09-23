@@ -128,10 +128,13 @@ public class CalendarAppController {
         
         dataPointLabels.add(currentDataPoint);
         
+        _logger.info("Asking server for data about label " + currentDataPoint);
+        
         // Send our request to the rpcService and handle the result
         rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, new AsyncCallback<List<DataPointAwData>>() {
             
             public void onSuccess(List<DataPointAwData> awData) {
+                _logger.info("Received " + awData.size() + " data points from the server.");
                 // If we get data back, send it out in an event
                 eventBus.fireEvent(new NewDataPointAwDataEvent(awData));
             }
@@ -143,7 +146,7 @@ public class CalendarAppController {
                 }
                 // If we have an authorization error, redirect back to the login screen
                 catch (AuthorizationRpcServiceException e) {
-                    _logger.info("Authorization problem, send the user back to the login screen");
+                    _logger.warning("Authorization problem, send the user back to the login screen");
                 } 
                 // Don't know what to do here, uh oh
                 catch (Throwable e) {

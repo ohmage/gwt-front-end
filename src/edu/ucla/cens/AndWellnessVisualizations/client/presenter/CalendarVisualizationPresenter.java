@@ -147,7 +147,7 @@ public class CalendarVisualizationPresenter implements Presenter,
         // Filter out data points that are not the current label
         filteredData = CollectionUtils.filter(data, new Predicate<DataPointAwData>() {
             public boolean apply(DataPointAwData type) {
-                _logger.finer("Checking data point with label " + type.getLabel() + " and value " + type.getValue());
+                _logger.finest("Checking data point with label " + type.getLabel() + " and value " + type.getValue());
                 
                 // Check to be sure the label exists
                 if (type.getLabel() == null) {
@@ -162,7 +162,7 @@ public class CalendarVisualizationPresenter implements Presenter,
         // Filter out data points that are not in the current month
         filteredData = CollectionUtils.filter(filteredData, new Predicate<DataPointAwData>() {
             public boolean apply(DataPointAwData type) {
-                _logger.finer("Checking data point with timestamp " + type.getTimeStamp());
+                _logger.finest("Checking data point with timestamp " + type.getTimeStamp());
                 
                 // Check to be sure the timestamp exists
                 if (type.getTimeStamp() == null) {
