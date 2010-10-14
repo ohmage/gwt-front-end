@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import com.google.code.p.gwtchismes.client.GWTCSimpleDatePicker;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -21,7 +22,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.CalendarVisualizationPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MonthSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
-import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AuthorizationRpcServiceException;
+import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.NotLoggedInException;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionView;
@@ -145,8 +146,9 @@ public class CalendarAppController {
                     throw error;
                 }
                 // If we have an authorization error, redirect back to the login screen
-                catch (AuthorizationRpcServiceException e) {
-                    _logger.warning("Authorization problem, send the user back to the login screen");
+                catch (NotLoggedInException e) {
+                    _logger.warning("Authorization problem, send the user back to the main screen");
+                    Window.Location.assign("/");
                 } 
                 // Don't know what to do here, uh oh
                 catch (Throwable e) {
