@@ -7,16 +7,16 @@ package edu.ucla.cens.AndWellnessVisualizations.client.rpcservice;
  *
  */
 @SuppressWarnings("serial")
-public class RpcServiceException extends RuntimeException {
-    public RpcServiceException(String message) {
+public class ServerException extends RuntimeException {
+    public ServerException(String message) {
         super(message);
     }
     
-    public RpcServiceException(String message, Throwable cause) {
+    public ServerException(String message, Throwable cause) {
         super(message, cause);
     }
     
-    public RpcServiceException(Throwable cause) {
+    public ServerException(Throwable cause) {
         super(cause);
     }
 }
