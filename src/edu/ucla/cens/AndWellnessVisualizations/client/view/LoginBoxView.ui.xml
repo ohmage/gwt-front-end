@@ -36,7 +36,7 @@
       </g:HorizontalPanel>
       
 	  <g:HorizontalPanel addStyleNames="{style.loginBoxHPanel}">
-	    <g:Button ui:field="goButton">Go</g:Button>
+	    <g:Button ui:field="loginButton">Login</g:Button>
 	  </g:HorizontalPanel>
 	  
 	</g:VerticalPanel>
