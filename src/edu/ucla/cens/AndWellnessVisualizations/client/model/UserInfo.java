@@ -1,5 +1,7 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.model;
 
+import com.google.gwt.core.client.JsArray;
+
 
 /**
  * Storage class to hold basic user information.
@@ -10,6 +12,7 @@ package edu.ucla.cens.AndWellnessVisualizations.client.model;
 public class UserInfo implements Comparable<UserInfo> {
     public String userName;
     public int privileges;
+    JsArray<CampaignNameAwData> campaignMembershipList = null;
     
     public UserInfo() {};
     
@@ -47,6 +50,8 @@ public class UserInfo implements Comparable<UserInfo> {
     public void setUserName(String userName) { this.userName = userName; }
     public int getPrivileges() { return privileges; }
     public void setPrivileges(int privileges) { this.privileges = privileges; }
+    public JsArray<CampaignNameAwData> getCampaignMembershipList() { return campaignMembershipList; };
+    public void setCampaignMembershipList(JsArray<CampaignNameAwData> campaignMembershipList) { this.campaignMembershipList = campaignMembershipList; };
 
     // Allows this model to be sorted by Collections.sort() (be userName only)
     public int compareTo(UserInfo arg0) {

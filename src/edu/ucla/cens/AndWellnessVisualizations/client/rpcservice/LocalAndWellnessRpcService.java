@@ -56,7 +56,7 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
             final AsyncCallback<AuthorizationTokenQueryAwData> callback) {
         // Validate the username/password
         if (!(userName.equals("abc") && password.equals("123"))) {
-            callback.onFailure(new AuthorizationRpcServiceException("Invalid username and/or password."));
+            callback.onFailure(new NotLoggedInException("Invalid username and/or password."));
         }
         
         // Grab the data
@@ -65,7 +65,7 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                 // Error occured, handle it here
                 public void onError(Request request, Throwable exception) {
                     // Couldn't connect to server (could be timeout, SOP violation, etc.)   
-                    callback.onFailure(new RpcServiceException("Request to server timed out."));
+                    callback.onFailure(new ServerException("Request to server timed out."));
                 }
                 
                 // Eval the JSON into an overlay class and return
@@ -78,12 +78,12 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                         
                         // Check for errors
                         if ("failure".equals(serverResponse.getResult())) {
-                            callback.onFailure(new AuthorizationRpcServiceException("Invalid username and/or password."));
+                            callback.onFailure(new NotLoggedInException("Invalid username and/or password."));
                         }
                         
                         // Make sure this is a success
                         if (! "success".equals(serverResponse.getResult())) {
-                            callback.onFailure(new RpcServiceException("Server returned malformed JSON."));
+                            callback.onFailure(new ServerException("Server returned malformed JSON."));
                         }
                        
                         // Set the authorization token in a local cookie
@@ -94,13 +94,13 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                         
                     } else {
                         // We are reading a local file, this shouldn't happen!
-                        callback.onFailure(new RpcServiceException("Cannot find file " + authorizationData));
+                        callback.onFailure(new ServerException("Cannot find file " + authorizationData));
                     }
                 }       
             });
         // Big error occured, handle it here
         } catch (RequestException e) {
-            throw new RpcServiceException("Cannot contact server.");     
+            throw new ServerException("Cannot contact server.");     
         }
         
     }
@@ -117,7 +117,7 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
         
         // Check to be sure the token has been set
         if (authToken == null) {
-            throw new AuthorizationRpcServiceException("Need to login.");
+            throw new NotLoggedInException("Need to login.");
         }
         
         // Grab the data
@@ -126,7 +126,7 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                 // Error occured, handle it here
                 public void onError(Request request, Throwable exception) {
                     // Couldn't connect to server (could be timeout, SOP violation, etc.)   
-                    callback.onFailure(new RpcServiceException("Request to server timed out."));
+                    callback.onFailure(new ServerException("Request to server timed out."));
                 }
                 
                 // Eval the JSON into an overlay class and return
@@ -139,12 +139,12 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                         
                         // Check for errors
                         if ("failure".equals(serverResponse.getResult())) {
-                            callback.onFailure(new AuthorizationRpcServiceException("Invalid username and/or password."));
+                            callback.onFailure(new NotLoggedInException("Invalid username and/or password."));
                         }
                         
                         // Make sure this is a success
                         if (! "success".equals(serverResponse.getResult())) {
-                            callback.onFailure(new RpcServiceException("Server returned malformed JSON."));
+                            callback.onFailure(new ServerException("Server returned malformed JSON."));
                         }
                         
                         // Translate into a List of DataPointAwData
@@ -156,13 +156,13 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                         
                     } else {
                         // We are reading a local file, this shouldn't happen!
-                        callback.onFailure(new RpcServiceException("Cannot find file " + dataPoint));
+                        callback.onFailure(new ServerException("Cannot find file " + dataPoint));
                     }
                 }       
             });
         // Big error occured, handle it here
         } catch (RequestException e) {
-            throw new RpcServiceException("Cannot contact server.");     
+            throw new ServerException("Cannot contact server.");     
         }
         
     }
@@ -180,7 +180,7 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
         
         // Check to be sure the token has been set
         if (authToken == null) {
-            throw new AuthorizationRpcServiceException("Need to login.");
+            throw new NotLoggedInException("Need to login.");
         }
         
      // Grab the data
@@ -189,7 +189,7 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                 // Error occured, handle it here
                 public void onError(Request request, Throwable exception) {
                     // Couldn't connect to server (could be timeout, SOP violation, etc.)   
-                    callback.onFailure(new RpcServiceException("Request to server timed out."));
+                    callback.onFailure(new ServerException("Request to server timed out."));
                 }
                 
                 // Eval the JSON into an overlay class and return
@@ -202,12 +202,12 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                         
                         // Check for errors
                         if ("failure".equals(serverResponse.getResult())) {
-                            callback.onFailure(new AuthorizationRpcServiceException("Invalid username and/or password."));
+                            callback.onFailure(new NotLoggedInException("Invalid username and/or password."));
                         }
                         
                         // Make sure this is a success
                         if (! "success".equals(serverResponse.getResult())) {
-                            callback.onFailure(new RpcServiceException("Server returned malformed JSON."));
+                            callback.onFailure(new ServerException("Server returned malformed JSON."));
                         }                    
                         
                         // Success, return the response!
@@ -215,13 +215,13 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                         
                     } else {
                         // We are reading a local file, this shouldn't happen!
-                        callback.onFailure(new RpcServiceException("Cannot find file " + dataPoint));
+                        callback.onFailure(new ServerException("Cannot find file " + dataPoint));
                     }
                 }       
             });
         // Big error occured, handle it here
         } catch (RequestException e) {
-            throw new RpcServiceException("Cannot contact server.");     
+            throw new ServerException("Cannot contact server.");     
         }
         
     }

@@ -57,6 +57,7 @@ public class CalendarVisualizationPresenter implements Presenter,
     private Date currentMonth;
     private Map<Date, Double> currentDayData;
     private String currentDataPointLabel;  // Assume we only use one label for now
+    
     private final AndWellnessRpcService rpcService;   // Used to make calls to the server for data
     private final HandlerManager eventBus;  
     private final CalendarVisualizationView view;
