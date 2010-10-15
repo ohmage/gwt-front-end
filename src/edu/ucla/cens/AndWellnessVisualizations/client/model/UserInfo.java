@@ -1,5 +1,8 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.core.client.JsArray;
 
 
@@ -10,9 +13,10 @@ import com.google.gwt.core.client.JsArray;
  *
  */
 public class UserInfo implements Comparable<UserInfo> {
-    public String userName;
-    public int privileges;
-    JsArray<CampaignNameAwData> campaignMembershipList = null;
+    private String userName;
+    private int privileges = -1;
+    private List<String> campaignMembershipList = new ArrayList<String>();
+    private int selectedCampaign = -1;
     
     public UserInfo() {};
     
@@ -50,8 +54,10 @@ public class UserInfo implements Comparable<UserInfo> {
     public void setUserName(String userName) { this.userName = userName; }
     public int getPrivileges() { return privileges; }
     public void setPrivileges(int privileges) { this.privileges = privileges; }
-    public JsArray<CampaignNameAwData> getCampaignMembershipList() { return campaignMembershipList; };
-    public void setCampaignMembershipList(JsArray<CampaignNameAwData> campaignMembershipList) { this.campaignMembershipList = campaignMembershipList; };
+    public List<String> getCampaignMembershipList() { return campaignMembershipList; };
+    public void setCampaignMembershipList(List<String> campaignMembershipList) { this.campaignMembershipList = campaignMembershipList; };
+    public int getSelectedCampaign() { return selectedCampaign; };
+    public void setSelectedCampaign(int selectedCampaign) { this.selectedCampaign = selectedCampaign; };
 
     // Allows this model to be sorted by Collections.sort() (be userName only)
     public int compareTo(UserInfo arg0) {
