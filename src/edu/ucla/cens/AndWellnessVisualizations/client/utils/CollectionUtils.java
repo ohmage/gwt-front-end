@@ -2,6 +2,7 @@ package edu.ucla.cens.AndWellnessVisualizations.client.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A number of utilities that work with Java Collections.
@@ -26,5 +27,23 @@ public class CollectionUtils {
             }
         }
         return result;
+    }
+    
+    /**
+     * Joins a Collection of Strings into a single String with the passed delimiter.
+     * 
+     * @param s The Collection to join.
+     * @param delimiter The delimiter to insert between joins.
+     * @return The single joined String.
+     */
+    public static String join(Collection<String> s, String delimiter) {
+        if (s == null || s.isEmpty()) return "";
+        Iterator<String> iter = s.iterator();
+        StringBuilder builder = new StringBuilder(iter.next());
+        while( iter.hasNext() )
+        {
+            builder.append(delimiter).append(iter.next());
+        }
+        return builder.toString();
     }
 }
