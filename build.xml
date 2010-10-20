@@ -44,7 +44,9 @@
       <jvmarg value="-Xmx512M"/>
       <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
       <arg line="${gwt.args}"/>
-      <arg value="edu.ucla.cens.AndWellnessVisualizations.CalendarVisualization"/>
+      <arg value="edu.ucla.cens.AndWellnessVisualizations.GenericAndWellness"/>
+      <arg value="edu.ucla.cens.AndWellnessVisualizations.LoginAndWellness"/>
+      <arg value="edu.ucla.cens.AndWellnessVisualizations.CalendarAndWellness"/>
       <arg value="-localWorkers" />
       <arg value="2" />
 

@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module rename-to='andwellnessvisualizations'>
+<module rename-to='calendarandwellness'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
   <inherits name="com.google.gwt.http.HTTP" />
   <inherits name="com.google.gwt.resources.Resources" />
+  <inherits name="com.google.gwt.xml.XML"/>
   <inherits name="com.google.code.p.gwtchismes.GWTChismes"/>
+
+  <!-- Nice GWT logging -->
+  <inherits name='com.google.gwt.logging.Logging' />  
+  
+  <set-property name='gwt.logging.enabled' value='TRUE' />  
+  <set-property name='gwt.logging.logLevel' value='INFO' />  
+  <set-property name='gwt.logging.popupHandler' value='DISABLED'/>  
+  <set-property name='gwt.logging.consoleHandler' value='DISABLED' />  
+  <set-property name='gwt.logging.developmentModeHandler' value='DISABLED' />  
+  <set-property name="gwt.logging.firebugHandler" value='ENABLED' />  
+  <set-property name="gwt.logging.systemHandler" value='DISABLED' />
+  
 
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->
@@ -16,7 +29,7 @@
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='edu.ucla.cens.AndWellnessVisualizations.client.DataFilter'/>
+  <entry-point class='edu.ucla.cens.AndWellnessVisualizations.client.CalendarAppControllerEntryPoint'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
