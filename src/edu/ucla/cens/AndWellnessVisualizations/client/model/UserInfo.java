@@ -3,8 +3,6 @@ package edu.ucla.cens.AndWellnessVisualizations.client.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.core.client.JsArray;
-
 
 /**
  * Storage class to hold basic user information.
@@ -14,6 +12,7 @@ import com.google.gwt.core.client.JsArray;
  */
 public class UserInfo implements Comparable<UserInfo> {
     private String userName;
+    private String authToken;
     private int privileges = -1;
     private List<String> campaignMembershipList = new ArrayList<String>();
     private int selectedCampaign = -1;
@@ -52,6 +51,8 @@ public class UserInfo implements Comparable<UserInfo> {
     
     public String getUserName() { return userName; }
     public void setUserName(String userName) { this.userName = userName; }
+    public String getAuthToken() { return authToken; }
+    public void setAuthToken(String authToken) { this.authToken = authToken; }
     public int getPrivileges() { return privileges; }
     public void setPrivileges(int privileges) { this.privileges = privileges; }
     public List<String> getCampaignMembershipList() { return campaignMembershipList; };

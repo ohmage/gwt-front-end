@@ -9,6 +9,10 @@ import java.util.logging.Logger;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Cookies;
 
+import edu.ucla.cens.AndWellnessVisualizations.client.event.NotLoggedInEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.NotLoggedInEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
@@ -23,7 +27,8 @@ import edu.ucla.cens.AndWellnessVisualizations.client.utils.CollectionUtils;
  * is a member, and the currently selected campaign is also stored.
  * 
  * The purpose of this class to is to know whether or not the system is in a logged in state.
- * Each module should load the login manager, then use it to take action when a user logs off
+ * Each module should load the login manager, then listen for UserLogoutEvents and UserLoginEvents
+ * to take action when a user logs off
  * or back in.  If the user is already logged in, the module can ask the login manager for the
  * stored user information.
  * 
@@ -59,6 +64,15 @@ public class AuthTokenLoginManager {
     public void init() {
         Collection<String> currentCookieNames = Cookies.getCookieNames();
         
+        // Listen for RequestLogoutEvents to handle a module requesting a logout
+        eventBus.addHandler(RequestLogoutEvent.TYPE, new RequestLogoutEventHandler() {
+            public void requestLogout(RequestLogoutEvent event) {
+                _logger.info("Logout requested");
+                
+                logOut();
+            }
+        });
+        
         if (currentCookieNames.contains(AUTH_TOKEN_COOKIE) &&
                 currentCookieNames.contains(USER_NAME_COOKIE)) {           
             // Switch us to currently logged in
@@ -86,11 +100,10 @@ public class AuthTokenLoginManager {
      * @param userName 
      * @param campaignList 
      */
-    public void loginWithAuthToken(String authToken, String userName, List<String> campaignList, int selectedCampaign) {
-        Cookies.setCookie(AUTH_TOKEN_COOKIE, authToken);
-        Cookies.setCookie(USER_NAME_COOKIE, userName);
-        Cookies.setCookie(CAMPAIGN_LIST_COOKIE, CollectionUtils.join(campaignList, DELIMITER));
-        Cookies.setCookie(SELECTED_CAMPAIGN_COOKIE, Integer.toString(selectedCampaign));
+    public void loginWithAuthToken(String authToken, String userName, List<String> campaignList) {
+        Cookies.setCookie(AUTH_TOKEN_COOKIE, authToken, null, null, "/", false);
+        Cookies.setCookie(USER_NAME_COOKIE, userName, null, null, "/", false);
+        Cookies.setCookie(CAMPAIGN_LIST_COOKIE, CollectionUtils.join(campaignList, DELIMITER), null, null, "/", false);
         
         _logger.fine("Loggin in as user: " + authToken + " with campaignList: " + CollectionUtils.join(campaignList, DELIMITER));
         
@@ -162,6 +175,10 @@ public class AuthTokenLoginManager {
             // Check to see if the user has selected a campaign (might not have happened)
             if (selectedCampaign != null) {
                 userInfo.setSelectedCampaign(Integer.parseInt(selectedCampaign));
+            }
+            // Unselected campaign is represented by -1
+            else {
+                userInfo.setSelectedCampaign(-1);
             }
         }
         

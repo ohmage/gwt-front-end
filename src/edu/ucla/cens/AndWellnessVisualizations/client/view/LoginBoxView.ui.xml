@@ -3,8 +3,14 @@
   xmlns:g="urn:import:com.google.gwt.user.client.ui">
   
   <ui:style>
+  	.mainPanel {
+  		width: 250px;
+  		margin-left: auto;
+  		margin-right: auto;	
+  	}
     .loginBoxLabel {
   		font-size: 0.85em;
+  		width: 75px;
   	}
     .loginBoxHPanel {
       margin: 3px 0px 3px 0px;
@@ -13,7 +19,7 @@
     }
   </ui:style>
 
-  <g:SimplePanel>
+  <g:SimplePanel addStyleNames="{style.mainPanel}">
     <g:VerticalPanel ui:field="dataEntryPanel">
       <g:HorizontalPanel addStyleNames="{style.loginBoxHPanel}">
         <!-- Use cells for specific table cell alignment -->

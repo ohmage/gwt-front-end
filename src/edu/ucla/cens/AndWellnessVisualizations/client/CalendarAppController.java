@@ -11,22 +11,30 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 
+import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthTokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLogoutEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLogoutEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.CalendarVisualizationPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MonthSelectionPresenter;
+import edu.ucla.cens.AndWellnessVisualizations.client.presenter.NavigationBarPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.NotLoggedInException;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionViewImpl;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarView;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarViewImpl;
 
 /**
  * The main controller for the Calendar visualization.  Its job is two fold.
@@ -40,10 +48,12 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionViewImp
 public class CalendarAppController {
     private final HandlerManager eventBus;
     private final AndWellnessRpcService rpcService; 
+    private final AuthTokenLoginManager loginManager;
     
     // Various views in this controller
     private CalendarVisualizationView calVizView = null;
     private MonthSelectionView monthView = null;
+    private NavigationBarView navBarView = null;
     
     // Various data we need to maintain
     private Date currentMonth = new Date();
@@ -55,9 +65,11 @@ public class CalendarAppController {
     private static Logger _logger = Logger.getLogger(CalendarAppController.class.getName());
     
     
-    public CalendarAppController(AndWellnessRpcService rpcService, HandlerManager eventBus) {
+    public CalendarAppController(AndWellnessRpcService rpcService, HandlerManager eventBus, AuthTokenLoginManager loginManager) {
         this.eventBus = eventBus;
         this.rpcService = rpcService;
+        this.loginManager = loginManager;
+        
         bind();
     }
     
@@ -84,12 +96,27 @@ public class CalendarAppController {
                 fetchDataPoints();
             }
         });
+        
+        // If we receive a logout, redirect back to the home page
+        eventBus.addHandler(UserLogoutEvent.TYPE, new UserLogoutEventHandler() {
+            public void onUserLogout(UserLogoutEvent event) {
+                Window.Location.assign("/");
+            }
+        });
     }
     
     /**
      * Initializes the various presenters and views that this controls
      */
-    public void go() {
+    public void go() {        
+        // Initialize and run the navigation bar view
+        if (navBarView == null) {
+            navBarView = new NavigationBarViewImpl();
+        }
+        NavigationBarPresenter navBarPres= new NavigationBarPresenter(eventBus, navBarView, loginManager);
+        navBarView.setPresenter(navBarPres);
+        navBarPres.go(RootPanel.get("navigationBarView"));
+        
         // Initialize and run the month selection
         if (monthView == null) {
             monthView = new MonthSelectionViewImpl();
@@ -118,8 +145,8 @@ public class CalendarAppController {
         // Find the first and last day of the requested month
         startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
         endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
-        /*
         userName = userInfo.getUserName();
+        /*
         campaignId = campaignInfo.getCampaignId();
         */
         
@@ -132,7 +159,8 @@ public class CalendarAppController {
         _logger.info("Asking server for data about label " + currentDataPoint);
         
         // Send our request to the rpcService and handle the result
-        rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, new AsyncCallback<List<DataPointAwData>>() {
+        rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, userInfo.getAuthToken(), 
+                new AsyncCallback<List<DataPointAwData>>() {
             
             public void onSuccess(List<DataPointAwData> awData) {
                 _logger.info("Received " + awData.size() + " data points from the server.");
@@ -147,8 +175,9 @@ public class CalendarAppController {
                 }
                 // If we have an authorization error, redirect back to the login screen
                 catch (NotLoggedInException e) {
-                    _logger.warning("Authorization problem, send the user back to the main screen");
-                    Window.Location.assign("/");
+                    _logger.warning("Authorization problem, log us out");
+                    
+                    eventBus.fireEvent(new RequestLogoutEvent());
                 } 
                 // Don't know what to do here, uh oh
                 catch (Throwable e) {

@@ -1,0 +1,47 @@
+<ui:UiBinder
+  xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  
+  <ui:style type="edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarViewImpl.NavigationBarStyle">
+    .mainNavigationBar {
+  		float: right;
+		margin: 25px 0 0 0;
+		font-size: 93.75%;
+		line-height: 1;
+  	}
+
+	.mainNavigationBar td {
+		display: block;
+		float: left;
+		margin: 0 0 0 2px;
+		padding: 6px 10px;
+		font-weight: 550;
+		-webkit-border-radius:  5px;
+		-moz-border-radius:  5px;
+		border-radius:  5px;		
+	}
+	
+	.mainNavigationBar .logoutLabel {
+		color: #0000AA;	
+	}
+	
+	.mainNavigationBar .logoutLabel:hover {
+		cursor: pointer;
+		text-decoration: underline;	
+	}
+	
+	.activeLabel a {
+		color: #002D4B;	
+	}
+	
+	.activeLabel a:hover {
+		cursor: default;
+		text-decoration: none;
+	}
+  </ui:style>
+
+  <g:SimplePanel addStyleNames="{style.mainNavigationBar}">
+    <g:HorizontalPanel ui:field="navigationBarPanel">
+	</g:HorizontalPanel>
+  </g:SimplePanel>
+</ui:UiBinder>

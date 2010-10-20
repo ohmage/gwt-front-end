@@ -6,6 +6,7 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 
+import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthTokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.SetModel;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
@@ -18,6 +19,7 @@ public class LoginBoxPresenter implements Presenter,
     private final AndWellnessRpcService rpcService;
     private final HandlerManager eventBus;  
     private final LoginBoxView view;
+    private final AuthTokenLoginManager loginManager;
     
     // SelectionModels to hold state from the View
     private final SetModel<String> userNameModel;
@@ -26,11 +28,12 @@ public class LoginBoxPresenter implements Presenter,
     private static Logger _logger = Logger.getLogger(LoginBoxPresenter.class.getName());
     
     public LoginBoxPresenter(AndWellnessRpcService rpcService, 
-            HandlerManager eventBus, LoginBoxView view) {
+            HandlerManager eventBus, LoginBoxView view, AuthTokenLoginManager loginManager) {
         this.rpcService = rpcService;
         this.eventBus = eventBus;
         this.view = view;
         this.view.setPresenter(this);
+        this.loginManager = loginManager;
         
         this.userNameModel = new SetModel<String>();
         this.passwordModel = new SetModel<String>();
@@ -79,7 +82,7 @@ public class LoginBoxPresenter implements Presenter,
             view.setInvalidPassword("Please enter a password");
         }
         
-        rpcService.fetchAuthorizationToken(userNameModel.getSetItem(), passwordModel.getSetItem(), new AsyncCallback<AuthorizationTokenQueryAwData>() {
+        rpcService.fetchAuthorizationToken(userNameModel.getSetItem(), passwordModel.getSetItem(), new AsyncCallback<UserInfo>() {
 
             /**
              * Notifies the View that the login failed
@@ -91,18 +94,14 @@ public class LoginBoxPresenter implements Presenter,
             }
 
             /**
-             * Sends out a login event upon a successful user login.
+             * Informs the login manager upon successful login.
              * 
              * @param result The login data.
              */
-            public void onSuccess(AuthorizationTokenQueryAwData result) {
-                _logger.info("Successfully logged in user: " + userNameModel.getSetItem());
+            public void onSuccess(UserInfo result) {
+                _logger.info("Successfully logged in user: " + result.getUserName());
                 
-                // Create a UserInfo object, put into a UserLoginEvent, and send out over the event bus
-                UserInfo userInfo = new UserInfo(userNameModel.getSetItem());
-                userInfo.setCampaignMembershipList(result.getCampaignNameList());
-                
-                eventBus.fireEvent(new UserLoginEvent(userInfo));
+                loginManager.loginWithAuthToken(result.getAuthToken(), result.getUserName(), result.getCampaignMembershipList());
             }
             
         });

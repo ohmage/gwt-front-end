@@ -27,7 +27,7 @@
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
     <!--                                           -->
-    <script type="text/javascript" language="javascript" src="/andwellnessvisualizations/andwellnessvisualizations.nocache.js"></script>
+    <script type="text/javascript" language="javascript" src="/genericandwellness/genericandwellness.nocache.js"></script>
   </head>
 
   <body class="page-id-500">

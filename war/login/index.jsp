@@ -27,7 +27,7 @@
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
     <!--                                           -->
-    <script type="text/javascript" language="javascript" src="/andwellnessvisualizations/andwellnessvisualizations.nocache.js"></script>
+    <script type="text/javascript" language="javascript" src="/loginandwellness/loginandwellness.nocache.js"></script>
   </head>
 
   <body class="page-id-502">
@@ -51,7 +51,7 @@
 <jsp:include page="/jsp/header.jsp"/>
 		
 		<div id="contents">
-				<div id="login_box"></div>
+				<div id="loginBoxView"></div>
 		</div>
 		
 <jsp:include page="/jsp/footer.jsp"/>

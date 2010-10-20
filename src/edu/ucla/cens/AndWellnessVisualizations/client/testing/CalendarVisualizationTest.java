@@ -17,12 +17,14 @@ import com.google.gwt.xml.client.XMLParser;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.CalendarAppController;
 import edu.ucla.cens.AndWellnessVisualizations.client.ClientInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthTokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.CalendarVisualizationPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MonthSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.LocalAndWellnessRpcService;
@@ -44,6 +46,7 @@ public class CalendarVisualizationTest implements EntryPoint {
     
     public LocalAndWellnessRpcService rpcService;
     public HandlerManager eventBus;
+    public AuthTokenLoginManager loginManager;
     
     private static Logger _logger = Logger.getLogger(CalendarVisualizationTest.class.getName());
     
@@ -54,13 +57,14 @@ public class CalendarVisualizationTest implements EntryPoint {
         // Initialize the rpc service and event bus for the app
         rpcService = new LocalAndWellnessRpcService();
         eventBus = new HandlerManager(null);
+        loginManager = new AuthTokenLoginManager(eventBus);
         
         // First login to get the rpcService ready
         doLogin();
     }
     
     private void initAppController() {
-        CalendarAppController calAppController = new CalendarAppController(rpcService, eventBus);
+        CalendarAppController calAppController = new CalendarAppController(rpcService, eventBus, loginManager);
         calAppController.go();
     }
 
@@ -75,7 +79,7 @@ public class CalendarVisualizationTest implements EntryPoint {
         _logger.info("Attempting to login...");
         
         // First login
-        rpcService.fetchAuthorizationToken("abc", "123", new AsyncCallback<AuthorizationTokenQueryAwData>() {
+        rpcService.fetchAuthorizationToken("abc", "123", new AsyncCallback<UserInfo>() {
 
             @Override
             public void onFailure(Throwable caught) {
@@ -83,7 +87,7 @@ public class CalendarVisualizationTest implements EntryPoint {
             }
 
             @Override
-            public void onSuccess(AuthorizationTokenQueryAwData result) {
+            public void onSuccess(UserInfo result) {
                 _logger.info("Successfully logged in");
                 
                 // Init the app controller
@@ -100,7 +104,7 @@ public class CalendarVisualizationTest implements EntryPoint {
     private void fetchData() {
         // Data for the rpc request
         Date startDate, endDate;
-        String userName, campaignId, clientName;
+        String userName, campaignId, clientName, authToken;
         List<String> dataPointLabels = new ArrayList<String>();
         
         // Find the first and last day of the requested month
@@ -109,12 +113,20 @@ public class CalendarVisualizationTest implements EntryPoint {
         userName = "testUser";
         campaignId = "testCampaign";
         clientName = "testGWTClient";
+        authToken = "1234567890";
         dataPointLabels.add(currentDataLabel);
+        
+        // Make sure we are logged in
+        if (! loginManager.isCurrentlyLoggedIn()) {
+            _logger.warning("Cannot fetch data without first logging in!");
+            return;
+        }
         
         _logger.info("Sending out a request for data label " + currentDataLabel);
         
         // Send our request to the rpcService and handle the result
-        rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, new AsyncCallback<List<DataPointAwData>>() {
+        rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, authToken,
+                new AsyncCallback<List<DataPointAwData>>() {
 
             public void onSuccess(List<DataPointAwData> data) {
                 _logger.info("Received " + data.size() + " data points from the server");

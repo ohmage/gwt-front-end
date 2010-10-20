@@ -27,7 +27,7 @@
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
     <!--                                           -->
-    <script type="text/javascript" language="javascript" src="/calendarvisualization/calendarvisualization.nocache.js"></script>
+    <script type="text/javascript" language="javascript" src="/calendarandwellness/calendarandwellness.nocache.js"></script>
   </head>
 
   <body class="calendarView">

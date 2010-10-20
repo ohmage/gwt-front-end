@@ -1,6 +1,5 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.model;
 
-import com.google.gwt.core.client.JsArray;
 
 /**
  * Overlays the response from /app/auth_token.  The response should contain
@@ -15,11 +14,8 @@ public class AuthorizationTokenQueryAwData extends QueryAwData {
     protected AuthorizationTokenQueryAwData() {};
     
     // Grab the authorization token from the JSON
-    public final native String getAuthorizationToken() /*-{ return this.data.token; }-*/;
-    
-    // Grab the List of campaign names
-    public final native JsArray<CampaignNameAwData> getCampaignNameList() /*-{ 
-        return this.data.campaigns; 
+    public final native AuthorizationTokenAwData getData() /*-{
+        return this.data;
     }-*/;
     
     // Create an AuthorizationTokenQueryAwData from a JSON string
