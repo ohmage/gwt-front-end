@@ -2,14 +2,12 @@ package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
 import java.util.logging.Logger;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthTokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.SetModel;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.LoginBoxView;
@@ -17,7 +15,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.LoginBoxView;
 public class LoginBoxPresenter implements Presenter,
     LoginBoxView.Presenter {
     private final AndWellnessRpcService rpcService;
-    private final HandlerManager eventBus;  
+    private final EventBus eventBus;  
     private final LoginBoxView view;
     private final AuthTokenLoginManager loginManager;
     
@@ -28,7 +26,7 @@ public class LoginBoxPresenter implements Presenter,
     private static Logger _logger = Logger.getLogger(LoginBoxPresenter.class.getName());
     
     public LoginBoxPresenter(AndWellnessRpcService rpcService, 
-            HandlerManager eventBus, LoginBoxView view, AuthTokenLoginManager loginManager) {
+            EventBus eventBus, LoginBoxView view, AuthTokenLoginManager loginManager) {
         this.rpcService = rpcService;
         this.eventBus = eventBus;
         this.view = view;

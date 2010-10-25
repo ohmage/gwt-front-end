@@ -1,6 +1,6 @@
 package edu.ucla.cens.AndWellnessVisualizations.client;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -21,14 +21,14 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarViewImpl
  *
  */
 public class LoginAppController {
-    private final HandlerManager eventBus;
+    private final EventBus eventBus;
     private final AndWellnessRpcService rpcService;
     private final AuthTokenLoginManager loginManager;
     
     private NavigationBarView navBarView = null;
     private LoginBoxView loginBoxView = null;
   
-    public LoginAppController(AndWellnessRpcService rpcService, HandlerManager eventBus, 
+    public LoginAppController(AndWellnessRpcService rpcService, EventBus eventBus, 
             AuthTokenLoginManager loginManager) {
         this.eventBus = eventBus;
         this.rpcService = rpcService;

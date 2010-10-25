@@ -2,7 +2,7 @@ package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
 import java.util.logging.Logger;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 
@@ -16,13 +16,13 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarView;
 
 
 public class NavigationBarPresenter implements Presenter, NavigationBarView.Presenter {
-    private final HandlerManager eventBus;  
+    private final EventBus eventBus;  
     private final NavigationBarView view;
     private final AuthTokenLoginManager loginManager;
     
     private static Logger _logger = Logger.getLogger(NavigationBarPresenter.class.getName());
     
-    public NavigationBarPresenter(HandlerManager eventBus, NavigationBarView view, AuthTokenLoginManager loginManager) {
+    public NavigationBarPresenter(EventBus eventBus, NavigationBarView view, AuthTokenLoginManager loginManager) {
         this.eventBus = eventBus;
         this.view = view;
         this.loginManager = loginManager;

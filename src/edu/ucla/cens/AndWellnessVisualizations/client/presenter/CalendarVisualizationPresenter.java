@@ -1,11 +1,9 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
 import com.google.code.p.gwtchismes.client.GWTCSimpleDatePicker;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.HasWidgets;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.ClientInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
@@ -14,7 +12,6 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEv
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.CollectionUtils;
@@ -59,14 +56,14 @@ public class CalendarVisualizationPresenter implements Presenter,
     private String currentDataPointLabel;  // Assume we only use one label for now
     
     private final AndWellnessRpcService rpcService;   // Used to make calls to the server for data
-    private final HandlerManager eventBus;  
+    private final EventBus eventBus;  
     private final CalendarVisualizationView view;
     
     // Nice logging utility
     private static Logger _logger = Logger.getLogger(CalendarVisualizationPresenter.class.getName());
     
     public CalendarVisualizationPresenter(AndWellnessRpcService rpcService, 
-            HandlerManager eventBus, CalendarVisualizationView view) {
+            EventBus eventBus, CalendarVisualizationView view) {
         this.rpcService = rpcService;
         this.eventBus = eventBus;
         this.view = view;

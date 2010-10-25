@@ -1,7 +1,8 @@
 package edu.ucla.cens.AndWellnessVisualizations.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.ui.RootPanel;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.DataFilterService;
@@ -16,11 +17,11 @@ import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.DataFilterServi
 public class DataFilter implements EntryPoint {
     // Static (global) so it can be easily accessed by javascript code
     // TODO: Remove when the javascript code disappears
-    public static HandlerManager eventBus;
+    public static EventBus eventBus;
     
     public void onModuleLoad() {
         DataFilterService rpcService = new DataFilterService();
-        eventBus = new HandlerManager(null);
+        eventBus = new SimpleEventBus();
         AppController appViewer = new AppController(rpcService, eventBus);
         appViewer.go(RootPanel.get("gwt_test"));
     }

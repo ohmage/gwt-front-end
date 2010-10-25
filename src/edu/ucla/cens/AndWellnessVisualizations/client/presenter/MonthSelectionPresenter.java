@@ -3,7 +3,7 @@ package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 import java.util.Date;
 
 import com.google.code.p.gwtchismes.client.GWTCDatePicker;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.HasWidgets;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
@@ -14,12 +14,12 @@ public class MonthSelectionPresenter implements Presenter,
         MonthSelectionView.Presenter {
 
     private Date currentMonth;
-    private HandlerManager eventBus;
+    private EventBus eventBus;
     private MonthSelectionView view;
     
    
     public MonthSelectionPresenter(AndWellnessRpcService rpcService, 
-            HandlerManager eventBus, MonthSelectionView view) {
+            EventBus eventBus, MonthSelectionView view) {
         this.eventBus = eventBus;
         this.view = view;
         this.view.setPresenter(this);

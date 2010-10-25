@@ -1,7 +1,8 @@
 package edu.ucla.cens.AndWellnessVisualizations.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Window;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthTokenLoginManager;
@@ -17,7 +18,7 @@ public class LoginAppControllerEntryPoint implements EntryPoint {
     public void onModuleLoad() {
         // Initialize the rpc service and event bus for the app
         AndWellnessRpcService rpcService = new LocalAndWellnessRpcService();
-        HandlerManager eventBus = new HandlerManager(null);
+        EventBus eventBus = new SimpleEventBus();
         AuthTokenLoginManager loginManager = new AuthTokenLoginManager(eventBus);
         
         // If we are already logged in redirect to the visualizations

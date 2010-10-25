@@ -2,7 +2,7 @@ package edu.ucla.cens.AndWellnessVisualizations.client;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.HasWidgets;
 
@@ -25,13 +25,13 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.DataFilterViewImpl;
  *
  */
 public class AppController implements Presenter, ValueChangeHandler<String> {
-    private final HandlerManager eventBus;
+    private final EventBus eventBus;
     private final DataFilterService rpcService; 
     private HasWidgets container;
     private DataFilterView<UserInfo> dataFilterView = null;
   
     
-    public AppController(DataFilterService rpcService, HandlerManager eventBus) {
+    public AppController(DataFilterService rpcService, EventBus eventBus) {
         this.eventBus = eventBus;
         this.rpcService = rpcService;
         bind();

@@ -1,6 +1,6 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -32,7 +32,7 @@ public class DataFilterPresenter implements Presenter,
     private List<UserInfo> users;
     private UserInfo userInfo;
     private final DataFilterService rpcService;   // Used to make calls to the server for data
-    private final HandlerManager eventBus;  
+    private final EventBus eventBus;  
     private final DataFilterView<UserInfo> view;
     // SelectionModels to hold state from the View
     private final SelectionModel<UserInfo> userSelectionModel;
@@ -47,7 +47,7 @@ public class DataFilterPresenter implements Presenter,
     private int numDays;
     
     public DataFilterPresenter(DataFilterService rpcService, 
-            HandlerManager eventBus, DataFilterView<UserInfo> view,
+            EventBus eventBus, DataFilterView<UserInfo> view,
             List<DropDownDefinition<UserInfo>> dropDownDefinitions) {
         this.rpcService = rpcService;
         this.eventBus = eventBus;

@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Cookies;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
@@ -37,7 +37,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.utils.CollectionUtils;
 public class AuthTokenLoginManager {
     private boolean currentlyLoggedIn = false;
     
-    private final HandlerManager eventBus;
+    private final EventBus eventBus;
     
     // Constant cookie names
     private final static String AUTH_TOKEN_COOKIE = "authToken";
@@ -49,7 +49,7 @@ public class AuthTokenLoginManager {
     // Logging utility
     private static Logger _logger = Logger.getLogger(AuthTokenLoginManager.class.getName());
     
-    public AuthTokenLoginManager(HandlerManager eventBus) {
+    public AuthTokenLoginManager(EventBus eventBus) {
         this.eventBus = eventBus;
         
         // Initialize the manager by checking the currently set cookies

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.code.p.gwtchismes.client.GWTCSimpleDatePicker;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -46,7 +46,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarViewImpl
  *
  */
 public class CalendarAppController {
-    private final HandlerManager eventBus;
+    private final EventBus eventBus;
     private final AndWellnessRpcService rpcService; 
     private final AuthTokenLoginManager loginManager;
     
@@ -65,7 +65,7 @@ public class CalendarAppController {
     private static Logger _logger = Logger.getLogger(CalendarAppController.class.getName());
     
     
-    public CalendarAppController(AndWellnessRpcService rpcService, HandlerManager eventBus, AuthTokenLoginManager loginManager) {
+    public CalendarAppController(AndWellnessRpcService rpcService, EventBus eventBus, AuthTokenLoginManager loginManager) {
         this.eventBus = eventBus;
         this.rpcService = rpcService;
         this.loginManager = loginManager;
