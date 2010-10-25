@@ -3,14 +3,13 @@ package edu.ucla.cens.AndWellnessVisualizations.client.common;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Cookies;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.event.NotLoggedInEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.NotLoggedInEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEvent;
@@ -81,7 +80,8 @@ public class AuthTokenLoginManager {
             _logger.info("Initialzing login manager with user name: " + Cookies.getCookie(USER_NAME_COOKIE));
             
             // Fire the logged in event
-            eventBus.fireEvent(new UserLoginEvent(getUserInfo()));
+            // maybe don't do this, make modules ask login manager directly if the user is already logged in
+            //eventBus.fireEvent(new UserLoginEvent(getUserInfo()));
         }
         else {
             _logger.info("No login information found in cookies");
@@ -189,9 +189,12 @@ public class AuthTokenLoginManager {
      * Clears all currently stored user info from the cookies.
      */
     private void clearUserInformation() {
-        Cookies.removeCookie(AUTH_TOKEN_COOKIE);
-        Cookies.removeCookie(USER_NAME_COOKIE);
-        Cookies.removeCookie(CAMPAIGN_LIST_COOKIE);
-        Cookies.removeCookie(SELECTED_CAMPAIGN_COOKIE);
+        // removeCookie call doesn't seem to work, instead settings cookies to expire now
+        Date removeExpire = new Date();
+        
+        Cookies.setCookie(AUTH_TOKEN_COOKIE, null, removeExpire, null, "/", false);
+        Cookies.setCookie(USER_NAME_COOKIE, null, removeExpire, null, "/", false);
+        Cookies.setCookie(CAMPAIGN_LIST_COOKIE, null, removeExpire, null, "/", false);
+        Cookies.setCookie(SELECTED_CAMPAIGN_COOKIE, null, removeExpire, null, "/", false);
     }
 }

@@ -50,16 +50,16 @@ public class NavigationBarPresenter implements Presenter, NavigationBarView.Pres
         // TODO fix this
         String currentUrl = Window.Location.getPath();
         
-        if ("/index.jsp".equals(currentUrl)) {
+        if ("/".equals(currentUrl) || "/index.jsp".equals(currentUrl)) {
             view.setActiveStyle(0);
         }
-        if ("/about/index.jsp".equals(currentUrl)) {
+        if ("/about".equals(currentUrl) || "/about/index.jsp".equals(currentUrl)) {
             view.setActiveStyle(1);
         }
-        if ("/help/index.jsp".equals(currentUrl)) {
+        if ("/help".equals(currentUrl) || "/help/index.jsp".equals(currentUrl)) {
             view.setActiveStyle(2);
         }
-        if ("/login/index.jsp".equals(currentUrl)) {
+        if ("/login".equals(currentUrl) || "/login/index.jsp".equals(currentUrl)) {
             view.setActiveStyle(3);
         }
     }

@@ -71,6 +71,9 @@ public class CalendarAppController {
         this.loginManager = loginManager;
         
         bind();
+        
+        // Faking currentDataPoint to maek things work for now
+        currentDataPoint = "alcoholNumberOfDrinks";
     }
     
     // Listen for events, take action
@@ -84,6 +87,9 @@ public class CalendarAppController {
                 // Call for new data
                 if (currentDataPoint != null) {
                     fetchDataPoints();
+                }
+                else {
+                    _logger.fine("MonthSelectionEvent detected but currentDataPoint is null.");
                 }
             }   
         });

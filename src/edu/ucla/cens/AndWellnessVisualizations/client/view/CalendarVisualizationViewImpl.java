@@ -47,6 +47,9 @@ public class CalendarVisualizationViewImpl extends Composite implements
       
         // Inject the CSS
         FrontendResources.INSTANCE.calendarVisualizationViewCss().ensureInjected();
+        
+        // Start with all days disabled
+        refreshCalendar();
     }
     
     public void setPresenter(Presenter presenter) {

@@ -299,8 +299,6 @@ public class CalendarVisualizationPresenter implements Presenter,
      * a day clicked event in response, but is otherwise not handled here.
      */
     public void onDayClicked(Date selectedDate) {
-        // TODO Auto-generated method stub
-        
+        // TODO implement
     }
-    
 }
