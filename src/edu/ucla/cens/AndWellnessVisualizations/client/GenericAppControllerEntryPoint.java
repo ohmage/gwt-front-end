@@ -3,9 +3,9 @@ package edu.ucla.cens.AndWellnessVisualizations.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
-import com.google.gwt.user.client.Window;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthTokenLoginManager;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthorizationManager;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.LocalAndWellnessRpcService;
 
@@ -19,15 +19,10 @@ public class GenericAppControllerEntryPoint implements EntryPoint {
         // Initialize the rpc service and event bus for the app
         AndWellnessRpcService rpcService = new LocalAndWellnessRpcService();
         EventBus eventBus = new SimpleEventBus();
-        AuthTokenLoginManager loginManager = new AuthTokenLoginManager(eventBus);
+        TokenLoginManager loginManager = new TokenLoginManager(eventBus);
         
-        // This is so hacky, but if we are on the main home page and logged in, redirect to the visuslizations
-        String currentUrl = Window.Location.getPath();
-        
-        if (("/".equals(currentUrl) || "/index.jsp".equals(currentUrl)) &&
-                loginManager.isCurrentlyLoggedIn()) {
-            Window.Location.assign("/calendar");
-        }
+        // Run the URL authorization
+        AuthorizationManager.instantiate(eventBus, loginManager);
         
         // Create and run the controller
         GenericAppController appController = new GenericAppController(rpcService, eventBus, loginManager);

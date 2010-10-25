@@ -6,7 +6,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthTokenLoginManager;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEventHandler;
@@ -18,14 +18,16 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarView;
 public class NavigationBarPresenter implements Presenter, NavigationBarView.Presenter {
     private final EventBus eventBus;  
     private final NavigationBarView view;
-    private final AuthTokenLoginManager loginManager;
+    private final TokenLoginManager loginManager;
     
     private static Logger _logger = Logger.getLogger(NavigationBarPresenter.class.getName());
     
-    public NavigationBarPresenter(EventBus eventBus, NavigationBarView view, AuthTokenLoginManager loginManager) {
+    public NavigationBarPresenter(EventBus eventBus, NavigationBarView view, TokenLoginManager loginManager) {
         this.eventBus = eventBus;
         this.view = view;
         this.loginManager = loginManager;
+        
+        this.view.setPresenter(this);
     }
     
     /**
@@ -53,13 +55,13 @@ public class NavigationBarPresenter implements Presenter, NavigationBarView.Pres
         if ("/".equals(currentUrl) || "/index.jsp".equals(currentUrl)) {
             view.setActiveStyle(0);
         }
-        if ("/about".equals(currentUrl) || "/about/index.jsp".equals(currentUrl)) {
+        if ("/about/".equals(currentUrl) || "/about/index.jsp".equals(currentUrl)) {
             view.setActiveStyle(1);
         }
-        if ("/help".equals(currentUrl) || "/help/index.jsp".equals(currentUrl)) {
+        if ("/help/".equals(currentUrl) || "/help/index.jsp".equals(currentUrl)) {
             view.setActiveStyle(2);
         }
-        if ("/login".equals(currentUrl) || "/login/index.jsp".equals(currentUrl)) {
+        if ("/login/".equals(currentUrl) || "/login/index.jsp".equals(currentUrl)) {
             view.setActiveStyle(3);
         }
     }

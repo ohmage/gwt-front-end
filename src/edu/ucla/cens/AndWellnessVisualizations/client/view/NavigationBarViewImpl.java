@@ -147,7 +147,12 @@ public class NavigationBarViewImpl extends Composite implements
      * @param event The logout click event.
      */
     public void onClick(ClickEvent event) {
-        presenter.logoutClicked();
+        if (presenter != null) {
+            presenter.logoutClicked();
+        }
+        else {
+            _logger.warning("Presenter has not been set.");
+        }
     }
     
     /**

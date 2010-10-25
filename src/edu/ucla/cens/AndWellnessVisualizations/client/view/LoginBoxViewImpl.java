@@ -11,12 +11,9 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionView.Presenter;
-import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionViewImpl.MonthSelectionViewUiBinder;
 
 public class LoginBoxViewImpl extends Composite implements LoginBoxView {
     @UiTemplate("LoginBoxView.ui.xml")

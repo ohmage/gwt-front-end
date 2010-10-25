@@ -7,20 +7,18 @@ import java.util.logging.Logger;
 
 import com.google.code.p.gwtchismes.client.GWTCSimpleDatePicker;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthTokenLoginManager;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEventHandler;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLogoutEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLogoutEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
@@ -48,7 +46,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarViewImpl
 public class CalendarAppController {
     private final EventBus eventBus;
     private final AndWellnessRpcService rpcService; 
-    private final AuthTokenLoginManager loginManager;
+    private final TokenLoginManager loginManager;
     
     // Various views in this controller
     private CalendarVisualizationView calVizView = null;
@@ -58,22 +56,22 @@ public class CalendarAppController {
     // Various data we need to maintain
     private Date currentMonth = new Date();
     private String currentDataPoint = null;
-    private UserInfo userInfo;
+    private UserInfo userInfo = null;
     private CampaignInfo campaignInfo = CampaignInfo.getInstance();
     
     // Logging utility
     private static Logger _logger = Logger.getLogger(CalendarAppController.class.getName());
     
     
-    public CalendarAppController(AndWellnessRpcService rpcService, EventBus eventBus, AuthTokenLoginManager loginManager) {
+    public CalendarAppController(AndWellnessRpcService rpcService, EventBus eventBus, TokenLoginManager loginManager) {
         this.eventBus = eventBus;
         this.rpcService = rpcService;
         this.loginManager = loginManager;
         
-        bind();
+        // Grab the user info from the login manager
+        this.userInfo = loginManager.getUserInfo();
         
-        // Faking currentDataPoint to maek things work for now
-        currentDataPoint = "alcoholNumberOfDrinks";
+        bind();
     }
     
     // Listen for events, take action
@@ -103,10 +101,10 @@ public class CalendarAppController {
             }
         });
         
-        // If we receive a logout, redirect back to the home page
-        eventBus.addHandler(UserLogoutEvent.TYPE, new UserLogoutEventHandler() {
-            public void onUserLogout(UserLogoutEvent event) {
-                Window.Location.assign("/");
+        // If we receive a login event, save the user info
+        eventBus.addHandler(UserLoginEvent.TYPE, new UserLoginEventHandler() {
+            public void onUserLogin(UserLoginEvent event) {
+                userInfo = event.getUserInfo();
             }
         });
     }
@@ -120,7 +118,6 @@ public class CalendarAppController {
             navBarView = new NavigationBarViewImpl();
         }
         NavigationBarPresenter navBarPres= new NavigationBarPresenter(eventBus, navBarView, loginManager);
-        navBarView.setPresenter(navBarPres);
         navBarPres.go(RootPanel.get("navigationBarView"));
         
         // Initialize and run the month selection
@@ -148,6 +145,12 @@ public class CalendarAppController {
         String userName, campaignId, clientName;
         List<String> dataPointLabels = new ArrayList<String>();
       
+        // Check to be sure the user information is set
+        if (userInfo == null) {
+            _logger.warning("No user info has been set, cannot fetch data points.");
+            return;
+        }
+        
         // Find the first and last day of the requested month
         startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
         endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);

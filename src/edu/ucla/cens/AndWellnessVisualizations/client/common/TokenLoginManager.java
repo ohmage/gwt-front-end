@@ -18,7 +18,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.CollectionUtils;
 
 /**
- * AuthTokenLoginManager acts as an abstraction of the login information stored
+ * TokenLoginManager acts as an abstraction of the login information stored
  * in a local cookie.  Upon login, the server returns an authorization token that
  * authenticates all future calls to the server API until expiration.  Since we want
  * to keep this token around if the user were to refresh or reload the webpage, the token
@@ -34,7 +34,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.utils.CollectionUtils;
  * @author jhicks
  *
  */
-public class AuthTokenLoginManager {
+public class TokenLoginManager {
     private boolean currentlyLoggedIn = false;
     
     private final EventBus eventBus;
@@ -47,9 +47,9 @@ public class AuthTokenLoginManager {
     private final static String DELIMITER = ",";
     
     // Logging utility
-    private static Logger _logger = Logger.getLogger(AuthTokenLoginManager.class.getName());
+    private static Logger _logger = Logger.getLogger(TokenLoginManager.class.getName());
     
-    public AuthTokenLoginManager(EventBus eventBus) {
+    public TokenLoginManager(EventBus eventBus) {
         this.eventBus = eventBus;
         
         // Initialize the manager by checking the currently set cookies

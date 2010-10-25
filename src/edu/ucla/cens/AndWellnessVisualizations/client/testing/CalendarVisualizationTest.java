@@ -16,7 +16,7 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.CalendarAppController;
-import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthTokenLoginManager;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigAwData;
@@ -37,7 +37,7 @@ public class CalendarVisualizationTest implements EntryPoint {
     
     public LocalAndWellnessRpcService rpcService;
     public EventBus eventBus;
-    public AuthTokenLoginManager loginManager;
+    public TokenLoginManager loginManager;
     
     private static Logger _logger = Logger.getLogger(CalendarVisualizationTest.class.getName());
     
@@ -48,7 +48,7 @@ public class CalendarVisualizationTest implements EntryPoint {
         // Initialize the rpc service and event bus for the app
         rpcService = new LocalAndWellnessRpcService();
         eventBus = new SimpleEventBus();
-        loginManager = new AuthTokenLoginManager(eventBus);
+        loginManager = new TokenLoginManager(eventBus);
         
         // First login to get the rpcService ready
         doLogin();

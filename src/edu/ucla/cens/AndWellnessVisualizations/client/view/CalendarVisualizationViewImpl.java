@@ -2,6 +2,7 @@ package edu.ucla.cens.AndWellnessVisualizations.client.view;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ public class CalendarVisualizationViewImpl extends Composite implements
         FrontendResources.INSTANCE.calendarVisualizationViewCss().ensureInjected();
         
         // Start with all days disabled
+        dayData = new HashMap<Date, Double>();
         refreshCalendar();
     }
     
@@ -76,10 +78,7 @@ public class CalendarVisualizationViewImpl extends Composite implements
         
         calendarVisualizationDatePicker.setCurrentMonth(month);
         
-        // If we have data, display it
-        if (dayData != null) {
-            refreshCalendar();
-        }
+        refreshCalendar();
     }
 
     /**
@@ -112,11 +111,6 @@ public class CalendarVisualizationViewImpl extends Composite implements
        
         // Start by disabling all the days, then enable the ones in the data
         disableAllVisibleDates();
-
-        if (dayData == null) {
-            _logger.warning("The view has no data, cannot refresh!");
-            return;
-        }
         
         // Enable the days, and set the opacity based on the day data
         days = dayData.keySet();

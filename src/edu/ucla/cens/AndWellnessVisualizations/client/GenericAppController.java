@@ -3,7 +3,7 @@ package edu.ucla.cens.AndWellnessVisualizations.client;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.RootPanel;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthTokenLoginManager;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.NavigationBarPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarView;
@@ -24,12 +24,12 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarViewImpl
 public class GenericAppController {
     private final EventBus eventBus;
     private final AndWellnessRpcService rpcService;
-    private final AuthTokenLoginManager loginManager;
+    private final TokenLoginManager loginManager;
     
     private NavigationBarView navBarView = null;
   
     public GenericAppController(AndWellnessRpcService rpcService, EventBus eventBus, 
-            AuthTokenLoginManager loginManager) {
+            TokenLoginManager loginManager) {
         this.eventBus = eventBus;
         this.rpcService = rpcService;
         this.loginManager = loginManager;
@@ -47,7 +47,7 @@ public class GenericAppController {
         if (navBarView == null) {
             navBarView = new NavigationBarViewImpl();
         }
-        NavigationBarPresenter navBarPres= new NavigationBarPresenter(eventBus, navBarView, loginManager);
+        NavigationBarPresenter navBarPres = new NavigationBarPresenter(eventBus, navBarView, loginManager);
         navBarPres.go(RootPanel.get("navigationBarView"));
     }
 }

@@ -6,7 +6,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthTokenLoginManager;
+import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.SetModel;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
@@ -17,7 +17,7 @@ public class LoginBoxPresenter implements Presenter,
     private final AndWellnessRpcService rpcService;
     private final EventBus eventBus;  
     private final LoginBoxView view;
-    private final AuthTokenLoginManager loginManager;
+    private final TokenLoginManager loginManager;
     
     // SelectionModels to hold state from the View
     private final SetModel<String> userNameModel;
@@ -26,7 +26,7 @@ public class LoginBoxPresenter implements Presenter,
     private static Logger _logger = Logger.getLogger(LoginBoxPresenter.class.getName());
     
     public LoginBoxPresenter(AndWellnessRpcService rpcService, 
-            EventBus eventBus, LoginBoxView view, AuthTokenLoginManager loginManager) {
+            EventBus eventBus, LoginBoxView view, TokenLoginManager loginManager) {
         this.rpcService = rpcService;
         this.eventBus = eventBus;
         this.view = view;
