@@ -3,6 +3,7 @@ package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 import java.util.logging.Logger;
 
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 
@@ -47,23 +48,7 @@ public class NavigationBarPresenter implements Presenter, NavigationBarView.Pres
         }
         view.setLoggedIn(loginManager.isCurrentlyLoggedIn());
         
-        // Set the active link based on the current URL, very hacky but not sure
-        // the best way to do this
-        // TODO fix this
-        String currentUrl = Window.Location.getPath();
-        
-        if ("/".equals(currentUrl) || "/index.jsp".equals(currentUrl)) {
-            view.setActiveStyle(0);
-        }
-        if ("/about/".equals(currentUrl) || "/about/index.jsp".equals(currentUrl)) {
-            view.setActiveStyle(1);
-        }
-        if ("/help/".equals(currentUrl) || "/help/index.jsp".equals(currentUrl)) {
-            view.setActiveStyle(2);
-        }
-        if ("/login/".equals(currentUrl) || "/login/index.jsp".equals(currentUrl)) {
-            view.setActiveStyle(3);
-        }
+        setActiveLink();
     }
     
     /**
@@ -79,12 +64,16 @@ public class NavigationBarPresenter implements Presenter, NavigationBarView.Pres
                 
                 view.updateUserName(userName);
                 view.setLoggedIn(true);
+                
+                setActiveLink();
             }
         });
         
         eventBus.addHandler(UserLogoutEvent.TYPE, new UserLogoutEventHandler() {
             public void onUserLogout(UserLogoutEvent event) {
                 view.setLoggedIn(false);
+                
+                setActiveLink();
             }
         });
     }
@@ -94,5 +83,35 @@ public class NavigationBarPresenter implements Presenter, NavigationBarView.Pres
      */
     public void logoutClicked() {
         eventBus.fireEvent(new RequestLogoutEvent());        
+    }
+    
+    /**
+     * Sets the active link based on the current URL, very hacky but not sure
+     * the best way to do this.
+     */
+    private void setActiveLink() {
+        String currentUrl = Window.Location.getPath();
+        RegExp activeRegexp;
+        
+        activeRegexp = RegExp.compile("^/about");
+        if (activeRegexp.test(currentUrl)) {
+            view.setActiveStyle(1);
+            return;
+        }
+        activeRegexp = RegExp.compile("^/help");
+        if (activeRegexp.test(currentUrl)) {
+            view.setActiveStyle(2);
+            return;
+        }
+        activeRegexp = RegExp.compile("^/login");
+        if (activeRegexp.test(currentUrl)) {
+            view.setActiveStyle(3);
+            return;
+        }
+        activeRegexp = RegExp.compile("^/");
+        if (activeRegexp.test(currentUrl)) {
+            view.setActiveStyle(0);
+            return;
+        }
     }
 }
