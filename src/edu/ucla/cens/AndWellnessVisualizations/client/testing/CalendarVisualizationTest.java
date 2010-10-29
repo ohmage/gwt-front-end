@@ -19,7 +19,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.CalendarAppController;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.LocalAndWellnessRpcService;
@@ -134,12 +134,12 @@ public class CalendarVisualizationTest implements EntryPoint {
     private void testXMLParse() {   
         _logger.info("Sending out a request for the campaign configuration information.");
         
-        rpcService.fetchConfigData(new AsyncCallback<ConfigAwData>() {
+        rpcService.fetchConfigData(new AsyncCallback<ConfigQueryAwData>() {
             public void onFailure(Throwable caught) {
                 _logger.warning("testXMLParse called onFailure with reason " + caught.getMessage());
             }
 
-            public void onSuccess(ConfigAwData result) {
+            public void onSuccess(ConfigQueryAwData result) {
                 _logger.info("Received configuration information from the server.");
                 
                 parseXml(result.getConfigurationXML());                

@@ -8,6 +8,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthorizationManage
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.LocalAndWellnessRpcService;
+import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.ServerAndWellnessRpcService;
 
 public class LoginAppControllerEntryPoint implements EntryPoint {
 
@@ -17,7 +18,7 @@ public class LoginAppControllerEntryPoint implements EntryPoint {
      */
     public void onModuleLoad() {
         // Initialize the rpc service and event bus for the app
-        AndWellnessRpcService rpcService = new LocalAndWellnessRpcService();
+        AndWellnessRpcService rpcService = new ServerAndWellnessRpcService();
         EventBus eventBus = new SimpleEventBus();
         TokenLoginManager loginManager = new TokenLoginManager(eventBus);
         
