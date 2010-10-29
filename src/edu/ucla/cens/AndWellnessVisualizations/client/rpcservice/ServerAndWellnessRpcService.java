@@ -39,7 +39,7 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
     RequestBuilder configurationService;
     
     // Locations of the text files to read
-    private final String authorizationLocation = "http://127.0.0.1:8080/app/auth_token";
+    private final String authorizationLocation = "/app/auth_token";
     private final String dataPointLocation = "/app/data";
     private final String configurationLocation = "/app/config";
         
