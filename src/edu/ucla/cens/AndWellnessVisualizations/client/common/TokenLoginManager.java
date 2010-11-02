@@ -105,7 +105,7 @@ public class TokenLoginManager {
         Cookies.setCookie(USER_NAME_COOKIE, userName, null, null, "/", false);
         Cookies.setCookie(CAMPAIGN_LIST_COOKIE, CollectionUtils.join(campaignList, DELIMITER), null, null, "/", false);
         
-        _logger.fine("Loggin in as user: " + authToken + " with campaignList: " + CollectionUtils.join(campaignList, DELIMITER));
+        _logger.fine("Logging in as user: " + authToken + " with campaignList: " + CollectionUtils.join(campaignList, DELIMITER));
         
         currentlyLoggedIn = true;
         
@@ -158,6 +158,7 @@ public class TokenLoginManager {
             String campaignListString = Cookies.getCookie(CAMPAIGN_LIST_COOKIE);
             List<String> campaignList = new ArrayList<String>();
             String selectedCampaign = Cookies.getCookie(SELECTED_CAMPAIGN_COOKIE);
+            String authToken = Cookies.getCookie(AUTH_TOKEN_COOKIE);
             
             // Create the new UserInfo
             userInfo = new UserInfo(userName);
@@ -180,6 +181,8 @@ public class TokenLoginManager {
             else {
                 userInfo.setSelectedCampaign(-1);
             }
+
+            userInfo.setAuthToken(authToken);
         }
         
         return userInfo;

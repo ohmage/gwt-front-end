@@ -52,8 +52,8 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
      * Returns the login information from /testing/server_response/auth_token.txt.
      * The username must be abc and password 123 for a success, else an error will return.
      */
-    public void fetchAuthorizationToken(final String userName, String password,
-            final AsyncCallback<UserInfo> callback) {
+    public void fetchAuthorizationToken(final String userName, final String password,
+            final AsyncCallback<AuthorizationTokenQueryAwData> callback) {
         // Validate the username/password
         if (!(userName.equals("abc") && password.equals("123"))) {
             callback.onFailure(new NotLoggedInException("Invalid username and/or password."));
@@ -72,7 +72,6 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                 // Eval the JSON into an overlay class and return
                 public void onResponseReceived(Request request, Response response) {
                     if (200 == response.getStatusCode()) {
-                        UserInfo translatedResponse;
                         // Eval the response into JSON
                         // (Hope this doesn't contain malicious JavaScript!)
                         String responseText = response.getText();
@@ -87,16 +86,9 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
                         if (! "success".equals(serverResponse.getResult())) {
                             callback.onFailure(new ServerException("Server returned malformed JSON."));
                         }
-                       
-                        
-                        // Translate data to a UserInfo object for return to callback
-                        translatedResponse = new UserInfo();
-                        translatedResponse.setUserName(userName);
-                        translatedResponse.setCampaignMembershipList(serverResponse.getStringCampaignNameList());
-                        translatedResponse.setAuthToken(serverResponse.getAuthorizationToken());
-                        
+    
                         // Success, return the response!
-                        callback.onSuccess(translatedResponse);
+                        callback.onSuccess(serverResponse);
                         
                     } else {
                         // We are reading a local file, this shouldn't happen!
@@ -172,16 +164,8 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
      * 
      * @param callback The callback to accept the config data.
      */
-    public void fetchConfigData(final AsyncCallback<ConfigQueryAwData> callback) {
-        // First grab our credentials to authorize with the server
-        String authToken = getAuthTokenCookie();
-        
-        // Check to be sure the token has been set
-        if (authToken == null) {
-            throw new NotLoggedInException("Need to login.");
-        }
-        
-     // Grab the data
+    public void fetchConfigData(String campaignId, String authToken, final AsyncCallback<ConfigQueryAwData> callback) {
+        // Grab the data
         try {
             configLocalService.sendRequest(null, new RequestCallback() {
                 // Error occured, handle it here

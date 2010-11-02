@@ -20,6 +20,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.CalendarVisualizationPresenter;
@@ -27,6 +28,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MonthSelectionPr
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.NavigationBarPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.NotLoggedInException;
+import edu.ucla.cens.AndWellnessVisualizations.client.utils.AwDataTranslators;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionView;
@@ -133,6 +135,21 @@ public class CalendarAppController {
         }
         CalendarVisualizationPresenter calVizPresenter = new CalendarVisualizationPresenter(rpcService, eventBus, calVizView);
         calVizPresenter.go(RootPanel.get("calendarVisualizationView"));
+        
+        // Grab the campaign configuration information from the server and translate
+        // into the CampaignInfo singleton
+        // HACK FOR NOW, assume we are always in the first campaign
+        String loggedInCampaign = userInfo.getCampaignMembershipList().get(0);
+        rpcService.fetchConfigData(loggedInCampaign, userInfo.getAuthToken(), new AsyncCallback<ConfigQueryAwData>() {
+            public void onFailure(Throwable arg0) {
+                _logger.warning("Problem getting configuration information from server: " + arg0.getMessage());
+            }
+
+            public void onSuccess(ConfigQueryAwData result) {
+                // Translate to the CampaignInfo singleton
+                AwDataTranslators.translateConfigQueryAwData(result);
+            }
+        });
     }
 
     /**

@@ -8,8 +8,10 @@ import com.google.gwt.user.client.ui.HasWidgets;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.SetModel;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
+import edu.ucla.cens.AndWellnessVisualizations.client.utils.AwDataTranslators;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.LoginBoxView;
 
 public class LoginBoxPresenter implements Presenter,
@@ -80,7 +82,7 @@ public class LoginBoxPresenter implements Presenter,
             view.setInvalidPassword("Please enter a password");
         }
         
-        rpcService.fetchAuthorizationToken(userNameModel.getSetItem(), passwordModel.getSetItem(), new AsyncCallback<UserInfo>() {
+        rpcService.fetchAuthorizationToken(userNameModel.getSetItem(), passwordModel.getSetItem(), new AsyncCallback<AuthorizationTokenQueryAwData>() {
 
             /**
              * Notifies the View that the login failed
@@ -96,10 +98,12 @@ public class LoginBoxPresenter implements Presenter,
              * 
              * @param result The login data.
              */
-            public void onSuccess(UserInfo result) {
-                _logger.info("Successfully logged in user: " + result.getUserName());
+            public void onSuccess(AuthorizationTokenQueryAwData result) {
+                UserInfo userInfo = AwDataTranslators.translateAwDataToUserInfo(userNameModel.getSetItem(), result);
                 
-                loginManager.loginWithAuthToken(result.getAuthToken(), result.getUserName(), result.getCampaignMembershipList());
+                _logger.info("Successfully logged in user: " + userInfo.getUserName());
+                
+                loginManager.loginWithAuthToken(userInfo.getAuthToken(), userInfo.getUserName(), userInfo.getCampaignMembershipList());
             }
             
         });

@@ -19,6 +19,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.CalendarAppController;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
@@ -70,7 +71,7 @@ public class CalendarVisualizationTest implements EntryPoint {
         _logger.info("Attempting to login...");
         
         // First login
-        rpcService.fetchAuthorizationToken("abc", "123", new AsyncCallback<UserInfo>() {
+        rpcService.fetchAuthorizationToken("abc", "123", new AsyncCallback<AuthorizationTokenQueryAwData>() {
 
             @Override
             public void onFailure(Throwable caught) {
@@ -78,7 +79,7 @@ public class CalendarVisualizationTest implements EntryPoint {
             }
 
             @Override
-            public void onSuccess(UserInfo result) {
+            public void onSuccess(AuthorizationTokenQueryAwData result) {
                 _logger.info("Successfully logged in");
                 
                 // Init the app controller
@@ -134,7 +135,7 @@ public class CalendarVisualizationTest implements EntryPoint {
     private void testXMLParse() {   
         _logger.info("Sending out a request for the campaign configuration information.");
         
-        rpcService.fetchConfigData(new AsyncCallback<ConfigQueryAwData>() {
+        rpcService.fetchConfigData("campaignId", "0123456789", new AsyncCallback<ConfigQueryAwData>() {
             public void onFailure(Throwable caught) {
                 _logger.warning("testXMLParse called onFailure with reason " + caught.getMessage());
             }
