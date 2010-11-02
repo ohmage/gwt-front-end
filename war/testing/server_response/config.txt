@@ -1,8 +1,7 @@
 {
     "result":"success",
-    "data": {
-        "user_role":1,
-        "configuration":"<campaign>
+    "user_role":"researcher",
+    "configuration":"<campaign>
   <campaignName>CHIPTS</campaignName>
   <campaignVersion>0.1</campaignVersion>
   <serverUrl>https://www.andwellness.org</serverUrl>
@@ -104,7 +103,6 @@
     </survey>
   </surveys>
 </campaign>",
-        "user_list":["user1","user2","user3"],
-        "special_id":["id1","id2","id3"]
-    }
+    "user_list":["user1","user2","user3"],
+    "special_ids":["id1","id2","id3"]
 }
