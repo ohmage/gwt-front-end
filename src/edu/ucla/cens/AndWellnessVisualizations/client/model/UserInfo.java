@@ -15,7 +15,9 @@ public class UserInfo implements Comparable<UserInfo> {
     private String authToken;
     private int privileges = -1;
     private List<String> campaignMembershipList = new ArrayList<String>();
-    private int selectedCampaign = -1;
+    //private int selectedCampaign = -1;
+    // Default to the first campaign selected for now
+    private int selectedCampaign = 0;
     
     public UserInfo() {};
     
@@ -60,6 +62,27 @@ public class UserInfo implements Comparable<UserInfo> {
     public int getSelectedCampaign() { return selectedCampaign; };
     public void setSelectedCampaign(int selectedCampaign) { this.selectedCampaign = selectedCampaign; };
 
+    /**
+     * Returns the ID of the selected campaign.
+     * 
+     * @return The ascii name of the currently selected campaign.  Returns null
+     * if there if no campaign selected.
+     */
+    public String getSelectedCampaignId() {
+        int selectedCampaign = getSelectedCampaign();
+        String selectedCampaignId;
+        
+        try {
+            selectedCampaignId = getCampaignMembershipList().get(selectedCampaign);
+        }
+        catch (IndexOutOfBoundsException err) {
+            // There is no selected campaign, return null.
+            return null;
+        }
+        
+        return selectedCampaignId;
+    }
+    
     // Allows this model to be sorted by Collections.sort() (be userName only)
     public int compareTo(UserInfo arg0) {
         return this.userName.compareTo(arg0.userName);

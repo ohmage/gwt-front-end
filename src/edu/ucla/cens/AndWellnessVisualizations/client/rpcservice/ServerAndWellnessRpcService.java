@@ -22,8 +22,10 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ErrorAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ErrorQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.utils.DateUtils;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.JsArrayUtils;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.MapUtils;
+import edu.ucla.cens.AndWellnessVisualizations.client.utils.StringUtils;
 
 /**
  * An implementation of the AndWellnessRpcService that contacts the AndWellness server
@@ -39,7 +41,7 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
     
     // Locations of the text files to read
     private final String authorizationLocation = "http://127.0.0.1:8080/app/auth_token";
-    private final String dataPointLocation = "http://127.0.0.1:8080/app/q/data";
+    private final String dataPointLocation = "http://127.0.0.1:8080/app/q/dp";
     private final String configurationLocation = "http://127.0.0.1:8080/app/q/config";
         
     // Logging utility
@@ -76,7 +78,6 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
         String postParams = MapUtils.translateToParameters(parameters);
         
         _logger.fine("Attempting authentication with parameters: " + postParams);
-        
         
         // Send the username/password to the server.
         try {
@@ -134,8 +135,24 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
             List<String> dataIds, String campaignId, String clientName, String authToken,
             final AsyncCallback<List<DataPointAwData>> callback) {
 
+        String postParams = null;
+        postParams = StringUtils.addParam(postParams, "u", userName);
+        postParams = StringUtils.addParam(postParams, "t", authToken);
+        postParams = StringUtils.addParam(postParams, "c", campaignId);
+        postParams = StringUtils.addParam(postParams, "s", DateUtils.translateToServerUploadFormat(startDate));
+        postParams = StringUtils.addParam(postParams, "e", DateUtils.translateToServerUploadFormat(endDate));
+        postParams = StringUtils.addParam(postParams, "ci", "2");
+        postParams = StringUtils.addParam(postParams, "cv", "0.1");
+        
+        // Add every data Id to the param list
+        for (String dataId:dataIds) {
+            postParams = StringUtils.addParam(postParams, "i", dataId);
+        }
+        
+        _logger.finer("Contacting data query API with parameter string: " + postParams);
+        
         try {
-            dataPointService.sendRequest(null, new RequestCallback() {
+            dataPointService.sendRequest(postParams, new RequestCallback() {
                 // Error occured, handle it here
                 public void onError(Request request, Throwable exception) {
                     // Couldn't connect to server (could be timeout, SOP violation, etc.)   

@@ -177,11 +177,8 @@ public class TokenLoginManager {
             if (selectedCampaign != null) {
                 userInfo.setSelectedCampaign(Integer.parseInt(selectedCampaign));
             }
-            // Unselected campaign is represented by -1
-            else {
-                userInfo.setSelectedCampaign(-1);
-            }
 
+            // Set the auth token to allow authentication
             userInfo.setAuthToken(authToken);
         }
         

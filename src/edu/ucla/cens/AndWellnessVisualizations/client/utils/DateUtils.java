@@ -14,6 +14,8 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 public class DateUtils {
     // Format of the timestamp string returned from the server
     public final static String timeStampFormat = "yyyy-MM-dd HH:mm:ss";
+    // Format of the timestamp string to upload to server POST api
+    public final static String uploadTimeStampFormat = "yyyy-MM-dd";
     
     /**
      * Translates a String from the server time format to a Date.
@@ -24,6 +26,11 @@ public class DateUtils {
     public static Date translateFromServerFormat(String toTranslate) {
         DateTimeFormat dateFormat = DateTimeFormat.getFormat(timeStampFormat);
         return dateFormat.parse(toTranslate);
+    }
+    
+    public static String translateToServerUploadFormat(Date toTranslate) {
+        DateTimeFormat dateFormat = DateTimeFormat.getFormat(uploadTimeStampFormat);
+        return dateFormat.format(toTranslate);
     }
     
     /**

@@ -102,13 +102,6 @@ public class CalendarAppController {
                 fetchDataPoints();
             }
         });
-        
-        // If we receive a login event, save the user info
-        eventBus.addHandler(UserLoginEvent.TYPE, new UserLoginEventHandler() {
-            public void onUserLogin(UserLoginEvent event) {
-                userInfo = event.getUserInfo();
-            }
-        });
     }
     
     /**
@@ -136,13 +129,39 @@ public class CalendarAppController {
         CalendarVisualizationPresenter calVizPresenter = new CalendarVisualizationPresenter(rpcService, eventBus, calVizView);
         calVizPresenter.go(RootPanel.get("calendarVisualizationView"));
         
+        // Fetch the configuration information, needed for the calendar views
+        fetchConfigData();
+    }
+
+    private void fetchConfigData() {
+        // If the userInfo is null for whatever reason, we cannot fetch the campaign info
+        if (userInfo == null) {
+            _logger.warning("User info cannot be found, we should not be here.");
+        }
+        
         // Grab the campaign configuration information from the server and translate
         // into the CampaignInfo singleton
-        // HACK FOR NOW, assume we are always in the first campaign
-        String loggedInCampaign = userInfo.getCampaignMembershipList().get(0);
+        String loggedInCampaign = userInfo.getSelectedCampaignId();
+        if (loggedInCampaign == null) {
+            _logger.warning("Do not known current campaign Id...cannot ask for configuration data.");
+            return;
+        }
+        
         rpcService.fetchConfigData(loggedInCampaign, userInfo.getAuthToken(), new AsyncCallback<ConfigQueryAwData>() {
-            public void onFailure(Throwable arg0) {
-                _logger.warning("Problem getting configuration information from server: " + arg0.getMessage());
+            public void onFailure(Throwable error) {
+                _logger.warning("Problem getting configuration information from server: " + error.getMessage());
+                
+                try {
+                    throw error;
+                }
+                catch (NotLoggedInException e) {
+                    _logger.warning("Authorization problem, log us out");
+                    
+                    eventBus.fireEvent(new RequestLogoutEvent());
+                }
+                catch (Throwable e) {
+                    _logger.severe(e.getMessage());
+                }
             }
 
             public void onSuccess(ConfigQueryAwData result) {
@@ -151,7 +170,7 @@ public class CalendarAppController {
             }
         });
     }
-
+    
     /**
      * Fetches new data points based on the locally stored fields.  Checks to be sure
      * we have all the necessary data before sending the request.
@@ -172,14 +191,11 @@ public class CalendarAppController {
         startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
         endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
         userName = userInfo.getUserName();
-        /*
-        campaignId = campaignInfo.getCampaignId();
-        */
+        campaignId = userInfo.getSelectedCampaignId();
         
-        userName = "testUser";
-        campaignId = "testCampaign";
         clientName = ClientInfo.getClientName();
         
+        // The list of data point labels to ask for
         dataPointLabels.add(currentDataPoint);
         
         _logger.info("Asking server for data about label " + currentDataPoint);
@@ -207,7 +223,7 @@ public class CalendarAppController {
                 } 
                 // Don't know what to do here, uh oh
                 catch (Throwable e) {
-                    _logger.warning(e.getMessage());
+                    _logger.severe(e.getMessage());
                 }
             }
             
