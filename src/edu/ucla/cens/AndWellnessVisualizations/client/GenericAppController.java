@@ -23,7 +23,6 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarViewImpl
  */
 public class GenericAppController {
     private final EventBus eventBus;
-    private final AndWellnessRpcService rpcService;
     private final TokenLoginManager loginManager;
     
     private NavigationBarView navBarView = null;
@@ -31,7 +30,6 @@ public class GenericAppController {
     public GenericAppController(AndWellnessRpcService rpcService, EventBus eventBus, 
             TokenLoginManager loginManager) {
         this.eventBus = eventBus;
-        this.rpcService = rpcService;
         this.loginManager = loginManager;
         
         bind();

@@ -1,8 +1,8 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.rpcservice;
 
 /**
- * A specific ServerException to indicate a a failure of credentials.  Either the
- * user was automatically logged out, or the login attempt failed (invalid user or password).
+ * A specific ServerException to indicate a failure of the auth token to authenticate.
+ * The user was automatically timed out.
  * 
  * @author jhicks
  *

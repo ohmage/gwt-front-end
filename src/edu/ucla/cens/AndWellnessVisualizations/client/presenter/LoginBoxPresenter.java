@@ -9,15 +9,12 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.SetModel;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
-import edu.ucla.cens.AndWellnessVisualizations.client.utils.AwDataTranslators;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.LoginBoxView;
 
 public class LoginBoxPresenter implements Presenter,
     LoginBoxView.Presenter {
     private final AndWellnessRpcService rpcService;
-    private final EventBus eventBus;  
     private final LoginBoxView view;
     private final TokenLoginManager loginManager;
     
@@ -30,7 +27,6 @@ public class LoginBoxPresenter implements Presenter,
     public LoginBoxPresenter(AndWellnessRpcService rpcService, 
             EventBus eventBus, LoginBoxView view, TokenLoginManager loginManager) {
         this.rpcService = rpcService;
-        this.eventBus = eventBus;
         this.view = view;
         this.view.setPresenter(this);
         this.loginManager = loginManager;

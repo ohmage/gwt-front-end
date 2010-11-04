@@ -7,7 +7,6 @@ import com.google.gwt.event.shared.SimpleEventBus;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthorizationManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
-import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.LocalAndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.ServerAndWellnessRpcService;
 
 public class GenericAppControllerEntryPoint implements EntryPoint {

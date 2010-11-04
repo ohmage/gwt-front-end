@@ -33,7 +33,8 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLogoutEventHandl
 public class AuthorizationManager {
     /**
      * ProtectionLevels defines the three possible protection levels for URLs.
-     * The URL can either have NO protection, 
+     * The URL can either have NO protection, require the user to be logged out,
+     * or require the user to be logged in.
      */
     private enum ProtectionLevel {
         NONE, 
@@ -65,7 +66,6 @@ public class AuthorizationManager {
             this.redirectIfAuthFail = redirectIfAuthFail; 
         }
     }
-    
     
     // AuthorizationManager fields
     private static AuthorizationManager authorizationManager = null;
@@ -132,35 +132,36 @@ public class AuthorizationManager {
                 case NONE:
                     // There is no protection on this URL, simply return
                     _logger.fine("URL authorize succeeded as no protection: " + urlToAuthorize);
-                    return;
+                    break;
                 case LOGGED_OUT:
                     // Make sure we are logged out
                     if (loginManager.isCurrentlyLoggedIn()) {
                         // Auth fails, redirect
                         _logger.info("URL authorize failed as LOGGED_OUT: " + urlToAuthorize);
-                        //Window.Location.assign(authRecord.redirectIfAuthFail);
+                        Window.Location.assign(authRecord.redirectIfAuthFail);
                     }
                     else {
                         // Auth succeeded, return
                         _logger.fine("URL authorize succeeded as LOGGED_OUT: " + urlToAuthorize);
-                        return;
                     }
+                    break;
                 case LOGGED_IN:
                     // Make sure we are logged in
                     if (!loginManager.isCurrentlyLoggedIn()) {
                         // Auth fails, redirect
                         _logger.info("URL authorize failed as LOGGED_IN: " + urlToAuthorize);
-                        //Window.Location.assign(authRecord.redirectIfAuthFail);
+                        Window.Location.assign(authRecord.redirectIfAuthFail);
                     }
                     else {
                         // Auth succeeded, return
                         _logger.fine("URL authorize succeeded as LOGGED_IN: " + urlToAuthorize);
-                        return;
                     }
+                    break;
                 default:
                     // If we get this far, assume the URL was NOT found
                     _logger.warning("Did not find URL in the PageAuthorize enum: " + urlToAuthorize);
-                    //Window.Location.assign("/");
+                    Window.Location.assign("/");
+                    break;
                 }
             }
         }

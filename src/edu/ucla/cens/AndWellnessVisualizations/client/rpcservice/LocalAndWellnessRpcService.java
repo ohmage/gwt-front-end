@@ -10,16 +10,12 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.ErrorAwData;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.ErrorQueryAwData;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.JsArrayUtils;
 
 /**
@@ -206,37 +202,5 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
             throw new ServerException("Cannot contact server.");     
         }
         
-    }
-    
-    
-    
-    /**
-     * Throws various RpcServiceExceptions based on the error codes.
-     * 
-     * @param errorResponse The JSON error response from the server.
-     */
-    private void parseServerErrorResponse(String errorResponse) {
-        ErrorQueryAwData errorQuery = ErrorQueryAwData.fromJsonString(errorResponse);
-        JsArray<ErrorAwData> errorList = errorQuery.getErrors();
-        
-        int numErrors = errorList.length();
-    }
-    
-    /**
-     * Sets the authorization token in a local cookie.
-     * 
-     * @param token The token to set.
-     */
-    void setAuthTokenCookie(String token) {
-        Cookies.setCookie("token", token);
-    }
-    
-    /**
-     * Returns the set authorization token.  Returns NULL if no token set.
-     * 
-     * @return The authorization token.
-     */
-    private String getAuthTokenCookie() {
-        return Cookies.getCookie("token");
     }
 }

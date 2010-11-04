@@ -10,9 +10,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEventHandler;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.CollectionUtils;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.DateUtils;
@@ -41,7 +39,7 @@ import java.util.logging.Logger;
  * selection event will trigger the presenter to change the displayed month, and an incoming data event
  * will trigger the presenter to update the view with the new data.
  * 
- * The presenter sends one event: a day selection event.  The event is not handled here.
+ * The presenter sends one event: a day selection event.
  * 
  * @author jhicks
  *
@@ -49,13 +47,10 @@ import java.util.logging.Logger;
 public class CalendarVisualizationPresenter implements Presenter,
         CalendarVisualizationView.Presenter {
    
-    private UserInfo currentUserInfo;
-    private CampaignInfo currentCampaignInfo;
     private Date currentMonth;
     private Map<Date, Double> currentDayData;
     private String currentDataPointLabel;  // Assume we only use one label for now
     
-    private final AndWellnessRpcService rpcService;   // Used to make calls to the server for data
     private final EventBus eventBus;  
     private final CalendarVisualizationView view;
     
@@ -64,7 +59,6 @@ public class CalendarVisualizationPresenter implements Presenter,
     
     public CalendarVisualizationPresenter(AndWellnessRpcService rpcService, 
             EventBus eventBus, CalendarVisualizationView view) {
-        this.rpcService = rpcService;
         this.eventBus = eventBus;
         this.view = view;
         this.view.setPresenter(this);

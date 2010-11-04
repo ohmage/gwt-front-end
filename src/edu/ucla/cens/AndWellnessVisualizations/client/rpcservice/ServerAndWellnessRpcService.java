@@ -21,7 +21,6 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ErrorAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ErrorQueryAwData;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.DateUtils;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.JsArrayUtils;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.MapUtils;
@@ -43,7 +42,52 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
     private final String authorizationLocation = "http://127.0.0.1:8080/app/auth_token";
     private final String dataPointLocation = "http://127.0.0.1:8080/app/q/dp";
     private final String configurationLocation = "http://127.0.0.1:8080/app/q/config";
+    
+    /**
+     * Contains all the possible error codes returned by the AndWellness server.
+     */
+    public static enum ErrorCode {
+        E0101("0101", "JSON syntax error"),
+        E0102("0102", "no data in message"),
+        E0103("0103", "server error"),
+        E0104("0104", "session expired"),
+        E0200("0200", "authentication failed"),
+        E0201("0201", "disabled user"),
+        E0202("0202", "new account attempting to access a service without changing default password first"),
+        E0300("0300", "missing JSON data"),
+        E0301("0301", "unknown request type"),
+        E0302("0302", "unknown phone version"),
+        E0304("0304", "invalid campaign id");
         
+        private final String errorCode;
+        private final String errorDescription;
+        
+        ErrorCode(String code, String description) {
+            errorCode = code;
+            errorDescription = description;
+        }
+        
+        public String getErrorCode() { return errorCode; }
+        public String getErrorDesc() { return errorDescription; }
+        
+        /**
+         * Returns the ErrorCode that has the passed in error code from the server.
+         * 
+         * @param err The error code from the server
+         * @return The correct ErrorCode, NULL if not found.
+         */
+        public static ErrorCode translateServerError(String err) {
+            // Loop over all ErrorCodes to find the right one.
+            for (ErrorCode errCode : ErrorCode.values()) {
+                if (err.equals(errCode.getErrorCode())) {
+                    return errCode;
+                }
+            }
+            
+            return null;
+        }
+    }
+    
     // Logging utility
     private static Logger _logger = Logger.getLogger(ServerAndWellnessRpcService.class.getName());
     
@@ -114,9 +158,9 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
                         callback.onSuccess(serverResponse);
                         
                     } else {
-                        _logger.warning("Server returned bad status.  Headers: " + response.getHeadersAsString());
-                        // Server returned an error, assume this is a bad login for now
-                        callback.onFailure(new NotLoggedInException("Invalid username or password."));
+                        // Parse the server error and pass back to the callback as a failure
+                        Throwable error = parseServerErrorResponse(response.getText());
+                        callback.onFailure(error);
                     }
                 }       
             });
@@ -185,8 +229,9 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
                         callback.onSuccess(dataPointList);
                         
                     } else {
-                        // Assume all server errors are invalid logins for now
-                        callback.onFailure(new NotLoggedInException("Invalid username and/or password."));
+                        // Parse the server error and pass back to the callback as a failure
+                        Throwable error = parseServerErrorResponse(response.getText());
+                        callback.onFailure(error);
                     }
                 }       
             });
@@ -245,12 +290,9 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
                         callback.onSuccess(serverResponse);
                         
                     } else {
-                        _logger.finer("Response status: " + response.getStatusCode());
-                        _logger.finer("Response headers:" + response.getHeadersAsString());
-                        _logger.finer("Response text: " + response.getText());
-                        
-                        // Assume all errors are invalid logins for now
-                        callback.onFailure(new NotLoggedInException("Invalid username and/or password."));
+                        // Parse the server error and pass back to the callback as a failure
+                        Throwable error = parseServerErrorResponse(response.getText());
+                        callback.onFailure(error);
                     }
                 }       
             });
@@ -262,18 +304,46 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
     }
     
     
-    
     /**
      * Returns various RpcServiceExceptions based on the error codes.
      * 
      * @param errorResponse The JSON error response from the server.
      */
     private Throwable parseServerErrorResponse(String errorResponse) {
+        Throwable returnError = null;
         ErrorQueryAwData errorQuery = ErrorQueryAwData.fromJsonString(errorResponse);
         JsArray<ErrorAwData> errorList = errorQuery.getErrors();
         
         int numErrors = errorList.length();
         
-        return null;
+        // Lets just throw the first error for now
+        if (numErrors > 0) {
+            ErrorCode errorCode = ErrorCode.translateServerError(errorList.get(0).getCode());
+            
+            switch (errorCode) {
+            case E0103:
+                returnError = new ServerException(errorCode.getErrorDesc());
+                break;
+            case E0104:
+                returnError = new NotLoggedInException(errorCode.getErrorDesc());
+                break;
+            case E0200:
+            case E0201:
+            case E0202:
+                returnError = new AuthenticationException(errorCode.getErrorDesc());
+                break;
+            case E0300:
+            case E0301:
+            case E0302:
+            case E0304:
+                returnError = new ApiException(errorCode.getErrorDesc());
+                break;
+            default:
+                returnError = new ServerException("Unknown server error.");
+                break;
+            }
+        }
+        
+        return returnError;
     }
 }
