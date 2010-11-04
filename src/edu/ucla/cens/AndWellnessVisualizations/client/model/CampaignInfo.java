@@ -14,10 +14,8 @@ import java.util.List;
  */
 public class CampaignInfo { 
     private String campaignName;  // The name of this campaign
-    private String campaignVersion;  // The version of this campaign
     private List<String> userList;  // A list of the users in enrolled in the current campaign
-    private List<SurveyInfo> surveyList;  // A list of the configured surveys in this campaign
-    private String xmlConfiguration;  // The XML used to configure this campaign
+    private List<ConfigurationInfo> configurationList;  // Holds configuration info for each version of the campaign
     private UserRole userRole;  // Describes the user's campaign permissions
     
     // Data fields necessary to describe a campaign configuration
@@ -28,7 +26,7 @@ public class CampaignInfo {
     
     public CampaignInfo() {
         userList = new ArrayList<String>();
-        surveyList = new ArrayList<SurveyInfo>();
+        configurationList = new ArrayList<ConfigurationInfo>();
     };
     
     /**
@@ -37,40 +35,30 @@ public class CampaignInfo {
      * @param campaignInfo The object to copy.
      */
     public CampaignInfo(CampaignInfo campaignInfo) {
-        CampaignInfo copy = new CampaignInfo();
-        
         // Copy everything over, immutables don't need to be copied
-        copy.setCampaignName(campaignInfo.getCampaignName());
-        copy.setCampaignVersion(campaignInfo.getCampaignVersion());
-        copy.setUserList(campaignInfo.getUserList());
-        copy.setSurveyList(campaignInfo.getSurveyList());
-        copy.setXmlConfiguration(campaignInfo.getXmlConfiguration());
-        copy.setUserRole(campaignInfo.getUserRole());
+        setCampaignName(campaignInfo.getCampaignName());
+        setUserList(campaignInfo.getUserList());
+        setUserRole(campaignInfo.getUserRole());
+        setConfigurationList(campaignInfo.getConfigurationList());
     }
 
     // Setters and getters
     public void setCampaignName(String campaignName) { this.campaignName = campaignName; }
     public String getCampaignName() { return campaignName; }
     
-    public void setCampaignVersion(String campaignVersion) { this.campaignVersion = campaignVersion; }
-    public String getCampaignVersion() { return campaignVersion; }
-    
     public void addUser(String userName) { userList.add(userName); }
     public void setUserList(List<String> userList) { this.userList = userList; }
     public List<String> getUserList() { return new ArrayList<String>(userList); }
     
-    public void addSurvey(SurveyInfo survey) { surveyList.add(survey); }
-    public void setSurveyList(List<SurveyInfo> surveyList) { this.surveyList = surveyList; }
-    public List<SurveyInfo> getSurveyList() {
-        List<SurveyInfo> copy = new ArrayList<SurveyInfo>();
-        for (SurveyInfo survey:surveyList) {
-            copy.add(new SurveyInfo(survey));
+    public void addConfiguration(ConfigurationInfo survey) { configurationList.add(survey); }
+    public void setConfigurationList(List<ConfigurationInfo> surveyList) { this.configurationList = surveyList; }
+    public List<ConfigurationInfo> getConfigurationList() {
+        List<ConfigurationInfo> copy = new ArrayList<ConfigurationInfo>();
+        for (ConfigurationInfo configuration:configurationList) {
+            copy.add(new ConfigurationInfo(configuration));
         }
         return copy;
     }
-    
-    public void setXmlConfiguration(String xmlConfiguration) { this.xmlConfiguration = xmlConfiguration; }
-    public String getXmlConfiguration() { return xmlConfiguration; }
     
     public void setUserRole(UserRole userRole) { this.userRole = userRole; }
     public UserRole getUserRole() { return userRole; }
@@ -82,10 +70,9 @@ public class CampaignInfo {
         StringBuffer myString = new StringBuffer();
         myString.append("CampaignInfo: ");
         myString.append("campaignName: " + getCampaignName());
-        myString.append(", campaignVersion: " + getCampaignVersion());
         myString.append(", userList: " + getUserList());
         myString.append(", userRole: " + getUserRole());
-        myString.append(", surveyList: " + getSurveyList());
+        myString.append(", configurationList: " + getConfigurationList());
         
         return myString.toString();
     }

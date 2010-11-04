@@ -27,10 +27,8 @@ public class SurveyInfo {
      * @param survey The survey information to copy.
      */
     public SurveyInfo(SurveyInfo survey) {
-        SurveyInfo copy = new SurveyInfo();
-        
-        copy.setSurveyName(survey.getSurveyName());
-        copy.setPromptList(survey.getPromptList());
+        setSurveyName(survey.getSurveyName());
+        setPromptList(survey.getPromptList());
     }
     
     // Setters/getters, all getters copy for mtuable objects

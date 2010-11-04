@@ -14,6 +14,8 @@ import com.google.gwt.xml.client.XMLParser;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignsAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigurationInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigurationsAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.PromptInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.SurveyInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
@@ -73,8 +75,6 @@ public class AwDataTranslators {
 
         // Set the basic campaign information
         campaignInfo.setCampaignName(awData.getCampaignName());
-        campaignInfo.setCampaignVersion(awData.getCampaignVersion());
-        campaignInfo.setXmlConfiguration(awData.getCampaignConfiguration());
         
         // Now set the correct user role
         String userRoleString = awData.getUserRole();
@@ -97,10 +97,34 @@ public class AwDataTranslators {
             campaignInfo.addUser(userListJS.get(i));
         }
         
-        // Finally translate the xmlConfiguration into a list of SurveyInfos
-        campaignInfo.setSurveyList(translateCampaignConfigurationToSurveyList(awData.getCampaignConfiguration()));
+        // For each configuration data, add a ConfigurationInfo
+        JsArray<ConfigurationsAwData> configInfoJS = awData.getConfigurations();
+        for (int i = 0; i < configInfoJS.length(); ++i) {
+            ConfigurationInfo configInfo = translateConfigurationsAwDataToConfigurationInfo(configInfoJS.get(i));
+            campaignInfo.addConfiguration(configInfo);
+        }
         
         return campaignInfo;
+    }
+    
+    /**
+     * Translates a ConfigurationsAwData from the AW server into a ConfigurationInfo object.
+     * 
+     * @param awData The server data to translate.
+     * @return The translated ConfigurationInfo.
+     */
+    public static ConfigurationInfo translateConfigurationsAwDataToConfigurationInfo(ConfigurationsAwData awData) {
+        ConfigurationInfo configInfo = new ConfigurationInfo();
+     
+        _logger.finer("Creating a ConfigurationInfo with campaign version: " + awData.getCampaignVersion());
+        
+        configInfo.setCampaignVersion(awData.getCampaignVersion());
+        configInfo.setXmlConfiguration(awData.getCampaignConfiguration());
+        
+        // Now setup the surveys based on the xml configuration
+        configInfo.setSurveyList(translateCampaignConfigurationToSurveyList(awData.getCampaignConfiguration()));
+        
+        return configInfo;
     }
     
     /**

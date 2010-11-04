@@ -18,13 +18,11 @@ public class PromptInfo {
     public PromptInfo() {}
     
     public PromptInfo(PromptInfo prompt) {
-        PromptInfo copy = new PromptInfo();
-        
-        copy.setPromptId(prompt.getPromptId());
-        copy.setDisplayLabel(prompt.getDisplayLabel());
-        copy.setPromptType(prompt.getPromptType());
-        copy.setDisplayType(prompt.getDisplayType());
-        copy.setUnit(prompt.getUnit());
+        setPromptId(prompt.getPromptId());
+        setDisplayLabel(prompt.getDisplayLabel());
+        setPromptType(prompt.getPromptType());
+        setDisplayType(prompt.getDisplayType());
+        setUnit(prompt.getUnit());
     }
     
     public void setPromptId(String promptId) { this.promptId = promptId; }
