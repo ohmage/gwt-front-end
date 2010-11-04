@@ -1,17 +1,17 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.model;
 
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
 
 public class ConfigQueryAwData extends QueryAwData {
     protected ConfigQueryAwData() {};
     
-    // Grab the data
-    public final native String getUserRole() /*-{ return this.user_role; }-*/;
-    public final native String getConfigurationXML() /*-{ return this.configuration; }-*/;
-    public final native JsArrayString getUserList() /*-{ return this.user_list; }-*/;
-    public final native JsArrayString getSpecialId() /*-{ return this.special_id; }-*/;
+    // Returns the list of special IDs associated with this user
+    public final native JsArrayString getSpecialId() /*-{ return this.special_ids; }-*/;
+    // Returns a list of Campaign info containing all necessary information about the campaign
+    public final native JsArray<CampaignsAwData> getCampaignList() /*-{ return this.campaigns }-*/;
     
-    // Create an AuthorizationTokenQueryAwData from a JSON string
+    // Create an ConfigQueryAwData from a JSON string
     public static native ConfigQueryAwData fromJsonString(String jsonString) /*-{
         return eval('(' + jsonString + ')'); 
     }-*/;

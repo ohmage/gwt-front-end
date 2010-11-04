@@ -17,9 +17,6 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEventHandler;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
@@ -59,19 +56,14 @@ public class CalendarAppController {
     private Date currentMonth = new Date();
     private String currentDataPoint = null;
     private UserInfo userInfo = null;
-    private CampaignInfo campaignInfo = CampaignInfo.getInstance();
     
     // Logging utility
     private static Logger _logger = Logger.getLogger(CalendarAppController.class.getName());
-    
     
     public CalendarAppController(AndWellnessRpcService rpcService, EventBus eventBus, TokenLoginManager loginManager) {
         this.eventBus = eventBus;
         this.rpcService = rpcService;
         this.loginManager = loginManager;
-        
-        // Grab the user info from the login manager
-        this.userInfo = loginManager.getUserInfo();
         
         bind();
     }
@@ -129,7 +121,7 @@ public class CalendarAppController {
         CalendarVisualizationPresenter calVizPresenter = new CalendarVisualizationPresenter(rpcService, eventBus, calVizView);
         calVizPresenter.go(RootPanel.get("calendarVisualizationView"));
         
-        // Fetch the configuration information, needed for the calendar views
+        // Fetch the configuration information, needed for the presenter/views
         fetchConfigData();
     }
 
@@ -147,7 +139,7 @@ public class CalendarAppController {
             return;
         }
         
-        rpcService.fetchConfigData(loggedInCampaign, userInfo.getAuthToken(), new AsyncCallback<ConfigQueryAwData>() {
+        rpcService.fetchConfigData(loggedInCampaign, loginManager.getAuthorizationToken(), new AsyncCallback<ConfigQueryAwData>() {
             public void onFailure(Throwable error) {
                 _logger.warning("Problem getting configuration information from server: " + error.getMessage());
                 
@@ -165,8 +157,7 @@ public class CalendarAppController {
             }
 
             public void onSuccess(ConfigQueryAwData result) {
-                // Translate to the CampaignInfo singleton
-                AwDataTranslators.translateConfigQueryAwData(result);
+                userInfo = AwDataTranslators.translateConfigQueryAwDataToUserInfo(loginManager.getLoggedInUserName(), result);
             }
         });
     }
@@ -201,7 +192,7 @@ public class CalendarAppController {
         _logger.info("Asking server for data about label " + currentDataPoint);
         
         // Send our request to the rpcService and handle the result
-        rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, userInfo.getAuthToken(), 
+        rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, loginManager.getAuthorizationToken(), 
                 new AsyncCallback<List<DataPointAwData>>() {
             
             public void onSuccess(List<DataPointAwData> awData) {

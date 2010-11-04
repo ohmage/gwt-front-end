@@ -8,7 +8,6 @@ import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthorizationManage
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
-import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.LocalAndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.ServerAndWellnessRpcService;
 
 public class CalendarAppControllerEntryPoint implements EntryPoint {

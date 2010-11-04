@@ -126,7 +126,7 @@ public class NavigationBarViewImpl extends Composite implements
         navigationBarPanel.clear();
         
         Label userNameLabel = new Label();
-        userNameLabel.setText(userName);
+        userNameLabel.setText("Logged in as " + userName);
         HTML aboutLink = new HTML("<a class=\"about-nav\" href=\"/about/\">About</a>", true);
         HTML helpLink = new HTML("<a class=\"help-nav\" href=\"/help/\">Help</a>", true);
         Label logoutLink = new Label();

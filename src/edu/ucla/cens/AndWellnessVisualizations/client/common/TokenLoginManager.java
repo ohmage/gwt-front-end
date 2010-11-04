@@ -1,10 +1,7 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.common;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.gwt.event.shared.EventBus;
@@ -14,16 +11,13 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLogoutEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
-import edu.ucla.cens.AndWellnessVisualizations.client.utils.CollectionUtils;
 
 /**
  * TokenLoginManager acts as an abstraction of the login information stored
  * in a local cookie.  Upon login, the server returns an authorization token that
  * authenticates all future calls to the server API until expiration.  Since we want
  * to keep this token around if the user were to refresh or reload the webpage, the token
- * is stores in a local cookie.  The logged in user, the list of campaigns of which the user
- * is a member, and the currently selected campaign is also stored.
+ * is stores in a local cookie.  The logged in user is also stored.
  * 
  * The purpose of this class to is to know whether or not the system is in a logged in state.
  * Each module should load the login manager, then listen for UserLogoutEvents and UserLoginEvents
@@ -42,9 +36,6 @@ public class TokenLoginManager {
     // Constant cookie names
     private final static String AUTH_TOKEN_COOKIE = "authToken";
     private final static String USER_NAME_COOKIE = "userName";
-    private final static String CAMPAIGN_LIST_COOKIE = "campaignList";
-    private final static String SELECTED_CAMPAIGN_COOKIE = "selectedCampaign";
-    private final static String DELIMITER = ",";
     
     // Logging utility
     private static Logger _logger = Logger.getLogger(TokenLoginManager.class.getName());
@@ -78,10 +69,6 @@ public class TokenLoginManager {
             currentlyLoggedIn = true;
             
             _logger.info("Initialzing login manager with user name: " + Cookies.getCookie(USER_NAME_COOKIE));
-            
-            // Fire the logged in event
-            // maybe don't do this, make modules ask login manager directly if the user is already logged in
-            //eventBus.fireEvent(new UserLoginEvent(getUserInfo()));
         }
         else {
             _logger.info("No login information found in cookies");
@@ -100,16 +87,15 @@ public class TokenLoginManager {
      * @param userName 
      * @param campaignList 
      */
-    public void loginWithAuthToken(String authToken, String userName, List<String> campaignList) {
+    public void loginWithAuthToken(String authToken, String userName) {
         Cookies.setCookie(AUTH_TOKEN_COOKIE, authToken, null, null, "/", false);
         Cookies.setCookie(USER_NAME_COOKIE, userName, null, null, "/", false);
-        Cookies.setCookie(CAMPAIGN_LIST_COOKIE, CollectionUtils.join(campaignList, DELIMITER), null, null, "/", false);
         
-        _logger.fine("Logging in as user: " + authToken + " with campaignList: " + CollectionUtils.join(campaignList, DELIMITER));
+        _logger.fine("Logging in as user: " + authToken);
         
         currentlyLoggedIn = true;
         
-        eventBus.fireEvent(new UserLoginEvent(getUserInfo()));
+        eventBus.fireEvent(new UserLoginEvent(userName));
     }
     
     /**
@@ -142,47 +128,29 @@ public class TokenLoginManager {
         return currentlyLoggedIn;
     }
     
+      
     /**
-     * Generates a UserInfo object from the current cookies.  Returns NULL if the
-     * userName cookie is not set.
+     * Returns the current user name if logged in, null otherwise.
      * 
-     * @return A UserInfo object.
+     * @return The currently logged in user name.
      */
-    public UserInfo getUserInfo() {
-        UserInfo userInfo = null;
-        
-        Collection<String> currentCookieNames = Cookies.getCookieNames();
-        if (currentCookieNames.contains(AUTH_TOKEN_COOKIE) &&
-                currentCookieNames.contains(USER_NAME_COOKIE)) {
-            String userName = Cookies.getCookie(USER_NAME_COOKIE);
-            String campaignListString = Cookies.getCookie(CAMPAIGN_LIST_COOKIE);
-            List<String> campaignList = new ArrayList<String>();
-            String selectedCampaign = Cookies.getCookie(SELECTED_CAMPAIGN_COOKIE);
-            String authToken = Cookies.getCookie(AUTH_TOKEN_COOKIE);
-            
-            // Create the new UserInfo
-            userInfo = new UserInfo(userName);
-            
-            _logger.fine("Reading in user " + userName);
-            
-            // Check to see if we have a stored campaign list (we should)
-            if (campaignListString != null) {
-                campaignList.addAll(Arrays.asList(campaignListString.split(DELIMITER)));
-                userInfo.setCampaignMembershipList(campaignList);
-                
-                _logger.fine("Reading in campaignList: " + campaignListString);
-            }
-            
-            // Check to see if the user has selected a campaign (might not have happened)
-            if (selectedCampaign != null) {
-                userInfo.setSelectedCampaign(Integer.parseInt(selectedCampaign));
-            }
-
-            // Set the auth token to allow authentication
-            userInfo.setAuthToken(authToken);
+    public String getLoggedInUserName() {
+        // First check if we are logged in
+        if (!isCurrentlyLoggedIn()) {
+            _logger.warning("Cannot get user name if not logged in.");
+            return null;
         }
         
-        return userInfo;
+        // Next check if the user name cookie is set (it should be if we are logged in
+        // but check anyway for debugging)
+        Collection<String> currentCookieNames = Cookies.getCookieNames();
+        if (!currentCookieNames.contains(USER_NAME_COOKIE)) {
+            _logger.severe("Logged in but no user name found.");
+            return null;
+        }
+        
+        // Now return the user name
+        return Cookies.getCookie(USER_NAME_COOKIE);
     }
     
     /**
@@ -194,7 +162,5 @@ public class TokenLoginManager {
         
         Cookies.setCookie(AUTH_TOKEN_COOKIE, null, removeExpire, null, "/", false);
         Cookies.setCookie(USER_NAME_COOKIE, null, removeExpire, null, "/", false);
-        Cookies.setCookie(CAMPAIGN_LIST_COOKIE, null, removeExpire, null, "/", false);
-        Cookies.setCookie(SELECTED_CAMPAIGN_COOKIE, null, removeExpire, null, "/", false);
     }
 }

@@ -1,0 +1,22 @@
+<ui:UiBinder
+  xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  
+  <ui:style>
+    
+  </ui:style>
+
+  <g:SimplePanel>
+    <g:VerticalPanel ui:field="dataPointBrowserMainPanel" visible="FALSE">
+    	<g:VerticalPanel ui:field="dataPointBrowserCampaignList">
+    		<g:Label>Campaign</g:Label>
+    	</g:VerticalPanel>
+    	<g:VerticalPanel ui:field="dataPointBrowserUserList" visible="FALSE">
+    		<g:Label>User</g:Label>
+    	</g:VerticalPanel>
+    	<g:VerticalPanel ui:field="dataPointBrowserDataPointList">
+    		<g:Label>Data Point</g:Label>
+    	</g:VerticalPanel>
+	</g:VerticalPanel>
+  </g:SimplePanel>
+</ui:UiBinder>

@@ -44,7 +44,7 @@ public class NavigationBarPresenter implements Presenter, NavigationBarView.Pres
         
         // Rebuild the nav bar based on the current login status
         if (loginManager.isCurrentlyLoggedIn()) {
-            view.updateUserName(loginManager.getUserInfo().getUserName());
+            view.updateUserName(loginManager.getLoggedInUserName());
         }
         view.setLoggedIn(loginManager.isCurrentlyLoggedIn());
         
@@ -58,7 +58,7 @@ public class NavigationBarPresenter implements Presenter, NavigationBarView.Pres
         // Listen for login and logout events, update the view accordingly
         eventBus.addHandler(UserLoginEvent.TYPE, new UserLoginEventHandler() {
             public void onUserLogin(UserLoginEvent event) {
-                String userName = event.getUserInfo().getUserName();
+                String userName = event.getUserName();
                 
                 _logger.fine("Received user login for " + userName);
                 

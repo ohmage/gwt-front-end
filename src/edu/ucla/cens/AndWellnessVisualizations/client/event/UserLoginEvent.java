@@ -2,26 +2,25 @@ package edu.ucla.cens.AndWellnessVisualizations.client.event;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 
 public class UserLoginEvent extends GwtEvent<UserLoginEventHandler> {
 
     public static Type<UserLoginEventHandler> TYPE = new Type<UserLoginEventHandler>();
     
     // Fields
-    private final UserInfo userInfo;
+    private final String userName;
     
-    public UserLoginEvent(UserInfo userInfo) {
-        this.userInfo = userInfo;
+    public UserLoginEvent(String userName) {
+        this.userName = userName;
     }
     
     /**
-     * Returns the user data.
+     * Returns the user name.
      * 
-     * @return The user data as a UserInfo object.
+     * @return The user name.
      */
-    public UserInfo getUserInfo() {
-        return userInfo;
+    public String getUserName() {
+        return userName;
     }
 
     protected void dispatch(UserLoginEventHandler handler) {

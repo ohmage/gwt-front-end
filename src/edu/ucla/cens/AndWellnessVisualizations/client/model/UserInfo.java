@@ -1,66 +1,62 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
 /**
- * Storage class to hold basic user information.
+ * UserInfo stores all information about the currently logged in user including
+ * their name, role, campaign membership, the currently selected campaign, and
+ * the currently selected date range.  This object is usually stored in the top
+ * level application controller, and is also maintained by the top level app
+ * controller.
+ * 
+ * This object is immutable, that is all calls to get return copies of data.
  * 
  * @author jhicks
  *
  */
 public class UserInfo implements Comparable<UserInfo> {
-    private String userName;
-    private String authToken;
-    private int privileges = -1;
-    private List<String> campaignMembershipList = new ArrayList<String>();
-    //private int selectedCampaign = -1;
-    // Default to the first campaign selected for now
-    private int selectedCampaign = 0;
+    private String userName;  // The name of the currently logged in user
+    private List<CampaignInfo> campaignList;
+    private int selectedCampaign = -1;
+    private List<String> specialIdList;
+    private Date selectedStartDate;
+    private Date selectedEndDate;
+ 
     
-    public UserInfo() {};
+    public UserInfo() {
+        campaignList = new ArrayList<CampaignInfo>();
+        specialIdList = new ArrayList<String>();
+    };
+ 
     
-    public UserInfo(String userName) {
-        this.userName = userName;
-        // We do not know the privileges, set to invalid
-        this.privileges = -1;
-    }
-    
-    public UserInfo(String userName, int privileges) {
-        this.userName = userName;
-        this.privileges = privileges;
-    }
-    
-    // Return whether the user is an admin
-    public boolean isAdmin() {
-        if (privileges == 1) {
-            return true;
-        }
-        
-        return false;
-    }
-    
-    // Return whether the user is a researcher
-    public boolean isResearcher() {
-        if (privileges == 3) {
-            return true;
-        }
-        
-        return false;
-    }
-    
-    
-    public String getUserName() { return userName; }
+    // Setters/getters, getters always copy to keep immutability
     public void setUserName(String userName) { this.userName = userName; }
-    public String getAuthToken() { return authToken; }
-    public void setAuthToken(String authToken) { this.authToken = authToken; }
-    public int getPrivileges() { return privileges; }
-    public void setPrivileges(int privileges) { this.privileges = privileges; }
-    public List<String> getCampaignMembershipList() { return campaignMembershipList; };
-    public void setCampaignMembershipList(List<String> campaignMembershipList) { this.campaignMembershipList = campaignMembershipList; };
-    public int getSelectedCampaign() { return selectedCampaign; };
-    public void setSelectedCampaign(int selectedCampaign) { this.selectedCampaign = selectedCampaign; };
+    public String getUserName() { return userName; }
+    
+    public void addCampaign(CampaignInfo campaignInfo) { campaignList.add(campaignInfo); }
+    public List<CampaignInfo> getCampaignList() { 
+        List<CampaignInfo> copy = new ArrayList<CampaignInfo>();
+        for (CampaignInfo object:campaignList) {
+            copy.add(new CampaignInfo(object));
+        }
+        return copy;
+    }
+    
+    public void setSelectedCampaign(int selectedCampaign) { this.selectedCampaign = selectedCampaign; }
+    public int getSelectedCampaign() { return selectedCampaign; }
+    
+    public void addSpecialIdList(String specialId) { specialIdList.add(specialId); }
+    public List<String> getSpecialIdList() { return new ArrayList<String>(specialIdList); }
+    
+    public void setSelectedStartDate(Date selectedStartDate) { this.selectedStartDate = selectedStartDate; }
+    public Date getSelectedStartDate() { return (Date)selectedStartDate.clone(); }
+    
+    public void setSelectedEndDate(Date selectedEndDate) { this.selectedEndDate = selectedEndDate; }
+    public Date getSelectedEndDate() { return (Date)selectedEndDate.clone(); }
+    
 
     /**
      * Returns the ID of the selected campaign.
@@ -73,7 +69,7 @@ public class UserInfo implements Comparable<UserInfo> {
         String selectedCampaignId;
         
         try {
-            selectedCampaignId = getCampaignMembershipList().get(selectedCampaign);
+            selectedCampaignId = campaignList.get(selectedCampaign).getCampaignName();
         }
         catch (IndexOutOfBoundsException err) {
             // There is no selected campaign, return null.
@@ -86,5 +82,22 @@ public class UserInfo implements Comparable<UserInfo> {
     // Allows this model to be sorted by Collections.sort() (be userName only)
     public int compareTo(UserInfo arg0) {
         return this.userName.compareTo(arg0.userName);
+    }
+    
+    /**
+     * Translates this data container into a string for output.
+     * 
+     * @return The object represented as a string.
+     */
+    public String toString() {
+        StringBuffer myString = new StringBuffer();
+        
+        myString.append("UserInfo: ");
+        myString.append(", userName: " + getUserName());
+        myString.append(", selectedCampaign: " + getSelectedCampaign());
+        myString.append(", specialIdList: " + getSpecialIdList());
+        myString.append(", campaignList: " + getCampaignList());
+        
+        return myString.toString();
     }
 }

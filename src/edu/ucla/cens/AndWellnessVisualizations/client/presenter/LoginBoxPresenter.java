@@ -99,11 +99,9 @@ public class LoginBoxPresenter implements Presenter,
              * @param result The login data.
              */
             public void onSuccess(AuthorizationTokenQueryAwData result) {
-                UserInfo userInfo = AwDataTranslators.translateAwDataToUserInfo(userNameModel.getSetItem(), result);
+                _logger.info("Successfully logged in user: " + userNameModel.getSetItem());
                 
-                _logger.info("Successfully logged in user: " + userInfo.getUserName());
-                
-                loginManager.loginWithAuthToken(userInfo.getAuthToken(), userInfo.getUserName(), userInfo.getCampaignMembershipList());
+                loginManager.loginWithAuthToken(result.getAuthorizationToken(), userNameModel.getSetItem());
             }
             
         });

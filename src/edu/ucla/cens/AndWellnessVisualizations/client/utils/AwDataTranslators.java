@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
-import com.google.gwt.xml.client.impl.DOMParseException;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignsAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.PromptInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.SurveyInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 
 /**
@@ -28,119 +30,191 @@ public class AwDataTranslators {
     private static Logger _logger = Logger.getLogger(AwDataTranslators.class.getName());
     
     /**
-     * Translates AuthorizationTokenQueryAwData from the AW server to a UserInfo object.
+     * Translates a ConfigQueryAwData server response into a UserInfo object.  The UserInfo object
+     * is fairly complex, consisting of CampaignInfos, which contain SurveyInfos, which contain PromptInfos.
+     * Most of this is translated from the XML configuration which is contained in the config query response.
      * 
      * @param userName The user name to use in the user info object.
      * @param awData The andwellness json to translate.
      * @return The translated UserInfo.
      */
-    public static UserInfo translateAwDataToUserInfo(String userName, AuthorizationTokenQueryAwData awData) {
+    public static UserInfo translateConfigQueryAwDataToUserInfo(String userName, ConfigQueryAwData awData) {
         UserInfo userInfo = new UserInfo();
-        
         userInfo.setUserName(userName);
-        userInfo.setCampaignMembershipList(awData.getStringCampaignNameList());
-        userInfo.setAuthToken(awData.getAuthorizationToken());
+        
+        _logger.finer("Creating a UserInfo for user: " + userName);
+        
+        // Grab the top level UserInfo information from the query
+        JsArrayString specialIdJS = awData.getSpecialId();
+        for (int i = 0; i < specialIdJS.length(); ++i) {
+            userInfo.addSpecialIdList(specialIdJS.get(i));
+        }
+        
+        // Run through the campaigns, storing each in a CampaignInfo
+        JsArray<CampaignsAwData> campaignListJS = awData.getCampaignList();
+        for (int i = 0; i < campaignListJS.length(); ++i) {
+            CampaignInfo newCampaignInfo = translateCampaignsAwDataToCampaignInfo(campaignListJS.get(i));
+            userInfo.addCampaign(newCampaignInfo);
+        }
         
         return userInfo;
     }
     
     /**
-     * Translates a ConfigQueryAwData into the CampaignInfo singleton.
+     * Translates a CampaignsAwData from the AW server config API into a CampaignInfo object.
      * 
-     * @param configQuery
+     * @param awData The JSON to translate.
+     * @return The translated CampaignInfo object.
      */
-    public static void translateConfigQueryAwData(ConfigQueryAwData configQuery) {
-        CampaignInfo campaignInfo = CampaignInfo.getInstance();
-        String userRoleString;
-        List<String> userList = new ArrayList<String>();
-        List<String> dataPointList;
+    public static CampaignInfo translateCampaignsAwDataToCampaignInfo(CampaignsAwData awData) {
+        CampaignInfo campaignInfo = new CampaignInfo();
         
-        // Clear out anything currently in the campaign info
-        campaignInfo.clear();
+        _logger.finer("Creating a CampaignInfo with campaign name: " + awData.getCampaignName());
+
+        // Set the basic campaign information
+        campaignInfo.setCampaignName(awData.getCampaignName());
+        campaignInfo.setCampaignVersion(awData.getCampaignVersion());
+        campaignInfo.setXmlConfiguration(awData.getCampaignConfiguration());
         
-        // Now run through the AwData and insert everything necessary
-        userRoleString = configQuery.getUserRole();
-        
-        // Translate the user role into the correct enum
-        if ("researcher".equals(userRoleString)) {
-            campaignInfo.setUserRole(CampaignInfo.UserRole.RESEARCHER);
-        }
-        else if ("admin".equals(userRoleString)) {
-            campaignInfo.setUserRole(CampaignInfo.UserRole.ADMIN);
-        }
-        else if ("participant".equals(userRoleString)) {
+        // Now set the correct user role
+        String userRoleString = awData.getUserRole();
+        if ("participant".equals(userRoleString)) {
             campaignInfo.setUserRole(CampaignInfo.UserRole.PARTICIPANT);
         }
+        else if ("administrator".equals(userRoleString)) {
+            campaignInfo.setUserRole(CampaignInfo.UserRole.ADMIN);
+        }
+        else if ("researcher".equals(userRoleString)) {
+            campaignInfo.setUserRole(CampaignInfo.UserRole.RESEARCHER);
+        }
         else {
-            _logger.severe("Unknown user role: " + userRoleString);
+            _logger.warning("Do not understand the user role in the JSON: " + userRoleString);
         }
         
-        // Translate the user list json into a string array
-        JsArrayString userListJs = configQuery.getSpecialId();
-        for (int i = 0; i < userListJs.length(); ++i) {
-            userList.add(userListJs.get(i));
+        // Copy over the list of user names
+        JsArrayString userListJS = awData.getUserList();
+        for (int i = 0; i < userListJS.length(); ++i) {
+            campaignInfo.addUser(userListJS.get(i));
         }
-        campaignInfo.setUserList(userList);
         
-        // Pull out the XML configuration, pull out the data point ids
-        String xmlConfiguration = configQuery.getConfigurationXML();
-        campaignInfo.setXmlConfiguration(xmlConfiguration);
+        // Finally translate the xmlConfiguration into a list of SurveyInfos
+        campaignInfo.setSurveyList(translateCampaignConfigurationToSurveyList(awData.getCampaignConfiguration()));
         
-        try {
-            dataPointList = parseXMLForPromptId(xmlConfiguration);
-        }
-        catch (DOMParseException exception) {
-            // This is quite bad, write out a severe message to log and continue to raise
-            _logger.severe("Unable to parse the XML configuration from the server.");
-            throw exception;
-        }
-
-        campaignInfo.setDataPointIdList(dataPointList);
-        
-        // Now pull out the special IDs and add
-        JsArrayString specialIdJs = configQuery.getSpecialId();
-        for (int i = 0; i < specialIdJs.length(); ++i) {
-            String specialId = specialIdJs.get(i);
-            campaignInfo.addDataPointId(specialId);
-            
-            _logger.finer("Adding special id: " + specialId);
-        }
+        return campaignInfo;
     }
     
     /**
-     * Parses an XML string for id nodes within prompt nodes.  Returns the contents of the
-     * id nodes in a string list.
+     * Translates a campaign configuration file from the AW server config API into a list of
+     * survey information.  The prompt info is hidden fairly deep in the XML tree, so there
+     * are a good number of nested loops here.
      * 
-     * @param xmlToParse The XML string to parse.
-     * @return The list of prompt ids.
+     * @param campaignConfiguration The XML campaign configuration to translate.
+     * @return The translated list of survey information.
      */
-    private static List<String> parseXMLForPromptId(String xmlToParse) throws DOMParseException {
-        List<String> promptIdList = new ArrayList<String>();
+    public static List<SurveyInfo> translateCampaignConfigurationToSurveyList(String campaignConfiguration) {
+        List<SurveyInfo> surveyInfoList = new ArrayList<SurveyInfo>();
         
-        // Parse the XML here, hope this isn't malicious XML...
-        Document xmlDocument = XMLParser.parse(xmlToParse);
+        // XML parse the campaign configuration
+        Document xmlDocument = XMLParser.parse(campaignConfiguration);
         
-        NodeList nodes = xmlDocument.getElementsByTagName("prompt");
-        
-        _logger.finer("Found " + nodes.getLength() + " prompt nodes");
-        
-        // Grab all the children of the prompt nodes, search for the id node
-        for (int i = 0; i < nodes.getLength(); ++i) {
-            NodeList childNodes = nodes.item(i).getChildNodes();
+        // Find all survey nodes
+        NodeList surveyNodes = xmlDocument.getElementsByTagName("survey");
+        // Loop through the survey nodes, create a new SurveyInfo for each
+        for (int i = 0; i < surveyNodes.getLength(); ++i) {
+            SurveyInfo surveyInfo = new SurveyInfo();
+            Node surveyNode = surveyNodes.item(i);
             
-            for (int j = 0; j < childNodes.getLength(); ++j) {
-                Node childNode = childNodes.item(j);
-                // Is this the id node?
-                if ("id".equals(childNode.getNodeName())) {
-                    // Grab the id and insert into our list
-                    String promptId = childNode.getChildNodes().item(0).getNodeValue();
-                    promptIdList.add(promptId);
-                    
-                    _logger.finer("Found prompt id: " + promptId);
+            // Loop over every child in the survey node, add to the survey info based on the node name
+            NodeList surveyNodeChildren = surveyNode.getChildNodes();
+            for (int j = 0; j < surveyNodeChildren.getLength(); ++i) {
+                Node surveyNodeChild = surveyNodeChildren.item(j);
+                String surveyNodeChildName = surveyNodeChild.getNodeName();
+                
+                if ("id".equals(surveyNodeChildName)) {
+                    surveyInfo.setSurveyName(surveyNodeChild.getChildNodes().item(0).getNodeValue());
                 }
+                if ("title".equals(surveyNodeChildName)) {
+                    surveyInfo.setSurveyTitle(surveyNodeChild.getChildNodes().item(0).getNodeValue());
+                }
+                if ("description".equals(surveyNodeChildName)) {
+                    surveyInfo.setSurveyDescription(surveyNodeChild.getChildNodes().item(0).getNodeValue());
+                }
+                if ("contentList".equals(surveyNodeChildName)) {
+                    // The content list contains either a prompt or a repeatableSet
+                    NodeList contentListNodes = surveyNodeChild.getChildNodes();
+                    for (int k = 0; k < contentListNodes.getLength(); ++k) {
+                        Node contentListNode = contentListNodes.item(k);
+                        
+                        // Translate prompt directly
+                        if ("prompt".equals(contentListNode.getNodeName())) {
+                            surveyInfo.addPrompt(translatePromptNodeToPromptInfo(contentListNode));
+                        }
+                        // repeatableSets have a prompts node which contains a list of prompt (2 more levels to go)
+                        if ("repeatableSet".equals(contentListNode.getNodeName())) {
+                            NodeList repeatableSetNodes = contentListNode.getChildNodes();
+                            for (int l = 0; l < repeatableSetNodes.getLength(); ++l) {
+                                Node repeatableSetNode = repeatableSetNodes.item(l);
+                                if ("prompts".equals(repeatableSetNode.getNodeName())){
+                                    NodeList promptsNodes = repeatableSetNode.getChildNodes();
+                                    // We finally have gotten to the actual prompts
+                                    for (int m = 0; m < promptsNodes.getLength(); ++m) {
+                                        Node promptsNode = promptsNodes.item(m);
+                                        // There should only be prompt nodes here, but check to be sure anyway
+                                        if ("prompt".equals(promptsNode.getNodeName())) {
+                                            surveyInfo.addPrompt(translatePromptNodeToPromptInfo(promptsNode));
+                                        }
+                                        else {
+                                            _logger.warning("Found a non prompt node in the prompts list in a repeatableSet");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            _logger.finer("Created a SurveyInfo for survey: " + surveyInfo.getSurveyName());
+            
+            // Add the completed SurveyInfo to the overall survey info list
+            surveyInfoList.add(surveyInfo);
+        }
+        
+        return surveyInfoList;
+    }
+    
+    /**
+     * Translates a com.google.gwt.xml.client.Node representing a prompt into a PromptInfo object.
+     * 
+     * @param promptNode The XML Node to translate.
+     * @return The translated PromptInfo.
+     */
+    public static PromptInfo translatePromptNodeToPromptInfo(Node promptNode) {
+        PromptInfo promptInfo = new PromptInfo();
+
+        // Loop over the prompt node children, finding the nodes we need
+        NodeList promptNodeChildren = promptNode.getChildNodes();
+        for (int i = 0; i < promptNodeChildren.getLength(); ++i) {
+            Node promptNodeChild = promptNodeChildren.item(i);
+            String promptNodeChildName = promptNodeChild.getNodeName();
+            
+            if ("id".equals(promptNodeChildName)) {
+                promptInfo.setPromptId(promptNodeChild.getChildNodes().item(0).getNodeValue());
+            }
+            if ("promptType".equals(promptNodeChildName)) {
+                promptInfo.setPromptType(promptNodeChild.getChildNodes().item(0).getNodeValue());
+            }
+            if ("displayLabel".equals(promptNodeChildName)) {
+                promptInfo.setDisplayLabel(promptNodeChild.getChildNodes().item(0).getNodeValue());
+            }
+            if ("displayType".equals(promptNodeChildName)) {
+                promptInfo.setDisplayType(promptNodeChild.getChildNodes().item(0).getNodeValue());
+            }
+            if ("unit".equals(promptNodeChildName)) {
+                promptInfo.setUnit(promptNodeChild.getChildNodes().item(0).getNodeValue());
             }
         }
         
-        return promptIdList;
+        return promptInfo;
     }
 }
