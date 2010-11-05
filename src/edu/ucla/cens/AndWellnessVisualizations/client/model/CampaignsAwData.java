@@ -7,7 +7,7 @@ public class CampaignsAwData extends QueryAwData {
     protected CampaignsAwData() {};
     
     // Returns the name of this campaign
-    public final native String getCampaignName() /*-{ return this.name; }-*/;
+    public final native String getCampaignName() /*-{ return this.id; }-*/;
     // Returns the user role in this campaign
     public final native String getUserRole() /*-{ return this.user_role; }-*/;
     // Returns the list of participants the logged in user can retrieve information about

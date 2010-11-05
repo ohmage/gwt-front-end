@@ -11,6 +11,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLogoutEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.NotLoggedInException;
 
 /**
  * TokenLoginManager acts as an abstraction of the login information stored
@@ -114,10 +115,17 @@ public class TokenLoginManager {
     /**
      * Returns the stored authorization token.
      * 
-     * @return The authorization token.  NULL if not set.
+     * @return The authorization token.  Throws NotLoggedInException if not logged in.
      */
     public String getAuthorizationToken() {
-        return Cookies.getCookie(AUTH_TOKEN_COOKIE);
+        String authToken = Cookies.getCookie(AUTH_TOKEN_COOKIE);
+        
+        if (authToken == null) {
+            throw new NotLoggedInException("Cannot find the authorization token.");
+        }
+        else {
+            return authToken;
+        }
     }
     
     /**

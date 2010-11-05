@@ -160,7 +160,7 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
      * 
      * @param callback The callback to accept the config data.
      */
-    public void fetchConfigData(String campaignId, String authToken, final AsyncCallback<ConfigQueryAwData> callback) {
+    public void fetchConfigData(String authToken, final AsyncCallback<ConfigQueryAwData> callback) {
         // Grab the data
         try {
             configLocalService.sendRequest(null, new RequestCallback() {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
@@ -249,10 +250,9 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
      * 
      * @param callback The callback to accept the config data.
      */
-    public void fetchConfigData(String campaignId, String authToken, final AsyncCallback<ConfigQueryAwData> callback) {
+    public void fetchConfigData(String authToken, final AsyncCallback<ConfigQueryAwData> callback) {
         // Setup the post parameters
         Map<String,String> parameters = new HashMap<String,String>();
-        parameters.put("c", campaignId);
         parameters.put("ci", "2");  // Hack in client ID for now
         parameters.put("t", authToken);
         String postParams = MapUtils.translateToParameters(parameters);
@@ -270,12 +270,17 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
                 
                 // Eval the JSON into an overlay class and return
                 public void onResponseReceived(Request request, Response response) {
+                    _logger.finer("Received response from the server for config API");
+                    
                     if (200 == response.getStatusCode()) {
+                        String responseText;
+                        ConfigQueryAwData serverResponse = null;
+                        
                         // Eval the response into JSON
                         // (Hope this doesn't contain malicious JavaScript!)
-                        String responseText = response.getText();
-                        ConfigQueryAwData serverResponse = ConfigQueryAwData.fromJsonString(responseText);
-                        
+                        responseText = response.getText();
+                        serverResponse = ConfigQueryAwData.fromJsonString(responseText);
+
                         // Check for errors
                         if ("failure".equals(serverResponse.getResult())) {
                             callback.onFailure(new NotLoggedInException("Invalid username and/or password."));
@@ -313,6 +318,8 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
         Throwable returnError = null;
         ErrorQueryAwData errorQuery = ErrorQueryAwData.fromJsonString(errorResponse);
         JsArray<ErrorAwData> errorList = errorQuery.getErrors();
+        
+        _logger.fine("Received an error response from the server, parsing");
         
         int numErrors = errorList.length();
         

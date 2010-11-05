@@ -138,7 +138,7 @@ public class AuthorizationManager {
                     if (loginManager.isCurrentlyLoggedIn()) {
                         // Auth fails, redirect
                         _logger.info("URL authorize failed as LOGGED_OUT: " + urlToAuthorize);
-                        Window.Location.assign(authRecord.redirectIfAuthFail);
+                        //Window.Location.assign(authRecord.redirectIfAuthFail);
                     }
                     else {
                         // Auth succeeded, return
@@ -150,7 +150,7 @@ public class AuthorizationManager {
                     if (!loginManager.isCurrentlyLoggedIn()) {
                         // Auth fails, redirect
                         _logger.info("URL authorize failed as LOGGED_IN: " + urlToAuthorize);
-                        Window.Location.assign(authRecord.redirectIfAuthFail);
+                        //Window.Location.assign(authRecord.redirectIfAuthFail);
                     }
                     else {
                         // Auth succeeded, return
@@ -160,7 +160,7 @@ public class AuthorizationManager {
                 default:
                     // If we get this far, assume the URL was NOT found
                     _logger.warning("Did not find URL in the PageAuthorize enum: " + urlToAuthorize);
-                    Window.Location.assign("/");
+                    //Window.Location.assign("/");
                     break;
                 }
             }

@@ -125,21 +125,14 @@ public class CalendarAppController {
         fetchConfigData();
     }
 
-    private void fetchConfigData() {
-        // If the userInfo is null for whatever reason, we cannot fetch the campaign info
-        if (userInfo == null) {
-            _logger.warning("User info cannot be found, we should not be here.");
-        }
-        
-        // Grab the campaign configuration information from the server and translate
-        // into the CampaignInfo singleton
-        String loggedInCampaign = userInfo.getSelectedCampaignId();
-        if (loggedInCampaign == null) {
-            _logger.warning("Do not known current campaign Id...cannot ask for configuration data.");
+    private void fetchConfigData() {   
+        // Make sure we are logged in
+        if (!loginManager.isCurrentlyLoggedIn()) {
+            _logger.warning("Cannot fetch config info if not logged in.");
             return;
         }
         
-        rpcService.fetchConfigData(loggedInCampaign, loginManager.getAuthorizationToken(), new AsyncCallback<ConfigQueryAwData>() {
+        rpcService.fetchConfigData(loginManager.getAuthorizationToken(), new AsyncCallback<ConfigQueryAwData>() {
             public void onFailure(Throwable error) {
                 _logger.warning("Problem getting configuration information from server: " + error.getMessage());
                 
@@ -157,6 +150,8 @@ public class CalendarAppController {
             }
 
             public void onSuccess(ConfigQueryAwData result) {
+                _logger.fine("Received config query from server, parsing into a userInfo");
+                
                 userInfo = AwDataTranslators.translateConfigQueryAwDataToUserInfo(loginManager.getLoggedInUserName(), result);
             }
         });

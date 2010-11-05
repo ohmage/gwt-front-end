@@ -37,5 +37,5 @@ public interface AndWellnessRpcService {
     public void fetchDataPoints(Date startDate, Date endDate, String userName, List<String> dataId, String campaignId, String clientName,
             String authToken, final AsyncCallback<List<DataPointAwData>> callback);
     
-    public void fetchConfigData(String campaignId, String authToken, final AsyncCallback<ConfigQueryAwData> callback);
+    public void fetchConfigData(String authToken, final AsyncCallback<ConfigQueryAwData> callback);
 }

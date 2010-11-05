@@ -150,19 +150,22 @@ public class AwDataTranslators {
             
             // Loop over every child in the survey node, add to the survey info based on the node name
             NodeList surveyNodeChildren = surveyNode.getChildNodes();
-            for (int j = 0; j < surveyNodeChildren.getLength(); ++i) {
+            for (int j = 0; j < surveyNodeChildren.getLength(); ++j) {
                 Node surveyNodeChild = surveyNodeChildren.item(j);
                 String surveyNodeChildName = surveyNodeChild.getNodeName();
                 
                 if ("id".equals(surveyNodeChildName)) {
                     surveyInfo.setSurveyName(surveyNodeChild.getChildNodes().item(0).getNodeValue());
                 }
+                
                 if ("title".equals(surveyNodeChildName)) {
                     surveyInfo.setSurveyTitle(surveyNodeChild.getChildNodes().item(0).getNodeValue());
                 }
+                
                 if ("description".equals(surveyNodeChildName)) {
                     surveyInfo.setSurveyDescription(surveyNodeChild.getChildNodes().item(0).getNodeValue());
                 }
+                
                 if ("contentList".equals(surveyNodeChildName)) {
                     // The content list contains either a prompt or a repeatableSet
                     NodeList contentListNodes = surveyNodeChild.getChildNodes();
@@ -186,9 +189,6 @@ public class AwDataTranslators {
                                         // There should only be prompt nodes here, but check to be sure anyway
                                         if ("prompt".equals(promptsNode.getNodeName())) {
                                             surveyInfo.addPrompt(translatePromptNodeToPromptInfo(promptsNode));
-                                        }
-                                        else {
-                                            _logger.warning("Found a non prompt node in the prompts list in a repeatableSet");
                                         }
                                     }
                                 }
@@ -238,6 +238,8 @@ public class AwDataTranslators {
                 promptInfo.setUnit(promptNodeChild.getChildNodes().item(0).getNodeValue());
             }
         }
+        
+        _logger.finer("Created a prompt with id: " + promptInfo.getPromptId());
         
         return promptInfo;
     }
