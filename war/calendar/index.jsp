@@ -62,7 +62,7 @@
 				
 				<div id="visualizationSelectionView" class="float-right border-color-standard"></div>
 				
-				<div id="dataLabelSelectionView" class="float-right border-color-standard"></div>
+				<div id="dataPointBrowserView" class="float-right border-color-standard"></div>
 				
 				<div id="dataCategorySelectionView" class="float-right border-color-standard"></div>
 				

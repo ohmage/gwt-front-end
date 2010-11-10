@@ -79,6 +79,23 @@ public class UserInfo implements Comparable<UserInfo> {
         return selectedCampaignId;
     }
     
+    /**
+     * Returns the user list for the passed campaign.
+     * 
+     * @param campaign The campaign for which to check.
+     * @return The list of users from the campaign, null if no users found.
+     */
+    public List<String> getUserListForCampaign(CampaignInfo campaign) {
+        List<String> userList = null;
+        
+        int campaignIndex = campaignList.indexOf(campaign);
+        if (campaignIndex > -1) {
+            userList = campaignList.get(campaignIndex).getUserList();
+        }
+        
+        return userList;
+    }
+    
     // Allows this model to be sorted by Collections.sort() (be userName only)
     public int compareTo(UserInfo arg0) {
         return this.userName.compareTo(arg0.userName);

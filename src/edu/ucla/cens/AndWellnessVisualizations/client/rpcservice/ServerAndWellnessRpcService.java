@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
@@ -284,11 +283,13 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
                         // Check for errors
                         if ("failure".equals(serverResponse.getResult())) {
                             callback.onFailure(new NotLoggedInException("Invalid username and/or password."));
+                            return;
                         }
                         
                         // Make sure this is a success
                         if (! "success".equals(serverResponse.getResult())) {
                             callback.onFailure(new ServerException("Server returned malformed JSON."));
+                            return;
                         }                    
                         
                         // Success, return the response!

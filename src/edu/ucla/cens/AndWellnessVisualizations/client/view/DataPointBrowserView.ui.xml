@@ -7,15 +7,25 @@
   </ui:style>
 
   <g:SimplePanel>
-    <g:VerticalPanel ui:field="dataPointBrowserMainPanel" visible="FALSE">
-    	<g:VerticalPanel ui:field="dataPointBrowserCampaignList">
+    <g:VerticalPanel ui:field="dataPointBrowserMainPanel">
+    	<g:VerticalPanel>
     		<g:Label>Campaign</g:Label>
+    		<g:ListBox ui:field="dataPointBrowserCampaignList"></g:ListBox>
     	</g:VerticalPanel>
-    	<g:VerticalPanel ui:field="dataPointBrowserUserList" visible="FALSE">
+    	<g:VerticalPanel>
+    		<g:Label>Version</g:Label>
+    		<g:ListBox ui:field="dataPointBrowserConfigurationList"></g:ListBox>
+    	</g:VerticalPanel>
+    	<g:VerticalPanel>
     		<g:Label>User</g:Label>
+    		<g:ListBox ui:field="dataPointBrowserUserList"></g:ListBox>
     	</g:VerticalPanel>
-    	<g:VerticalPanel ui:field="dataPointBrowserDataPointList">
-    		<g:Label>Data Point</g:Label>
+    	<g:VerticalPanel>
+    		<g:Label>Survey</g:Label>
+    		<g:ListBox ui:field="dataPointBrowserSurveyList"></g:ListBox>
+    	</g:VerticalPanel>
+    	<g:VerticalPanel>
+    		<g:Label ui:field="dataPointBrowserDataPointList">Data Point</g:Label>
     	</g:VerticalPanel>
 	</g:VerticalPanel>
   </g:SimplePanel>

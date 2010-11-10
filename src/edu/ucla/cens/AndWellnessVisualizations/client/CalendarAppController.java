@@ -10,17 +10,24 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 
+import edu.ucla.cens.AndWellnessVisualizations.client.common.DataPointBrowserViewDefinitions;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.CampaignConfigurationEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigurationInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.PromptInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.SurveyInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.CalendarVisualizationPresenter;
+import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataPointBrowserPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MonthSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.NavigationBarPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
@@ -28,6 +35,8 @@ import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.NotLoggedInExce
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.AwDataTranslators;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationViewImpl;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.DataPointBrowserView;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.DataPointBrowserViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarView;
@@ -51,6 +60,10 @@ public class CalendarAppController {
     private CalendarVisualizationView calVizView = null;
     private MonthSelectionView monthView = null;
     private NavigationBarView navBarView = null;
+    private DataPointBrowserView<CampaignInfo,ConfigurationInfo,SurveyInfo,PromptInfo> dataPointBrowserView = null;
+    
+    // Definitions needed for the views to render
+    private DataPointBrowserViewDefinitions dataPointBrowserViewDefinitions = null;
     
     // Various data we need to maintain
     private Date currentMonth = new Date();
@@ -114,6 +127,23 @@ public class CalendarAppController {
         MonthSelectionPresenter monthPres = new MonthSelectionPresenter(rpcService, eventBus, monthView);
         monthPres.go(RootPanel.get("monthSelectionView"));
         
+        // Initialize and run the data browser view
+        if (dataPointBrowserView == null) {
+            dataPointBrowserView = new DataPointBrowserViewImpl<CampaignInfo,ConfigurationInfo,SurveyInfo,PromptInfo>();
+            // Initialize the render definitions
+            if (dataPointBrowserViewDefinitions == null) {
+                dataPointBrowserViewDefinitions = new DataPointBrowserViewDefinitions();
+            }
+            dataPointBrowserView.setDefinitions(
+                    dataPointBrowserViewDefinitions.getCampaignInfoDefinition(), 
+                    dataPointBrowserViewDefinitions.getConfigurationInfoDefinition(), 
+                    dataPointBrowserViewDefinitions.getSurveyInfoDefinition(), 
+                    dataPointBrowserViewDefinitions.getDataPointDefinition());
+        }
+        DataPointBrowserPresenter dpbPres = new DataPointBrowserPresenter(eventBus, dataPointBrowserView);
+        dpbPres.go(RootPanel.get("dataPointBrowserView"));
+        
+        
         // Initialize and run the calendar visualization
         if (calVizView == null) {
             calVizView = new CalendarVisualizationViewImpl();
@@ -153,6 +183,9 @@ public class CalendarAppController {
                 _logger.fine("Received config query from server, parsing into a userInfo");
                 
                 userInfo = AwDataTranslators.translateConfigQueryAwDataToUserInfo(loginManager.getLoggedInUserName(), result);
+                
+                // Now that we have new campaign configuration, send out an event to notify anyone listening
+                eventBus.fireEvent(new CampaignConfigurationEvent(userInfo));
             }
         });
     }

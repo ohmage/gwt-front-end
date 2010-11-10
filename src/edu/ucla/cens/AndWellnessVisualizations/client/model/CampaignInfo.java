@@ -63,6 +63,25 @@ public class CampaignInfo {
     public void setUserRole(UserRole userRole) { this.userRole = userRole; }
     public UserRole getUserRole() { return userRole; }
     
+    
+    
+    /**
+     * Overrides the equals method.  Compares one CampaignInfo against another.
+     */
+    public boolean equals(Object toCompare) {
+        if (this == toCompare)
+            return true;
+        
+        if ( !(toCompare instanceof CampaignInfo)) {
+            return false;
+        }
+        
+        CampaignInfo campaignToCompare = (CampaignInfo) toCompare;
+        
+        // Now do the actual comparison, just compare campaign name for now
+        return (this.campaignName.equals(campaignToCompare.campaignName));
+    }
+    
     /**
      * Translates this data container to a human readable string.
      */
