@@ -78,10 +78,6 @@ public class DataPointBrowserPresenter implements Presenter,
      */
     private void receiveCampaignConfiguration(UserInfo newConfig) {
         List<CampaignInfo> campaignList;
-        List<ConfigurationInfo> configurationList;
-        List<String> userList;
-        List<SurveyInfo> surveyList;
-        List<PromptInfo> promptList;
         
         // Clear everything out
         clearModels();
@@ -93,33 +89,8 @@ public class DataPointBrowserPresenter implements Presenter,
         campaignList = newConfig.getCampaignList();
         view.setCampaignList(campaignList);
         
-        // If there is only one campaign, set the configuration and user list for that campaign
-        if (campaignList.size() == 1) {
-            CampaignInfo singleCampaign = campaignList.get(0);
-            setCampaign.updateSetItem(singleCampaign);
-            configurationList = singleCampaign.getConfigurationList();
-            view.setConfigurationList(configurationList);
-            
-            userList = singleCampaign.getUserList();
-            view.setUserList(userList);
-            
-            // Auto select the first user in the list
-            setUserName.updateSetItem(userList.get(0));
-            
-            // If there is only one configuration, set the surveys
-            if (configurationList.size() == 1) {
-                ConfigurationInfo singleConfiguration = configurationList.get(0);
-                setConfiguration.updateSetItem(singleConfiguration);
-                surveyList = singleConfiguration.getSurveyList();
-                view.setSurveyList(surveyList);
-                
-                // Set the promptId list with the first survey in the list
-                SurveyInfo firstSurvey = surveyList.get(0);
-                setSurvey.updateSetItem(firstSurvey);
-                promptList = firstSurvey.getPromptList();
-                view.setDataPointList(promptList);
-            }
-        }
+        // Update the selected campaign as the first campaign in the list
+        updateSelectedCampaign(campaignList.get(0));
     }
 
     /**
@@ -129,13 +100,14 @@ public class DataPointBrowserPresenter implements Presenter,
      * @param campaign The selected campaign.
      */
     public void campaignSelected(CampaignInfo campaign) {
-        setCampaign.updateSetItem(campaign);
+        // Unset the version, user, survey, and datapoint
+        setConfiguration.clear();
+        setUserName.clear();
+        setSurvey.clear();
+        setDataPoint.clear();
         
-        // Update the view with the versions for this new campaign
-        view.setConfigurationList(campaign.getConfigurationList());
-        
-        // Update the view with the users for this campaign
-        view.setUserList(campaign.getUserList());
+        // Update the view and selections for the new campaign
+        updateSelectedCampaign(campaign);
     }
     
     /** 
@@ -143,10 +115,12 @@ public class DataPointBrowserPresenter implements Presenter,
      * view with new surveys and data points.
      */
     public void configurationSelected(ConfigurationInfo configuration) {
-        setConfiguration.updateSetItem(configuration);
+        // Unset the current survey and datapoint
+        setSurvey.clear();
+        setDataPoint.clear();
         
-        // Update the view with the surveys for this configuration
-        view.setSurveyList(configuration.getSurveyList());
+        // Update the view with and selections for the new configuration
+        updateSelectedConfiguration(configuration);
     }
 
     /**
@@ -158,6 +132,10 @@ public class DataPointBrowserPresenter implements Presenter,
     public void userSelected(String userName) {
         setUserName.updateSetItem(userName);
         
+        // If we have a selected data point already, send out a datapointselection event with the new user
+        if (setDataPoint.isSet()) {
+            sendNewDataPointSelectionEvent();
+        }
     }
 
     /**
@@ -166,6 +144,7 @@ public class DataPointBrowserPresenter implements Presenter,
     public void surveySelected(SurveyInfo survey) {
         setSurvey.updateSetItem(survey);
         
+        // Make the user select a new data point after the survey selection switches
         setDataPoint.clear();
         
         view.setDataPointList(survey.getPromptList());
@@ -180,7 +159,7 @@ public class DataPointBrowserPresenter implements Presenter,
         
         _logger.finer("Selected data point: " + dataPoint.getPromptId());
         
-        fetchDataFromServer();
+        sendNewDataPointSelectionEvent();
     }
 
     /**
@@ -188,7 +167,7 @@ public class DataPointBrowserPresenter implements Presenter,
      * campaign, user, survey, and prompt id.  Silently fails if one of the
      * above are not selected.
      */
-    private void fetchDataFromServer() {
+    private void sendNewDataPointSelectionEvent() {
         // Make sure we have all necessary data to access the server.
         if (!setCampaign.isSet() ||
             !setSurvey.isSet() ||
@@ -217,10 +196,51 @@ public class DataPointBrowserPresenter implements Presenter,
                             setDataPoint.getSetItem()));
     }
     
+    
+    /**
+     * Selects the passed in campaign.  Update the view's configuration list and user list.
+     * Auto select the first user and configuration in the list.
+     * 
+     * @param campaign The newly selected campaign
+     */
+    private void updateSelectedCampaign(CampaignInfo campaign) {
+        setCampaign.updateSetItem(campaign);
+        List<ConfigurationInfo> configurationList = campaign.getConfigurationList();
+        view.setConfigurationList(configurationList);
+        
+        // Set the user list from this campaign
+        List<String> userList = campaign.getUserList();
+        view.setUserList(userList);
+        
+        // Auto select the first user in the list
+        setUserName.updateSetItem(userList.get(0));
+        
+        // Auto select the first configuration in the list
+        updateSelectedConfiguration(configurationList.get(0));        
+    }
+    
+    /**
+     * Selects the passed in configuration.  Update the view's survey list and data point list.
+     * Auto selects the first survey in the survey list.
+     * 
+     * @param configuration The newly selected configuration
+     */
+    private void updateSelectedConfiguration(ConfigurationInfo configuration) {
+        setConfiguration.updateSetItem(configuration);
+        List<SurveyInfo> surveyList = configuration.getSurveyList();
+        view.setSurveyList(surveyList);
+        
+        // Set the promptId list with the first survey in the list
+        SurveyInfo firstSurvey = surveyList.get(0);
+        setSurvey.updateSetItem(firstSurvey);
+        List<PromptInfo> promptList = firstSurvey.getPromptList();
+        view.setDataPointList(promptList);
+    }
+    
     /**
      * Clears out all data currently stored in our models.
      */
-    void clearModels() {
+    private void clearModels() {
         setCampaign.clear();
         setConfiguration.clear();
         setUserName.clear();
