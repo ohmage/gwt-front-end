@@ -1,7 +1,5 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.common;
 
-import com.google.gwt.user.client.ui.Widget;
-
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigurationInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.PromptInfo;
@@ -37,9 +35,8 @@ public class DataPointBrowserViewDefinitions {
     private ColumnDefinition<PromptInfo> promptInfoColumnDefinition = 
         new ColumnDefinition<PromptInfo>() {
 
-            public Widget render(PromptInfo t) {
-                // TODO Auto-generated method stub
-                return null;
+            public void render(PromptInfo t, StringBuilder sb) {
+                sb.append(t.getPromptId());
             }
     };
 
