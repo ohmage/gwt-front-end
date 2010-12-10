@@ -153,6 +153,12 @@ ul {
 	text-decoration: none;	
 }
 
+/* dataPointBrowserView */
+#dataPointBrowserView {
+	width: 300px;	
+}
+
+
 /* Page specific properties */
 
 /* Home page css */
