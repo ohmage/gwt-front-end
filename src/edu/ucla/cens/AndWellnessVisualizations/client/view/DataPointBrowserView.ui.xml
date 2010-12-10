@@ -1,6 +1,7 @@
 <ui:UiBinder
   xmlns:ui="urn:ui:com.google.gwt.uibinder"
-  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:cv='urn:import:com.google.gwt.user.cellview.client'>
   
   <ui:style>
     
@@ -25,7 +26,8 @@
     		<g:ListBox ui:field="dataPointBrowserSurveyList"></g:ListBox>
     	</g:VerticalPanel>
     	<g:VerticalPanel>
-    		<g:Label ui:field="dataPointBrowserDataPointList">Data Point</g:Label>
+    		<g:Label>Data Point</g:Label>
+    		<cv:CellTable ui:field="dataPointBrowserDataPointTable"></cv:CellTable>
     	</g:VerticalPanel>
 	</g:VerticalPanel>
   </g:SimplePanel>

@@ -1,5 +1,6 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,6 +77,12 @@ public class DataPointBrowserPresenter implements Presenter,
      * @param newConfig The new configuration information.
      */
     private void receiveCampaignConfiguration(UserInfo newConfig) {
+        List<CampaignInfo> campaignList;
+        List<ConfigurationInfo> configurationList;
+        List<String> userList;
+        List<SurveyInfo> surveyList;
+        List<PromptInfo> promptList;
+        
         // Clear everything out
         clearModels();
         
@@ -83,7 +90,36 @@ public class DataPointBrowserPresenter implements Presenter,
         view.resetData();
         
         // Update the campaign list
-        view.setCampaignList(newConfig.getCampaignList());
+        campaignList = newConfig.getCampaignList();
+        view.setCampaignList(campaignList);
+        
+        // If there is only one campaign, set the configuration and user list for that campaign
+        if (campaignList.size() == 1) {
+            CampaignInfo singleCampaign = campaignList.get(0);
+            setCampaign.updateSetItem(singleCampaign);
+            configurationList = singleCampaign.getConfigurationList();
+            view.setConfigurationList(configurationList);
+            
+            userList = singleCampaign.getUserList();
+            view.setUserList(userList);
+            
+            // Auto select the first user in the list
+            setUserName.updateSetItem(userList.get(0));
+            
+            // If there is only one configuration, set the surveys
+            if (configurationList.size() == 1) {
+                ConfigurationInfo singleConfiguration = configurationList.get(0);
+                setConfiguration.updateSetItem(singleConfiguration);
+                surveyList = singleConfiguration.getSurveyList();
+                view.setSurveyList(surveyList);
+                
+                // Set the promptId list with the first survey in the list
+                SurveyInfo firstSurvey = surveyList.get(0);
+                setSurvey.updateSetItem(firstSurvey);
+                promptList = firstSurvey.getPromptList();
+                view.setDataPointList(promptList);
+            }
+        }
     }
 
     /**
@@ -124,14 +160,27 @@ public class DataPointBrowserPresenter implements Presenter,
         
     }
 
+    /**
+     * Call when a new survey is selected.  Unset the currently set prompt and update the prompt list.
+     */
     public void surveySelected(SurveyInfo survey) {
         setSurvey.updateSetItem(survey);
         
+        setDataPoint.clear();
+        
+        view.setDataPointList(survey.getPromptList());
     }
+    
+    /**
+     * Call when a new data point is selected.  Ask for new data from server.
+     */
 
     public void dataPointSelected(PromptInfo dataPoint) {
         setDataPoint.updateSetItem(dataPoint);
         
+        _logger.finer("Selected data point: " + dataPoint.getPromptId());
+        
+        fetchDataFromServer();
     }
 
     /**

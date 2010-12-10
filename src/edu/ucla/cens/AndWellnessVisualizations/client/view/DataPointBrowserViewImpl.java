@@ -1,9 +1,12 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.view;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.gwt.cell.client.ClickableTextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -11,13 +14,19 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.SelectionChangeEvent;
+import com.google.gwt.view.client.SingleSelectionModel;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.common.ColumnDefinition;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.DropDownDefinition;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.PromptInfo;
 
 /**
  * The implementation of data point browser view.  The user must select
@@ -45,8 +54,9 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
     @UiField ListBox dataPointBrowserUserList;
     @UiField ListBox dataPointBrowserSurveyList;
     
-    // Field for the data point list
-    CellTable<W> dataPointTable;
+    // The CellTable to hold the data points
+    @UiField(provided=true)
+    CellTable<W> dataPointBrowserDataPointTable;
     
     // Call the presenter in response to user interaction
     private Presenter<T,U,V,W> presenter;
@@ -66,6 +76,40 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
     
     // Constructor, initialize the widget
     public DataPointBrowserViewImpl() {
+        // Create a clickable cell to render each data point
+        ClickableTextCell textCell = new ClickableTextCell();
+        
+        // Initialize the dataPoint cell table
+        dataPointBrowserDataPointTable = new CellTable<W>();
+        dataPointBrowserDataPointTable.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
+        
+        // Create name column.
+        Column<W,String> nameColumn = new Column<W,String>(textCell) {
+            public String getValue(W field) {
+                StringBuilder string = new StringBuilder();
+                dataPointColumnDefinition.render(field, string);
+                return string.toString();
+            }
+        };
+        this.dataPointBrowserDataPointTable.addColumn(nameColumn);
+        
+        // Add a selection model to handle data point selections
+        final SingleSelectionModel<W> selectionModel = new SingleSelectionModel<W>();
+        dataPointBrowserDataPointTable.setSelectionModel(selectionModel);
+        
+        // Define a new SelectionChangeEvent handler to pass the selection to the presenter
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            public void onSelectionChange(SelectionChangeEvent event) {
+                // Grab the selected W
+                W selected = selectionModel.getSelectedObject();
+            
+                // Pass it back to the present to handle
+                if (selected != null && presenter != null) {
+                    presenter.dataPointSelected(selected);
+                }
+            }
+        });
+        
         initWidget(uiBinder.createAndBindUi(this));
     }
   
@@ -99,8 +143,8 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
         dataPointBrowserCampaignList.clear();
         
         // Loop over the campaignList, render, and add to the display
-        StringBuilder campaignString = new StringBuilder();
         for (T campaign : campaignList) {
+            StringBuilder campaignString = new StringBuilder();
             campaignListDropDownDefinition.render(campaign, campaignString);
             dataPointBrowserCampaignList.addItem(campaignString.toString());
         }
@@ -120,8 +164,8 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
         dataPointBrowserConfigurationList.clear();
         
         // Loop over the configuration list, render, and add to the display
-        StringBuilder configurationString = new StringBuilder();
         for (U configuration : configurationList) {
+            StringBuilder configurationString = new StringBuilder();
             configurationListDropDownDefinition.render(configuration, configurationString);
             dataPointBrowserConfigurationList.addItem(configurationString.toString());
         }
@@ -157,8 +201,8 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
         dataPointBrowserSurveyList.clear();
         
         // Loop over the surveyList, render, and add to the display
-        StringBuilder surveyString = new StringBuilder();
         for (V survey : surveyList) {
+            StringBuilder surveyString = new StringBuilder();
             surveyListDropDownDefinition.render(survey, surveyString);
             dataPointBrowserSurveyList.addItem(surveyString.toString());
         }
@@ -173,8 +217,9 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
      */
     public void setDataPointList(List<W> dataPointData) {
         this.dataPointData = dataPointData;
-        
-        // TODO implement the display of data point data
+          
+        dataPointBrowserDataPointTable.setRowCount(dataPointData.size(), true);
+        dataPointBrowserDataPointTable.setRowData(0, this.dataPointData);
     }
     
     
@@ -229,13 +274,14 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
             presenter.surveySelected(surveyList.get(selectedSurvey));
         }
     }
+
     
     public void resetData() {
         dataPointBrowserCampaignList.clear();
         dataPointBrowserConfigurationList.clear();
         dataPointBrowserUserList.clear();
         dataPointBrowserSurveyList.clear();
-        // TODO reset the data point list when it works
+        // TODO: reset data point table
     }
     
     public Widget asWidget() {
