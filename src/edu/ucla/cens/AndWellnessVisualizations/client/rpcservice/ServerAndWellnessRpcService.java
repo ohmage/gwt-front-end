@@ -178,25 +178,34 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
     public void fetchDataPoints(Date startDate, Date endDate, String userName,
             List<String> dataIds, String campaignId, String clientName, String authToken,
             final AsyncCallback<List<DataPointAwData>> callback) {
-
-        String postParams = null;
-        postParams = StringUtils.addParam(postParams, "u", userName);
-        postParams = StringUtils.addParam(postParams, "t", authToken);
-        postParams = StringUtils.addParam(postParams, "c", campaignId);
-        postParams = StringUtils.addParam(postParams, "s", DateUtils.translateToServerUploadFormat(startDate));
-        postParams = StringUtils.addParam(postParams, "e", DateUtils.translateToServerUploadFormat(endDate));
-        postParams = StringUtils.addParam(postParams, "ci", "2");
-        postParams = StringUtils.addParam(postParams, "cv", "0.1");
+        StringBuffer postParams = new StringBuffer();
         
-        // Add every data Id to the param list
-        for (String dataId:dataIds) {
-            postParams = StringUtils.addParam(postParams, "i", dataId);
+        // addParam can possibly throw an IllegalArgumentException if one of our passed in params
+        // is null, just throw it up
+        try {
+            StringUtils.addParam(postParams, "u", userName);
+            StringUtils.addParam(postParams, "t", authToken);
+            StringUtils.addParam(postParams, "c", campaignId);
+            StringUtils.addParam(postParams, "s", DateUtils.translateToServerUploadFormat(startDate));
+            StringUtils.addParam(postParams, "e", DateUtils.translateToServerUploadFormat(endDate));
+            StringUtils.addParam(postParams, "ci", "2");
+            StringUtils.addParam(postParams, "cv", "0.1");
+            
+            // Add every data Id to the param list
+            for (String dataId:dataIds) {
+                StringUtils.addParam(postParams, "i", dataId);
+            }
+        }
+        catch (IllegalArgumentException err) {
+            _logger.severe("One or more passed parameters is bad.");
+            
+            throw err;
         }
         
-        _logger.finer("Contacting data query API with parameter string: " + postParams);
+        _logger.finer("Contacting data query API with parameter string: " + postParams.toString());
         
         try {
-            dataPointService.sendRequest(postParams, new RequestCallback() {
+            dataPointService.sendRequest(postParams.toString(), new RequestCallback() {
                 // Error occured, handle it here
                 public void onError(Request request, Throwable exception) {
                     // Couldn't connect to server (could be timeout, SOP violation, etc.)   

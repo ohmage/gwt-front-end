@@ -12,11 +12,22 @@ public class StringUtils {
      * @param value The value to add to the string.
      * @return Returns the new, modified string.
      */
-    public static String addParam(String addHere, String key, String value) {
-        // If addHere is null, create a new String and return
-        if (addHere == null)
-            return URL.encode(key) + "=" + URL.encode(value);
-        else 
-            return addHere + "&" + URL.encode(key) + "=" + URL.encode(value); 
+    public static void addParam(StringBuffer addHere, String key, String value) {
+        if (addHere == null) {
+            throw new IllegalArgumentException("StringBuffer cannot be null");
+        }
+        
+        // If the key or value is null, also complain
+        if (key == null || value == null) {
+            throw new IllegalArgumentException("key or value is null");
+        }
+       
+        // Check if this is the first parameter to add
+        if (addHere.length() == 0) {
+            addHere.append(URL.encode(key) + "=" + URL.encode(value));
+        }
+        else {
+            addHere.append("&" + URL.encode(key) + "=" + URL.encode(value));
+        }
     }
 }
