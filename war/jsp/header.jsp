@@ -1,7 +1,7 @@
 <div id="header">
 	<div id="title" class="float_left">
-		<a href="/">
-			<img src="/images/apple_andwellness.png" title="AndWellness" alt="AndWellness" />
+		<a href="../">
+			<img src="../images/apple_andwellness.png" title="AndWellness" alt="AndWellness" />
 		</a>
 	</div>
 	
