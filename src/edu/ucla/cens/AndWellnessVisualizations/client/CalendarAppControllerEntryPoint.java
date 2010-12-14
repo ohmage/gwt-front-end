@@ -6,7 +6,6 @@ import com.google.gwt.event.shared.SimpleEventBus;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.common.AuthorizationManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.ServerAndWellnessRpcService;
 
@@ -28,8 +27,5 @@ public class CalendarAppControllerEntryPoint implements EntryPoint {
         // Create and run the controller
         CalendarAppController appController = new CalendarAppController(rpcService, eventBus, loginManager);
         appController.go();
-        
-        // Fake a data point selection event to make things work
-        eventBus.fireEvent(new DataPointLabelSelectionEvent("alcoholNumberOfDrinks"));
     }
 }

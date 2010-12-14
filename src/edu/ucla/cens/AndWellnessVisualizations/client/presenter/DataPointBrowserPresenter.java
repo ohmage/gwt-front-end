@@ -1,5 +1,6 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -168,6 +169,8 @@ public class DataPointBrowserPresenter implements Presenter,
      * above are not selected.
      */
     private void sendNewDataPointSelectionEvent() {
+        List<String> promptIdList = new ArrayList<String>();
+        
         // Make sure we have all necessary data to access the server.
         if (!setCampaign.isSet() ||
             !setSurvey.isSet() ||
@@ -189,11 +192,14 @@ public class DataPointBrowserPresenter implements Presenter,
                     " survey: " + survey + " user: " + userName + " dataPoint: " + dataPoint);
         }
         
+        // The data point selection expects a list, even if only one selection
+        promptIdList.add(setDataPoint.getSetItem().getPromptId());
+        
         // Fire off the selection event
-        eventBus.fireEvent(new NewDataPointSelectionEvent(setCampaign.getSetItem(),
+        eventBus.fireEvent(new NewDataPointSelectionEvent(setCampaign.getSetItem().getCampaignName(),
+                setConfiguration.getSetItem().getCampaignVersion(),
                             setUserName.getSetItem(),
-                            setSurvey.getSetItem(),
-                            setDataPoint.getSetItem()));
+                            promptIdList));
     }
     
     

@@ -13,11 +13,11 @@ import com.google.gwt.user.client.ui.RootPanel;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.DataPointBrowserViewDefinitions;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.CampaignConfigurationEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
@@ -65,9 +65,14 @@ public class CalendarAppController {
     // Definitions needed for the views to render
     private DataPointBrowserViewDefinitions dataPointBrowserViewDefinitions = null;
     
-    // Various data we need to maintain
+    // Data necessary to fetch data from the server
     private Date currentMonth = new Date();
-    private String currentDataPoint = null;
+    private List<String> currentDataPointList = new ArrayList<String>();
+    private String currentUserName = null;
+    private String currentCampaignName = null;
+    private String currentCampaignVersion = null;
+    
+    // Data about the logged in user
     private UserInfo userInfo = null;
     
     // Logging utility
@@ -89,20 +94,17 @@ public class CalendarAppController {
             public void onSelection(MonthSelectionEvent event) {
                 currentMonth = event.getMonthSelection();
                 
-                // Call for new data
-                if (currentDataPoint != null) {
-                    fetchDataPoints();
-                }
-                else {
-                    _logger.fine("MonthSelectionEvent detected but currentDataPoint is null.");
-                }
+                fetchDataPoints();
             }   
         });
         
         // Listen for a new data point label selection, call for new data
-        eventBus.addHandler(DataPointLabelSelectionEvent.TYPE, new DataPointLabelSelectionEventHandler() {
-            public void onSelection(DataPointLabelSelectionEvent event) {
-                currentDataPoint = event.getDataPointLabelSelection();
+        eventBus.addHandler(NewDataPointSelectionEvent.TYPE, new NewDataPointSelectionEventHandler() {
+            public void onSelect(NewDataPointSelectionEvent event) {
+                currentDataPointList = event.getPromptIds();
+                currentUserName = event.getUserName();
+                currentCampaignName = event.getCampaignName();
+                currentCampaignVersion = event.getCampaignVersion();
                 
                 fetchDataPoints();
             }
@@ -197,8 +199,6 @@ public class CalendarAppController {
     private void fetchDataPoints() {
         // Data for the rpc request
         Date startDate, endDate;
-        String userName, campaignId, clientName;
-        List<String> dataPointLabels = new ArrayList<String>();
       
         // Check to be sure the user information is set
         if (userInfo == null) {
@@ -206,21 +206,19 @@ public class CalendarAppController {
             return;
         }
         
+        // Make sure all necessary selection information is net
+        if (currentUserName == null || currentCampaignName == null || currentCampaignVersion == null ||
+                currentDataPointList.size() == 0) {
+            _logger.warning("Not all necessary information has been set to fetch data.");
+            return;
+        }
+        
         // Find the first and last day of the requested month
         startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
         endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
-        userName = userInfo.getUserName();
-        campaignId = userInfo.getSelectedCampaignId();
-        
-        clientName = ClientInfo.getClientName();
-        
-        // The list of data point labels to ask for
-        dataPointLabels.add(currentDataPoint);
-        
-        _logger.info("Asking server for data about label " + currentDataPoint);
-        
+          
         // Send our request to the rpcService and handle the result
-        rpcService.fetchDataPoints(startDate, endDate, userName, dataPointLabels, campaignId, clientName, loginManager.getAuthorizationToken(), 
+        rpcService.fetchDataPoints(startDate, endDate, currentUserName, currentDataPointList, currentCampaignName, currentCampaignVersion, loginManager.getAuthorizationToken(), 
                 new AsyncCallback<List<DataPointAwData>>() {
             
             public void onSuccess(List<DataPointAwData> awData) {

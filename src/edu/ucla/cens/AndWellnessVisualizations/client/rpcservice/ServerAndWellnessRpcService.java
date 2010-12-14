@@ -176,7 +176,7 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
      * and endDate.
      */
     public void fetchDataPoints(Date startDate, Date endDate, String userName,
-            List<String> dataIds, String campaignId, String clientName, String authToken,
+            List<String> dataIds, String campaignId, String campaignVersion, String authToken,
             final AsyncCallback<List<DataPointAwData>> callback) {
         StringBuffer postParams = new StringBuffer();
         
@@ -189,7 +189,7 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
             StringUtils.addParam(postParams, "s", DateUtils.translateToServerUploadFormat(startDate));
             StringUtils.addParam(postParams, "e", DateUtils.translateToServerUploadFormat(endDate));
             StringUtils.addParam(postParams, "ci", "2");
-            StringUtils.addParam(postParams, "cv", "0.1");
+            StringUtils.addParam(postParams, "cv", campaignVersion);
             
             // Add every data Id to the param list
             for (String dataId:dataIds) {
@@ -198,6 +198,12 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
         }
         catch (IllegalArgumentException err) {
             _logger.severe("One or more passed parameters is bad.");
+            _logger.finer("user: " + userName);
+            _logger.finer("authToken: " + authToken);
+            _logger.finer("campaignId: " + campaignId);
+            _logger.finer("startDate: " + DateUtils.translateToServerUploadFormat(startDate));
+            _logger.finer("endDate: " + DateUtils.translateToServerUploadFormat(endDate));
+            _logger.finer("campaignVersion: " + campaignVersion);
             
             throw err;
         }

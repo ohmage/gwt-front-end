@@ -4,12 +4,12 @@ import com.google.code.p.gwtchismes.client.GWTCSimpleDatePicker;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.HasWidgets;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.DataPointLabelSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.CollectionUtils;
@@ -69,12 +69,12 @@ public class CalendarVisualizationPresenter implements Presenter,
      */
     public void bind() {
         // Listen for a new data point label selection
-        eventBus.addHandler(DataPointLabelSelectionEvent.TYPE,
-            new DataPointLabelSelectionEventHandler() {
-                public void onSelection(DataPointLabelSelectionEvent event) {
-                    _logger.fine("Receveived a data point label selection event with label " + event.getDataPointLabelSelection());
+        eventBus.addHandler(NewDataPointSelectionEvent.TYPE,
+            new NewDataPointSelectionEventHandler() {
+                public void onSelect(NewDataPointSelectionEvent event) {
+                    _logger.fine("Receveived a data point label selection event with label " + event.getPromptIds().get(0));
                     
-                    currentDataPointLabel = event.getDataPointLabelSelection();                   
+                    currentDataPointLabel = event.getPromptIds().get(0);                   
                 }            
         });
         
