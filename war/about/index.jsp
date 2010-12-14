@@ -12,7 +12,7 @@
     <!--                                                               -->
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->
-    <link type="text/css" rel="stylesheet" href="/css/styles.css">
+    <link type="text/css" rel="stylesheet" href="../css/styles.css">
 	
     <!--                                           -->
     <!-- Any title is fine                         -->
@@ -20,14 +20,14 @@
     <title>AndWellness</title>
     
     <!-- Cool apple icon -->
-    <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon">
+    <link href="../favicon.ico" rel="shortcut icon" type="image/x-icon">
     
     <!--                                           -->
     <!-- This script loads your compiled module.   -->
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
     <!--                                           -->
-    <script type="text/javascript" language="javascript" src="/genericandwellness/genericandwellness.nocache.js"></script>
+    <script type="text/javascript" language="javascript" src="../genericandwellness/genericandwellness.nocache.js"></script>
   </head>
 
   <body class="page-id-500">
@@ -48,7 +48,7 @@
 
 	<div id="main_wrapper">
 	
-<jsp:include page="/jsp/header.jsp"/>
+<jsp:include page="../jsp/header.jsp"/>
 		
 		<div id="contents">
 				<h2>About</h2>
@@ -122,7 +122,7 @@
   
 		</div>
 		
-<jsp:include page="/jsp/footer.jsp"/>
+<jsp:include page="../jsp/footer.jsp"/>
 
 	</div>
   </body>
