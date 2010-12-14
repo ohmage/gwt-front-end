@@ -143,12 +143,10 @@ public class DataPointBrowserPresenter implements Presenter,
      * Call when a new survey is selected.  Unset the currently set prompt and update the prompt list.
      */
     public void surveySelected(SurveyInfo survey) {
-        setSurvey.updateSetItem(survey);
-        
         // Make the user select a new data point after the survey selection switches
         setDataPoint.clear();
         
-        view.setDataPointList(survey.getPromptList());
+        updateSelectedSurvey(survey);
     }
     
     /**
@@ -238,9 +236,30 @@ public class DataPointBrowserPresenter implements Presenter,
         
         // Set the promptId list with the first survey in the list
         SurveyInfo firstSurvey = surveyList.get(0);
-        setSurvey.updateSetItem(firstSurvey);
-        List<PromptInfo> promptList = firstSurvey.getPromptList();
-        view.setDataPointList(promptList);
+        updateSelectedSurvey(firstSurvey);
+    }
+    
+    /**
+     * Selects the passed in survey.  Updates the view's data point list.
+     * Filters through the data point list and removes any data points with
+     * display type metadata.
+     * 
+     * @param survey
+     */
+    private void updateSelectedSurvey(SurveyInfo survey) {
+        setSurvey.updateSetItem(survey);
+        
+        List<PromptInfo> promptList = survey.getPromptList();
+        List<PromptInfo> noMetadataPromptList = new ArrayList<PromptInfo>();
+        
+        // Filter out any metadatas in the list
+        for (PromptInfo prompt : promptList) {
+            if (! prompt.getDisplayType().equals("metadata")) {
+                noMetadataPromptList.add(prompt);
+            }
+        }
+        
+        view.setDataPointList(noMetadataPromptList);
     }
     
     /**

@@ -99,7 +99,7 @@ public class CalendarVisualizationPresenter implements Presenter,
         eventBus.addHandler(NewDataPointAwDataEvent.TYPE,
             new NewDataPointAwDataEventHandler() {
                 public void onNewData(NewDataPointAwDataEvent event) {
-                    _logger.fine("Received a new data point event");
+                    _logger.fine("Received a new data point event with " + event.getData().size() + " data points.");
                     
                     // reset the current data
                     currentDayData.clear();
@@ -172,14 +172,12 @@ public class CalendarVisualizationPresenter implements Presenter,
         // Check to see if we found any data
         if (filteredData.size() == 0) {
             _logger.warning("Found no data in month " + currentMonth + " with data label " + currentDataPointLabel);
-            
-            // If no data, return an empty map
+
             return new HashMap<Date,Double>();
         }
         
-        // Find the display type of the data
-        //displayType = CampaignInfo.getDisplayType(currentDataPointLabel);
-        displayType = "count";
+        // Grab the display type of the first data point
+        displayType = filteredData.iterator().next().getType();
         
         // Process the data based on the display type
         if ("count".equals(displayType)) {
@@ -269,20 +267,27 @@ public class CalendarVisualizationPresenter implements Presenter,
             Collection<DataPointAwData> filteredData) {
         _logger.fine("processMeasurementData(): Processing measurement data.");
         
-        // TODO Auto-generated method stub
-        return null;
+        Map<Date, Double> processedData = new HashMap<Date, Double>();
+        
+        return processedData;
     }
 
     private Map<Date, Double> processEventData(
             Collection<DataPointAwData> filteredData) {
-        // TODO Auto-generated method stub
-        return null;
+        _logger.fine("processEventData(): Processing event data.");
+        
+        Map<Date, Double> processedData = new HashMap<Date, Double>();
+        
+        return processedData;
     }
 
     private Map<Date, Double> processCategoryData(
             Collection<DataPointAwData> filteredData) {
-        // TODO Auto-generated method stub
-        return null;
+        _logger.fine("processCategoryData(): Processing category data.");
+        
+        Map<Date, Double> processedData = new HashMap<Date, Double>();
+        
+        return processedData;
     }
 
     /**
