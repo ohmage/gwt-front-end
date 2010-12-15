@@ -216,7 +216,7 @@ public class CalendarVisualizationPresenter implements Presenter,
         Date startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
         Date endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
         
-        int maximumCountPerDay = 0;
+        float maximumCountPerDay = 0;
         // A for loop that increases one day at a time
         for (Date i = startDate; i.before(endDate); i = GWTCSimpleDatePicker.increaseDate(i, 1)) {
             // For every Date in the month, check all Dates in the collection to see if any are in the day.
@@ -227,7 +227,7 @@ public class CalendarVisualizationPresenter implements Presenter,
                 Date dataPointDate = DateUtils.translateFromServerFormat(singleCountDataPoint.getTimeStamp());
                 if (DateUtils.isDateInDay(dataPointDate, i)) {
                     // Since we are a count, this must be greater than 0 to make a difference (what's a count of 0 mean?)
-                    if (Integer.parseInt(singleCountDataPoint.getValue()) > 0) {                    
+                    if (Float.parseFloat(singleCountDataPoint.getValue()) > 0) {                    
                         singleDayAwData.add(singleCountDataPoint);
                         
                         _logger.finest("processCountData(): Found date " + dataPointDate + " in day " + i + " with value " + singleCountDataPoint.getValue());
@@ -238,9 +238,9 @@ public class CalendarVisualizationPresenter implements Presenter,
             // If we found at any datapoints for this day
             if (singleDayAwData.size() > 0) {
                 // Now add up all the values in the singleDayList and add it into the processedData Map
-                int totalValue = 0;
+                float totalValue = 0;
                 for (DataPointAwData day: singleDayAwData) {
-                    totalValue += Integer.parseInt(day.getValue());
+                    totalValue += Float.parseFloat(day.getValue());
                 }
                 
                 // See if we have a new maximum count in a single day for later normalization
