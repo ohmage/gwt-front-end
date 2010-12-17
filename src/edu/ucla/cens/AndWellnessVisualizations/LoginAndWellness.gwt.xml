@@ -5,18 +5,27 @@
   <inherits name="com.google.gwt.http.HTTP" />
   <inherits name="com.google.gwt.resources.Resources" />
   <inherits name="com.google.gwt.xml.XML"/>
+  <inherits name="com.google.gwt.i18n.I18N"/>
   <inherits name="com.google.code.p.gwtchismes.GWTChismes"/>
 
-  <!-- Nice GWT logging -->
-  <inherits name='com.google.gwt.logging.Logging' />  
+  <!-- GWT logging -->
+  <inherits name='com.google.gwt.logging.Logging' />    
+  <set-property name='gwt.logging.enabled' value='FALSE' />  
+
+  <!-- Property name to determine whether or not we are debugging -->
+  <define-property name="deployStatus" values="RELEASE,DEBUG" />
+  <set-property name="deployStatus" value="RELEASE" />
   
-  <set-property name='gwt.logging.enabled' value='TRUE' />  
-  <set-property name='gwt.logging.logLevel' value='FINE' />  
-  <set-property name='gwt.logging.popupHandler' value='DISABLED'/>  
-  <set-property name='gwt.logging.consoleHandler' value='ENABLED' />  
-  <set-property name='gwt.logging.developmentModeHandler' value='DISABLED' />  
-  <set-property name="gwt.logging.firebugHandler" value='DISABLED' />  
-  <set-property name="gwt.logging.systemHandler" value='DISABLED' />
+  <!-- Use different constant depending on whether or not we are debugging -->
+  	<replace-with class='edu.ucla.cens.AndWellnessVisualizations.client.DeployStatus.Release'>
+		<when-type-is class='edu.ucla.cens.AndWellnessVisualizations.client.DeployStatus' />
+		<when-property-is name='deployStatus' value='RELEASE' />
+	</replace-with>
+	
+	<replace-with class='edu.ucla.cens.AndWellnessVisualizations.client.DeployStatus.Debug'>
+		<when-type-is class='edu.ucla.cens.AndWellnessVisualizations.client.DeployStatus' />
+		<when-property-is name='deployStatus' value='DEBUG' />
+	</replace-with>
   
   
   <!-- Inherit the default GWT style sheet.  You can change       -->

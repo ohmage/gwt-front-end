@@ -15,6 +15,7 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.AndWellnessVisualizations.client.AndWellnessConstants;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
@@ -37,11 +38,6 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
     RequestBuilder authorizationService;
     RequestBuilder dataPointService;
     RequestBuilder configurationService;
-    
-    // Locations of the text files to read
-    private final String authorizationLocation = "http://127.0.0.1:8080/app/auth_token";
-    private final String dataPointLocation = "http://127.0.0.1:8080/app/q/dp";
-    private final String configurationLocation = "http://127.0.0.1:8080/app/q/config";
     
     /**
      * Contains all the possible error codes returned by the AndWellness server.
@@ -95,11 +91,11 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
      * Initializes the various RequestBuilders to contact the AW server.
      */
     public ServerAndWellnessRpcService() {
-        authorizationService = new RequestBuilder(RequestBuilder.POST, URL.encode(authorizationLocation));
+        authorizationService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getAuthorizationUrl()));
         authorizationService.setHeader("Content-Type", URL.encode("application/x-www-form-urlencoded"));
-        dataPointService = new RequestBuilder(RequestBuilder.POST, URL.encode(dataPointLocation));
+        dataPointService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getDataPointUrl()));
         dataPointService.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        configurationService = new RequestBuilder(RequestBuilder.POST, URL.encode(configurationLocation));
+        configurationService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getConfigurationUrl()));
         configurationService.setHeader("Content-Type", "application/x-www-form-urlencoded");
     }
     

@@ -50,19 +50,24 @@
       <arg value="edu.ucla.cens.AndWellnessVisualizations.CalendarAndWellness"/>
       <arg value="-localWorkers" />
       <arg value="2" />
-
     </java>
   </target>
 
   <target name="build" depends="gwtc" description="Build this project" />
 
   <target name="war" depends="build" description="Create a war file">
+  	<war webxml="war/WEB-INF/web-remote.xml" destfile="AndWellnessFrontend.war">
+    </war>
+  	
 	<zip destfile="AndWellnessFrontend.war" basedir="war"/>
   </target>
 	
-  <target name="war-nobuild" description="Create a war file">
-    <zip destfile="AndWellnessFrontend.war" basedir="war"/>
-  </target>
+	<target name="war-nobuild" description="Create a war file">
+	  	<war webxml="war/WEB-INF/web-remote.xml" destfile="AndWellnessFrontend.war">
+	  	</war>
+	  	
+		<zip destfile="AndWellnessFrontend.war" basedir="war"/>
+	  </target>
 	
   <target name="clean" description="Cleans this project">
     <delete dir="war/WEB-INF/classes" failonerror="false" />

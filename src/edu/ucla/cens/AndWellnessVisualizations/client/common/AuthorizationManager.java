@@ -6,6 +6,8 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Window;
 
+import edu.ucla.cens.AndWellnessVisualizations.client.AndWellnessConstants;
+import edu.ucla.cens.AndWellnessVisualizations.client.DeployStatus;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLoginEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.UserLogoutEvent;
@@ -138,7 +140,11 @@ public class AuthorizationManager {
                     if (loginManager.isCurrentlyLoggedIn()) {
                         // Auth fails, redirect
                         _logger.info("URL authorize failed as LOGGED_OUT: " + urlToAuthorize);
-                        //Window.Location.assign(authRecord.redirectIfAuthFail);
+                        
+                        // Turn off redirects when debugging
+                        if (AndWellnessConstants.status.getStatus().equals(DeployStatus.Status.RELEASE)) {
+                            Window.Location.assign(authRecord.redirectIfAuthFail);
+                        }
                     }
                     else {
                         // Auth succeeded, return
@@ -150,7 +156,11 @@ public class AuthorizationManager {
                     if (!loginManager.isCurrentlyLoggedIn()) {
                         // Auth fails, redirect
                         _logger.info("URL authorize failed as LOGGED_IN: " + urlToAuthorize);
-                        //Window.Location.assign(authRecord.redirectIfAuthFail);
+                        
+                        // Turn off redirects when debugging
+                        if (AndWellnessConstants.status.getStatus().equals(DeployStatus.Status.RELEASE)) {
+                            Window.Location.assign(authRecord.redirectIfAuthFail);
+                        }
                     }
                     else {
                         // Auth succeeded, return
@@ -160,9 +170,16 @@ public class AuthorizationManager {
                 default:
                     // If we get this far, assume the URL was NOT found
                     _logger.warning("Did not find URL in the PageAuthorize enum: " + urlToAuthorize);
-                    //Window.Location.assign("/");
+                    
+                    // Turn off redirects when debugging
+                    if (AndWellnessConstants.status.getStatus().equals(DeployStatus.Status.RELEASE)) {
+                        Window.Location.assign("/");
+                    }
                     break;
                 }
+                
+                // Return once we find the first matching authRecord
+                return;
             }
         }
     }
