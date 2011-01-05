@@ -37,7 +37,7 @@
       		<g:Label addStyleNames="{style.loginBoxLabel}">Password:</g:Label>
       	</g:cell>
       	<g:cell horizontalAlignment='ALIGN_RIGHT'>
-      	  <g:TextBox ui:field='userPasswordBox'></g:TextBox>
+      	  <g:PasswordTextBox ui:field='userPasswordBox'></g:PasswordTextBox>
       	</g:cell>
       </g:HorizontalPanel>
       

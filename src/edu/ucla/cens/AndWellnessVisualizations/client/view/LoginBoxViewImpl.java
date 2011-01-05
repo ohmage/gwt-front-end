@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -26,7 +27,7 @@ public class LoginBoxViewImpl extends Composite implements LoginBoxView {
     
     // Fields defined in the ui XML
     @UiField TextBox userLoginBox;
-    @UiField TextBox userPasswordBox;
+    @UiField PasswordTextBox userPasswordBox;
     @UiField Button loginButton;
     
     // Call the presenter in response to events (user clicks)
