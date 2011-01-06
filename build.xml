@@ -6,6 +6,12 @@
   <!-- Configure path to GWT SDK -->
   <property name="gwt.sdk" location="lib" />
 
+  <!-- Compilation variables -->
+  <property name="version"  value="snapshot"/>
+  <property name="resources" location="war"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+	
   <path id="project.class.path">
     <pathelement location="war/WEB-INF/classes"/>
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
@@ -55,23 +61,25 @@
 
   <target name="build" depends="gwtc" description="Build this project" />
 
-  <target name="war" depends="build" description="Create a war file">
-  	<war webxml="war/WEB-INF/web-remote.xml" destfile="AndWellnessFrontend.war">
-    </war>
-  	
-	<zip destfile="AndWellnessFrontend.war" basedir="war"/>
-  </target>
-	
-	<target name="war-nobuild" description="Create a war file">
-	  	<war webxml="war/WEB-INF/web-remote.xml" destfile="AndWellnessFrontend.war">
-	  	</war>
-	  	
-		<zip destfile="AndWellnessFrontend.war" basedir="war"/>
-	  </target>
+	<target name="war" depends="build" description="Compiles Java files and creates WAR.">
+	    <mkdir dir="${dist}"/>
+	    <war webxml="${resources}/WEB-INF/web-remote.xml" destfile="${dist}/${ant.project.name}-${version}.war">
+	      <classes dir="${resources}/WEB-INF/classes"/>
+	      <webinf dir="${resources}/WEB-INF">
+	        <exclude name="web.xml"/>
+	      	<exclude name="web-remote.xml"/>
+	      </webinf>
+	      <zipfileset dir="${resources}">
+	        <exclude name="META-INF/**"/>
+	        <exclude name="WEB-INF/**"/>
+	      </zipfileset>
+	      <!-- <fileset dir="${resources}/jsp" /> -->
+	    </war>
+	  </target>	
 	
   <target name="clean" description="Cleans this project">
-    <delete dir="war/WEB-INF/classes" failonerror="false" />
-    <delete dir="war/andwellnessvisualizations" failonerror="false" />
+    <delete dir="${resources}/WEB-INF/classes" failonerror="false" />
+    <delete dir="${dist}" failonerror="false" />
   </target>
 
 </project>
