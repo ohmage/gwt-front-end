@@ -16,6 +16,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQu
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.MobilityDataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.JsArrayUtils;
 
 /**
@@ -203,4 +204,12 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
         }
         
     }
+
+	@Override
+	public void fetchMobilityDataPoints(Date startDate, Date endDate,
+			String currentUserName, String authorizationToken,
+			AsyncCallback<List<MobilityDataPointAwData>> asyncCallback) {
+		// TODO Auto-generated method stub
+		
+	}
 }

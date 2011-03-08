@@ -17,13 +17,13 @@ public class AndWellnessConstants {
     private final static String authorizationLocationDebug = "http://127.0.0.1:8080/app/auth_token";
     private final static String dataPointLocationDebug = "http://127.0.0.1:8080/app/q/dp";
     private final static String configurationLocationDebug = "http://127.0.0.1:8080/app/q/config";
-    
+    private final static String mobilityLocationDebug = "http://127.0.0.1:8080/app/q/m";
     
     // RELEASE CONSTANTS
     private final static String authorizationLocationRelease = "../app/auth_token";
     private final static String dataPointLocationRelease = "../app/q/dp";
     private final static String configurationLocationRelease = "../app/q/config";
-    
+    private final static String mobilityLocationRelease = "../app/q/m";
     
     
         
@@ -77,4 +77,21 @@ public class AndWellnessConstants {
         
         return null;
     }
+
+    /**
+     * Returns the mobility api url based on the deployment status.
+     * Returns null if the status cannot be found
+     * 
+     * @return The mobility API URL.
+     */
+	public static String getMobilityUrl() {
+		if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
+            return mobilityLocationDebug;
+        }
+        else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
+            return mobilityLocationRelease;
+        }
+		
+		return null;
+	}
 }
