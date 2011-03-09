@@ -11,6 +11,6 @@ import com.google.gwt.core.client.JavaScriptObject;
 public class MobilityLocationAwData extends JavaScriptObject {
     protected MobilityLocationAwData() {};
     
-    public final native String getLatitude() /*-{ return this.la; }-*/;
-    public final native String getLongitude() /*-{ return this.lo; }-*/;
+    public final native double getLatitude() /*-{ return this.la; }-*/;
+    public final native double getLongitude() /*-{ return this.lo; }-*/;
 }

@@ -206,8 +206,8 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
     }
 
 	@Override
-	public void fetchMobilityDataPoints(Date startDate, Date endDate,
-			String currentUserName, String authorizationToken,
+	public void fetchMobilityDataPoints(Date day,
+			String userName, String authorizationToken,
 			AsyncCallback<List<MobilityDataPointAwData>> asyncCallback) {
 		// TODO Auto-generated method stub
 		

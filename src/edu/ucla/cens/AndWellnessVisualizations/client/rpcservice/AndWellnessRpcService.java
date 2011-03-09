@@ -40,7 +40,7 @@ public interface AndWellnessRpcService {
     
     public void fetchConfigData(String authToken, final AsyncCallback<ConfigQueryAwData> callback);
 
-	public void fetchMobilityDataPoints(Date startDate, Date endDate,
-			String currentUserName, String authorizationToken,
+	public void fetchMobilityDataPoints(Date day,
+			String userName, String authorizationToken,
 			final AsyncCallback<List<MobilityDataPointAwData>> asyncCallback);
 }

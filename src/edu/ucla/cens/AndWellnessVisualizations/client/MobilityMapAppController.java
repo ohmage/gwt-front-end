@@ -1,6 +1,5 @@
 package edu.ucla.cens.AndWellnessVisualizations.client;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -15,7 +14,6 @@ import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.CampaignConfigurationEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewMobilityDataPointAwDataEvent;
@@ -23,22 +21,21 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigurationInfo;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.MobilityDataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.PromptInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.SurveyInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
-import edu.ucla.cens.AndWellnessVisualizations.client.presenter.CalendarVisualizationPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataPointBrowserPresenter;
+import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MobilityMapPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MonthSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.NavigationBarPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.NotLoggedInException;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.AwDataTranslators;
-import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationView;
-import edu.ucla.cens.AndWellnessVisualizations.client.view.CalendarVisualizationViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DataPointBrowserView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DataPointBrowserViewImpl;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.MobilityMapVisualizationView;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.MobilityMapVisualizationViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarView;
@@ -61,6 +58,11 @@ public class MobilityMapAppController {
     // Various views in this controller
     private MonthSelectionView monthView = null;
     private NavigationBarView navBarView = null;
+    private DataPointBrowserView<CampaignInfo,ConfigurationInfo,SurveyInfo,PromptInfo> dataPointBrowserView = null;
+    private MobilityMapVisualizationView mobMapView = null;
+    
+    // Definitions needed for the views to render
+    private DataPointBrowserViewDefinitions dataPointBrowserViewDefinitions = null;
     
     // Data necessary to fetch data from the server
     private Date currentMonth = new Date();
@@ -91,6 +93,15 @@ public class MobilityMapAppController {
                 fetchDataPoints();
             }   
         });
+        
+        // Listen for a new data point label selection, call for new data
+        eventBus.addHandler(NewDataPointSelectionEvent.TYPE, new NewDataPointSelectionEventHandler() {
+            public void onSelect(NewDataPointSelectionEvent event) {
+                currentUserName = event.getUserName();
+                
+                fetchDataPoints();
+            }
+        });
     }
     
     /**
@@ -110,6 +121,29 @@ public class MobilityMapAppController {
         }
         MonthSelectionPresenter monthPres = new MonthSelectionPresenter(rpcService, eventBus, monthView);
         monthPres.go(RootPanel.get("monthSelectionView"));
+        
+        // Initialize and run the data browser view
+        if (dataPointBrowserView == null) {
+            dataPointBrowserView = new DataPointBrowserViewImpl<CampaignInfo,ConfigurationInfo,SurveyInfo,PromptInfo>();
+            // Initialize the render definitions
+            if (dataPointBrowserViewDefinitions == null) {
+                dataPointBrowserViewDefinitions = new DataPointBrowserViewDefinitions();
+            }
+            dataPointBrowserView.setDefinitions(
+                    dataPointBrowserViewDefinitions.getCampaignInfoDefinition(), 
+                    dataPointBrowserViewDefinitions.getConfigurationInfoDefinition(), 
+                    dataPointBrowserViewDefinitions.getSurveyInfoDefinition(), 
+                    dataPointBrowserViewDefinitions.getDataPointDefinition());
+        }
+        DataPointBrowserPresenter dpbPres = new DataPointBrowserPresenter(eventBus, dataPointBrowserView);
+        dpbPres.go(RootPanel.get("dataPointBrowserView"));
+        
+        if (mobMapView == null) {
+        	mobMapView = new MobilityMapVisualizationViewImpl();
+        }
+        // Initialize and run the map view
+        MobilityMapPresenter monthPresenter = new MobilityMapPresenter(rpcService, eventBus, mobMapView);
+        monthPresenter.go(RootPanel.get("mapVisualizationView"));
         
         // Fetch the configuration information, needed for the presenter/views
         fetchConfigData();
@@ -175,7 +209,7 @@ public class MobilityMapAppController {
         endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
           
         // Send our request to the rpcService and handle the result
-        rpcService.fetchMobilityDataPoints(startDate, endDate, currentUserName, loginManager.getAuthorizationToken(), 
+        rpcService.fetchMobilityDataPoints(new Date(), currentUserName, loginManager.getAuthorizationToken(), 
                 new AsyncCallback<List<MobilityDataPointAwData>>() {
             
             public void onSuccess(List<MobilityDataPointAwData> awData) {
