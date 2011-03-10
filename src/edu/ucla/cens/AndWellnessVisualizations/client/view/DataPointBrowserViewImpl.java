@@ -224,6 +224,24 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
         dataPointBrowserDataPointTable.setRowData(0, this.dataPointData);
     }
     
+    /**
+     * Methods to show hide the various selection fields
+     */
+    public void setCampaignVisibility(boolean visible) {
+    	dataPointCampaignPanel.setVisible(visible);
+    }
+    public void setVersionVisibility(boolean visible) {
+    	dataPointCampaignVersionPanel.setVisible(visible);
+    }
+    public void setUserVisibility(boolean visible) {
+    	dataPointUserPanel.setVisible(visible);
+    }
+    public void setSurveyVisibility(boolean visible) {
+    	dataPointSurveyPanel.setVisible(visible);
+    }
+    public void setDPVisibility(boolean visible) {
+    	dataPointDPPanel.setVisible(visible);
+    }
     
     /**
      * Methods to pass user interactions back to the presenter.

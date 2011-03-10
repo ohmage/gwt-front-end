@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.google.code.p.gwtchismes.client.GWTCSimpleDatePicker;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -12,10 +11,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.DataPointBrowserViewDefinitions;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.CampaignConfigurationEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointSelectionEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointSelectionEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewMobilityDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
@@ -65,7 +62,7 @@ public class MobilityMapAppController {
     private DataPointBrowserViewDefinitions dataPointBrowserViewDefinitions = null;
     
     // Data necessary to fetch data from the server
-    private Date currentMonth = new Date();
+    private Date currentDay = new Date();
     private String currentUserName = null;
     
     // Data about the logged in user
@@ -84,22 +81,16 @@ public class MobilityMapAppController {
     
     // Listen for events, take action
     private void bind() {
-        // Listen for a month selection event, if we have a data point selected, call for new data
-        // for the new month
-        eventBus.addHandler(MonthSelectionEvent.TYPE, new MonthSelectionEventHandler() {
-            public void onSelection(MonthSelectionEvent event) {
-                currentMonth = event.getMonthSelection();
-                
-                fetchDataPoints();
-            }   
-        });
-        
         // Listen for a new data point label selection, call for new data
-        eventBus.addHandler(NewDataPointSelectionEvent.TYPE, new NewDataPointSelectionEventHandler() {
-            public void onSelect(NewDataPointSelectionEvent event) {
-                currentUserName = event.getUserName();
-                
-                fetchDataPoints();
+        eventBus.addHandler(DataBrowserSelectionEvent.TYPE, new DataBrowserSelectionEventHandler() {
+            public void onSelect(DataBrowserSelectionEvent event) {
+            	switch(event.getType()) {
+            	// Only worry about user names
+            	case userName:
+            		currentUserName = event.getData().get(0);
+            		fetchDataPoints();
+            		break;
+            	}
             }
         });
     }
@@ -137,6 +128,10 @@ public class MobilityMapAppController {
         }
         DataPointBrowserPresenter dpbPres = new DataPointBrowserPresenter(eventBus, dataPointBrowserView);
         dpbPres.go(RootPanel.get("dataPointBrowserView"));
+        // We don't want to show most of the browser panels
+        dpbPres.setCampaignVisibility(false);
+        dpbPres.setDPVisibility(false);
+        dpbPres.setSurveyVisibility(false);
         
         if (mobMapView == null) {
         	mobMapView = new MobilityMapVisualizationViewImpl();
@@ -189,9 +184,6 @@ public class MobilityMapAppController {
      * we have all the necessary data before sending the request.
      */
     private void fetchDataPoints() {
-        // Data for the rpc request
-        Date startDate, endDate;
-      
         // Check to be sure the user information is set
         if (userInfo == null) {
             _logger.warning("No user info has been set, cannot fetch data points.");
@@ -199,17 +191,13 @@ public class MobilityMapAppController {
         }
         
         // Make sure all necessary selection information is net
-        if (currentUserName == null) {
+        if (currentUserName == null || currentDay == null) {
             _logger.warning("Not all necessary information has been set to fetch data.");
             return;
         }
-        
-        // Find the first and last day of the requested month
-        startDate = GWTCSimpleDatePicker.getFirstDayOfMonth(currentMonth);
-        endDate = GWTCSimpleDatePicker.getLastDayOfMonth(currentMonth);
           
         // Send our request to the rpcService and handle the result
-        rpcService.fetchMobilityDataPoints(new Date(), currentUserName, loginManager.getAuthorizationToken(), 
+        rpcService.fetchMobilityDataPoints(currentDay, currentUserName, loginManager.getAuthorizationToken(), 
                 new AsyncCallback<List<MobilityDataPointAwData>>() {
             
             public void onSuccess(List<MobilityDataPointAwData> awData) {

@@ -18,6 +18,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.model.MobilityDataPointAwData;
@@ -33,6 +34,7 @@ public class MobilityMapVisualizationViewImpl extends Composite
     private static Logger _logger = Logger.getLogger(MobilityMapVisualizationViewImpl.class.getName());
     
     @UiField SimplePanel mapPanel;
+    @UiField VerticalPanel mapLegend; 
     
 	private Presenter presenter;
 	
@@ -46,12 +48,12 @@ public class MobilityMapVisualizationViewImpl extends Composite
 	private Icon stillIcon = null;
 	
 	// Stores the location data list
-	private List<MobilityDataPointAwData> locationData;
+	private List<MobilityDataPointAwData> locationData = null;
 	
 	public MobilityMapVisualizationViewImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
 		
-		// Init the maps api
+		// Init the maps api with our map key
 		Maps.loadMapsApi("ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxRi_j0U6kJrkFvY4-OX2XYmEAa76BQ2ZkOydhEh44vXPVI_djTFw81U0w", "2", false, new Runnable() {
 			public void run() {
 				buildMap();
@@ -73,6 +75,9 @@ public class MobilityMapVisualizationViewImpl extends Composite
     	runIcon = Icon.newInstance("../images/runicon.png");
     	driveIcon = Icon.newInstance("../images/driveicon.png");
     	stillIcon = Icon.newInstance("../images/stillicon.png");
+    	
+    	// Just in case data already came in, try to load it now
+    	loadMap();
 	}
 	
 	public void setPresenter(Presenter presenter) {
@@ -82,7 +87,13 @@ public class MobilityMapVisualizationViewImpl extends Composite
 	public void setDataList(List<MobilityDataPointAwData> data) {
 		this.locationData = data;
 		
-		if (map != null) {
+		// Load data into the map
+		loadMap();
+	}
+	
+	private void loadMap() {
+		// Make sure we have a map and some data
+		if (map != null && locationData != null && locationData.size() > 0) {
 			// Clear the current data
 			map.clearOverlays();
 			LatLngBounds bounds = LatLngBounds.newInstance();
@@ -152,9 +163,4 @@ public class MobilityMapVisualizationViewImpl extends Composite
 	public Widget asWidget() {
 		return this;
 	}
-
-
-
-
-
 }

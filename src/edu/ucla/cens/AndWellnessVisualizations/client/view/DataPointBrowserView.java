@@ -46,5 +46,12 @@ public interface DataPointBrowserView<T,U,V,W> {
     // Resets the data lists
     void resetData();
     
+    // Update the panel visiblities
+    void setCampaignVisibility(boolean visible);
+    void setVersionVisibility(boolean visible);
+    void setUserVisibility(boolean visible);
+    void setSurveyVisibility(boolean visible);
+    void setDPVisibility(boolean visible);
+    
     Widget asWidget();
 }

@@ -18,7 +18,7 @@
     		<g:ListBox ui:field="dataPointBrowserConfigurationList"></g:ListBox>
     	</g:VerticalPanel>
     	<g:VerticalPanel ui:field="dataPointUserPanel">
-    		<g:Label>User</g:Label>
+    		<g:Label>Select user</g:Label>
     		<g:ListBox ui:field="dataPointBrowserUserList"></g:ListBox>
     	</g:VerticalPanel>
     	<g:VerticalPanel ui:field="dataPointSurveyPanel">

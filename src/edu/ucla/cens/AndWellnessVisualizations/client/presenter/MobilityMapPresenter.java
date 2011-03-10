@@ -1,8 +1,11 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
+import java.util.logging.Logger;
+
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.HasWidgets;
 
+import edu.ucla.cens.AndWellnessVisualizations.client.MobilityMapAppController;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewMobilityDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewMobilityDataPointAwDataEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
@@ -10,6 +13,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.MobilityMapVisualizat
 
 public class MobilityMapPresenter implements Presenter,
 	MobilityMapVisualizationView.Presenter {
+	private static Logger _logger = Logger.getLogger(MobilityMapPresenter.class.getName());
 	
 	// Save a handle to the event bus to listen to and pass events
     private EventBus eventBus;
@@ -43,6 +47,8 @@ public class MobilityMapPresenter implements Presenter,
         // Listen for incoming mobility data, pass to the view
     	eventBus.addHandler(NewMobilityDataPointAwDataEvent.TYPE, new NewMobilityDataPointAwDataEventHandler() {
 			public void onNewData(NewMobilityDataPointAwDataEvent event) {
+				_logger.fine("Received an incoming data event");
+				
 				view.setDataList(event.getData());
 			}
     	});

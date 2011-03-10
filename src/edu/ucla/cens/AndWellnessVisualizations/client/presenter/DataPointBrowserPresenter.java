@@ -2,7 +2,6 @@ package edu.ucla.cens.AndWellnessVisualizations.client.presenter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.event.shared.EventBus;
@@ -11,7 +10,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.SetModel;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.CampaignConfigurationEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.CampaignConfigurationEventHandler;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigurationInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.PromptInfo;
@@ -69,6 +68,34 @@ public class DataPointBrowserPresenter implements Presenter,
     }
     
     /**
+     * Call to show/hide the campaign/config selection fields
+     */
+    public void setCampaignVisibility(boolean visible) {
+    	if (view != null) {
+    		view.setCampaignVisibility(visible);
+    		view.setVersionVisibility(visible);
+    	}
+    }
+    
+    public void setUserVisibility(boolean visible) {
+    	if (view != null) {
+    		view.setUserVisibility(visible);
+    	}
+    }
+    
+    public void setSurveyVisibility(boolean visible) {
+    	if (view != null) {
+    		view.setSurveyVisibility(visible);
+    	}
+    }
+    
+    public void setDPVisibility(boolean visible) {
+    	if (view != null) {
+    		view.setDPVisibility(visible);
+    	}
+    }
+    
+    /**
      * Updates the view based on the new configuration information.  Load the new
      * campaign info into the campaign list and user list.  If there is
      * only one campaign or only one user, automatically select those.  If these is only
@@ -109,6 +136,9 @@ public class DataPointBrowserPresenter implements Presenter,
         
         // Update the view and selections for the new campaign
         updateSelectedCampaign(campaign);
+        
+        // Send out an event with this info
+        sendCampaignSelectionEvent();
     }
     
     /** 
@@ -122,6 +152,8 @@ public class DataPointBrowserPresenter implements Presenter,
         
         // Update the view with and selections for the new configuration
         updateSelectedConfiguration(configuration);
+        
+        sendVersionSelectionEvent();
     }
 
     /**
@@ -133,10 +165,7 @@ public class DataPointBrowserPresenter implements Presenter,
     public void userSelected(String userName) {
         setUserName.updateSetItem(userName);
         
-        // If we have a selected data point already, send out a datapointselection event with the new user
-        if (setDataPoint.isSet()) {
-            sendNewDataPointSelectionEvent();
-        }
+        sendUserNameSelectionEvent();
     }
 
     /**
@@ -156,9 +185,7 @@ public class DataPointBrowserPresenter implements Presenter,
     public void dataPointSelected(PromptInfo dataPoint) {
         setDataPoint.updateSetItem(dataPoint);
         
-        _logger.finer("Selected data point: " + dataPoint.getPromptId());
-        
-        sendNewDataPointSelectionEvent();
+        sendDataPointSelectionEvent();
     }
 
     /**
@@ -166,38 +193,73 @@ public class DataPointBrowserPresenter implements Presenter,
      * campaign, user, survey, and prompt id.  Silently fails if one of the
      * above are not selected.
      */
-    private void sendNewDataPointSelectionEvent() {
-        List<String> promptIdList = new ArrayList<String>();
-        
+    private void sendCampaignSelectionEvent() {
+    	String campaign;
+    	DataBrowserSelectionEvent event = new DataBrowserSelectionEvent(DataBrowserSelectionEvent.DataType.campaignName);
+    	
         // Make sure we have all necessary data to access the server.
-        if (!setCampaign.isSet() ||
-            !setSurvey.isSet() ||
-            !setUserName.isSet() ||
-            !setDataPoint.isSet()) {
-            
-            _logger.warning("Attempted to fetch data without all required parameters");
+        if (!setCampaign.isSet()) {
+            _logger.warning("No campaign is selected.");
             return;
         }
         
-        // Debugging
-        if (_logger.isLoggable(Level.FINE)) {
-            String campaign = setCampaign.getSetItem().getCampaignName();
-            String survey = setSurvey.getSetItem().getSurveyName();
-            String userName = setUserName.getSetItem();
-            String dataPoint = setDataPoint.getSetItem().getPromptId();
+        campaign = setCampaign.getSetItem().getCampaignName();
+        event.add(campaign);
+        
+        _logger.fine("Sending out selection event for campaign: " + campaign);
+    	
+    	eventBus.fireEvent(event);
+    }
     
-            _logger.fine("Sending out data selection event for campaign: " + campaign + 
-                    " survey: " + survey + " user: " + userName + " dataPoint: " + dataPoint);
-        }
-        
-        // The data point selection expects a list, even if only one selection
-        promptIdList.add(setDataPoint.getSetItem().getPromptId());
-        
-        // Fire off the selection event
-        eventBus.fireEvent(new NewDataPointSelectionEvent(setCampaign.getSetItem().getCampaignName(),
-                setConfiguration.getSetItem().getCampaignVersion(),
-                            setUserName.getSetItem(),
-                            promptIdList));
+    private void sendVersionSelectionEvent() {
+    	String config;
+    	DataBrowserSelectionEvent event = new DataBrowserSelectionEvent(DataBrowserSelectionEvent.DataType.campaignVersion);
+    	
+    	if (!setConfiguration.isSet()) {
+    		_logger.warning("No campaign version is selected.");
+    		return;
+    	}
+    	
+    	config = setConfiguration.getSetItem().getCampaignVersion();
+    	event.add(config);
+    	
+    	_logger.fine("Sending out selection event for configuration: " + config);
+    	
+    	eventBus.fireEvent(event);
+    }
+    
+    private void sendUserNameSelectionEvent() {
+    	String userName;
+    	DataBrowserSelectionEvent event = new DataBrowserSelectionEvent(DataBrowserSelectionEvent.DataType.userName);
+    	
+    	if (!setUserName.isSet()) {
+    		_logger.warning("No user is selected.");
+    		return;
+    	}
+    	
+    	userName = setUserName.getSetItem();
+    	event.add(userName);
+    	
+    	_logger.fine("Sending out selection event for user name: " + userName);
+    	
+    	eventBus.fireEvent(event);
+    }
+    
+    private void sendDataPointSelectionEvent() {
+    	String dataPoint;
+    	DataBrowserSelectionEvent event = new DataBrowserSelectionEvent(DataBrowserSelectionEvent.DataType.promptIdList);
+    	
+    	if (!setDataPoint.isSet()) {
+    		_logger.warning("No prompt id is selected.");
+    		return;
+    	}
+    	
+    	dataPoint = setDataPoint.getSetItem().getPromptId();
+    	event.add(dataPoint);
+    	
+    	_logger.fine("Sending out selection event for prompt id: " + dataPoint);
+    	
+    	eventBus.fireEvent(event);
     }
     
     
@@ -218,6 +280,8 @@ public class DataPointBrowserPresenter implements Presenter,
         
         // Auto select the first user in the list
         setUserName.updateSetItem(userList.get(0));
+        // ...and send out an event announcing this
+        sendUserNameSelectionEvent();
         
         // Auto select the first configuration in the list
         updateSelectedConfiguration(configurationList.get(0));        
@@ -231,6 +295,9 @@ public class DataPointBrowserPresenter implements Presenter,
      */
     private void updateSelectedConfiguration(ConfigurationInfo configuration) {
         setConfiguration.updateSetItem(configuration);
+        // .. and send out an announcment of this
+        sendVersionSelectionEvent();
+        
         List<SurveyInfo> surveyList = configuration.getSurveyList();
         view.setSurveyList(surveyList);
         

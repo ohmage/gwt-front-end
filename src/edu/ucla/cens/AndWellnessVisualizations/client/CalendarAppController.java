@@ -16,8 +16,8 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.CampaignConfiguratio
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointSelectionEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointSelectionEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
@@ -99,14 +99,26 @@ public class CalendarAppController {
         });
         
         // Listen for a new data point label selection, call for new data
-        eventBus.addHandler(NewDataPointSelectionEvent.TYPE, new NewDataPointSelectionEventHandler() {
-            public void onSelect(NewDataPointSelectionEvent event) {
-                currentDataPointList = event.getPromptIds();
-                currentUserName = event.getUserName();
-                currentCampaignName = event.getCampaignName();
-                currentCampaignVersion = event.getCampaignVersion();
-                
-                fetchDataPoints();
+        eventBus.addHandler(DataBrowserSelectionEvent.TYPE, new DataBrowserSelectionEventHandler() {
+            public void onSelect(DataBrowserSelectionEvent event) {
+                switch(event.getType()) {
+                case campaignName:
+                	currentCampaignName = event.getData().get(0);
+                	break;
+                case campaignVersion:
+                	currentCampaignVersion = event.getData().get(0);
+                	break;
+                case userName:
+                	currentUserName = event.getData().get(0);
+                	// If a new user is selected, update our data
+                	fetchDataPoints();
+                	break;
+                case promptIdList:
+                	currentDataPointList = event.getData();
+                	// If a new prompt id is selected, update our data
+                	fetchDataPoints();
+                	break;
+                }
             }
         });
     }
