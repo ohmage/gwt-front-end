@@ -13,6 +13,8 @@ import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.CampaignConfigurationEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewMobilityDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
@@ -23,6 +25,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.PromptInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.SurveyInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataPointBrowserPresenter;
+import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DateSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MobilityMapPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MonthSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.NavigationBarPresenter;
@@ -31,6 +34,8 @@ import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.NotLoggedInExce
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.AwDataTranslators;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DataPointBrowserView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DataPointBrowserViewImpl;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.DateSelectionView;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.DateSelectionViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MobilityMapVisualizationView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MobilityMapVisualizationViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionView;
@@ -57,6 +62,7 @@ public class MobilityMapAppController {
     private NavigationBarView navBarView = null;
     private DataPointBrowserView<CampaignInfo,ConfigurationInfo,SurveyInfo,PromptInfo> dataPointBrowserView = null;
     private MobilityMapVisualizationView mobMapView = null;
+    private DateSelectionView dateView = null;
     
     // Definitions needed for the views to render
     private DataPointBrowserViewDefinitions dataPointBrowserViewDefinitions = null;
@@ -93,6 +99,14 @@ public class MobilityMapAppController {
             	}
             }
         });
+        
+        // Listen for a new date selection
+       eventBus.addHandler(DateSelectionEvent.TYPE, new DateSelectionEventHandler() {
+			public void onSelection(DateSelectionEvent event) {
+				currentDay = event.getSelection();
+				fetchDataPoints();
+			} 
+       });
     }
     
     /**
@@ -139,6 +153,13 @@ public class MobilityMapAppController {
         // Initialize and run the map view
         MobilityMapPresenter monthPresenter = new MobilityMapPresenter(rpcService, eventBus, mobMapView);
         monthPresenter.go(RootPanel.get("mapVisualizationView"));
+        
+        // Initialize and run the month selection
+        if (dateView == null) {
+        	dateView = new DateSelectionViewImpl();
+        }
+        DateSelectionPresenter datePres = new DateSelectionPresenter(rpcService, eventBus, dateView);
+        datePres.go(RootPanel.get("dateSelectionView"));
         
         // Fetch the configuration information, needed for the presenter/views
         fetchConfigData();

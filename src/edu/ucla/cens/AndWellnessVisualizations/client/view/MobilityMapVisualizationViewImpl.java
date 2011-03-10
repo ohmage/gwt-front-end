@@ -93,7 +93,7 @@ public class MobilityMapVisualizationViewImpl extends Composite
 	
 	private void loadMap() {
 		// Make sure we have a map and some data
-		if (map != null && locationData != null && locationData.size() > 0) {
+		if (map != null && locationData != null) {
 			// Clear the current data
 			map.clearOverlays();
 			LatLngBounds bounds = LatLngBounds.newInstance();

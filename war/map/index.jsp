@@ -63,6 +63,8 @@
 				
 				<div id="dataPointBrowserView" class="float-right border-color-standard"></div>
 				
+				<div id="dateSelectionView" class="float-right border-color-standard"></div>
+				
 				<div id="dataCategorySelectionView" class="float-right border-color-standard"></div>
 				
 				<div class="clear-line"></div>

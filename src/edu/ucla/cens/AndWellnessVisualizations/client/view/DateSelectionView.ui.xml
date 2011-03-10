@@ -3,7 +3,10 @@
   xmlns:g="urn:import:com.google.gwt.user.client.ui"
   xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
 
-  <g:VerticalPanel>
-    <dp:DatePicker ui:field="dateSelectionPicker" />
-  </g:VerticalPanel>
+  <g:SimplePanel>
+  <g:VerticalPanel ui:field="dataPointUserPanel">
+   		<g:Label>Select date</g:Label>
+   		<dp:DatePicker ui:field="dateSelectionPicker"/>
+   	</g:VerticalPanel>  
+  </g:SimplePanel>
 </ui:UiBinder>
