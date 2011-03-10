@@ -188,6 +188,20 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
             dataPointBrowserUserList.addItem(user);
         }
     }
+    
+    /**
+     * Sets the selected user if it exists in the current user list
+     * 
+     * @param user The user to select
+     */
+    public void setSelectedUser(String user) {
+    	_logger.finer("Setting selected user to: " + user);
+    	
+    	int userIndex = userList.indexOf(user);
+    	if (userIndex >= 0) {
+    		dataPointBrowserUserList.setSelectedIndex(userIndex);
+    	}
+    }
 
     /**
      * Sets the survey drop down box with the new survey information.

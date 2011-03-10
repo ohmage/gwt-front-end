@@ -165,6 +165,8 @@ public class DataPointBrowserPresenter implements Presenter,
     public void userSelected(String userName) {
         setUserName.updateSetItem(userName);
         
+        _logger.fine("New user selected: " + userName);
+        
         sendUserNameSelectionEvent();
     }
 
@@ -277,9 +279,11 @@ public class DataPointBrowserPresenter implements Presenter,
         // Set the user list from this campaign
         List<String> userList = campaign.getUserList();
         view.setUserList(userList);
+        // Set list to current user name
+        view.setSelectedUser(userInfo.getUserName());
         
-        // Auto select the first user in the list
-        setUserName.updateSetItem(userList.get(0));
+        // Auto select the logged in user
+        setUserName.updateSetItem(userInfo.getUserName());
         // ...and send out an event announcing this
         sendUserNameSelectionEvent();
         

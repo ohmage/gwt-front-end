@@ -37,6 +37,9 @@ public interface DataPointBrowserView<T,U,V,W> {
     // Sets the user list
     void setUserList(List<String> userList);
     
+    // Sets the selected user
+    void setSelectedUser(String user);
+    
     // Sets the survey list
     void setSurveyList(List<V> surveyList);
     
