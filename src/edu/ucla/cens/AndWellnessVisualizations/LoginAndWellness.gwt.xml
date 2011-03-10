@@ -7,6 +7,7 @@
   <inherits name="com.google.gwt.xml.XML"/>
   <inherits name="com.google.gwt.i18n.I18N"/>
   <inherits name="com.google.code.p.gwtchismes.GWTChismes"/>
+  <inherits name="com.google.gwt.maps.GoogleMaps"/>
 
   <!-- GWT logging -->
   <inherits name='com.google.gwt.logging.Logging' />    

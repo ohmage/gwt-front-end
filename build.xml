@@ -26,6 +26,7 @@
   	<copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
     <!-- Add any additional server libs that need to be copied -->
     <copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwtchismes-0.9.7.jar" />
+    <copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-maps.jar" />
   </target>
 
   <target name="javac" depends="libs" description="Compile java source">
