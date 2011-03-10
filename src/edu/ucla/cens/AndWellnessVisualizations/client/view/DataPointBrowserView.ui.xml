@@ -9,23 +9,23 @@
 
   <g:SimplePanel>
     <g:VerticalPanel ui:field="dataPointBrowserMainPanel">
-    	<g:VerticalPanel>
+    	<g:VerticalPanel ui:field="dataPointCampaignPanel">
     		<g:Label>Campaign</g:Label>
     		<g:ListBox ui:field="dataPointBrowserCampaignList"></g:ListBox>
     	</g:VerticalPanel>
-    	<g:VerticalPanel>
+    	<g:VerticalPanel ui:field="dataPointCampaignVersionPanel">
     		<g:Label>Version</g:Label>
     		<g:ListBox ui:field="dataPointBrowserConfigurationList"></g:ListBox>
     	</g:VerticalPanel>
-    	<g:VerticalPanel>
+    	<g:VerticalPanel ui:field="dataPointUserPanel">
     		<g:Label>User</g:Label>
     		<g:ListBox ui:field="dataPointBrowserUserList"></g:ListBox>
     	</g:VerticalPanel>
-    	<g:VerticalPanel>
+    	<g:VerticalPanel ui:field="dataPointSurveyPanel">
     		<g:Label>Survey</g:Label>
     		<g:ListBox ui:field="dataPointBrowserSurveyList"></g:ListBox>
     	</g:VerticalPanel>
-    	<g:VerticalPanel>
+    	<g:VerticalPanel ui:field="dataPointDPPanel">
     		<g:Label>Data Point</g:Label>
     		<cv:CellTable ui:field="dataPointBrowserDataPointTable"></cv:CellTable>
     	</g:VerticalPanel>

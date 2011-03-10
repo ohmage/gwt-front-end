@@ -1,14 +1,11 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.view;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.gwt.cell.client.ClickableTextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -16,7 +13,6 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
-import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -26,7 +22,6 @@ import com.google.gwt.view.client.SingleSelectionModel;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.common.ColumnDefinition;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.DropDownDefinition;
-import edu.ucla.cens.AndWellnessVisualizations.client.model.PromptInfo;
 
 /**
  * The implementation of data point browser view.  The user must select
@@ -35,8 +30,6 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.PromptInfo;
  * 
  * @author jhicks
  *
- * @param <T> Represents the data point list data.
- * @param <V>
  */
 public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements DataPointBrowserView<T,U,V,W> {
     @UiTemplate("DataPointBrowserView.ui.xml")
@@ -53,6 +46,13 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
     @UiField ListBox dataPointBrowserConfigurationList;
     @UiField ListBox dataPointBrowserUserList;
     @UiField ListBox dataPointBrowserSurveyList;
+    
+    // To show and hide each selection field
+    @UiField VerticalPanel dataPointCampaignPanel;
+    @UiField VerticalPanel dataPointCampaignVersionPanel;
+    @UiField VerticalPanel dataPointUserPanel;
+    @UiField VerticalPanel dataPointSurveyPanel;
+    @UiField VerticalPanel dataPointDPPanel;
     
     // The CellTable to hold the data points
     @UiField(provided=true)
@@ -111,6 +111,8 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
         });
         
         initWidget(uiBinder.createAndBindUi(this));
+        
+        _logger.finer("Instantiated DataPointBrowserViewImpl");
     }
   
     // Setup our presenter
@@ -228,9 +230,7 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
      */
 
     @UiHandler("dataPointBrowserCampaignList")
-    void onDataPointBrowserCampaignListChanged(ChangeEvent event) {
-        //_logger.info("User selected campaign: " + event.getValue());
-        
+    void onDataPointBrowserCampaignListChanged(ChangeEvent event) {        
         // Find which row was selected
         int selectedCampaign = dataPointBrowserCampaignList.getSelectedIndex();
         
@@ -242,12 +242,10 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
     
     @UiHandler("dataPointBrowserConfigurationList")
     void onDataPointBrowserConfigurationListChanged(ChangeEvent event) {
-        //_logger.info("User selected campaign version" + event.getValue());
-        
         // Find which row was selected
         int selectedConfiguration = dataPointBrowserConfigurationList.getSelectedIndex();
         
-     // Pass the selected campaign back to the presenter
+        // Pass the selected campaign back to the presenter
         if (presenter != null) {
             presenter.configurationSelected(configurationList.get(selectedConfiguration));
         }
@@ -255,8 +253,6 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
     
     @UiHandler("dataPointBrowserUserList")
     void onDataPointBrowserUserListChanged(ChangeEvent event) {
-       // _logger.info("User selected user: " + event.getValue());
-        
         if (presenter != null) {
             int selectedUser = dataPointBrowserUserList.getSelectedIndex();
             presenter.userSelected(dataPointBrowserUserList.getItemText(selectedUser));
@@ -265,8 +261,6 @@ public class DataPointBrowserViewImpl<T,U,V,W> extends Composite implements Data
     
     @UiHandler("dataPointBrowserSurveyList")
     void onDataPointBrowserSurveyListChanged(ChangeEvent event) {
-        //_logger.info("User selected survey: " + event.getValue());
-        
         // Find which row was selected
         int selectedSurvey = dataPointBrowserSurveyList.getSelectedIndex();
         
