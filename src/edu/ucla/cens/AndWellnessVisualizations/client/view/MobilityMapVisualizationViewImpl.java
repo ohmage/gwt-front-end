@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.maps.client.InfoWindow;
+import com.google.gwt.maps.client.InfoWindowContent;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.Maps;
 import com.google.gwt.maps.client.control.LargeMapControl;
+import com.google.gwt.maps.client.event.MarkerClickHandler;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.maps.client.geom.LatLngBounds;
 import com.google.gwt.maps.client.geom.Size;
@@ -101,22 +104,22 @@ public class MobilityMapVisualizationViewImpl extends Composite
 			for (MobilityDataPointAwData dataPoint : this.locationData) {
 				// Grab the data from the dataPoint
 				String mode = dataPoint.getMode();
-            	String locationStatus = dataPoint.getLocationStatus();
+            	final String locationStatus = dataPoint.getLocationStatus();
             	double lat, lon;
+            	final String timeStamp;
             	
-            	// Check if the lat/lon data is valid
-            	if (locationStatus.equals("valid")) {
-            		MobilityLocationAwData mobLoc = dataPoint.getLocation();
-            		lat = mobLoc.getLatitude();
-            		lon = mobLoc.getLongitude();
-            		
-            		_logger.finer("Mobility: lat " + lat + " lon " + lon + " mode " + mode);
-            	}
-            	// Do nothing for now if non valid loc data
-            	else {
+            	// Skip "unavailable" data points
+            	if (locationStatus.equals("unavailable"))
             		continue;
-            	}
-				
+            	
+            	// Grab and parse the location object
+        		MobilityLocationAwData mobLoc = dataPoint.getLocation();
+        		lat = mobLoc.getLatitude();
+        		lon = mobLoc.getLongitude();
+        		timeStamp = mobLoc.getTimeStamp();
+        		
+        		_logger.finer("Mobility: lat " + lat + " lon " + lon + " mode " + mode);
+            	
 				Icon iconToUse;
                 if (mode.equals("still")) {
                 	iconToUse = stillIcon;
@@ -145,13 +148,25 @@ public class MobilityMapVisualizationViewImpl extends Composite
                 options.setIcon(iconToUse);
                 
                 // Set the point location
-                LatLng point = LatLng.newInstance(lat, lon);
+                final LatLng point = LatLng.newInstance(lat, lon);
                 
                 // Increase the bounds
                 bounds.extend(point);
                 
+                // Create the map marker
+                final Marker marker = new Marker(point, options);
+                // Add the overlay text
+                marker.addMarkerClickHandler(new MarkerClickHandler() {
+                    public void onClick(MarkerClickEvent event) {
+                    	_logger.fine("Detected click, adding info time: " + timeStamp + " status: " + locationStatus);
+                    	
+                    	InfoWindow info = map.getInfoWindow();
+                    	info.open(point, new InfoWindowContent("Time: " + timeStamp + "<br>Status: " + locationStatus));
+                    }
+                });
+                
                 // Add to the map
-                map.addOverlay(new Marker(point, options));
+                map.addOverlay(marker);
 			}
 			
 			// Zoom and center the map to the new bounds

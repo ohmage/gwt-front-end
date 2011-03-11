@@ -13,4 +13,5 @@ public class MobilityLocationAwData extends JavaScriptObject {
     
     public final native double getLatitude() /*-{ return this.la; }-*/;
     public final native double getLongitude() /*-{ return this.lo; }-*/;
+    public final native String getTimeStamp() /*-{ return this.ts; }-*/;
 }
