@@ -25,7 +25,7 @@ public class AndWellnessConstants {
     private final static String dataPointLocationRelease = "../app/q/dp";
     private final static String configurationLocationRelease = "../app/q/config";
     private final static String mobilityLocationRelease = "../app/q/m";
-    private final static String googleMapsApiKeyRelease = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxTSFov2pRIXTMXmJtOHSJVnImuOrRRbrQPGvvdbztyn6nYzKy4ZFDUXrw";
+    private final static String googleMapsApiKeyRelease = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxSaGzzTMV7IrE3zhGi4xAUyZKf_rhQSdRF4uQQEE-RzoBWBBPLzb1MWNg";
     
         
     /**
@@ -101,7 +101,7 @@ public class AndWellnessConstants {
 	 * 
 	 * @return The google maps API key.
 	 */
-	public static String getMapsApiKeyl() {
+	public static String getMapsApiKey() {
 		if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
             return googleMapsApiKeyDebug;
         }

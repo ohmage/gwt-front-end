@@ -58,7 +58,7 @@ public class MobilityMapVisualizationViewImpl extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 		
 		// Init the maps api with our map key
-		Maps.loadMapsApi(AndWellnessConstants.getMapsApiKeyl(), "2", false, new Runnable() {
+		Maps.loadMapsApi(AndWellnessConstants.getMapsApiKey(), "2", false, new Runnable() {
 			public void run() {
 				buildMap();
 		    }
