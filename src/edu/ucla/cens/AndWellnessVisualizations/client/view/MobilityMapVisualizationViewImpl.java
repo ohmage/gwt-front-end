@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.AndWellnessVisualizations.client.AndWellnessConstants;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.MobilityDataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.MobilityLocationAwData;
 
@@ -57,7 +58,7 @@ public class MobilityMapVisualizationViewImpl extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 		
 		// Init the maps api with our map key
-		Maps.loadMapsApi("ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxRi_j0U6kJrkFvY4-OX2XYmEAa76BQ2ZkOydhEh44vXPVI_djTFw81U0w", "2", false, new Runnable() {
+		Maps.loadMapsApi(AndWellnessConstants.getMapsApiKeyl(), "2", false, new Runnable() {
 			public void run() {
 				buildMap();
 		    }
