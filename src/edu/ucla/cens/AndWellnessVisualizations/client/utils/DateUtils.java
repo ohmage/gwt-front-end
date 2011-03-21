@@ -17,6 +17,12 @@ public class DateUtils {
     // Format of the timestamp string to upload to server POST api
     public final static String uploadTimeStampFormat = "yyyy-MM-dd";
     
+    // Various time constants
+    public final static int msInSec = 1000;
+    public final static int secInMin = 60;
+    public final static int minInHour = 60;
+    public final static int hourInDay = 24;
+    
     /**
      * Translates a String from the server time format to a Date.
      * 
@@ -31,6 +37,19 @@ public class DateUtils {
     public static String translateToServerUploadFormat(Date toTranslate) {
         DateTimeFormat dateFormat = DateTimeFormat.getFormat(uploadTimeStampFormat);
         return dateFormat.format(toTranslate);
+    }
+    
+    /**
+     * Adds a number of days to the Date, returns a copy.
+     * 
+     * @param toAdd The Date to add days to.
+     * @param numDays The number of days to add.
+     * @return The new Date.
+     */
+    public static Date addDays(Date toAdd, int numDays) {
+    	long time = toAdd.getTime();
+    	time += msInSec * secInMin * minInHour * hourInDay * numDays;
+    	return new Date(time);
     }
     
     /**

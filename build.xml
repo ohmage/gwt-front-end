@@ -56,6 +56,7 @@
       <arg value="edu.ucla.cens.AndWellnessVisualizations.LoginAndWellness"/>
       <arg value="edu.ucla.cens.AndWellnessVisualizations.CalendarAndWellness"/>
       <arg value="edu.ucla.cens.AndWellnessVisualizations.MobilityMapAndWellness"/>
+      <arg value="edu.ucla.cens.AndWellnessVisualizations.MobilityChartAndWellness"/>
       <arg value="-localWorkers" />
       <arg value="2" />
     </java>

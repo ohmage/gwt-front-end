@@ -1,0 +1,38 @@
+<ui:UiBinder
+  xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  
+  <ui:style>
+  	.weekSelectionLink {
+  		padding-left: 7px;
+  		padding-right: 7px;
+  	}
+  	.weekSelectionLink:hover {
+  		cursor: pointer;
+  		text-decoration: underline;
+  	}
+  	.weekSelectionCurrentMonth {
+  		font-size: 1.3em;
+  		width: 150px;
+  		border-left: 2px solid #E8E8E8;
+  		border-right: 2px solid #E8E8E8;
+  	}
+  	.weekSelectionFullHeight {
+  		height: 100%;	
+  	}
+  </ui:style>
+
+  <g:SimplePanel addStyleNames="{style.weekSelectionFullHeight}">
+  	<g:HorizontalPanel addStyleNames="{style.weekSelectionFullHeight}">
+  		<g:cell horizontalAlignment='ALIGN_RIGHT' verticalAlignment='ALIGN_MIDDLE'>
+  			<g:Label addStyleNames="{style.weekSelectionLink}" ui:field="previousWeekLabel">Previous Week</g:Label>
+  		</g:cell>
+  		<g:cell horizontalAlignment='ALIGN_CENTER' verticalAlignment='ALIGN_MIDDLE'>
+  			<g:Label addStyleNames="{style.weekSelectionCurrentMonth}" ui:field="currentWeekLabel"></g:Label>
+  		</g:cell>
+  		<g:cell horizontalAlignment='ALIGN_LEFT' verticalAlignment='ALIGN_MIDDLE'>
+  			<g:Label addStyleNames="{style.weekSelectionLink}" ui:field="nextWeekLabel">Next Week</g:Label>
+  		</g:cell>
+  	</g:HorizontalPanel>
+  </g:SimplePanel>
+</ui:UiBinder>
