@@ -51,15 +51,15 @@ public class WeekSelectionViewImpl extends Composite implements WeekSelectionVie
     /**
      * Sets the current week to display.
      * 
-     * @param week The first day of the 7 day week to display
+     * @param week The last day of the 7 day week to display
      */
     public void setCurrentWeek(Date week) {
         DateTimeFormat dayFormat = DateTimeFormat.getFormat("MMM d");
-        Date endOfWeek = DateUtils.addDays(week, 7);
+        Date startOfWeek = DateUtils.addDays(week, -6);
         
         _logger.fine("Setting current week to " + dayFormat.format(week));
         
-        currentWeekLabel.setText(dayFormat.format(week) + " - " + dayFormat.format(endOfWeek));
+        currentWeekLabel.setText(dayFormat.format(startOfWeek) + " - " + dayFormat.format(week));
     }
     
     // Handlers for clicks

@@ -4,11 +4,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.common.DataPointBrowserViewDefinitions;
@@ -18,9 +16,11 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelection
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.NewChunkedMobilityAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewMobilityDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ChunkedMobilityAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigurationInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.MobilityDataPointAwData;
@@ -28,23 +28,21 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.PromptInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.SurveyInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataPointBrowserPresenter;
-import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DateSelectionPresenter;
-import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MobilityMapPresenter;
-import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MonthSelectionPresenter;
+import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MobilityChartPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.NavigationBarPresenter;
+import edu.ucla.cens.AndWellnessVisualizations.client.presenter.WeekSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.NotLoggedInException;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.AwDataTranslators;
+import edu.ucla.cens.AndWellnessVisualizations.client.utils.DateUtils;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DataPointBrowserView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DataPointBrowserViewImpl;
-import edu.ucla.cens.AndWellnessVisualizations.client.view.DateSelectionView;
-import edu.ucla.cens.AndWellnessVisualizations.client.view.DateSelectionViewImpl;
-import edu.ucla.cens.AndWellnessVisualizations.client.view.MobilityMapVisualizationView;
-import edu.ucla.cens.AndWellnessVisualizations.client.view.MobilityMapVisualizationViewImpl;
-import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionView;
-import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionViewImpl;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.MobilityChartVisualizationView;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.MobilityChartVisualizationViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarViewImpl;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.WeekSelectionView;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.WeekSelectionViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.widget.IFrameForm;
 
 /**
@@ -63,7 +61,9 @@ public class MobilityChartAppController {
     
     // Various views in this controller
     private NavigationBarView navBarView = null;
+    private WeekSelectionView weekSelectionView = null;
     private DataPointBrowserView<CampaignInfo,ConfigurationInfo,SurveyInfo,PromptInfo> dataPointBrowserView = null;
+    private MobilityChartVisualizationView mobChartView = null;
     
     // Definitions needed for the views to render
     private DataPointBrowserViewDefinitions dataPointBrowserViewDefinitions = null;
@@ -100,18 +100,46 @@ public class MobilityChartAppController {
             	}
             }
         });
+        
+        eventBus.addHandler(DateSelectionEvent.TYPE, new DateSelectionEventHandler() {
+			public void onSelection(DateSelectionEvent event) {
+				switch(event.getType()) {
+				case Week:
+					// New week, select new data
+					currentDay = event.getSelection();
+					fetchDataPoints();
+					break;
+				}
+			}
+        });
     }
     
     /**
      * Initializes the various presenters and views that this controls
      */
-    public void go() {        
+    @SuppressWarnings("deprecation")
+	public void go() {        
         // Initialize and run the navigation bar view
         if (navBarView == null) {
             navBarView = new NavigationBarViewImpl();
         }
         NavigationBarPresenter navBarPres= new NavigationBarPresenter(eventBus, navBarView, loginManager);
         navBarPres.go(RootPanel.get("navigationBarView"));
+        
+        // Initialize and run the week selection view
+        if (weekSelectionView == null) {
+        	weekSelectionView = new WeekSelectionViewImpl();
+        }
+        WeekSelectionPresenter weekSelPres = new WeekSelectionPresenter(rpcService, eventBus, weekSelectionView);
+        weekSelPres.go(RootPanel.get("weekSelectionView"));
+        // Set to always end on Sundays
+        Date date = new Date();
+        // Deprecated, but Calendar is not included in the GWT libraries
+        if (date.getDay() != 0) {
+        	// Shift to Sunday
+        	date = DateUtils.addDays(date, date.getDay());
+        }
+        weekSelPres.setCurrentWeek(date);
         
         // Initialize and run the data browser view
         if (dataPointBrowserView == null) {
@@ -133,13 +161,14 @@ public class MobilityChartAppController {
         dpbPres.setDPVisibility(false);
         dpbPres.setSurveyVisibility(false);
         
-        // Test the new iframe widget
-        final IFrameForm frame = new IFrameForm();
-        RootPanel.get("chartVisualizationView").add(frame);
-        frame.submit();
+        if (mobChartView == null) {
+        	mobChartView = new MobilityChartVisualizationViewImpl();
+        }
+        MobilityChartPresenter mobChartPres = new MobilityChartPresenter(rpcService, eventBus, mobChartView);
+        mobChartPres.go(RootPanel.get("mobilityChartVisualizationView"));
         
         // Fetch the configuration information, needed for the presenter/views
-        //fetchConfigData();
+        fetchConfigData();
     }
 
     private void fetchConfigData() {   
@@ -195,13 +224,13 @@ public class MobilityChartAppController {
         }
           
         // Send our request to the rpcService and handle the result
-        rpcService.fetchMobilityDataPoints(currentDay, currentUserName, loginManager.getAuthorizationToken(), 
-                new AsyncCallback<List<MobilityDataPointAwData>>() {
+        rpcService.fetchChunkedMobility(DateUtils.addDays(currentDay, -6), currentDay, currentUserName, "2", loginManager.getAuthorizationToken(), 
+                new AsyncCallback<List<ChunkedMobilityAwData>>() {
             
-            public void onSuccess(List<MobilityDataPointAwData> awData) {
+            public void onSuccess(List<ChunkedMobilityAwData> awData) {
                 _logger.info("Received " + awData.size() + " data points from the server.");
                 // If we get data back, send it out in an event
-                eventBus.fireEvent(new NewMobilityDataPointAwDataEvent(awData));
+                eventBus.fireEvent(new NewChunkedMobilityAwDataEvent(awData));
             }
             
             public void onFailure(Throwable error) {

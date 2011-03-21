@@ -47,12 +47,17 @@ public class WeekSelectionPresenter implements Presenter,
         
     }
     
+    public void setCurrentWeek(Date week) {
+    	currentWeek = week;
+    	view.setCurrentWeek(week);
+    }
+    
     /**
      * Called when the user clicks previous month.  Update the displayed month and
      * send out a month change event.
      */
     public void onPreviousWeekSelected() {
-        currentWeek = GWTCDatePicker.increaseWeek(currentWeek, -7);
+        currentWeek = GWTCDatePicker.increaseWeek(currentWeek, -1);
         
         // Update the view with the new month
         view.setCurrentWeek(currentWeek);
@@ -62,7 +67,7 @@ public class WeekSelectionPresenter implements Presenter,
     }
 
     public void onNextWeekSelected() {
-        currentWeek = GWTCDatePicker.increaseWeek(currentWeek, 7);
+        currentWeek = GWTCDatePicker.increaseWeek(currentWeek, 1);
         
         // Update the view with the new month
         view.setCurrentWeek(currentWeek);

@@ -22,7 +22,7 @@ public class IFrameForm extends Composite {
 	/**
 	 * Create a vertical panel with a hidden form and an iframe target for the form.
 	 */
-	public IFrameForm() {
+	public IFrameForm(String url) {
 		VerticalPanel panel = new VerticalPanel();
 		
 		// Setup and add the frame
@@ -32,7 +32,8 @@ public class IFrameForm extends Composite {
 		// Setup and add the form
 		form = new FormPanel(iFrame);
 		// Move this URL into a constant
-		form.setAction("https://chart.googleapis.com/chart");
+		//form.setAction("https://chart.googleapis.com/chart");
+		form.setAction(url);
 		form.setMethod(FormPanel.METHOD_POST);
 		form.setVisible(false);
 		panel.add(form);
@@ -42,6 +43,7 @@ public class IFrameForm extends Composite {
 		form.add(formChildren);
 		
 		// Set some default chart parameters
+		/*
 		setNameValue("cht", "bhs");
 		setNameValue("chxt", "x,y");
 		setNameValue("chxl", "0:|12am|6am|noon|6pm|12am|1:|Sun|Sat|Fri|Thu|Wed|Tue|Mon");
@@ -50,7 +52,7 @@ public class IFrameForm extends Composite {
 		setNameValue("chco", "FFC6A5|FFFF42|DEF3BD|00A5C6|DEBDDE");
 		setNameValue("chd", "t:0,0,0,0,0");
 		//setNameValue("chs", width + "x" + height);
-		
+		*/
 		initWidget(panel);
 	}
 	
