@@ -51,11 +51,11 @@
 <jsp:include page="../jsp/header.jsp"/>
 		
 		<div id="contents">
-				<!-- Month selector div -->
-				<div id="monthSelectionView" class="border-color-standard"></div>
+				<!-- Week selector div -->
+				<div id="weekSelectionView" class="border-color-standard"></div>
 		
 				<!-- Chart data view -->
-				<div id="chartVisualizationView" class="float-left"></div>
+				<div id="mobilityChartVisualizationView" class="float-left"></div>
 				
 				<div id ="calendarDayDetailView"></div>
 				
