@@ -7,8 +7,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.common.SetModel;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.DateSelectionView;
 
@@ -52,14 +51,18 @@ public class DateSelectionPresenter implements Presenter,
      */
     private void bind() {
         // Listen for month change events
-    	eventBus.addHandler(MonthSelectionEvent.TYPE,
-                new MonthSelectionEventHandler() {
-                    public void onSelection(MonthSelectionEvent event) {
-                        
-                        month = event.getMonthSelection();
-                        
-                        if (view != null) {
-                            view.setCurrentMonth(month);
+    	eventBus.addHandler(DateSelectionEvent.TYPE,
+                new DateSelectionEventHandler() {
+                    public void onSelection(DateSelectionEvent event) {
+                        switch (event.getType()) {
+                        case Month:
+	                        month = event.getSelection();
+	                        
+	                        if (view != null) {
+	                            view.setCurrentMonth(month);
+	                        }
+	                        
+	                        break;
                         }
                     }
             });
@@ -69,6 +72,6 @@ public class DateSelectionPresenter implements Presenter,
 		setDate.updateSetItem(selection);
 		
 		// Send out a date selection event
-		eventBus.fireEvent(new DateSelectionEvent(setDate.getSetItem()));
+		eventBus.fireEvent(new DateSelectionEvent(setDate.getSetItem(), DateSelectionEvent.DateType.Day));
 	}
 }

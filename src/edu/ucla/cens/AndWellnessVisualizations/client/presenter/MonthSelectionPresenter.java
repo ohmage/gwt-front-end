@@ -6,7 +6,7 @@ import com.google.code.p.gwtchismes.client.GWTCDatePicker;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.HasWidgets;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionView;
 
@@ -58,7 +58,7 @@ public class MonthSelectionPresenter implements Presenter,
         view.setCurrentMonth(currentMonth);
         
         // Send out the new month selection event
-        eventBus.fireEvent(new MonthSelectionEvent(currentMonth));
+        eventBus.fireEvent(new DateSelectionEvent(currentMonth, DateSelectionEvent.DateType.Month));
     }
 
     public void onNextMonthSelected() {
@@ -68,6 +68,6 @@ public class MonthSelectionPresenter implements Presenter,
         view.setCurrentMonth(currentMonth);
         
         // Send out the new month selection event
-        eventBus.fireEvent(new MonthSelectionEvent(currentMonth));
+        eventBus.fireEvent(new DateSelectionEvent(currentMonth, DateSelectionEvent.DateType.Month));
     }
 }

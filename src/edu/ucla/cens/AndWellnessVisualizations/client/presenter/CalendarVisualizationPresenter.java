@@ -4,8 +4,8 @@ import com.google.code.p.gwtchismes.client.GWTCSimpleDatePicker;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.HasWidgets;
 
-import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEvent;
@@ -83,18 +83,23 @@ public class CalendarVisualizationPresenter implements Presenter,
         
         // Listen for a new month selection.  Change to the new month and fetch new data from
         // the server.
-        eventBus.addHandler(MonthSelectionEvent.TYPE,
-            new MonthSelectionEventHandler() {
-                public void onSelection(MonthSelectionEvent event) {
-                    _logger.fine("Received a month selection event with month " + currentMonth);
-                    
-                    currentMonth = event.getMonthSelection();
-                    
-                    if (view != null) {
-                        view.updateMonth(currentMonth);
-                        // Also update the data in case there is something new
-                        view.updateDayData(currentDayData);
-                    }
+        eventBus.addHandler(DateSelectionEvent.TYPE,
+            new DateSelectionEventHandler() {
+                public void onSelection(DateSelectionEvent event) {
+                	switch (event.getType()) {
+                	case Month:
+	                    _logger.fine("Received a month selection event with month " + currentMonth);
+	                    
+	                    currentMonth = event.getSelection();
+	                    
+	                    if (view != null) {
+	                        view.updateMonth(currentMonth);
+	                        // Also update the data in case there is something new
+	                        view.updateDayData(currentDayData);
+	                    }
+	                    
+	                    break;
+                	}
                 }
         });
         

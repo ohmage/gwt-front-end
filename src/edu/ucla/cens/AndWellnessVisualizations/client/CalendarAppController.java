@@ -13,8 +13,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.DataPointBrowserViewDefinitions;
 import edu.ucla.cens.AndWellnessVisualizations.client.common.TokenLoginManager;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.CampaignConfigurationEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEvent;
-import edu.ucla.cens.AndWellnessVisualizations.client.event.MonthSelectionEventHandler;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEventHandler;
@@ -90,11 +90,16 @@ public class CalendarAppController {
     private void bind() {
         // Listen for a month selection event, if we have a data point selected, call for new data
         // for the new month
-        eventBus.addHandler(MonthSelectionEvent.TYPE, new MonthSelectionEventHandler() {
-            public void onSelection(MonthSelectionEvent event) {
-                currentMonth = event.getMonthSelection();
-                
-                fetchDataPoints();
+        eventBus.addHandler(DateSelectionEvent.TYPE, new DateSelectionEventHandler() {
+            public void onSelection(DateSelectionEvent event) {
+            	switch (event.getType()) {
+            	case Month:
+	                currentMonth = event.getSelection();
+	                
+	                fetchDataPoints();
+	                
+	                break;
+            	}
             }   
         });
         

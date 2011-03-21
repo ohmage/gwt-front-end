@@ -7,11 +7,16 @@ import com.google.gwt.event.shared.GwtEvent;
 public class DateSelectionEvent extends GwtEvent<DateSelectionEventHandler> {
     public static Type<DateSelectionEventHandler> TYPE = new Type<DateSelectionEventHandler>();
     
+    // Types of date selection
+    public static enum DateType {Day, Week, Month};
+    
     // Fields
     private final Date dateSelection;
+    private final DateType dateType;
     
-    public DateSelectionEvent(Date _dateSelection) {
+    public DateSelectionEvent(Date _dateSelection, DateType _dateType) {
         dateSelection = _dateSelection;
+        dateType = _dateType;
     }
     
     /**
@@ -21,6 +26,15 @@ public class DateSelectionEvent extends GwtEvent<DateSelectionEventHandler> {
      */
     public Date getSelection() {
         return dateSelection;
+    }
+    
+    /**
+     * Returns the type of date selection.
+     * 
+     * @return The dateType.
+     */
+    public DateType getType() {
+    	return dateType;
     }
 
     protected void dispatch(DateSelectionEventHandler handler) {

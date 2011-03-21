@@ -103,8 +103,13 @@ public class MobilityMapAppController {
         // Listen for a new date selection
        eventBus.addHandler(DateSelectionEvent.TYPE, new DateSelectionEventHandler() {
 			public void onSelection(DateSelectionEvent event) {
-				currentDay = event.getSelection();
-				fetchDataPoints();
+				// Only listen for date selections
+				switch(event.getType()) {
+				case Day:
+					currentDay = event.getSelection();
+					fetchDataPoints();
+					break;
+				}
 			} 
        });
     }
