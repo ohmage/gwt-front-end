@@ -17,6 +17,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.AndWellnessConstants;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ChunkedMobilityAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ChunkedMobilityQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
@@ -41,6 +43,7 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
     RequestBuilder dataPointService;
     RequestBuilder configurationService;
     RequestBuilder mobilityService;
+    RequestBuilder chunkedMobilityService;
     
     /**
      * Contains all the possible error codes returned by the AndWellness server.
@@ -102,6 +105,8 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
         configurationService.setHeader("Content-Type", "application/x-www-form-urlencoded");
         mobilityService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getMobilityUrl()));
         mobilityService.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        chunkedMobilityService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getChunkedMobilityUrl()));
+        chunkedMobilityService.setHeader("Content-Type", "application/x-www-form-urlencoded");
     }
     
     /**
@@ -328,6 +333,78 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
         }
 	}
     
+	public void fetchChunkedMobility(Date startDate, Date endDate,
+			String userName, String clientName, String authToken,
+			final AsyncCallback<List<ChunkedMobilityAwData>> asyncCallback) {
+		StringBuffer postParams = new StringBuffer();
+        
+        // addParam can possibly throw an IllegalArgumentException if one of our passed in params
+        // is null, just throw it up
+        try {
+            StringUtils.addParam(postParams, "u", userName);
+            StringUtils.addParam(postParams, "t", authToken);
+            StringUtils.addParam(postParams, "s", DateUtils.translateToServerUploadFormat(startDate));
+            StringUtils.addParam(postParams, "e", DateUtils.translateToServerUploadFormat(endDate));
+            StringUtils.addParam(postParams, "ci", clientName);
+        }
+        catch (IllegalArgumentException err) {
+            _logger.severe("One or more passed parameters is bad.");
+            _logger.finer("user: " + userName);
+            _logger.finer("authToken: " + authToken);
+            _logger.finer("startDate: " + DateUtils.translateToServerUploadFormat(startDate));
+            _logger.finer("endDate: " + DateUtils.translateToServerUploadFormat(endDate));
+            
+            throw err;
+        }
+        
+        _logger.finer("Contacting mobility query API with parameter string: " + postParams.toString());
+		
+        try {
+        	chunkedMobilityService.sendRequest(postParams.toString(), new RequestCallback() {
+                // Error occured, handle it here
+                public void onError(Request request, Throwable exception) {
+                    // Couldn't connect to server (could be timeout, SOP violation, etc.)   
+                	asyncCallback.onFailure(new ServerException("Request to server timed out."));
+                }
+                
+                // Eval the JSON into an overlay class and return
+                public void onResponseReceived(Request request, Response response) {
+                    if (200 == response.getStatusCode()) {
+                        // Eval the response into JSON
+                        // (Hope this doesn't contain malicious JavaScript!)
+                        String responseText = response.getText();
+                        ChunkedMobilityQueryAwData serverResponse = ChunkedMobilityQueryAwData.fromJsonString(responseText);
+                        
+                        // Check for errors
+                        if ("failure".equals(serverResponse.getResult())) {
+                        	asyncCallback.onFailure(new NotLoggedInException("Invalid username and/or password."));
+                        }
+                        
+                        // Make sure this is a success
+                        if (! "success".equals(serverResponse.getResult())) {
+                        	asyncCallback.onFailure(new ServerException("Server returned malformed JSON."));
+                        }
+                        
+                        // Translate into a List of DataPointAwData
+                        JsArray<ChunkedMobilityAwData> dataPointAwDataArray = serverResponse.getData();
+                        List<ChunkedMobilityAwData> dataPointList = JsArrayUtils.translateToList(dataPointAwDataArray);
+                        
+                        // Success, return the response!
+                        asyncCallback.onSuccess(dataPointList);
+                        
+                    } else {
+                        // Parse the server error and pass back to the callback as a failure
+                        Throwable error = parseServerErrorResponse(response.getText());
+                        asyncCallback.onFailure(error);
+                    }
+                }       
+            });
+        // Big error occured, handle it here
+        } catch (RequestException e) {
+            throw new ServerException("Cannot contact server.");     
+        }
+	}
+	
     /**
      * Fetches the configuration information from the local file system.
      * Parses into a javascript overlay object and passes back to the callback.
@@ -439,5 +516,4 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
         
         return returnError;
     }
-
 }

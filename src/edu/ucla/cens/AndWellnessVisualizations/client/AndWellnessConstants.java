@@ -18,6 +18,7 @@ public class AndWellnessConstants {
     private final static String dataPointLocationDebug = "http://127.0.0.1:8080/app/q/dp";
     private final static String configurationLocationDebug = "http://127.0.0.1:8080/app/q/config";
     private final static String mobilityLocationDebug = "http://127.0.0.1:8080/app/q/m";
+    private final static String chunkedMobilityLocationDebug = "http://127.0.0.1:8080/app/q/mc";
     private final static String googleMapsApiKeyDebug = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxRi_j0U6kJrkFvY4-OX2XYmEAa76BQ2ZkOydhEh44vXPVI_djTFw81U0w";
     
     // RELEASE CONSTANTS
@@ -25,6 +26,7 @@ public class AndWellnessConstants {
     private final static String dataPointLocationRelease = "../app/q/dp";
     private final static String configurationLocationRelease = "../app/q/config";
     private final static String mobilityLocationRelease = "../app/q/m";
+    private final static String chunkedMobilityLocationRelease = "../app/q/mc";
     private final static String googleMapsApiKeyRelease = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxSaGzzTMV7IrE3zhGi4xAUyZKf_rhQSdRF4uQQEE-RzoBWBBPLzb1MWNg";
     
         
@@ -91,6 +93,17 @@ public class AndWellnessConstants {
         }
         else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
             return mobilityLocationRelease;
+        }
+		
+		return null;
+	}
+	
+	public static String getChunkedMobilityUrl() {
+		if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
+            return chunkedMobilityLocationDebug;
+        }
+        else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
+            return chunkedMobilityLocationRelease;
         }
 		
 		return null;

@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ChunkedMobilityAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.MobilityDataPointAwData;
@@ -43,4 +44,7 @@ public interface AndWellnessRpcService {
 	public void fetchMobilityDataPoints(Date day,
 			String userName, String authorizationToken,
 			final AsyncCallback<List<MobilityDataPointAwData>> asyncCallback);
+	
+	public void fetchChunkedMobility(Date startDate, Date endDate, String userName, 
+			String clientName, String authToken, final AsyncCallback<List<ChunkedMobilityAwData>> asyncCallback);
 }

@@ -13,6 +13,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.AndWellnessVisualizations.client.model.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.AndWellnessVisualizations.client.model.ChunkedMobilityAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.DataPointQueryAwData;
@@ -209,6 +210,14 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
 	public void fetchMobilityDataPoints(Date day,
 			String userName, String authorizationToken,
 			AsyncCallback<List<MobilityDataPointAwData>> asyncCallback) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fetchChunkedMobility(Date startDate, Date endDate,
+			String userName, String clientName, String authToken,
+			AsyncCallback<List<ChunkedMobilityAwData>> asyncCallback) {
 		// TODO Auto-generated method stub
 		
 	}
