@@ -60,9 +60,9 @@
 				<!-- Day detail view -->
 				<div id ="calendarDayDetailView"></div>
 				
-				<div id="visualizationSelectionView" class="float-right border-color-standard"></div>
+				<div id="visualizationSelectionView" class="float-right border-color-standard dataSelector"></div>
 				
-				<div id="dataPointBrowserView" class="float-right border-color-standard"></div>
+				<div id="dataPointBrowserView" class="float-right border-color-standard dataSelector"></div>
 				
 				<div id="dataCategorySelectionView" class="float-right border-color-standard"></div>
 				
