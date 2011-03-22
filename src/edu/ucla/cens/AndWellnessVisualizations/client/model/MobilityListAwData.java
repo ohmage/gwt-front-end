@@ -1,5 +1,8 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
@@ -11,9 +14,47 @@ import com.google.gwt.core.client.JavaScriptObject;
 public class MobilityListAwData extends JavaScriptObject {
     protected MobilityListAwData() {};
     
-    public final native int getStill() /*-{ return this.still; }-*/;
-    public final native int getWalk() /*-{ return this.walk; }-*/;
-    public final native int getRun() /*-{ return this.run; }-*/;
-    public final native int getBike() /*-{ return this.bike; }-*/;
-    public final native int getDrive() /*-{ return this.drive; }-*/;
+    public final Map<String, Integer> getModes() {
+    	Map<String, Integer> toReturn = new HashMap<String, Integer>();
+    	
+    	// Super specific, but we are in the data model so we can be
+    	toReturn.put("still", getStill());
+    	toReturn.put("walk", getWalk());
+    	toReturn.put("run", getRun());
+    	toReturn.put("bike", getBike());
+    	toReturn.put("drive", getDrive());
+    	
+    	return toReturn;
+    }
+    
+    public final native int getStill() /*-{
+    	if (this.still) 
+    		return this.still;
+    	else
+    	 	return 0;
+    }-*/;
+    public final native int getWalk() /*-{ 
+    	if (this.walk)
+    		return this.walk; 
+    	else
+    		return 0;
+    }-*/;
+    public final native int getRun() /*-{ 
+    	if (this.run)
+    		return this.run;
+    	else
+    	 	return 0;
+    }-*/;
+    public final native int getBike() /*-{
+    	if (this.bike) 
+    		return this.bike;
+    	else
+    	 	return 0;
+    }-*/;
+    public final native int getDrive() /*-{
+    	if (this.drive) 
+    		return this.drive;
+    	else
+    	 	return 0;
+    }-*/;
 }
