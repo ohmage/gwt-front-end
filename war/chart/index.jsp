@@ -30,7 +30,7 @@
     <script type="text/javascript" language="javascript" src="../mobilitychartandwellness/mobilitychartandwellness.nocache.js"></script>
   </head>
 
-  <body class="chartView">
+  <body class="calendarView">
 
     <!-- OPTIONAL: include this if you want history support -->
     <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
@@ -59,13 +59,9 @@
 				
 				<div id ="calendarDayDetailView"></div>
 				
-				<div id="visualizationSelectionView" class="float-right border-color-standard"></div>
+				<div id="visualizationSelectionView" class="float-right border-color-standard dataSelector"></div>
 				
-				<div id="dataPointBrowserView" class="float-right border-color-standard"></div>
-				
-				<div id="dateSelectionView" class="float-right border-color-standard"></div>
-				
-				<div id="dataCategorySelectionView" class="float-right border-color-standard"></div>
+				<div id="dataPointBrowserView" class="float-right border-color-standard dataSelector"></div>
 				
 				<div class="clear-line"></div>
 		</div>
