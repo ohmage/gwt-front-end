@@ -40,6 +40,16 @@ public class DateUtils {
     }
     
     /**
+     * Find the number of seconds we are in the day.
+     * 
+     * @param day The date to find.
+     * @return The number of seconds from midnight.
+     */
+    public static int secsIntoDay(Date day) {
+    	return day.getHours() * 60 * 60 + day.getMinutes() * 60 + day.getSeconds();
+    }
+    
+    /**
      * Adds a number of days to the Date, returns a copy.
      * 
      * @param toAdd The Date to add days to.
