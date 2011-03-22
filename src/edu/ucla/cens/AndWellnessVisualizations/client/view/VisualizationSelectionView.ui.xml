@@ -8,6 +8,9 @@
   		height: 40px;
   		margin-left: 15px;
   	}
+  	.iconImage:hover {
+  		cursor: pointer;
+  	}
   </ui:style>
   
   <g:HorizontalPanel>
