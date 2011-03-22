@@ -53,7 +53,8 @@ public class AuthorizationManager {
         HELP ("^/help", ProtectionLevel.NONE, null), // Help page is unrestricted
         LOGIN ("^/login", ProtectionLevel.LOGGED_OUT, "/map"), // Only show login page if not logged in
         CALENDAR ("^/calendar", ProtectionLevel.LOGGED_IN, "/"), // Must be logged in to see visualizations
-        MAP ("^/map", ProtectionLevel.LOGGED_IN, "/"); // Must be logged in to see visualizations
+        MAP ("^/map", ProtectionLevel.LOGGED_IN, "/"), // Must be logged in to see visualizations
+        CHART ("^/chart", ProtectionLevel.LOGGED_IN, "/"); // Must be logged in to see visualizations
         //ROOT ("^/", ProtectionLevel.LOGGED_OUT, "/calendar"); // If logged in, show visualizations instead of home
         
         
