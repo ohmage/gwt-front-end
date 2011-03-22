@@ -387,6 +387,7 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
                         
                         // Translate into a List of DataPointAwData
                         JsArray<ChunkedMobilityAwData> dataPointAwDataArray = serverResponse.getData();
+                        
                         List<ChunkedMobilityAwData> dataPointList = JsArrayUtils.translateToList(dataPointAwDataArray);
                         
                         // Success, return the response!
