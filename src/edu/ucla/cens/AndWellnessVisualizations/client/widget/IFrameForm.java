@@ -12,9 +12,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class IFrameForm extends Composite {
 	public static final String iFrameName = "iFrameId";
 	
-	public static enum Day {Mon, Tue, Wed, Thu, Fri, Sat, Sun};
-	public static enum Mode {Still, Walk, Run, Bike, Drive};
-	
 	private NamedFrame iFrame;
 	private FormPanel form;
 	private VerticalPanel formChildren;
@@ -32,7 +29,6 @@ public class IFrameForm extends Composite {
 		// Setup and add the form
 		form = new FormPanel(iFrame);
 		// Move this URL into a constant
-		//form.setAction("https://chart.googleapis.com/chart");
 		form.setAction(url);
 		form.setMethod(FormPanel.METHOD_POST);
 		form.setVisible(false);
@@ -42,17 +38,6 @@ public class IFrameForm extends Composite {
 		formChildren = new VerticalPanel();
 		form.add(formChildren);
 		
-		// Set some default chart parameters
-		/*
-		setNameValue("cht", "bhs");
-		setNameValue("chxt", "x,y");
-		setNameValue("chxl", "0:|12am|6am|noon|6pm|12am|1:|Sun|Sat|Fri|Thu|Wed|Tue|Mon");
-		setNameValue("chdl", "Still|Walk|Run|Bike|Drive");
-		// Set 5 fake values for correct legend coloring
-		setNameValue("chco", "FFC6A5|FFFF42|DEF3BD|00A5C6|DEBDDE");
-		setNameValue("chd", "t:0,0,0,0,0");
-		//setNameValue("chs", width + "x" + height);
-		*/
 		initWidget(panel);
 	}
 	
@@ -74,7 +59,7 @@ public class IFrameForm extends Composite {
 	}
 	
 	/**
-	 * Add or replace a name/value pair in the form.
+	 * Add or update a name/value pair in the form.
 	 */
 	public void setNameValue(String name, String value) {
 		boolean foundName = false;
