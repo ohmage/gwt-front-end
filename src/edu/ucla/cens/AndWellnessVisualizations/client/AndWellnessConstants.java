@@ -10,7 +10,11 @@ import com.google.gwt.core.client.GWT;
  *
  */
 public class AndWellnessConstants {
-    // Use to determine the deployment status
+    public static enum VizType {
+    	CALENDAR, MAP, CHART;
+    }
+	
+	// Use to determine the deployment status
     public final static DeployStatus status = GWT.create(DeployStatus.class);
     
     // DEBUGGING CONSTANTS
@@ -22,13 +26,20 @@ public class AndWellnessConstants {
     private final static String googleMapsApiKeyDebug = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxRi_j0U6kJrkFvY4-OX2XYmEAa76BQ2ZkOydhEh44vXPVI_djTFw81U0w";
     
     // RELEASE CONSTANTS
+    /* API URLs */
     private final static String authorizationLocationRelease = "../app/auth_token";
     private final static String dataPointLocationRelease = "../app/q/dp";
     private final static String configurationLocationRelease = "../app/q/config";
     private final static String mobilityLocationRelease = "../app/q/m";
     private final static String chunkedMobilityLocationRelease = "../app/q/mc";
+
     private final static String googleMapsApiKeyRelease = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxSaGzzTMV7IrE3zhGi4xAUyZKf_rhQSdRF4uQQEE-RzoBWBBPLzb1MWNg";
-    
+
+    // UNIFORM CONSTANTS
+    /* Visualization URLs */
+    private final static String calendarUrl = "calendar";
+    private final static String mapUrl = "map";
+    private final static String chartUrl = "chart";
         
     /**
      * Returns the authorization server api url based on the deployment status.
@@ -123,5 +134,32 @@ public class AndWellnessConstants {
         }
 		
 		return null;
+	}
+	
+	/**
+	 * Returns the absolute calendar url location.  The calling function must add any relative paths.
+	 * 
+	 * @return The calendar visualization location.
+	 */
+	public static String getCalendarUrl() {
+		return calendarUrl;
+	}
+	
+	/**
+	 * Returns the absolute map url location.  The calling function must add any relative paths.
+	 * 
+	 * @return The map visualization location.
+	 */
+	public static String getMapUrl() {
+		return mapUrl;
+	}
+	
+	/**
+	 * Returns the absolute chart url location.  The calling function must add any relative paths.
+	 * 
+	 * @return The chart visualization location.
+	 */
+	public static String getChartUrl() {
+		return chartUrl;
 	}
 }

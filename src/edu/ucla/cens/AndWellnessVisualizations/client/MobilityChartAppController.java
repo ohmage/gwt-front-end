@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -19,6 +20,8 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.DateSelectionEventHa
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewChunkedMobilityAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.NewMobilityDataPointAwDataEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.VisualizationSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.VisualizationSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ChunkedMobilityAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
@@ -30,6 +33,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.model.UserInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataPointBrowserPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MobilityChartPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.NavigationBarPresenter;
+import edu.ucla.cens.AndWellnessVisualizations.client.presenter.VisualizationSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.WeekSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.NotLoggedInException;
@@ -41,6 +45,8 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.MobilityChartVisualiz
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MobilityChartVisualizationViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarViewImpl;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.VisualizationSelectionView;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.VisualizationSelectionViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.WeekSelectionView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.WeekSelectionViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.widget.IFrameForm;
@@ -61,6 +67,7 @@ public class MobilityChartAppController {
     
     // Various views in this controller
     private NavigationBarView navBarView = null;
+    private VisualizationSelectionView vizSelView = null;
     private WeekSelectionView weekSelectionView = null;
     private DataPointBrowserView<CampaignInfo,ConfigurationInfo,SurveyInfo,PromptInfo> dataPointBrowserView = null;
     private MobilityChartVisualizationView mobChartView = null;
@@ -101,6 +108,7 @@ public class MobilityChartAppController {
             }
         });
         
+        // Listen for a new week selection, call for new data
         eventBus.addHandler(DateSelectionEvent.TYPE, new DateSelectionEventHandler() {
 			public void onSelection(DateSelectionEvent event) {
 				switch(event.getType()) {
@@ -108,6 +116,27 @@ public class MobilityChartAppController {
 					// New week, select new data
 					currentDay = event.getSelection();
 					fetchDataPoints();
+					break;
+				}
+			}
+        });
+        
+        // Listen for a visualization selection, redirect to the new page
+        eventBus.addHandler(VisualizationSelectionEvent.TYPE, new VisualizationSelectionEventHandler() {
+			public void onSelect(VisualizationSelectionEvent event) {
+				_logger.fine("Handling viz selection event of type " + event.getSelection().toString());
+				
+				switch (event.getSelection()) {
+				case CALENDAR:
+					// Redirect to the calendar
+					Window.Location.assign("../" + AndWellnessConstants.getCalendarUrl());
+					break;
+				case MAP:
+					// Redirect to the map
+					Window.Location.assign("../" + AndWellnessConstants.getMapUrl());
+					break;
+				case CHART:
+					// We are on the chart already, do nothing
 					break;
 				}
 			}
@@ -126,6 +155,13 @@ public class MobilityChartAppController {
         NavigationBarPresenter navBarPres= new NavigationBarPresenter(eventBus, navBarView, loginManager);
         navBarPres.go(RootPanel.get("navigationBarView"));
         
+        // Initialize and run the viz selection view
+        if (vizSelView == null) {
+        	vizSelView = new VisualizationSelectionViewImpl();
+        }
+        VisualizationSelectionPresenter vizSelPres = new VisualizationSelectionPresenter(rpcService, eventBus, vizSelView); 
+        vizSelPres.go(RootPanel.get("visualizationSelectionView"));
+        
         // Initialize and run the week selection view
         if (weekSelectionView == null) {
         	weekSelectionView = new WeekSelectionViewImpl();
@@ -137,9 +173,10 @@ public class MobilityChartAppController {
         // Deprecated, but Calendar is not included in the GWT libraries
         if (date.getDay() != 0) {
         	// Shift to Sunday
-        	date = DateUtils.addDays(date, date.getDay());
+        	date = DateUtils.addDays(date, 7 - date.getDay());
         }
         weekSelPres.setCurrentWeek(date);
+        currentDay = date;
         
         // Initialize and run the data browser view
         if (dataPointBrowserView == null) {

@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import com.google.code.p.gwtchismes.client.GWTCSimpleDatePicker;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -19,6 +20,8 @@ import edu.ucla.cens.AndWellnessVisualizations.client.event.NewDataPointAwDataEv
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEvent;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.DataBrowserSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.event.RequestLogoutEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.VisualizationSelectionEvent;
+import edu.ucla.cens.AndWellnessVisualizations.client.event.VisualizationSelectionEventHandler;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.CampaignInfo;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigQueryAwData;
 import edu.ucla.cens.AndWellnessVisualizations.client.model.ConfigurationInfo;
@@ -30,6 +33,7 @@ import edu.ucla.cens.AndWellnessVisualizations.client.presenter.CalendarVisualiz
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.DataPointBrowserPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.MonthSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.presenter.NavigationBarPresenter;
+import edu.ucla.cens.AndWellnessVisualizations.client.presenter.VisualizationSelectionPresenter;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.AndWellnessRpcService;
 import edu.ucla.cens.AndWellnessVisualizations.client.rpcservice.NotLoggedInException;
 import edu.ucla.cens.AndWellnessVisualizations.client.utils.AwDataTranslators;
@@ -41,6 +45,8 @@ import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.MonthSelectionViewImpl;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarView;
 import edu.ucla.cens.AndWellnessVisualizations.client.view.NavigationBarViewImpl;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.VisualizationSelectionView;
+import edu.ucla.cens.AndWellnessVisualizations.client.view.VisualizationSelectionViewImpl;
 
 /**
  * The main controller for the Calendar visualization.  Its job is two fold.
@@ -60,6 +66,7 @@ public class CalendarAppController {
     private CalendarVisualizationView calVizView = null;
     private MonthSelectionView monthView = null;
     private NavigationBarView navBarView = null;
+    private VisualizationSelectionView vizSelView = null;
     private DataPointBrowserView<CampaignInfo,ConfigurationInfo,SurveyInfo,PromptInfo> dataPointBrowserView = null;
     
     // Definitions needed for the views to render
@@ -126,6 +133,27 @@ public class CalendarAppController {
                 }
             }
         });
+        
+        // Listen for a visualization selection, redirect to the new page
+        eventBus.addHandler(VisualizationSelectionEvent.TYPE, new VisualizationSelectionEventHandler() {
+ 			public void onSelect(VisualizationSelectionEvent event) {
+ 				_logger.fine("Handling viz selection event of type " + event.getSelection().toString());
+ 				
+ 				switch (event.getSelection()) {
+ 				case CALENDAR:
+ 					// Do nothing
+ 					break;
+ 				case MAP:
+ 					// Redirect to the map
+ 					Window.Location.assign("../" + AndWellnessConstants.getMapUrl());
+ 					break;
+ 				case CHART:
+ 					// Redirect to the chart
+ 					Window.Location.assign("../" + AndWellnessConstants.getChartUrl());
+ 					break;
+ 				}
+ 			}
+        });
     }
     
     /**
@@ -145,6 +173,13 @@ public class CalendarAppController {
         }
         MonthSelectionPresenter monthPres = new MonthSelectionPresenter(rpcService, eventBus, monthView);
         monthPres.go(RootPanel.get("monthSelectionView"));
+        
+        // Initialize and run the viz selection view
+        if (vizSelView == null) {
+        	vizSelView = new VisualizationSelectionViewImpl();
+        }
+        VisualizationSelectionPresenter vizSelPres = new VisualizationSelectionPresenter(rpcService, eventBus, vizSelView); 
+        vizSelPres.go(RootPanel.get("visualizationSelectionView"));
         
         // Initialize and run the data browser view
         if (dataPointBrowserView == null) {
