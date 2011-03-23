@@ -61,8 +61,8 @@ public class MobilityChartVisualizationViewImpl extends Composite
 		// Horizontal bar chart
 		frame.setNameValue("cht", "bhs");
 		// Sizing
-		frame.setSize(650, 400);
-		frame.setNameValue("chs", "650x400");
+		frame.setSize(680, 400);
+		frame.setNameValue("chs", "680x400");
 		// Bar width and spacing
 		frame.setNameValue("chbh", "a,20,20");
 		// Axis labels
@@ -73,8 +73,11 @@ public class MobilityChartVisualizationViewImpl extends Composite
 		// Text formatting
 		frame.setNameValue("chxs", "0,000000,13,0,t|1,000000,13,0,t");
 		// Ranging
-		//chds=0,160
 		frame.setNameValue("chds", "0,1440");
+		// Grid lines
+		//frame.setNameValue("chg", "25,0,2,2");
+		
+		frame.setBorder(false);
 		
 		initWidget(frame);
 	}
@@ -100,6 +103,15 @@ public class MobilityChartVisualizationViewImpl extends Composite
 			Day[] dayList = Day.values();
 			
 			if (dayList[dayList.length - 1].equals(this))
+				return true;
+			
+			return false;
+		}
+		
+		public boolean isFirstDay() {
+			Day[] dayList = Day.values();
+			
+			if (dayList[0].equals(this))
 				return true;
 			
 			return false;
@@ -233,8 +245,11 @@ public class MobilityChartVisualizationViewImpl extends Composite
 				curTime = DateUtils.secsIntoDay(start) / 60;
 				
 				// If curTime is after the previous end time, add a slot for unknown
-				if (curTime > prevEndTime) {
-					parsedList.add(new ChartData(curTime - prevEndTime, Mode.none.getColor()));
+				// If this is less than 10 minutes, don't add a buffer
+				// This has the effect of both removing small "none" spaces and merging two
+				// chunks of the same mode that are next to each other.
+				if (curTime > prevEndTime + 10) {
+					appendChartData(parsedList, curTime - prevEndTime, Mode.none.getColor());
 					
 					_logger.finer("Adding " + (curTime - prevEndTime) + " of padding to " + d);
 					
@@ -280,11 +295,13 @@ public class MobilityChartVisualizationViewImpl extends Composite
 				}
 				else {
 					// Insert into the list
-					parsedList.add(new ChartData(durationInMin, Mode.lookupColor(maxMode)));
+					int time = (curTime - prevEndTime) + durationInMin;
 					
-					_logger.finer("Adding " + durationInMin + " to " + d);
+					appendChartData(parsedList, time, Mode.lookupColor(maxMode));
 					
-					prevEndTime += durationInMin;
+					_logger.finer("Adding " + time + " to " + d);
+					
+					prevEndTime += time;
 				}				
 			}
 			
@@ -328,25 +345,27 @@ public class MobilityChartVisualizationViewImpl extends Composite
 				try {
 					ChartData data = parsedList.get(i);
 					
+					// If this is NOT the first day, add separators
+					if (! d.isFirstDay()) {
+						chco.append("|");
+						chd.append(",");
+					}
+					
 					chco.append(data.color);
 					chd.append(data.length);
 					
-					// If this is NOT the last day, add separators
-					if (! d.isLastDay()) {
-						chco.append("|");
-						chd.append(",");
-					}
+					
 				}
 				// This is ok, this day must just be smaller than the others
 				catch (IndexOutOfBoundsException e) {
-					chco.append(Mode.none.getColor());
-					chd.append("0");
-					
-					// If this is NOT the last day, add separators
-					if (! d.isLastDay()) {
+					// If this is NOT the first day, add separators
+					if (! d.isFirstDay()) {
 						chco.append("|");
 						chd.append(",");
 					}
+					
+					chco.append(Mode.none.getColor());
+					chd.append("0");
 					
 					continue;
 				}
@@ -365,10 +384,49 @@ public class MobilityChartVisualizationViewImpl extends Composite
 		// We are done, let's hope this works
 		frame.setNameValue("chco", chco.toString());
 		frame.setNameValue("chd", chd.toString());
-		frame.submit();
+		
+		// Check the length first
+		int frameLength = frame.length();
+		if (frameLength > 16000) {
+			_logger.severe("Too many characters in the POST: " + frameLength);
+			
+			// Reset the frame
+			String data = "t:0,0,0,0,0,0,0";
+			String color = Mode.none.getColor() + "|" + 
+			Mode.still.getColor() + "|" + 
+			Mode.walk.getColor() + "|" + 
+			Mode.run.getColor() + "|" + 
+			Mode.bike.getColor() + "|" + 
+			Mode.drive.getColor();
+			
+			frame.setNameValue("chco", color);
+			frame.setNameValue("chd", data);
+			
+			frame.submit();
+		}
+		else {
+			_logger.fine("Submitting POST with character length: " + frameLength);
+			frame.submit();
+		}
 	}
 	
 	public Widget asWidget() {
 		return this;
+	}
+	
+	private void appendChartData(List<ChartData> list, int duration, String color) {
+		// First check to see if the previous ChartData has the same mode
+		if (! list.isEmpty()) {
+			ChartData prevMode = list.get(list.size() - 1);
+			if (prevMode.color.equals(color)) {
+				// Just update the previous node instead
+				prevMode.length += (duration); 
+			}
+			else
+				list.add(new ChartData(duration, color));
+		}
+		else {
+			list.add(new ChartData(duration, color));
+		}
 	}
 }
