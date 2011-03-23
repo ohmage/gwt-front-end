@@ -5,12 +5,16 @@ import java.util.logging.Logger;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -26,6 +30,7 @@ public class LoginBoxViewImpl extends Composite implements LoginBoxView {
     private static Logger _logger = Logger.getLogger(LoginBoxViewImpl.class.getName());
     
     // Fields defined in the ui XML
+    @UiField FocusPanel mainLoginPanel;
     @UiField TextBox userLoginBox;
     @UiField PasswordTextBox userPasswordBox;
     @UiField Button loginButton;
@@ -35,7 +40,23 @@ public class LoginBoxViewImpl extends Composite implements LoginBoxView {
     
     // Very simple constructor now that the UI is defined in XML
     public LoginBoxViewImpl() {
-        initWidget(uiBinder.createAndBindUi(this));      
+        initWidget(uiBinder.createAndBindUi(this));
+        
+        // Setup a handler to handle enter key presses
+        mainLoginPanel.addKeyUpHandler(new KeyUpHandler() {
+			public void onKeyUp(KeyUpEvent event) {
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					_logger.info("Enter key up");
+			        
+					// Submit the form
+			        if (presenter != null) {
+			            presenter.onLoginButtonClicked();
+			        }
+				}
+				
+			}
+        	
+        });
     }
 
     /**

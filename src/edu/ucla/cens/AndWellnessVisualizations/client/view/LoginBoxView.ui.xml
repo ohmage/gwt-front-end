@@ -19,7 +19,7 @@
     }
   </ui:style>
 
-  <g:SimplePanel addStyleNames="{style.mainPanel}">
+  <g:FocusPanel addStyleNames="{style.mainPanel}" ui:field="mainLoginPanel">
     <g:VerticalPanel ui:field="dataEntryPanel">
       <g:HorizontalPanel addStyleNames="{style.loginBoxHPanel}">
         <!-- Use cells for specific table cell alignment -->
@@ -46,5 +46,5 @@
 	  </g:HorizontalPanel>
 	  
 	</g:VerticalPanel>
-  </g:SimplePanel>
+  </g:FocusPanel>
 </ui:UiBinder>
