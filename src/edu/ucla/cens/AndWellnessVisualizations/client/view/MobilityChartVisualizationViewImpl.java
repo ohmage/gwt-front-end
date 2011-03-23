@@ -44,7 +44,13 @@ import edu.ucla.cens.AndWellnessVisualizations.client.widget.IFrameForm;
 
 public class MobilityChartVisualizationViewImpl extends Composite 
 	implements MobilityChartVisualizationView {
-
+	// Various constants used by the chart
+	// 1440 minutes in a day
+	final private static int RANGE = 1440;
+	final private static int WIDTH = 680;
+	final private static int HEIGHT = 400;
+	
+	
     private static Logger _logger = Logger.getLogger(MobilityChartVisualizationViewImpl.class.getName());
     
 	private Presenter presenter;
@@ -61,8 +67,8 @@ public class MobilityChartVisualizationViewImpl extends Composite
 		// Horizontal bar chart
 		frame.setNameValue("cht", "bhs");
 		// Sizing
-		frame.setSize(680, 400);
-		frame.setNameValue("chs", "680x400");
+		frame.setSize(WIDTH, HEIGHT);
+		frame.setNameValue("chs", WIDTH + "x" + HEIGHT);
 		// Bar width and spacing
 		frame.setNameValue("chbh", "a,20,20");
 		// Axis labels
@@ -73,7 +79,7 @@ public class MobilityChartVisualizationViewImpl extends Composite
 		// Text formatting
 		frame.setNameValue("chxs", "0,000000,13,0,t|1,000000,13,0,t");
 		// Ranging
-		frame.setNameValue("chds", "0,1440");
+		frame.setNameValue("chds", "0," + RANGE);
 		// Grid lines
 		//frame.setNameValue("chg", "25,0,2,2");
 		
@@ -236,13 +242,19 @@ public class MobilityChartVisualizationViewImpl extends Composite
 			// Keep track of where we are in the day
 			int curTime = 0;
 			int prevEndTime = 0;
-			int maxTime = 1440;
 			for (ChunkedMobilityAwData dayDataPoint: dayList) {
 				Date start = DateUtils.translateFromServerFormat(dayDataPoint.getTimeStamp());
+				// Get the duration in minutes
 				int durationInMin = dayDataPoint.getDuration() / 1000 / 60;
 				
 				// Find where this data point starts
 				curTime = DateUtils.secsIntoDay(start) / 60;
+				
+				// Sanity check, this shouldn't happen
+				if (curTime < prevEndTime) {
+					_logger.warning("Found mode starting at " + start + "but we are already past that time.");
+					continue;
+				}
 				
 				// If curTime is after the previous end time, add a slot for unknown
 				// If this is less than 10 minutes, don't add a buffer
@@ -271,14 +283,14 @@ public class MobilityChartVisualizationViewImpl extends Composite
 				_logger.finer("Parsing: mode " + maxMode + " start " + start + " duration " + durationInMin);
 				
 				// Check for day overflow
-				if (curTime + durationInMin > maxTime) {
-					int todayTime = (curTime + durationInMin) - maxTime;
+				if (curTime + durationInMin > RANGE) {
+					int todayTime = (curTime + durationInMin) - RANGE;
 					int tomorrowTime = durationInMin - todayTime;
 					
 					// Add time to today
 					parsedList.add(new ChartData(todayTime, Mode.lookupColor(maxMode)));
 					
-					_logger.finer("Adding " + todayTime + " to " + d);
+					_logger.finer("Adding " + todayTime + " " + maxMode + " to " + d);
 					
 					// Add time to tomorrow (this should be ok, but check for null anyway)
 					List<ChartData> tomorrowParsedList = dayParsedData.get(d.getCode() + 1);
@@ -299,17 +311,17 @@ public class MobilityChartVisualizationViewImpl extends Composite
 					
 					appendChartData(parsedList, time, Mode.lookupColor(maxMode));
 					
-					_logger.finer("Adding " + time + " to " + d);
+					_logger.finer("Adding " + time + " " + maxMode + " to " + d);
 					
 					prevEndTime += time;
 				}				
 			}
 			
 			// Fill out the remainder of the day
-			if (prevEndTime < maxTime) {
-				parsedList.add(new ChartData(maxTime - prevEndTime, Mode.none.getColor()));
+			if (prevEndTime < RANGE) {
+				parsedList.add(new ChartData(RANGE - prevEndTime, Mode.none.getColor()));
 				
-				_logger.finer("Filling remainder of day with padding of " + (maxTime - prevEndTime));
+				_logger.finer("Filling remainder of day with padding of " + (RANGE - prevEndTime));
 			}
 		}
 		
