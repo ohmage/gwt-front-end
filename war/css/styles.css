@@ -178,7 +178,7 @@ ul {
 }
 
 #mobilityChartVisualizationView {
-	padding-bottom: 5px;	
+	padding: 3px;	
 }
 
 #weekSelectionView {
@@ -205,3 +205,12 @@ ul {
 .float-left { float: left; }
 .border-color-standard { border-color: #E8E8E8; }
 
+/* Over ride some GWT properties */
+
+/* Never have a border around a frame*/
+.gwt-Frame {
+	border-top: 0 !important;
+	border-bottom: 0 !important;
+	border-left: 0 !important;
+	border-right: 0 !important;	
+}
