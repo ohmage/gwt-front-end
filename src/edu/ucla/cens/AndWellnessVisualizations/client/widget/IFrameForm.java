@@ -1,6 +1,5 @@
 package edu.ucla.cens.AndWellnessVisualizations.client.widget;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
