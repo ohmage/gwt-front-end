@@ -65,6 +65,11 @@
         <url-pattern>*.jsp</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>jsp</servlet-name>
+        <url-pattern>*.ico</url-pattern>
+    </servlet-mapping>
+
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
