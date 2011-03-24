@@ -1,6 +1,7 @@
 package edu.ucla.cens.AndWellnessVisualizations.client;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -261,11 +262,25 @@ public class MobilityChartAppController {
         }
           
         // Send our request to the rpcService and handle the result
-        rpcService.fetchChunkedMobility(DateUtils.addDays(currentDay, -6), currentDay, currentUserName, "2", loginManager.getAuthorizationToken(), 
+        // Need to add oen to curentDay to received the correct amount of data
+        final Date firstDay = DateUtils.addDays(currentDay, -6);
+        final Date lastDay = DateUtils.addDays(currentDay, 1);
+        rpcService.fetchChunkedMobility(firstDay, lastDay, currentUserName, "2", loginManager.getAuthorizationToken(), 
                 new AsyncCallback<List<ChunkedMobilityAwData>>() {
             
             public void onSuccess(List<ChunkedMobilityAwData> awData) {
                 _logger.info("Received " + awData.size() + " data points from the server.");
+                
+                // Filter the list for out of bounds data
+                Iterator<ChunkedMobilityAwData> dataIter = awData.iterator();
+                while (dataIter.hasNext()) {
+                	ChunkedMobilityAwData dataPoint = dataIter.next();
+                	Date day = DateUtils.translateFromServerFormat(dataPoint.getTimeStamp());
+                	
+                	if (day.compareTo(firstDay) < 0|| day.compareTo(lastDay) > 0)
+                		dataIter.remove();
+                }
+                
                 // If we get data back, send it out in an event
                 eventBus.fireEvent(new NewChunkedMobilityAwDataEvent(awData));
             }
