@@ -18,6 +18,7 @@ public class MobilityListAwData extends JavaScriptObject {
     	Map<String, Integer> toReturn = new HashMap<String, Integer>();
     	
     	// Super specific, but we are in the data model so we can be
+    	toReturn.put("none", getUnknown());
     	toReturn.put("still", getStill());
     	toReturn.put("walk", getWalk());
     	toReturn.put("run", getRun());
@@ -26,6 +27,13 @@ public class MobilityListAwData extends JavaScriptObject {
     	
     	return toReturn;
     }
+    
+    public final native int getUnknown() /*-{
+    	if (this.unknown) 
+    		return this.unknown;
+    	else
+    	 	return 0;
+    }-*/;
     
     public final native int getStill() /*-{
     	if (this.still) 
