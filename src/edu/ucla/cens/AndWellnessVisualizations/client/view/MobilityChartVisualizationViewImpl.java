@@ -44,11 +44,14 @@ import edu.ucla.cens.AndWellnessVisualizations.client.widget.IFrameForm;
 
 public class MobilityChartVisualizationViewImpl extends Composite 
 	implements MobilityChartVisualizationView {
-	// Various constants used by the chart
+	/* Various constants used by the chart */
 	// 1440 minutes in a day
 	final private static int RANGE = 1440;
 	final private static int WIDTH = 680;
 	final private static int HEIGHT = 400;
+	
+	/* Google CHART API parameter names */
+	final private static String CHART_TYPE = "cht";
 	
 	
     private static Logger _logger = Logger.getLogger(MobilityChartVisualizationViewImpl.class.getName());
@@ -257,10 +260,10 @@ public class MobilityChartVisualizationViewImpl extends Composite
 				}
 				
 				// If curTime is after the previous end time, add a slot for unknown
-				// If this is less than 10 minutes, don't add a buffer
+				// If this is less than 5 minutes, don't add a buffer
 				// This has the effect of both removing small "none" spaces and merging two
 				// chunks of the same mode that are next to each other.
-				if (curTime > prevEndTime + 10) {
+				if (curTime > prevEndTime + 5) {
 					appendChartData(parsedList, curTime - prevEndTime, Mode.none.getColor());
 					
 					_logger.finer("Adding " + (curTime - prevEndTime) + " of padding to " + d);
@@ -282,7 +285,7 @@ public class MobilityChartVisualizationViewImpl extends Composite
 				
 				_logger.finer("Parsing: mode " + maxMode + " start " + start + " duration " + durationInMin);
 				
-				// Check for day overflow
+				// Check for day overflow, this shouldn't span more than one day
 				if (curTime + durationInMin > RANGE) {
 					int todayTime = (curTime + durationInMin) - RANGE;
 					int tomorrowTime = durationInMin - todayTime;
@@ -440,5 +443,12 @@ public class MobilityChartVisualizationViewImpl extends Composite
 		else {
 			list.add(new ChartData(duration, color));
 		}
+	}
+	
+	/**
+	 * Initialize the chd and chco parameters to make the legend colors work correctly
+	 */
+	private void initLegendData(StringBuffer chd, StringBuffer chco) {
+		
 	}
 }
