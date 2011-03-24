@@ -245,6 +245,11 @@ public class MobilityChartVisualizationViewImpl extends Composite
 			// Keep track of where we are in the day
 			int curTime = 0;
 			int prevEndTime = 0;
+			// Add up any current time in the day
+			for (ChartData data: parsedList) {
+				prevEndTime += data.length;
+			}
+			
 			for (ChunkedMobilityAwData dayDataPoint: dayList) {
 				Date start = DateUtils.translateFromServerFormat(dayDataPoint.getTimeStamp());
 				// Get the duration in minutes
@@ -255,7 +260,7 @@ public class MobilityChartVisualizationViewImpl extends Composite
 				
 				// Sanity check, this shouldn't happen
 				if (curTime < prevEndTime) {
-					_logger.warning("Found mode starting at " + start + "but we are already past that time.");
+					_logger.warning("Found mode starting at " + start + " but we are already past that time.");
 					continue;
 				}
 				
