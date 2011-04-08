@@ -1,8 +1,5 @@
 package edu.ucla.cens.mobilize.client.view;
 
-import java.util.List;
-import java.util.Map;
-
 public interface DashboardView {
 
   interface Presenter {

@@ -18,8 +18,6 @@ public class SurveyResponse {
 	String campaignName;
 	String surveyId;
 	String surveyName;
-	Map<String, PromptInfo> promptInfos;
-	List<DataPointAwData> rawPromptResponses; // from data point api
 	List<PromptResponse> promptResponses;
 	
   // NOTE: prompt responses above could be images, etc, but everything is 
@@ -38,9 +36,7 @@ public class SurveyResponse {
 	}
 	
 	private void init() {
-    this.promptInfos = new HashMap<String, PromptInfo>();
     this.promptResponses = new ArrayList<PromptResponse>();
-    this.rawPromptResponses = new ArrayList<DataPointAwData>();
 	}
 
 	public String getCampaignId() { return this.campaignId; }
@@ -74,31 +70,13 @@ public class SurveyResponse {
     List<PromptResponse> retval = new ArrayList<PromptResponse>(this.promptResponses);
     return retval;
   }
-  
-	public void setPromptResponses(List<PromptInfo> infos, List<DataPointAwData> dataPoints) {
-	  // create map of prompt ids to prompt infos
-	  this.promptInfos.clear();
-	  for (int i = 0; i < infos.size(); i++) {
-	    this.promptInfos.put(infos.get(i).getPromptId(), infos.get(i));
-	  }
-	  // for each data point, find matching info and save info/data pair 
-	  this.promptResponses.clear();
-	  for (int i = 0; i < dataPoints.size(); i++) {
-	    DataPointAwData dp = dataPoints.get(i);
-	    // NOTE: "label" in DataPointAwData is the promptId
-	    if (this.promptInfos.containsKey(dp.getLabel())) {
-	      PromptInfo info = this.promptInfos.get(dp.getLabel());
-	      this.promptResponses.add(new PromptResponse(info, dp));
-	    }
-	  }
-	}
 	
 	public void addPromptResponse(PromptInfo promptInfo, DataPointAwData dataPoint) {
 	  this.promptResponses.add(new PromptResponse(promptInfo, dataPoint));
 	}
 	
 	public String getDetails() {
-		// todo: should return 2d array (prompts/responses) not formatted text
+	  // FIXME: view should render list of PromptResponses instead
 		StringBuilder sb = new StringBuilder();
 		sb.append("<div class='prompt'>How many hours did you sleep?</div>");
 		sb.append("<div class='promptResponse'>five</div>");

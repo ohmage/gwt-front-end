@@ -27,6 +27,15 @@ import edu.ucla.cens.mobilize.client.ui.CampaignDetail;
 import edu.ucla.cens.mobilize.client.ui.CampaignEditForm;
 import edu.ucla.cens.mobilize.client.ui.CampaignList;
 
+/**
+ * Everything shown in the campaigns tab is part of the CampaignView.
+ * There are several subviews. Only the top level view uses a presenter.
+ * The subviews are controlled by swapping out components that can be
+ * found in the mobilize.client.ui module.
+ * 
+ * @author vhajdik
+ *
+ */
 public class CampaignViewImpl extends Composite implements CampaignView {
   
   private static CampaignViewUiBinder uiBinder = GWT

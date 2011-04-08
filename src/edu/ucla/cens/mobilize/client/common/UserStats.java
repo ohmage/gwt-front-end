@@ -1,9 +1,8 @@
-package edu.ucla.cens.mobilize.client.model;
+package edu.ucla.cens.mobilize.client.common;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.ucla.cens.mobilize.client.common.UserRole;
 
 public class UserStats {
   public Map<UserRole, Integer> activeCampaignCount; // by role

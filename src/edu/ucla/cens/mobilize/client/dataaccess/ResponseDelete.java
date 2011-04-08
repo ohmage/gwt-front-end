@@ -1,13 +1,17 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 
-public class ResponseDelete /*extends JavaScriptObject*/ { 
+/**
+ * Data struct returned by server in response to a deletion request.
+ * @author vhajdik
+ */
+// FIXME: should be javascriptobj if we actually use this
+public class ResponseDelete /*extends JavaScriptObject*/ {  
   protected boolean wasSuccessful;
   protected int errorCode;
   protected String msg;

@@ -7,3 +7,4 @@
 war/WEB-INF/**/*
 deploy-local.sh
 bin
+*.DS_Store

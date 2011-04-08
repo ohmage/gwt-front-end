@@ -13,6 +13,7 @@ import java.util.List;
  * 
  * This object is immutable, that is all calls to get return copies of data.
  * 
+ * @deprecated Use UserInfo instead
  * @author jhicks
  *
  */

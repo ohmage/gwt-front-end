@@ -13,6 +13,7 @@ import edu.ucla.cens.mobilize.client.common.UserRole;
  * 
  * This class is immutable, all getter functions return a copy of mutable objects.
  * 
+ * @deprecated Use CampaignDetailedInfo or CampaignConciseInfo instead
  * @author jhicks
  *
  */

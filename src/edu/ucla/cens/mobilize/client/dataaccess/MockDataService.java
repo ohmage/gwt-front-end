@@ -11,24 +11,22 @@ import java.util.logging.Logger;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.Random;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
+import edu.ucla.cens.mobilize.client.common.UserStats;
 import edu.ucla.cens.mobilize.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
 import edu.ucla.cens.mobilize.client.model.DataPointAwData;
 import edu.ucla.cens.mobilize.client.model.DataPointQueryAwData;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
-import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
-import edu.ucla.cens.mobilize.client.model.UserStats;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse.ResponseStatus;
 import edu.ucla.cens.mobilize.client.utils.XmlConfigTranslator;
 

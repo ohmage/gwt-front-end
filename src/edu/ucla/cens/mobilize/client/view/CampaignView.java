@@ -1,12 +1,17 @@
 package edu.ucla.cens.mobilize.client.view;
 
-
 import java.util.List;
 import com.google.gwt.user.client.ui.IsWidget;
-import edu.ucla.cens.mobilize.client.common.CampaignId;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 
+/**
+ * Everything in the campaigns tab is part of the CampaignView.
+ * (There are several subviews.)
+ * 
+ * @author vhajdik
+ *
+ */
 public interface CampaignView extends IsWidget {
   
   // presenter management
@@ -34,17 +39,15 @@ public interface CampaignView extends IsWidget {
   void showError(String msg);
   void showMsg(String msg);
   void hideMsg();
-  
-  // methods to get values from user input fields
-  
-  // methods to set values in user input fields
-  
-  // set data for display // FIXME: violates mvp
+
+  // set data for display
   void setCampaignList(List<CampaignConciseInfo> campaigns); 
   void setCampaignDetail(CampaignDetailedInfo campaign, boolean canEdit);
   void setCampaignEdit(CampaignDetailedInfo campaign);
   void setParticipantsToChooseFrom(List<String> participants);
   void setPlotSideBarTitle(String title);
+  
+  // R plots
   void clearPlots();
   void addPlot(String imgUrl);
   void showPlots();

@@ -33,9 +33,6 @@ public class LoginViewImpl extends Composite implements LoginView {
     
     public LoginViewImpl() {
         initWidget(uiBinder.createAndBindUi(this)); 
-        
-        // msg is only shown when there's a login failure
-        //msgDiv.setVisible(false);
         initEventHandlers();
     }
     
