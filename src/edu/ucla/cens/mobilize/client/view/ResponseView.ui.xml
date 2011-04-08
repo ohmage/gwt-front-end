@@ -1,0 +1,139 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  <ui:style>
+    .buttonPanel {
+    	padding-left: 5px;
+    }
+    .container {
+    	padding: 10px 15px; 
+    	padding: 0px;
+    }
+    .desc {
+    	color: #333;
+    	display: inline-block;
+    	font-weight: bold;
+      padding: 15px 5px 10px;
+    }
+    .list {
+      padding: 0px 0px 5px 10px;
+    }
+    .filterContainer {
+    	background-color: #DDD;
+    	border-bottom: solid 1px #BBB;
+      padding: 5px 5px;
+      text-align: right;
+    }
+    .filterContainer label {
+    	font-weight: bold;
+    }
+    .filterContainer select {
+      margin: 0px 10px;
+      width: 100px;
+    }
+    .filterContainer td {
+    	vertical-align: middle;
+    }
+    .header td {
+    	background-color: #EEE;
+      padding: 5px 0px 0px 5px;
+      vertical-align: middle;
+    }
+    .privateList .header td {
+    	font-weight: bold;
+    }
+    .responsesContainer {
+    	padding: 0px 20px;
+    }
+    .shareButton{
+      background: #EEEEEE url('images/accept.png') no-repeat;
+    }
+    .deleteButton {
+      background: #EEEEEE url('images/delete.png') no-repeat;
+    }
+    .unshareButton {
+      background: #EEEEEE url('images/unshare.png') no-repeat;
+    }
+    .shareButton, .deleteButton, .unshareButton {
+      background-position: 2px 50%;
+      padding: 2px 2px 2px 18px;
+    }
+    .smallActionLink, .smallActionLink:hover {
+    	color: #551A8B;
+      cursor: pointer;
+      font-size: 0.9em;
+      margin-top: -10px;
+      padding: 0px 2px 5px 2px;
+      text-decoration: underline;
+    }
+  </ui:style>
+  
+  <g:HTMLPanel addStyleNames='{style.container} responseView'>
+    <div class='{style.filterContainer}'>
+			<g:HorizontalPanel verticalAlignment='middle'>
+				<g:HTML><label>Participant Name:</label></g:HTML>
+				<g:ListBox ui:field='participantFilter' visibleItemCount='1' />
+				<g:HTML><label>Campaign:</label></g:HTML>
+				<g:ListBox ui:field='campaignFilter' visibleItemCount='1' />
+				<g:HTML><label>Survey:</label></g:HTML>
+				<g:ListBox ui:field='surveyFilter' visibleItemCount='1' />
+			</g:HorizontalPanel>
+		</div>
+      
+    <g:VerticalPanel addStyleNames='{style.responsesContainer}'>  
+      <!-- responses that need to be approved or deleted -->
+      <g:HTMLPanel addStyleNames='{style.desc}'>
+        Private responses (visible only to you):
+        <g:Anchor ui:field='selectAllPrivateLink' addStyleNames='{style.smallActionLink}'>
+          select all
+        </g:Anchor>
+        |
+        <g:Anchor ui:field='selectNonePrivateLink' addStyleNames='{style.smallActionLink}'>
+          none
+        </g:Anchor>
+      </g:HTMLPanel>
+      
+      <!-- the responses -->
+      <g:VerticalPanel ui:field="privateList" addStyleNames='{style.privateList} {style.list}' />
+         
+      <!-- buttons that affect the top list of responses (those that are waiting)-->
+      <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
+        <!-- fixme: disable until something is checked -->
+        <g:Button ui:field='shareButton' addStyleNames='{style.shareButton}'>
+          Share
+        </g:Button> 
+        <g:Button ui:field='deletePrivateButton' addStyleNames='{style.deleteButton}'>
+          Delete
+        </g:Button>
+      </g:HorizontalPanel>
+      
+      <!-- next, responses that have already been shared -->
+      <g:HTMLPanel addStyleNames='{style.desc}'>
+        Public responses (visible to everyone):
+        <g:Anchor ui:field='selectAllPublicLink' addStyleNames='{style.smallActionLink}'>
+          select all
+        </g:Anchor>
+        |
+        <g:Anchor ui:field='selectNonePublicLink' addStyleNames='{style.smallActionLink}'>
+          none
+        </g:Anchor>
+        <!--<a ui:field='selectAllPublic' class='{style.smallActionLink}' href="#">select all</a>-->
+      </g:HTMLPanel>
+      
+      <!-- the responses -->
+      <g:VerticalPanel ui:field="publicList" addStyleNames='{style.list}'/>
+   
+      <!-- buttons that affect the second list of response (those that are already public) -->
+      <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
+        <!-- fixme: disable until something is checked -->
+        <g:Button ui:field='unshareButton' addStyleNames='{style.unshareButton}'>
+          Unshare
+        </g:Button> 
+        <g:Button ui:field='deletePublicButton' addStyleNames='{style.deleteButton}'>
+          Delete
+        </g:Button>
+      </g:HorizontalPanel>
+    </g:VerticalPanel>
+   </g:HTMLPanel>
+
+</ui:UiBinder> 

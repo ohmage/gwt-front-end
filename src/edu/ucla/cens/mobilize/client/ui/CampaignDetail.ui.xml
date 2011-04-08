@@ -1,0 +1,183 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:d="urn:import:com.google.gwt.dom.client">
+  <ui:style type="edu.ucla.cens.mobilize.client.ui.CampaignDetail.CampaignDetailStyle">
+    .actionLinks {
+    	font-size: 0.9em;
+    	padding: 20px;
+    }
+    .backLink {
+    	display: inline-block;
+    	float: left;
+    	padding-left: 20px;
+    }
+    .container {
+    }
+    .detailPanel {
+    	width: 100%;
+    }
+    .detailTable {
+    	width: 100%;
+    }
+    .detailTable td {
+    	vertical-align: top;
+    }
+   .detailText, .actionLinks {
+   	  padding-left: 20px;
+    }
+    .editButton {
+    	background-image: url('images/page_white_edit.png');
+    	background-repeat: no-repeat;
+    	background-position: 2px 50%;
+    	float:right;
+    	margin-right: 20px;
+    	padding: 2px 2px 2px 23px;
+    }
+    td.label {
+    	font-weight: bold;
+    	height: 25px;
+    	padding-right: 10px;
+    	text-align: right;
+    	width: 170px;
+    }
+    .participantList {
+    	margin-bottom: 10px;
+    }
+    .privacyPrivate {
+    	background-image: url('images/lock.png');
+      background-color: #EEE;
+      border: solid 1px #BBB;
+    }
+    .privacyShared {
+    	background-image: url('images/group.png');
+    	background-color: #FFF7D7;
+    	border: solid thin #DDD6A4;
+    }
+    .sectionHeader {
+    	margin-bottom: 10px;
+    	padding: 20px 0px 6px;
+    	text-align: center;
+    }
+    .sectionHeaderTitle {
+    	font-size: 1.2em;
+    	font-weight: bold;
+    }
+    .running, .stopped, .other, .privacyShared, .privacyPrivate {
+    	background-repeat: no-repeat;
+      background-position: 2px 50%;
+    	font-weight: bold;
+    	display: inline-block;
+    	padding: 3px 20px 3px 20px;
+    	text-align: center;
+    	width: 55px;
+    }
+    .stopped {
+    	background-image: url('images/bullet_red.png');
+    	background-color: #EEE;
+    	border: solid 1px #BBB;
+    }
+    .running {
+    	background-image: url('images/bullet_green.png');
+    	background-color: #E3F5CB;
+    	border: solid 1px #99D999;
+    }
+    .xmlLink {
+    	font-size: 0.9em;
+    	padding: 0px 3px;
+    }
+  </ui:style>
+  
+  <g:HTMLPanel ui:field='container' addStyleNames='{style.container}'>
+     <g:VerticalPanel addStyleNames='{style.detailPanel}'>
+     
+       <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
+              <g:HTMLPanel addStyleNames='{style.backLink}'>
+                <g:InlineHyperlink ui:field="backLink2" targetHistoryToken='campaigns'>
+                <!--fixme: go back to last page, may not be list-->
+                  &laquo;&nbsp;Back
+                </g:InlineHyperlink>
+              </g:HTMLPanel>
+          <span class='{style.sectionHeaderTitle}'>Campaign&nbsp;Details</span>
+          <g:InlineHyperlink addStyleNames='{style.editButton}' 
+                       ui:field='editCampaignLink' 
+                       targetHistoryToken='campaigns?v=edit'>
+            Edit&nbsp;Campaign
+          </g:InlineHyperlink>
+       </g:HTMLPanel>
+     
+      <g:HTMLPanel>
+	      <table class='{style.detailTable}'>
+	        <tr>
+	          <td class='{style.label}'>
+	            <label>Name:</label>
+	          </td>
+	          <td>
+				     <g:InlineLabel ui:field='name'/>
+	          </td>
+	        </tr>
+	        <tr>
+	          <td class='{style.label}'>
+	            <label>Description:</label>
+	          </td>
+	          <td>
+	           <g:InlineLabel ui:field='desc' />
+	          </td>
+	        </tr>
+	        <tr>
+	          <td class='{style.label}'>
+	            <label>Participants:</label>
+	          </td>
+	          <td>
+	           <g:VerticalPanel ui:field='participants' addStyleNames='{style.participantList}' />
+	          </td>
+	        </tr>
+	        <tr>
+	          <td class='{style.label}'>
+	            <label>Xml Config:</label>
+	          </td>
+	          <td>
+		          <g:Anchor ui:field='viewXmlLink' addStyleNames='small-action-link'>
+		            View
+		          </g:Anchor>
+		          <g:Anchor ui:field='downloadXmlLink' addStyleNames='small-action-link'>
+                Download
+              </g:Anchor>
+              <div id="hiddenFormContainer" class="hidden" />
+	          </td>
+	        </tr>
+	        <tr>
+	          <td class='{style.label}'>
+	            <label>Running State:</label>
+	          </td>
+	          <td>
+	            <span ui:field='runningStateSpan' class='{style.other}'></span>
+	          </td>
+	        </tr>
+	        <tr>
+	          <td class='{style.label}'>
+	            <label>Privacy Setting:</label>
+	          </td>
+	          <td>
+	            <span ui:field='privacySpan' 
+	                  class='{style.privacyPrivate}'>
+	             PRIVATE
+	            </span>
+	          </td>
+	        </tr>
+	        <tr>
+	          <td>
+							<g:HTMLPanel addStyleNames='{style.actionLinks}'>
+							  <g:InlineHyperlink ui:field="backLink" targetHistoryToken='campaigns'>
+							  <!--fixme: go back to last page, may not be list-->
+							    &laquo;&nbsp;Go&nbsp;to&nbsp;campaign&nbsp;list
+							  </g:InlineHyperlink>
+							</g:HTMLPanel>
+	          </td>
+	          <td />
+	        </tr>
+	      </table>
+      </g:HTMLPanel>      
+    </g:VerticalPanel>
+  </g:HTMLPanel>
+</ui:UiBinder> 

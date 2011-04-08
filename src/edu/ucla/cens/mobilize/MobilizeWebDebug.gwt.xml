@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='mobilizeweb'>
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <inherits name='com.google.gwt.user.User'/>
+
+  <!-- GWT logging -->
+  <inherits name='com.google.gwt.logging.Logging' />    
+  <set-property name='gwt.logging.enabled' value='TRUE' />  
+  <set-property name='gwt.logging.logLevel' value='FINEST' />
+  <set-property name='gwt.logging.popupHandler' value='DISABLED'/>  
+  <set-property name='gwt.logging.consoleHandler' value='ENABLED' />  
+  <set-property name='gwt.logging.developmentModeHandler' value='DISABLED' />  
+  <set-property name="gwt.logging.firebugHandler" value='DISABLED' />  
+  <set-property name="gwt.logging.systemHandler" value='DISABLED' />
+
+  <!-- Property name to determine whether or not we are debugging -->
+  <define-property name="deployStatus" values="RELEASE,DEBUG" />
+  <set-property name="deployStatus" value="DEBUG" />
+  
+  <!-- Use different constant depending on whether or not we are debugging -->
+  <replace-with class='edu.ucla.cens.mobilize.client.DeployStatus.Release'>
+    <when-type-is class='edu.ucla.cens.mobilize.client.DeployStatus' />
+    <when-property-is name='deployStatus' value='RELEASE' />
+  </replace-with>
+  
+  <replace-with class='edu.ucla.cens.mobilize.client.DeployStatus.Debug'>
+    <when-type-is class='edu.ucla.cens.mobilize.client.DeployStatus' />
+    <when-property-is name='deployStatus' value='DEBUG' />
+  </replace-with>
+
+  <!-- Inherit the default GWT style sheet.  You can change       -->
+  <!-- the theme of your GWT application by uncommenting          -->
+  <!-- any one of the following lines.                            -->
+  <!--<inherits name='com.google.gwt.user.theme.standard.Standard'/>-->
+  <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+  <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
+
+  <!-- Other module inherits                                      -->
+  <inherits name="name.pehl.totoe.xml.XmlParser" /> <!-- for xpath -->
+
+  <!-- Specify the app entry point class.                         -->
+  <entry-point class='edu.ucla.cens.mobilize.client.MainApp'/>
+
+  <!-- Specify the paths for translatable code                    -->
+  <source path='client'/>
+  <source path='shared'/>
+
+  <!-- keep long css names so you can find them in web inspector/firebug -->
+  <set-configuration-property name="CssResource.style" value="pretty"/>
+  
+  <inherits name="com.google.gwt.xml.XML"/>
+  <inherits name="com.google.gwt.xml.XML"/>
+  <inherits name="com.google.gwt.xml.XML"/>
+</module>

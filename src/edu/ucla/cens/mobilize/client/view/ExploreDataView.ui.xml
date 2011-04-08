@@ -1,0 +1,134 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
+	
+  <ui:style>
+    .campaignFilter, .participantFilter, .dateFilter {
+    	font-weight: bold;
+    	height: 20px;
+    	padding: 5px 20px;
+    }
+    div.campaignFilter {
+      background-color:#DDD;
+    }
+    .participantFilter {
+      background-color:#EDEDED;
+    }
+    .campaignListBox {
+      width: 150px;
+    }
+    .container {
+      height:300px;
+      padding: 20px;
+    }
+    .mainContent {
+      clear:none;
+    }
+    .filterContainer {
+    	clear: none;
+    	display: block;
+    }
+    .filterContainer label {
+    	display: inline-block;
+    	padding: 0px 5px;
+    	text-align: right;
+    	width: 55px;
+    }
+    .filterContainer select {
+    	width: 100px;
+    }
+    .dateFilter {
+      background-color:#F5F5F5;
+      padding-left: 42px;
+    }
+    .dateFilter button {
+      margin-left: 10px;
+      text-align: right;
+    }
+    .dateFilter label {
+    	padding-right: 0px 5px;
+      width: auto;
+    }
+    .dateFilter input {
+      width: 105px;
+    }
+    .filterSpan {
+    }
+    .plotTypePanel {
+      clear:none;
+    } 
+  </ui:style>
+  
+  <g:VerticalPanel>
+  
+    <g:DockLayoutPanel addStyleNames='{style.container}' unit='PX'>
+     
+     <!-- filters -->
+     <g:north size='90'>
+       <g:HTMLPanel addStyleNames='{style.filterContainer}'>
+        <div class='{style.campaignFilter}'>
+          <span class='{style.filterSpan}'>
+            <label>Campaign:</label>
+            <g:ListBox ui:field='campaignListBox' visibleItemCount='1' />
+          </span>
+          <span class='{style.filterSpan}'>
+            <label>Version:</label>
+            <g:ListBox ui:field='versionListBox' visibleItemCount='1' />
+          </span>
+          <span class='{style.filterSpan}'>
+            <label>Survey:</label>
+            <g:ListBox ui:field='surveyListBox' visibleItemCount='1' />
+          </span>
+        </div>
+        <div class='{style.participantFilter}'>
+          <span class='{style.filterSpan}'>
+            <label>Group:</label>
+            <g:ListBox ui:field='groupListBox' visibleItemCount='1' />
+          </span>
+          <span class='{style.filterSpan}'>
+            <label>User:</label>
+            <g:ListBox ui:field='userListBox' visibleItemCount='1' />
+          </span>
+        </div>
+        <div class='{style.dateFilter}'>
+          <label>From:</label>
+          <dp:DateBox ui:field='startDate' />
+          <label>To:</label>
+          <dp:DateBox ui:field='endDate' />
+          <g:Button>Go</g:Button>
+        </div>
+       </g:HTMLPanel>
+     </g:north>
+     
+     <!-- list of graphable variables -->
+     <g:west size='200'>
+       <g:Tree ui:field='variableTree'>
+       </g:Tree>
+     </g:west>
+     
+     <g:center addStyleNames='{style.mainContent}'>
+      <g:FlowPanel ui:field='content'>
+        <g:Label text='select a plot type below'/>
+      </g:FlowPanel>
+     </g:center>
+     
+     <g:south size='30'>
+       <g:HorizontalPanel ui:field='plotTypePanel' 
+                          addStyleNames='{style.plotTypePanel}'>
+         <g:RadioButton ui:field='byTimeRadio' 
+                        ui:name='plotType' 
+                        ui:text='By Time' />
+         <g:RadioButton ui:field='byLocationRadio' 
+                        ui:name='plotType' 
+                        ui:text='By Location' /> 
+         <g:RadioButton ui:field='rawDataRadio' 
+                        ui:name='plotType' 
+                        ui:text='Raw Data' />
+       </g:HorizontalPanel>
+     </g:south>
+    
+    </g:DockLayoutPanel>
+  </g:VerticalPanel>
+  
+</ui:UiBinder> 

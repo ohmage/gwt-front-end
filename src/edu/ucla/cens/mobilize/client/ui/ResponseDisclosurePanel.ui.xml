@@ -1,0 +1,71 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+	.toolbarCtr {
+		 height: 25px;
+		 width: 100px;
+	}
+	.checkbox {
+		/*background-color: #EFEFFF;*/
+		/*border-top: solid thin #BBB;*/
+		padding: 3px 0px 8px 2px;
+	}
+	.date {
+		padding-right: 5px;
+	}
+	.header td {
+		color: #222445;
+		height: 26px;
+		padding: 2px 5px 0px;
+	}
+	.header img {
+		border: none;
+	}
+	.shareButton {
+		background: #EEEEEE url('images/accept.png') no-repeat;
+	}
+	.unshareButton {
+		background: #EEEEEE url('images/unshare.png') no-repeat;
+	}
+	.deleteButton {
+		background: #EEEEEE url('images/delete.png') no-repeat;
+	}
+	.shareButton, .unshareButton, .deleteButton {
+		height: 20px;
+		width: 20px;
+	}
+	.toolbar > img {
+		border: solid thin white;
+	}
+	.toolbar > img:hover {
+		background: #EEE;
+		border: solid thin #CCC;
+	}
+	</ui:style>
+ <g:HorizontalPanel>
+   <g:CheckBox ui:field='checkbox' addStyleNames='{style.checkbox}' />
+	 <g:DisclosurePanel ui:field='disclosurePanel'>
+	   <g:customHeader>
+	     <g:HorizontalPanel addStyleNames='{style.header} header'>
+	         <g:Label ui:field='campaignName'>campaign name</g:Label>
+		       <g:Label ui:field='surveyName'>survey name</g:Label>
+		       <g:Label ui:field='responseDateLabel' addStyleNames='{style.date}'>response date</g:Label>
+		       <g:cell addStyleNames='{style.toolbarCtr}'>
+			       <g:HTML ui:field='toolbar' addStyleNames='hidden {style.toolbar}'>
+			       <!--
+			         <g:Button ui:field='shareButton' addStyleNames='{style.shareButton}' />
+			         <g:Button ui:field='deleteButton' addStyleNames='{style.deleteButton}' />
+			         -->
+			         <img src='images/accept.png' />
+			         <img src='images/delete.png' />
+			       </g:HTML>
+		       </g:cell>
+	     </g:HorizontalPanel>
+	   </g:customHeader>
+	   <g:HTML ui:field='details'>
+	     <b>response</b> display template goes here
+	   </g:HTML>
+	 </g:DisclosurePanel>
+   </g:HorizontalPanel>
+</ui:UiBinder> 
