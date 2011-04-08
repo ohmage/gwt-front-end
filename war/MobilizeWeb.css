@@ -1,0 +1,299 @@
+html {
+	height: 100%;
+}
+
+body {
+	/*color: #222455;*/
+	color: #003;
+	font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+	font-size: 11px;
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+	overflow: auto;
+}
+
+input, textarea {
+	font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+	font-size: 11px;
+}
+
+.hidden {
+	display: none;
+}
+
+.small-action-link {
+	cursor: pointer;
+	font-size: 0.8em;
+	padding: 0px 3px;
+	text-decoration: underline;
+}
+
+a:link, .small-action-link {
+	color: #238;
+}
+
+a:visited {
+	color: #236;
+}
+
+a:hover, a:active {
+	color: red;
+}
+
+#main-content {
+	height: 85%;
+	margin: auto;
+	width: 100%;
+}
+
+#footer {
+}
+
+#copyright {
+}
+
+#footer-links {
+}
+
+/****** styles for response view *******/
+/** fixme: edit disclosure panel so you can have styles in template **/
+.responseView .header td {
+	padding-top: 5px;
+}
+
+.responseView .prompt {
+	color: #333;
+	font-weight: bold;
+	padding: 2px 15px;
+}
+
+.responseView .promptResponse {
+	color: #666;
+	padding: 2px 25px;
+}
+/****** end styles for response view *******/
+
+.floatstop {
+	clear: both;
+	display: block;
+	height: 1px;
+}
+
+.formHint {
+	font-size: 0.8em;
+	font-style: italic;
+	font-weight: normal;
+}
+
+/** Most GWT widgets already have a style name defined */
+
+.gwt-DateBox {
+	width: 75px;
+}
+
+.gwt-DatePicker {
+	background-color: white;
+	border: solid thin #999;
+}
+
+.datePickerDay {
+	cursor: pointer;
+}
+
+.datePickerDay, .datePickerWeekdayLabel, .datePickerWeekendLabel {
+	font-size: 0.8em;
+	padding: 4px;
+	text-align: center;
+}
+
+.datePickerWeekdayLabel, .datePickerWeekendLabel {
+	-moz-background-clip: border;
+	-moz-background-origin: padding;
+	-moz-background-size: auto auto;
+	background-attachment: scroll;
+	background-color: #CCC;
+	background-image: none;
+	background-position: 0 0;
+	background-repeat: repeat;
+	cursor: default;
+	padding-bottom: 2px;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-top: 0;
+}
+
+.datePickerDayIsWeekend {
+	background-color: #EEE;
+}
+
+.datePickerDayIsFiller {
+	color: #777;
+}
+
+.datePickerDayIsToday {
+	background-color: #EEE;
+	border: solid 1px #AAA;
+	font-weight: bold;
+}
+	
+.datePickerMonthSelector {
+	background-color: #CCC;
+	font-size: 0.9em;
+	font-weight: bold;
+	padding: 0px 5px;
+	text-align: center;
+}
+
+.gwt-DateBox {
+	height: 11px;
+}
+
+.gwt-TabBar {
+	/*background-color: #666899;*/
+	background-color: #003;
+	padding: 10px 0px 0px 20px;
+}
+
+.gwt-TabBarItem   {
+  background-color: #BBB;
+  cursor: pointer;
+  border: solid 1px #DDD;
+  border-bottom: none;
+  font-weight: bold;
+  padding: 4px 10px;
+  margin: 0px 5px;
+}
+
+.gwt-TabBarItem-selected {
+  background-color: #DDD;
+  border: solid 1px #FFF;
+  border-bottom: none;
+  padding: 5px 10px;
+  text-weight: bold;
+}
+
+/* don't outline tab bar when first selected */
+/* todo: something that lets keyboard navigators tell current tab location */
+.gwt-TabBarItem:active, .gwt-TabBarItem:focus {
+  outline-style: none; 
+  -moz-outline-style:none;
+}
+
+.gwt-TabPanel {
+	height: 500px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+}
+
+.gwt-TabPanelBottom { 
+	border: solid 1px #BBB;
+	border-bottom: none;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	height: 500px;
+	margin-bottom: 50px;
+	/* fixme: handle long content better*/
+}
+
+
+.gwt-PopupPanelGlass {
+  background-color: #000;
+  opacity: 0.3;
+  filter: literal("alpha(opacity=30)");
+}
+
+/** Dialog box styles taken from (old?) gwt default style sheet. **/
+
+.gwt-DialogBox {
+  border: 1px solid #bbbbbb;
+}
+
+.gwt-DialogBox .Caption {
+  background: #B8CEE0 url(images/bg_headergradient.gif) repeat-x; /* color matches main page header stripe*/
+  border-bottom: 1px solid #bbbbbb;
+  cursor: default;
+  font-weight: bold;
+  padding: 4px 4px 4px 10px;
+}
+
+.gwt-DialogBox .Content table {
+  filter: alpha(opacity=100); /* Fixes rendering issues in IE7 */
+}
+
+.gwt-DialogBox { border: 1px solid #003; background-color: #003;}
+.gwt-DialogBox .Caption {
+  background: #B8CEE0 url(images/bg_headergradient.gif) repeat-x; 
+  border-bottom: 1px solid #bbbbbb;
+  cursor: default;
+  font-weight: bold;
+  padding: 6px 4px 6px 10px;
+}
+
+.gwt-DialogBox { 
+  background-color: #888;
+	border: 1px solid #333;
+	border-top: 1px solid #666;  
+}
+.gwt-DialogBox .dialogContent { background-color: white; }
+.gwt-DialogBox .dialogTopLeft { background-color: #888; }
+.gwt-DialogBox .dialogTopLeftInner {}
+.gwt-DialogBox .dialogTopCenter {}
+.gwt-DialogBox .dialogTopCenterInner {}
+.gwt-DialogBox .dialogTopRight { background-color: #AAA; }
+.gwt-DialogBox .dialogTopRightInner {}
+.gwt-DialogBox .dialogMiddleLeft { background-color: #888; }
+.gwt-DialogBox .dialogMiddleLeftInner {}
+.gwt-DialogBox .dialogMiddleCenter { background-color: white; }
+.gwt-DialogBox .dialogMiddleCenterInner {}
+.gwt-DialogBox .dialogMiddleRight { background-color: #AAA; }
+.gwt-DialogBox .dialogMiddleRightInner {}
+.gwt-DialogBox .dialogBottomLeft { background-color: #888; }
+.gwt-DialogBox .dialogBottomLeftInner {}
+.gwt-DialogBox .dialogBottomCenter { 
+	 background-color: #888; 
+	 border: none;
+	 height: 1px; 
+}
+.gwt-DialogBox .dialogBottomCenterInner {}
+.gwt-DialogBox .dialogBottomRight { background-color: #AAA; }
+.gwt-DialogBox .dialogBottomRightInner {}
+
+/********* styles for campaign browse tree *********************/
+/* FIXME: move these into uibinder template file */
+
+.gwt-Tree {
+	padding: 20px;
+}
+
+.gwt-TreeItem {
+	cursor: pointer;
+}
+
+.treeItemCampaign > table > tbody > tr > td > div.gwt-TreeItem, 
+.treeItemSurvey > table > tbody > tr > td > div.gwt-TreeItem, 
+.treeItemPrompt > div.gwt-TreeItem {
+	padding: 5px 0px 5px 20px;
+}
+
+.treeItemCampaign > table > tbody > tr > td > div.gwt-TreeItem {
+  background-image: url('images/report.png');
+  background-repeat: no-repeat;
+  background-position: 0px 2px;
+}
+
+.treeItemSurvey > table > tbody > tr > td > div.gwt-TreeItem {
+  background-image: url('images/page_white_text.png');
+  background-repeat: no-repeat;
+  background-position: 0px 2px;
+}
+
+.treeItemPrompt > div.gwt-TreeItem {
+  background-image: url('images/bullet_blue.png');
+  background-repeat: no-repeat;
+  background-position: 0px 2px;
+  margin-left: -16px;
+}
+
+/************ end styles for campaign browse tree **************/

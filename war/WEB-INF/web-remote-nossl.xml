@@ -42,11 +42,6 @@
     
     <servlet-mapping>
         <servlet-name>default</servlet-name>
-        <url-pattern>*.jpeg</url-pattern>
-    </servlet-mapping>
-    
-    <servlet-mapping>
-        <servlet-name>default</servlet-name>
         <url-pattern>*.png</url-pattern>
     </servlet-mapping>
     
@@ -65,14 +60,9 @@
         <url-pattern>*.jsp</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>jsp</servlet-name>
-        <url-pattern>*.ico</url-pattern>
-    </servlet-mapping>
-
   <!-- Default page to serve -->
   <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>MobilizeWeb.html</welcome-file>
   </welcome-file-list>
 
 </web-app>
