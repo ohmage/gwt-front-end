@@ -24,7 +24,17 @@ import name.pehl.totoe.xml.client.XmlParser;
 
 public class XmlConfigTranslator {
   private static Logger _logger = Logger.getLogger(XmlConfigTranslator.class.getName());
-  private Document xmlDocument;
+  private Document xmlDocument_doNotUse;
+  private Document xmlDocument() {
+    Document retval = null;
+    if (xmlDocument_doNotUse != null) {
+      retval = xmlDocument_doNotUse;
+    } else {
+      _logger.severe("XmlConfigTranslator used before xml doc was loaded.");
+      retval = new XmlParser().parse("<error>XmlConfigTranslator used before xml doc was loaded<error>");
+    }
+    return retval;
+  }
   
   // http://code.google.com/p/totoe/wiki/XmlUsage
   // https://github.com/cens/AndWellnessConfiguration/blob/master/spec/configuration.xsd
@@ -34,7 +44,7 @@ public class XmlConfigTranslator {
     boolean success = false;
     try {
       // string is used to build dom and then discarded
-      this.xmlDocument = new XmlParser().parse(xmlString);
+      this.xmlDocument_doNotUse = new XmlParser().parse(xmlString);
       success = true;
     } catch (XmlParseException xmlException) {
       _logger.severe("Document could not be loaded. XmlParseException: " + 
@@ -44,19 +54,28 @@ public class XmlConfigTranslator {
   }
   
   public String getCampaignName() {
-    return this.xmlDocument.selectValue("//campaignName");
+    return xmlDocument().selectValue("//campaignName");
   }
   
   // get info object for one survey
   public SurveyInfo getSurveyInfo(String surveyId) {
-    // TODO
-    return null;
+    SurveyInfo surveyInfo = null;
+    try {
+      String deleteme = xmlDocument().toString();
+      Node surveyNode = xmlDocument().selectNode("//survey[id=\"" + surveyId + "\"]");
+      surveyInfo = this.nodeToSurveyInfo(surveyNode);
+    } catch (XPathException exception) {
+      // TODO: log warning
+    } catch (Exception otherException) {
+      // TODO: wtf?
+    }
+    return surveyInfo;
   }
   
   // gets a list of all survey infos in this campaign
   public List<SurveyInfo> getSurveyInfos() {
     List<SurveyInfo> retVal = new ArrayList<SurveyInfo>();
-    List<Node> surveyNodes = xmlDocument.selectNodes("//survey");
+    List<Node> surveyNodes = xmlDocument().selectNodes("//survey");
     // https://github.com/cens/AndWellnessConfiguration/blob/master/spec/configuration.xsd
     for (Node n : surveyNodes) {
       retVal.add(nodeToSurveyInfo(n));
@@ -70,7 +89,7 @@ public class XmlConfigTranslator {
   public List<String> getSurveyIds() {
     List<String> ids = null;
     try {
-      ids = Arrays.asList(xmlDocument.selectValues("//surveys/survey/id"));
+      ids = Arrays.asList(xmlDocument().selectValues("//surveys/survey/id"));
     } catch (XPathException exception) {
       // FIXME: error handling
     }

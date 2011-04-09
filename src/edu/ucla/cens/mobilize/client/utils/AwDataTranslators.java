@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -12,13 +13,17 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
 import edu.ucla.cens.mobilize.client.common.UserRole;
+import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignsAwData;
 import edu.ucla.cens.mobilize.client.model.ConfigQueryAwData;
 import edu.ucla.cens.mobilize.client.model.ConfigurationInfo;
 import edu.ucla.cens.mobilize.client.model.ConfigurationsAwData;
+import edu.ucla.cens.mobilize.client.model.DataPointAwData;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
+import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyInfo;
+import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfoOld;
 
 /**
@@ -245,5 +250,37 @@ public class AwDataTranslators {
         _logger.finer("Created a prompt with id: " + promptInfo.getPromptId());
         
         return promptInfo;
+    }
+    
+    public static List<SurveyResponse> translateDataPointsToSurveyResponses(
+        List<DataPointAwData> dataPoints, CampaignDetailedInfo campaignInfo) {
+
+      HashMap<String, SurveyResponse> responses = new HashMap<String, SurveyResponse>();
+      
+      for (DataPointAwData dataPoint : dataPoints) {
+        String surveyId = dataPoint.getSurveyId();
+        SurveyInfo surveyInfo = campaignInfo.getSurvey(surveyId);
+        if (surveyInfo != null) {
+          if (!responses.containsKey(surveyId)) {
+            SurveyResponse obj = new SurveyResponse();
+            obj.setCampaignId(campaignInfo.getCampaignId());
+            obj.setCampaignName(campaignInfo.getCampaignName());
+            obj.setResponseDate(dataPoint.getTimeStamp());
+            obj.setPrivacyState(dataPoint.getPrivacyState());
+            obj.setSurveyId(surveyId);
+            if (surveyInfo != null) obj.setSurveyName(surveyInfo.getSurveyName());
+            responses.put(surveyId, obj);
+          }
+          
+          PromptInfo promptInfo = campaignInfo.getSurvey(surveyId).getPrompt(dataPoint.getPromptId());
+          SurveyResponse surveyResponse = responses.get(surveyId);
+          surveyResponse.addPromptResponse(promptInfo, dataPoint);
+        } else {
+          // data point does not match any survey in campaign info
+          // log warning/error
+        }
+      }
+      
+      return new ArrayList<SurveyResponse>(responses.values());
     }
 }

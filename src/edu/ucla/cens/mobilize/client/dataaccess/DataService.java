@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Map;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
@@ -49,21 +50,20 @@ public interface DataService {
   void fetchCampaignDetailList(List<String> campaignIds, 
                                final AsyncCallback<List<CampaignDetailedInfo>> callback);
   
+  
+  
   // get cached detail. returns null if campaigns have not been loaded
   CampaignDetailedInfo getCampaignDetail(String campaignId);
   
   void deleteCampaign(String campaignId,
                       final AsyncCallback<ResponseDelete> callback);
-  
-  // get data points for one campaign at a time
-  void fetchPrivateSurveyResponses(String campaignId, // TODO: pass campaignInfo?
-                                   final AsyncCallback<List<SurveyResponse>> callback);
-  
-  // void fetchPromptResponses
-  // void fetchPromptInfos
-  // void fetchDataPoints
+    
+  void fetchDataPoints(String campaignId,
+                       DataPointFilterParams params,
+                       final AsyncCallback<List<DataPointAwData>> callback);
 
-  // FIXME: add date range
-  void fetchPrivateDataPoints(String campaignId,
-                              final AsyncCallback<List<DataPointAwData>> asyncCallback);
+  void fetchSurveyResponses(String campaignId,
+                            DataPointFilterParams params,
+                            final AsyncCallback<List<SurveyResponse>> callback);
+  
 }

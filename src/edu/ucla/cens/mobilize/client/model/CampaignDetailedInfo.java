@@ -3,6 +3,8 @@ package edu.ucla.cens.mobilize.client.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.Window;
+
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRole;
@@ -177,11 +179,13 @@ public class CampaignDetailedInfo {
   }
   
   public void setXmlConfig(String xmlConfig) {
-    if (this.configTranslator.loadFromXml(this.xmlConfig)) {
+    if (this.configTranslator.loadFromXml(xmlConfig)) {
       this.xmlConfig = xmlConfig;
     } else {
       // TODO: how should error be handled?
       this.xmlConfig = "there was a problem loading the xml config";
+      // DELETEME
+      //Window.alert(this.xmlConfig);
     }
   }
 

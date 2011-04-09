@@ -6,14 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 public class SurveyResponse {
 	
-  public enum ResponseStatus { PUBLIC, PRIVATE }	
-	
   Date responseDate;
-  ResponseStatus responseStatus;
+  Privacy privacyState;
   String campaignId; // urn
 	String campaignName;
 	String surveyId;
@@ -30,7 +29,7 @@ public class SurveyResponse {
 	public SurveyResponse(String campaignName,
 	     String surveyName,
 	     Date responseDate,
-	     ResponseStatus status) {
+	     Privacy privacyState) {
 	  init();
 	  
 	}
@@ -63,8 +62,8 @@ public class SurveyResponse {
 	  }
 	}
 	
-	public ResponseStatus getResponseStatus() { return this.responseStatus; }
-	public void setResponseStatus(ResponseStatus status) { this.responseStatus = status; } 
+	public Privacy getPrivacyState() { return this.privacyState; }
+	public void setPrivacyState(Privacy privacy) { this.privacyState = privacy; } 
 	
   public List<PromptResponse> getPromptResponses() {
     List<PromptResponse> retval = new ArrayList<PromptResponse>(this.promptResponses);

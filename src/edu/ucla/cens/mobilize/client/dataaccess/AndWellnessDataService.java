@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
@@ -12,8 +13,7 @@ import edu.ucla.cens.mobilize.client.model.DataPointAwData;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
-public class 
-AndWellnessDataService implements DataService {
+public class AndWellnessDataService implements DataService {
 
   // TODO: make sure to throw exception if request fails because of logout
 
@@ -66,15 +66,15 @@ AndWellnessDataService implements DataService {
   }
 
   @Override
-  public void fetchPrivateSurveyResponses(String campaignId,
-      AsyncCallback<List<SurveyResponse>> callback) {
+  public void fetchDataPoints(String campaignId, DataPointFilterParams params,
+      AsyncCallback<List<DataPointAwData>> callback) {
     // TODO Auto-generated method stub
     
   }
 
   @Override
-  public void fetchPrivateDataPoints(String campaignId,
-      AsyncCallback<List<DataPointAwData>> asyncCallback) {
+  public void fetchSurveyResponses(String campaignId,
+      DataPointFilterParams params, AsyncCallback<List<SurveyResponse>> callback) {
     // TODO Auto-generated method stub
     
   }

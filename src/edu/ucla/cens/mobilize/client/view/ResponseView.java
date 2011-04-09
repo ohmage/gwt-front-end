@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
+import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.*;
 
 public interface ResponseView extends IsWidget {
@@ -17,8 +18,8 @@ public interface ResponseView extends IsWidget {
   }
 
   void setPresenter(Presenter presenter);
-
-  // load data in filters
+  
+  // load values in filters
   void setParticipantList(List<String> participantNames);
   void setCampaignList(List<String> campaignNames);
   void setSurveyList(List<String> surveyNames);
@@ -28,8 +29,15 @@ public interface ResponseView extends IsWidget {
   void selectCampaign(String campaign);
   void selectSurvey(String survey);
 
+  // get selected filters
+  String getSelectedParticipant();
+  String getSelectedCampaign();
+  String getSelectedSurvey();
+  Privacy getSelectedPrivacyState();
+  
   // display
   void renderPrivate(List<SurveyResponse> responses);
   void renderPublic(List<SurveyResponse> responses);
+  void renderInvisible(List<SurveyResponse> responses);
   
 }

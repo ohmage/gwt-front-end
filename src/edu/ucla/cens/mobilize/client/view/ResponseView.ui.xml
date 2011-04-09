@@ -3,7 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
   <ui:style>
     .buttonPanel {
-    	padding-left: 5px;
+    	padding: 8px;
     }
     .container {
     	padding: 10px 15px; 
@@ -15,21 +15,42 @@
     	font-weight: bold;
       padding: 15px 5px 10px;
     }
+    .leftSideBar {
+    	background-color: #EEE;
+    	border-right: solid 1px #CCC;
+    }
+    .leftSideBarMenu {
+    	width: 100%;
+    }
+    .leftSideBarMenu table {
+    	border:none;
+    	border-collapse: collapse;
+    	margin-top: 20px;
+    }
+    .leftSideBarMenu td {
+      border-bottom: solid thin #DDD;
+      cursor: pointer;
+      padding: 4px 0px 4px 20px;
+      width: 200px; /* same as west panel */
+    }
+    .leftSideBarMenu td:hover {
+    	background-color: #FFF;
+    }
     .list {
       padding: 0px 0px 5px 10px;
     }
     .filterContainer {
     	background-color: #DDD;
     	border-bottom: solid 1px #BBB;
-      padding: 5px 5px;
+      padding: 2px 2px 2px 20px;
       text-align: right;
+      width: 100%;
     }
-    .filterContainer label {
+    .filterContainer .label {
     	font-weight: bold;
+    	padding: 0px 5px 0px 10px;
     }
     .filterContainer select {
-      margin: 0px 10px;
-      width: 100px;
     }
     .filterContainer td {
     	vertical-align: middle;
@@ -39,11 +60,15 @@
       padding: 5px 0px 0px 5px;
       vertical-align: middle;
     }
-    .privateList .header td {
+    .responseList .header td {
     	font-weight: bold;
     }
-    .responsesContainer {
-    	padding: 0px 20px;
+    .responseContainer {
+    	overflow: auto;
+    	padding: 0px 10px;
+    }
+    .scrollable {
+      overflow: auto;
     }
     .shareButton{
       background: #EEEEEE url('images/accept.png') no-repeat;
@@ -68,72 +93,84 @@
     }
   </ui:style>
   
-  <g:HTMLPanel addStyleNames='{style.container} responseView'>
-    <div class='{style.filterContainer}'>
-			<g:HorizontalPanel verticalAlignment='middle'>
-				<g:HTML><label>Participant Name:</label></g:HTML>
-				<g:ListBox ui:field='participantFilter' visibleItemCount='1' />
-				<g:HTML><label>Campaign:</label></g:HTML>
-				<g:ListBox ui:field='campaignFilter' visibleItemCount='1' />
-				<g:HTML><label>Survey:</label></g:HTML>
-				<g:ListBox ui:field='surveyFilter' visibleItemCount='1' />
-			</g:HorizontalPanel>
-		</div>
-      
-    <g:VerticalPanel addStyleNames='{style.responsesContainer}'>  
-      <!-- responses that need to be approved or deleted -->
-      <g:HTMLPanel addStyleNames='{style.desc}'>
-        Private responses (visible only to you):
-        <g:Anchor ui:field='selectAllPrivateLink' addStyleNames='{style.smallActionLink}'>
-          select all
-        </g:Anchor>
-        |
-        <g:Anchor ui:field='selectNonePrivateLink' addStyleNames='{style.smallActionLink}'>
-          none
-        </g:Anchor>
+  <g:DockLayoutPanel unit='PX' ui:field='mainLayout'>
+  
+    <!-- top filter bar -->
+    <g:north size='27'>
+      <g:HTMLPanel addStyleNames='{style.filterContainer}'>      
+		    <g:HorizontalPanel verticalAlignment='middle'>
+		      <g:InlineLabel addStyleNames='{style.label}'>Participant Name:</g:InlineLabel>
+		      <g:InlineLabel ui:field='singleParticipantLabel' />
+		      <g:ListBox ui:field='participantFilter' visibleItemCount='1' />
+		      <g:InlineLabel addStyleNames='{style.label}'>Campaign:</g:InlineLabel>
+		      <g:ListBox ui:field='campaignFilter' visibleItemCount='1' />
+		      <g:InlineLabel addStyleNames='{style.label}'>Survey:</g:InlineLabel>
+		      <g:ListBox ui:field='surveyFilter' visibleItemCount='1' />
+		    </g:HorizontalPanel>
+	    </g:HTMLPanel>
+    </g:north>
+    
+    <!-- left sidebar lets you pick private/public/invisible -->
+    <g:west size='170'>
+      <g:HTMLPanel addStyleNames='{style.leftSideBar}'>
+        <g:MenuBar ui:field='leftSideBarMenu'
+                   vertical='true'
+                   addStyleNames='{style.leftSideBarMenu}'>
+          <g:MenuItem ui:field='privateMenuItem'>Private Responses</g:MenuItem>
+          <g:MenuItem ui:field='publicMenuItem'>Public Responses</g:MenuItem>
+          <g:MenuItem ui:field='allMenuItem'>All Responses</g:MenuItem>
+        </g:MenuBar>
       </g:HTMLPanel>
-      
-      <!-- the responses -->
-      <g:VerticalPanel ui:field="privateList" addStyleNames='{style.privateList} {style.list}' />
-         
-      <!-- buttons that affect the top list of responses (those that are waiting)-->
-      <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
-        <!-- fixme: disable until something is checked -->
-        <g:Button ui:field='shareButton' addStyleNames='{style.shareButton}'>
-          Share
-        </g:Button> 
-        <g:Button ui:field='deletePrivateButton' addStyleNames='{style.deleteButton}'>
-          Delete
-        </g:Button>
-      </g:HorizontalPanel>
-      
-      <!-- next, responses that have already been shared -->
-      <g:HTMLPanel addStyleNames='{style.desc}'>
-        Public responses (visible to everyone):
-        <g:Anchor ui:field='selectAllPublicLink' addStyleNames='{style.smallActionLink}'>
-          select all
-        </g:Anchor>
-        |
-        <g:Anchor ui:field='selectNonePublicLink' addStyleNames='{style.smallActionLink}'>
-          none
-        </g:Anchor>
-        <!--<a ui:field='selectAllPublic' class='{style.smallActionLink}' href="#">select all</a>-->
+    </g:west>
+    
+    <g:center>
+      <g:HTMLPanel addStyleNames='{style.scrollable}'>  
+	      <g:VerticalPanel addStyleNames='{style.responseContainer}'>
+	        
+	        <!-- descriptive text and controls for selecting/unselecting responses -->
+		      <g:HTMLPanel addStyleNames='{style.desc}'>
+		        <!-- description changes with view -->
+		        <g:InlineLabel ui:field='descriptionLabel'>
+		          Private responses (visible only to you):
+		        </g:InlineLabel>
+		        
+		        <g:Anchor ui:field='selectAllLink' addStyleNames='{style.smallActionLink}'>
+		          select all
+		        </g:Anchor>
+		        |
+		        <g:Anchor ui:field='selectNoneLink' addStyleNames='{style.smallActionLink}'>
+		          none
+		        </g:Anchor>
+		      </g:HTMLPanel>
+		      
+		      <!-- list of responses that match the selected filters  -->
+		      <g:VerticalPanel ui:field="responseList" addStyleNames='{style.responseList} {style.list}' />
+		    
+		       
+	           
+	      </g:VerticalPanel>
       </g:HTMLPanel>
-      
-      <!-- the responses -->
-      <g:VerticalPanel ui:field="publicList" addStyleNames='{style.list}'/>
-   
-      <!-- buttons that affect the second list of response (those that are already public) -->
-      <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
-        <!-- fixme: disable until something is checked -->
-        <g:Button ui:field='unshareButton' addStyleNames='{style.unshareButton}'>
-          Unshare
-        </g:Button> 
-        <g:Button ui:field='deletePublicButton' addStyleNames='{style.deleteButton}'>
-          Delete
-        </g:Button>
-      </g:HorizontalPanel>
-    </g:VerticalPanel>
-   </g:HTMLPanel>
+    </g:center>
+    
+    <g:east size='200'><g:HTMLPanel /><!--placeholder--></g:east>
+    
+    <g:south size='40'>
+    <!-- buttons that affect the selected responses -->
+          <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
+            <!-- fixme: disable until something is checked -->
+            <g:Button ui:field='shareButton' addStyleNames='{style.shareButton}'>
+              Share
+            </g:Button> 
+            <g:Button ui:field='unshareButton' addStyleNames='{style.unshareButton}'>
+              Unshare
+            </g:Button>
+            <!-- fixme: show confirm dialog for delete -->
+            <g:Button ui:field='deleteButton' addStyleNames='{style.deleteButton}'>
+              Delete
+            </g:Button>
+          </g:HorizontalPanel>
+    </g:south>
+    
+  </g:DockLayoutPanel>
 
 </ui:UiBinder> 

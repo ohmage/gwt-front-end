@@ -9,38 +9,44 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel;
 
 public class ResponseViewImpl extends Composite implements ResponseView {
-
+  
   private static ResponseViewUiBinder uiBinder = GWT
       .create(ResponseViewUiBinder.class);
 
   @UiTemplate("ResponseView.ui.xml")
   interface ResponseViewUiBinder extends UiBinder<Widget, ResponseViewImpl> {
   }
-  
+
+  @UiField InlineLabel singleParticipantLabel;
   @UiField ListBox participantFilter;
   @UiField ListBox campaignFilter;
   @UiField ListBox surveyFilter;
-  @UiField VerticalPanel privateList;
-  @UiField VerticalPanel publicList;
+  @UiField InlineLabel descriptionLabel;
+  @UiField VerticalPanel responseList;
   @UiField Button shareButton;
   @UiField Button unshareButton;
-  @UiField Button deletePrivateButton;
-  @UiField Button deletePublicButton;
-  @UiField Anchor selectAllPublicLink;
-  @UiField Anchor selectAllPrivateLink;
-  @UiField Anchor selectNonePublicLink;
-  @UiField Anchor selectNonePrivateLink;
+  @UiField Button deleteButton;
+  @UiField Anchor selectAllLink;
+  @UiField Anchor selectNoneLink;
+  
+  @UiField MenuItem privateMenuItem;
+  @UiField MenuItem publicMenuItem;
+  @UiField MenuItem allMenuItem;
   
   ResponseView.Presenter presenter;
 
@@ -50,66 +56,35 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
   
   private void setEventHandlers() {
-    selectAllPublicLink.addClickHandler(new ClickHandler() {
+    selectAllLink.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        selectAllPublic();
+        selectAll();
       }
     });
     
-    selectAllPrivateLink.addClickHandler(new ClickHandler() {
+    selectNoneLink.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        selectAllPrivate();
+        selectNone();
       }
     });
-    
-    selectNonePublicLink.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        selectNonePublic();
-      }
-    });
-    
-    selectNonePrivateLink.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        selectNonePrivate();
-      }
-    });
+   
   }
 
-  private void selectAllPublic() {
-    for (int i = 0; i < publicList.getWidgetCount(); i++) {
-      if (publicList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
-        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)publicList.getWidget(i);
+  private void selectAll() {
+    for (int i = 0; i < responseList.getWidgetCount(); i++) {
+      if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
+        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
         panel.setChecked(true);
       }
     }
   }
   
-  private void selectAllPrivate() {
-    for (int i = 0; i < privateList.getWidgetCount(); i++) {
-      if (privateList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
-        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)privateList.getWidget(i);
-        panel.setChecked(true);
-      }
-    }
-  }
-  
-  private void selectNonePublic() {
-    for (int i = 0; i < publicList.getWidgetCount(); i++) {
-      if (publicList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
-        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)publicList.getWidget(i);
-        panel.setChecked(false);
-      }
-    }
-  }
-  
-  private void selectNonePrivate() {
-    for (int i = 0; i < privateList.getWidgetCount(); i++) {
-      if (privateList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
-        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)privateList.getWidget(i);
+  private void selectNone() {
+    for (int i = 0; i < responseList.getWidgetCount(); i++) {
+      if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
+        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
         panel.setChecked(false);
       }
     }
@@ -127,7 +102,22 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     for (String name : participantNames) {
       participantFilter.addItem(name); // FIXME: two param method to add value?
     }
-  }
+    
+    participantFilter.clear();
+    if (participantNames.size() == 1) {
+      singleParticipantLabel.setVisible(true);
+      singleParticipantLabel.setText(participantNames.get(0));
+      participantFilter.setVisible(false);
+      
+    } else {
+      singleParticipantLabel.setVisible(false);
+      participantFilter.setVisible(true);
+      participantFilter.clear();
+      for (String name : participantNames) {
+        participantFilter.addItem(name); 
+      }
+    }
+  } 
 
   @Override
   public void setCampaignList(List<String> campaignNames) {
@@ -177,22 +167,53 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @Override
   public void renderPrivate(List<SurveyResponse> responses) {
-    this.privateList.clear();
+    // TODO: private/public styles
+    this.responseList.clear();
     for (SurveyResponse response : responses) {
       ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
       responseWidget.setResponse(response);
-      this.privateList.add(responseWidget);
+      this.responseList.add(responseWidget);
     }
   }
 
   @Override
   public void renderPublic(List<SurveyResponse> responses) {
-    this.publicList.clear();
+    // TODO: private/public styles
+    this.responseList.clear();
     for (SurveyResponse response : responses) {
       ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
       responseWidget.setResponse(response);
-      this.publicList.add(responseWidget);
+      this.responseList.add(responseWidget);
     }
+  }
+
+  @Override
+  public void renderInvisible(List<SurveyResponse> responses) {
+    // TODO Auto-generated method stub
+  }
+
+  @Override
+  public String getSelectedParticipant() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String getSelectedCampaign() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String getSelectedSurvey() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Privacy getSelectedPrivacyState() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 

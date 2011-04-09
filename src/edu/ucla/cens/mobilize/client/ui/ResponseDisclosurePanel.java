@@ -19,7 +19,6 @@ import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.ibm.icu.text.DateFormat;
 
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 

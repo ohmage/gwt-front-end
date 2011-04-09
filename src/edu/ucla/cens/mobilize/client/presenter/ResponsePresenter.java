@@ -10,7 +10,9 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.view.ResponseView;
+import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
+import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
@@ -23,8 +25,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   List<String> participants = new ArrayList<String>();
   List<String> campaignIds = new ArrayList<String>();
   List<String> surveys = new ArrayList<String>();
-  List<SurveyResponse> privateResponses = new ArrayList<SurveyResponse>();
-  List<SurveyResponse> publicResponses = new ArrayList<SurveyResponse>();  
+  List<SurveyResponse> responses = new ArrayList<SurveyResponse>();
 
   // TODO: contents of campaign filter should be updated when
   // participant name changes. contents of survey filter should
@@ -76,16 +77,21 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   }
 
   private void loadData() {
-    // String[] names = {"Joe Brown", "Bob Hope", "That other guy"};
-    // String[] campaigns = {"Sleep Sens", "Media/Advertising", "Diet Sens"};
-    // this.participants = new ArrayList<String>(Arrays.asList(names));
+    this.responses.clear();
     
-    //this.surveys = new ArrayList<String>(Arrays.asList(new String[]{"survey1", "survey2"}));
+    // get filter params from gui
+    DataPointFilterParams params = new DataPointFilterParams();
+    params.participantId = this.view.getSelectedParticipant();
+    params.privacyState = this.view.getSelectedPrivacyState();
+    params.surveyId = this.view.getSelectedSurvey();
     
-    this.privateResponses.clear();
-    this.publicResponses.clear();
+    // data point api only allows queries for one campaign at a time,
+    // so iterate through campaigns and update display after loading 
+    // data for each one
     for (String campaignId : this.campaignIds) {
-      this.dataService.fetchPrivateSurveyResponses(campaignId, new AsyncCallback<List<SurveyResponse>>() {
+      this.dataService.fetchSurveyResponses(campaignId,
+                                            params,
+                                            new AsyncCallback<List<SurveyResponse>>() {
 
         @Override
         public void onFailure(Throwable caught) {
@@ -94,8 +100,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
         @Override
         public void onSuccess(List<SurveyResponse> result) {
-          privateResponses.addAll(result);
-          // TODO: sort by date
+          responses.addAll(result);
           updateDisplay();
         }
       });
@@ -107,8 +112,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     view.selectParticipant("Joe Brown"); // fixme: what if not there?
     view.setCampaignList(campaignIds);
     view.setSurveyList(surveys);
-    view.renderPrivate(privateResponses);
-    view.renderPublic(publicResponses);
+    view.renderPrivate(responses); // FIXME: just one render method?
   }
 
 
