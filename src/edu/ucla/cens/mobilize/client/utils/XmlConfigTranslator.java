@@ -61,7 +61,6 @@ public class XmlConfigTranslator {
   public SurveyInfo getSurveyInfo(String surveyId) {
     SurveyInfo surveyInfo = null;
     try {
-      String deleteme = xmlDocument().toString();
       Node surveyNode = xmlDocument().selectNode("//survey[id=\"" + surveyId + "\"]");
       surveyInfo = this.nodeToSurveyInfo(surveyNode);
     } catch (XPathException exception) {

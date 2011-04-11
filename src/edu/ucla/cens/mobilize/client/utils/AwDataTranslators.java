@@ -266,13 +266,13 @@ public class AwDataTranslators {
             obj.setCampaignId(campaignInfo.getCampaignId());
             obj.setCampaignName(campaignInfo.getCampaignName());
             obj.setResponseDate(dataPoint.getTimeStamp());
-            obj.setPrivacyState(dataPoint.getPrivacyState());
+            obj.setPrivacyState(dataPoint.getPrivacyState()); // FIXME: what if datapoints (prompts) have conflicting privacy?
             obj.setSurveyId(surveyId);
             if (surveyInfo != null) obj.setSurveyName(surveyInfo.getSurveyName());
             responses.put(surveyId, obj);
           }
           
-          PromptInfo promptInfo = campaignInfo.getSurvey(surveyId).getPrompt(dataPoint.getPromptId());
+          PromptInfo promptInfo = surveyInfo.getPrompt(dataPoint.getPromptId());
           SurveyResponse surveyResponse = responses.get(surveyId);
           surveyResponse.addPromptResponse(promptInfo, dataPoint);
         } else {
