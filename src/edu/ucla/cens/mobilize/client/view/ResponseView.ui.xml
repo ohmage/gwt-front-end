@@ -10,10 +10,11 @@
     	padding: 0px;
     }
     .desc {
+    	background-color: #FFFFE0;
     	color: #333;
-    	display: inline-block;
     	font-weight: bold;
       padding: 15px 5px 10px;
+      margin: 0px;
     }
     .leftSideBar {
     	background-color: #EEE;

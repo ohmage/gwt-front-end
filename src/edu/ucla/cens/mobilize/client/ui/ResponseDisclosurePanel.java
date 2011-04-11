@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -20,10 +21,19 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 
 public class ResponseDisclosurePanel extends Composite
 	implements HasMouseOverHandlers, HasMouseOutHandlers {
+  
+  public interface ResponseDisclosurePanelStyle extends CssResource {
+    String promptResponse();
+    String promptText();
+    String promptValue();
+  }
+
+  @UiField ResponseDisclosurePanelStyle style;
 	@UiField Label campaignName;
 	@UiField CheckBox checkbox;
 	@UiField Label surveyName;
@@ -55,8 +65,23 @@ public class ResponseDisclosurePanel extends Composite
 		// responseDate.setText(response.getDateString()); // todo: get date, not string
 		Date date = response.getResponseDate();
 		String dateString = (date != null) ? this.dateTimeFormat.format(date) : "";
-		responseDateLabel.setText(dateString); 
-		details.setHTML(response.getDetails()); // fixme sanitize
+		responseDateLabel.setText(dateString);
+		//details.setHTML(response.getDetails()); // fixme sanitize
+		StringBuilder sb = new StringBuilder();
+		for (PromptResponse promptResponse : response.getPromptResponses()) {
+	    sb.append("<div class='").append(style.promptResponse()).append("'>");
+	    sb.append("<div class='").append(style.promptText()).append("'>");
+        String text = promptResponse.getText();
+        sb.append((text != null) ? text : "unavailable");
+      sb.append("</div>");
+      sb.append("<div class='").append(style.promptValue()).append("'>");
+        // FIXME: handle different types (e.g., images)
+        String value = promptResponse.getValue();
+        sb.append((value != null) ? value : "unavailable");
+      sb.append("</div>");
+      sb.append("</div>");
+		}
+		details.setHTML(sb.toString());
 		return this; // for chaining
 	}
 

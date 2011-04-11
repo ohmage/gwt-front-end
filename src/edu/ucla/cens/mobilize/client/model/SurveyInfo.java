@@ -51,7 +51,7 @@ public class SurveyInfo {
         return copy;
     }
     
-    // get a single prompt by id
+    // get a single prompt by id. returns null if prompt not found
     public PromptInfo getPrompt(String promptId) {
       PromptInfo retval = null;
       for (PromptInfo pinfo : this.promptList) {

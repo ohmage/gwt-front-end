@@ -1,14 +1,9 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style>
-	.toolbarCtr {
-		 height: 25px;
-		 width: 100px;
-	}
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel.ResponseDisclosurePanelStyle">
+	/* header row is always visible, shows summary info */
 	.checkbox {
-		/*background-color: #EFEFFF;*/
-		/*border-top: solid thin #BBB;*/
 		padding: 3px 0px 8px 2px;
 	}
 	.date {
@@ -22,6 +17,8 @@
 	.header img {
 		border: none;
 	}
+	/* action image buttons appear when hovering over header or 
+	   when disclosure panel is open*/
 	.shareButton {
 		background: #EEEEEE url('images/accept.png') no-repeat;
 	}
@@ -35,6 +32,10 @@
 		height: 20px;
 		width: 20px;
 	}
+	.toolbarCtr {
+     height: 25px;
+     width: 100px;
+  }
 	.toolbar > img {
 		border: solid thin white;
 	}
@@ -42,6 +43,23 @@
 		background: #EEE;
 		border: solid thin #CCC;
 	}
+	/* prompt responses are visible when disclosure panel is open */
+	.promptResponseCtr {
+		padding-bottom: 10px;
+  }
+	.promptResponse {
+		padding-bottom: 2px;
+  }
+	.promptText {
+	  color: #333;
+	  font-weight: bold;
+	  padding: 2px 15px;
+  }
+  /* todo: different styles for different prompt types */
+  .promptValue {
+  	color: #666;
+    padding: 2px 25px;
+  }
 	</ui:style>
  <g:HorizontalPanel>
    <g:CheckBox ui:field='checkbox' addStyleNames='{style.checkbox}' />
@@ -63,7 +81,7 @@
 		       </g:cell>
 	     </g:HorizontalPanel>
 	   </g:customHeader>
-	   <g:HTML ui:field='details'>
+	   <g:HTML ui:field='details' addStyleNames='{style.promptResponseCtr}'>
 	     <b>response</b> display template goes here
 	   </g:HTML>
 	 </g:DisclosurePanel>

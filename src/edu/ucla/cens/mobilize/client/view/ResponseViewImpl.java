@@ -170,10 +170,12 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     // TODO: private/public styles
     this.responseList.clear();
     for (SurveyResponse response : responses) {
+      // widget shows survey title, date, etc. when clicked it reveals full response
       ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
       responseWidget.setResponse(response);
       this.responseList.add(responseWidget);
     }
+    this.descriptionLabel.setText("Private Responses, visible only to you.");
   }
 
   @Override

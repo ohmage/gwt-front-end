@@ -271,8 +271,11 @@ public class AwDataTranslators {
             if (surveyInfo != null) obj.setSurveyName(surveyInfo.getSurveyName());
             responses.put(surveyId, obj);
           }
-          
-          PromptInfo promptInfo = surveyInfo.getPrompt(dataPoint.getPromptId());
+          // NOTE: if promptId is not found in the survey info (meaning prompt
+          // did not appear for that survey in the xml config) promptInfo will
+          // be null here. PromptResponse obj checks for null and falls back to 
+          // using the dataPoint label
+          PromptInfo promptInfo = surveyInfo.getPrompt(dataPoint.getPromptId()); // can be null
           SurveyResponse surveyResponse = responses.get(surveyId);
           surveyResponse.addPromptResponse(promptInfo, dataPoint);
         } else {

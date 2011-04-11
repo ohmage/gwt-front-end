@@ -56,24 +56,6 @@ a:hover, a:active {
 #footer-links {
 }
 
-/****** styles for response view *******/
-/** fixme: edit disclosure panel so you can have styles in template **/
-.responseView .header td {
-	padding-top: 5px;
-}
-
-.responseView .prompt {
-	color: #333;
-	font-weight: bold;
-	padding: 2px 15px;
-}
-
-.responseView .promptResponse {
-	color: #666;
-	padding: 2px 25px;
-}
-/****** end styles for response view *******/
-
 .floatstop {
 	clear: both;
 	display: block;
