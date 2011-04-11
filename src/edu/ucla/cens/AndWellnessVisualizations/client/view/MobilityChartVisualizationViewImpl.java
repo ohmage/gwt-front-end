@@ -69,8 +69,9 @@ public class MobilityChartVisualizationViewImpl extends Composite
 		
 		// Horizontal bar chart
 		frame.setNameValue("cht", "bhs");
-		// Sizing
-		frame.setSize(WIDTH, HEIGHT);
+		// Sizing, make the frame a bit bigger to avoid scroll bars
+		// Why IE needs 8 extra pixels I have no idea
+		frame.setSize(WIDTH + 8, HEIGHT + 8);
 		frame.setNameValue("chs", WIDTH + "x" + HEIGHT);
 		// Bar width and spacing
 		frame.setNameValue("chbh", "a,20,20");
