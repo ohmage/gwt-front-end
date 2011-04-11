@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -36,13 +37,20 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField ListBox participantFilter;
   @UiField ListBox campaignFilter;
   @UiField ListBox surveyFilter;
-  @UiField InlineLabel descriptionLabel;
+  //@UiField Label descriptionLabel;
+  @UiField Label sectionHeaderTitle;
+  @UiField Label sectionHeaderDetail;
   @UiField VerticalPanel responseList;
-  @UiField Button shareButton;
-  @UiField Button unshareButton;
-  @UiField Button deleteButton;
-  @UiField Anchor selectAllLink;
-  @UiField Anchor selectNoneLink;
+  @UiField Button shareButtonTop;
+  @UiField Button unshareButtonTop;
+  @UiField Button deleteButtonTop;
+  @UiField Button shareButtonBottom;
+  @UiField Button unshareButtonBottom;
+  @UiField Button deleteButtonBottom;
+  @UiField Anchor selectAllLinkTop;
+  @UiField Anchor selectNoneLinkTop;
+  @UiField Anchor selectAllLinkBottom;
+  @UiField Anchor selectNoneLinkBottom;
   
   @UiField MenuItem privateMenuItem;
   @UiField MenuItem publicMenuItem;
@@ -56,20 +64,33 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
   
   private void setEventHandlers() {
-    selectAllLink.addClickHandler(new ClickHandler() {
+    selectAllLinkTop.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         selectAll();
       }
     });
     
-    selectNoneLink.addClickHandler(new ClickHandler() {
+    selectNoneLinkTop.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         selectNone();
       }
     });
    
+    selectAllLinkBottom.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        selectAll();
+      }
+    });
+    
+    selectNoneLinkBottom.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        selectNone();
+      }
+    });
   }
 
   private void selectAll() {
@@ -175,7 +196,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       responseWidget.setResponse(response);
       this.responseList.add(responseWidget);
     }
-    this.descriptionLabel.setText("Private Responses, visible only to you.");
+    this.sectionHeaderTitle.setText("Private Responses");
+    this.sectionHeaderDetail.setText("Visible only to you.");
   }
 
   @Override

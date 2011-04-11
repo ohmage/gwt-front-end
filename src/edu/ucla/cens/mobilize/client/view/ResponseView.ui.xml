@@ -3,18 +3,11 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
   <ui:style>
     .buttonPanel {
-    	padding: 8px;
+    	padding: 4px 12px;
     }
     .container {
     	padding: 10px 15px; 
     	padding: 0px;
-    }
-    .desc {
-    	background-color: #FFFFE0;
-    	color: #333;
-    	font-weight: bold;
-      padding: 15px 5px 10px;
-      margin: 0px;
     }
     .leftSideBar {
     	background-color: #EEE;
@@ -36,9 +29,6 @@
     }
     .leftSideBarMenu td:hover {
     	background-color: #FFF;
-    }
-    .list {
-      padding: 0px 0px 5px 10px;
     }
     .filterContainer {
     	background-color: #DDD;
@@ -66,10 +56,31 @@
     }
     .responseContainer {
     	overflow: auto;
-    	padding: 0px 10px;
+    	padding: 5px 10px;
+    	width: 100%;
     }
     .scrollable {
       overflow: auto;
+    }
+    .sectionHeader {
+      background-color: #FFFFE0;
+      border-bottom: solid 1px #CCC;
+      color: #333;
+      font-weight: bold;
+      padding: 15px;
+      margin: 0px;
+    }
+    .sectionHeaderTitle {
+    	font-size: 1.1em;
+    	font-weight: bold;
+    }
+    .sectionHeaderDetail {
+    	font-weight: normal;
+    	font-size: 0.8em;
+    	padding-top: 2px;
+    }
+    .selectAllNoneLinks {
+    	padding: 5px 10px;
     }
     .shareButton{
       background: #EEEEEE url('images/accept.png') no-repeat;
@@ -125,30 +136,52 @@
     </g:west>
     
     <g:center>
-      <g:HTMLPanel addStyleNames='{style.scrollable}'>  
+      <g:HTMLPanel addStyleNames='{style.scrollable}'>
+        <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
+            <!-- description changes depending on left menubar selection -->
+            <g:Label ui:field='sectionHeaderTitle' addStyleNames='{style.sectionHeaderTitle}'>
+              Private responses
+            </g:Label>
+            <g:Label ui:field='sectionHeaderDetail' addStyleNames='{style.sectionHeaderDetail}'>
+              Visible only to you.
+            </g:Label> 
+        </g:HTMLPanel>
+        
+        <!-- buttons that affect selected responses -->
+	      <g:HorizontalPanel addStyleNames='{style.buttonPanel}' verticalAlignment='ALIGN_MIDDLE'>
+	        <g:cell verticalAlignment='ALIGN_MIDDLE'>
+		        <g:Anchor ui:field='selectAllLinkTop' addStyleNames='{style.smallActionLink}'>
+	            select all
+	          </g:Anchor>
+          </g:cell>
+          <g:cell verticalAlignment='ALIGN_MIDDLE'>
+            <g:InlineHTML>
+              |
+            </g:InlineHTML>
+          </g:cell>
+          <g:cell verticalAlignment='ALIGN_MIDDLE'>
+	          <g:Anchor ui:field='selectNoneLinkTop' addStyleNames='{style.smallActionLink}'>
+	            none
+	          </g:Anchor>
+          </g:cell> 
+	        <!-- fixme: disable until something is checked -->
+	        <g:Button ui:field='shareButtonTop' addStyleNames='{style.shareButton}'>
+	          Share
+	        </g:Button> 
+	        <g:Button ui:field='unshareButtonTop' addStyleNames='{style.unshareButton}'>
+	          Unshare
+	        </g:Button>
+	        <!-- fixme: show confirm dialog for delete -->
+	        <g:Button ui:field='deleteButtonTop' addStyleNames='{style.deleteButton}'>
+	          Delete
+	        </g:Button>
+        </g:HorizontalPanel>
+        
 	      <g:VerticalPanel addStyleNames='{style.responseContainer}'>
-	        
-	        <!-- descriptive text and controls for selecting/unselecting responses -->
-		      <g:HTMLPanel addStyleNames='{style.desc}'>
-		        <!-- description changes with view -->
-		        <g:InlineLabel ui:field='descriptionLabel'>
-		          Private responses (visible only to you):
-		        </g:InlineLabel>
-		        
-		        <g:Anchor ui:field='selectAllLink' addStyleNames='{style.smallActionLink}'>
-		          select all
-		        </g:Anchor>
-		        |
-		        <g:Anchor ui:field='selectNoneLink' addStyleNames='{style.smallActionLink}'>
-		          none
-		        </g:Anchor>
-		      </g:HTMLPanel>
-		      
+	      
 		      <!-- list of responses that match the selected filters  -->
-		      <g:VerticalPanel ui:field="responseList" addStyleNames='{style.responseList} {style.list}' />
-		    
-		       
-	           
+		      <g:VerticalPanel ui:field="responseList" addStyleNames='{style.responseList}' />
+		      
 	      </g:VerticalPanel>
       </g:HTMLPanel>
     </g:center>
@@ -156,20 +189,39 @@
     <g:east size='200'><g:HTMLPanel /><!--placeholder--></g:east>
     
     <g:south size='40'>
-    <!-- buttons that affect the selected responses -->
-          <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
-            <!-- fixme: disable until something is checked -->
-            <g:Button ui:field='shareButton' addStyleNames='{style.shareButton}'>
-              Share
-            </g:Button> 
-            <g:Button ui:field='unshareButton' addStyleNames='{style.unshareButton}'>
-              Unshare
-            </g:Button>
-            <!-- fixme: show confirm dialog for delete -->
-            <g:Button ui:field='deleteButton' addStyleNames='{style.deleteButton}'>
-              Delete
-            </g:Button>
-          </g:HorizontalPanel>
+      <g:HTMLPanel>
+         
+        <!-- buttons that affect the selected responses -->
+	      <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
+	        <g:cell verticalAlignment='ALIGN_MIDDLE'>
+	        <!-- select all/none action links -->
+		        <g:Anchor ui:field='selectAllLinkBottom' addStyleNames='{style.smallActionLink}'>
+		          select all
+		        </g:Anchor>
+		      </g:cell>
+		      <g:cell verticalAlignment='ALIGN_MIDDLE'>
+		        <g:InlineHTML>
+		        |
+		        </g:InlineHTML>
+		      </g:cell>
+		      <g:cell verticalAlignment='ALIGN_MIDDLE'>
+		        <g:Anchor ui:field='selectNoneLinkBottom' addStyleNames='{style.smallActionLink}'>
+		          none
+		        </g:Anchor>
+	        </g:cell>
+	        <!-- fixme: disable until something is checked -->
+	        <g:Button ui:field='shareButtonBottom' addStyleNames='{style.shareButton}'>
+	          Share
+	        </g:Button> 
+	        <g:Button ui:field='unshareButtonBottom' addStyleNames='{style.unshareButton}'>
+	          Unshare
+	        </g:Button>
+	        <!-- fixme: show confirm dialog for delete -->
+	        <g:Button ui:field='deleteButtonBottom' addStyleNames='{style.deleteButton}'>
+	          Delete
+	        </g:Button>
+       </g:HorizontalPanel>
+     </g:HTMLPanel>
     </g:south>
     
   </g:DockLayoutPanel>
