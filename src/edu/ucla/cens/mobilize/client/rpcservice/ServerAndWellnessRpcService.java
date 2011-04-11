@@ -161,11 +161,16 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
                         callback.onSuccess(serverResponse);
                         
                     } else {
-                        // TODO: handle status codes differently (e.g., 404 server not found)
-                        String errorString = response.getText();
-                        // Parse the server error and pass back to the callback as a failure
-                        Throwable error = parseServerErrorResponse(response.getText());
-                        callback.onFailure(error);
+                        if (404 == statusCode) {
+                          String msg = "Authorization failed: Could not reach server at " + authorizationService.getUrl();
+                          _logger.severe(msg);
+                          throw new ServerException(msg);
+                        } else {
+                          String errorString = response.getText();
+                          // Parse the server error and pass back to the callback as a failure
+                          Throwable error = parseServerErrorResponse(response.getText());
+                          callback.onFailure(error);
+                        }
                     }
                 }       
             });
