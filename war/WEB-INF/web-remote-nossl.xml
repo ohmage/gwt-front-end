@@ -66,9 +66,15 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>jsp</servlet-name>
+        <servlet-name>default</servlet-name>
         <url-pattern>*.ico</url-pattern>
     </servlet-mapping>
+
+    <!-- Fix css mime type -->
+    <mime-mapping>
+        <extension>css</extension>
+        <mime-type>text/css</mime-type>
+    </mime-mapping>
 
   <!-- Default page to serve -->
   <welcome-file-list>
