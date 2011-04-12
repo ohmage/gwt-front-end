@@ -20,7 +20,7 @@ public class AndWellnessConstants {
     
     
     // RELEASE CONSTANTS
-    private final static String authorizationLocationRelease = "../app/auth_token";
+    private final static String authorizationLocationRelease = "../app/user/auth_token";
     private final static String dataPointLocationRelease = "../app/q/dp";
     private final static String configurationLocationRelease = "../app/q/config";
     

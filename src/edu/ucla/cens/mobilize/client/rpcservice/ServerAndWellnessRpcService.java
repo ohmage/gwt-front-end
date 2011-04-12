@@ -118,9 +118,9 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
      
         // Setup the post parameters
         Map<String,String> parameters = new HashMap<String,String>();
-        parameters.put("u", userName);
-        parameters.put("p", password);
-        parameters.put("ci", "2");  // Hack in client ID for now
+        parameters.put("user", userName);
+        parameters.put("password", password);
+        parameters.put("client", "2");  // Hack in client ID for now
         String postParams = MapUtils.translateToParameters(parameters);
         
         _logger.fine("Attempting authentication with parameters: " + postParams);
