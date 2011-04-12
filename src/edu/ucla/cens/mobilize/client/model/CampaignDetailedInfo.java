@@ -95,7 +95,7 @@ public class CampaignDetailedInfo {
     return privacy;
   }
 
-  // gets one survey from config
+  // gets one survey from config. returns null if not found
   public SurveyInfo getSurvey(String surveyId) {
     return this.configTranslator.getSurveyInfo(surveyId);
   }

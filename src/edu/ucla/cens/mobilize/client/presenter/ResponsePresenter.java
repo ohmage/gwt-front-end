@@ -2,13 +2,14 @@ package edu.ucla.cens.mobilize.client.presenter;
 
 import java.util.ArrayList;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.MainApp;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
@@ -27,6 +28,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   List<String> surveys = new ArrayList<String>();
   List<SurveyResponse> responses = new ArrayList<SurveyResponse>();
 
+  private static Logger _logger = Logger.getLogger(MainApp.class.getName());
+  
   // TODO: contents of campaign filter should be updated when
   // participant name changes. contents of survey filter should
   // be changed when campaign is selected
@@ -52,8 +55,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   
   @Override
   public void onFilterChange() {
-    // FIXME: add filters
-    loadData();
+    loadData(); // gets filter values during load
     updateDisplay();
   }
 
@@ -112,9 +114,22 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     view.selectParticipant("Joe Brown"); // fixme: what if not there?
     view.setCampaignList(campaignIds);
     view.setSurveyList(surveys);
-    view.renderPrivate(responses); // FIXME: just one render method?
+    Privacy privacy = view.getSelectedPrivacyState();
+    switch (privacy) {
+      case PUBLIC:
+        view.renderPublic(responses);
+        break;
+      case PRIVATE: 
+        view.renderPrivate(responses);
+        break;
+      case INVISIBLE:
+        view.renderInvisible(responses);
+        break;
+      default:
+        view.renderAll(responses);
+        break;
+    }
   }
-
 
   
 }

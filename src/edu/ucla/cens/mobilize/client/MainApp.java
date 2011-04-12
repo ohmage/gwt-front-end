@@ -56,9 +56,8 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   // event management
   EventBus eventBus = new SimpleEventBus();
   
-  // rpc
-  AndWellnessRpcService rpcService = new ServerAndWellnessRpcService();
-  
+  // classes for accessing data store
+  AndWellnessRpcService rpcService = new ServerAndWellnessRpcService();  
   DataService dataService = new MockDataService(); // FIXME: use real service
   
   // login management
@@ -100,7 +99,6 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     } else {
       initLogin();
     }
-    
   }
   
   private void initAppForUser(UserInfo userInfo) {
@@ -126,7 +124,8 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   }
   
   private void initUser() {    
-    dataService.fetchUserInfo(loginManager.getLoggedInUserName(), new AsyncCallback<UserInfo>() {
+    final String userName = loginManager.getLoggedInUserName();
+    dataService.fetchUserInfo(userName, new AsyncCallback<UserInfo>() {
 
       @Override
       public void onFailure(Throwable caught) {
@@ -135,7 +134,12 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
 
       @Override
       public void onSuccess(UserInfo user) {
-        initAppForUser(user);
+        if (user != null) {
+          initAppForUser(user);
+        } else {
+          _logger.severe("Failed to fetch user info for user " + userName + ". Forcing logout.");
+          logout();
+        }
       }
     });
   }
@@ -290,10 +294,14 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     } else if (view.equals("help")) {
       showHelp();
     } else if (view.equals("logout")) {
-      loginManager.logOut();
-      History.newItem("dashboard", false); // logging in again will show dashboard
-      Window.Location.reload(); // reload to clear state
+      logout();
     }
+  }
+  
+  private void logout() {
+    loginManager.logOut();
+    History.newItem("dashboard", false); // logging in again will show dashboard
+    Window.Location.reload(); // reload to clear state
   }
   
   private String extractView(String historyToken) {

@@ -252,6 +252,7 @@ public class AwDataTranslators {
         return promptInfo;
     }
     
+    // TODO: what exceptions can be thrown and where should they be caught?
     public static List<SurveyResponse> translateDataPointsToSurveyResponses(
         List<DataPointAwData> dataPoints, CampaignDetailedInfo campaignInfo) {
 

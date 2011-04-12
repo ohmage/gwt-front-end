@@ -204,13 +204,21 @@ public class MockDataService implements DataService {
   @Override
   public void fetchDataPoints(String campaignId, DataPointFilterParams params,
       AsyncCallback<List<DataPointAwData>> callback) {
-    DataPointQueryAwData serverResponse = DataPointQueryAwData.fromJsonString(getDataPointArrayJson());
-    JsArray<DataPointAwData> dataPointsJs = serverResponse.getData();
-    List<DataPointAwData> dataPoints = new ArrayList<DataPointAwData>();
-    for (int i = 0; i < dataPointsJs.length(); i++) {
-      dataPoints.add(dataPointsJs.get(i));
+    try {
+      DataPointQueryAwData serverResponse = DataPointQueryAwData.fromJsonString(getDataPointArrayJson());
+      JsArray<DataPointAwData> dataPointsJs = serverResponse.getData();
+      _logger.finest(serverResponse.getData().join().toString());
+      _logger.finest(dataPointsJs.toString());
+      List<DataPointAwData> dataPoints = new ArrayList<DataPointAwData>();
+      for (int i = 0; i < dataPointsJs.length(); i++) {
+        dataPoints.add(dataPointsJs.get(i));
+      }
+      _logger.finest("successfully loaded " + Integer.toString(dataPoints.size()) + " data points from json");
+      callback.onSuccess(dataPoints);
+    } catch (Exception e) {
+      _logger.severe(e.getMessage());
+      callback.onFailure(e);
     }
-    callback.onSuccess(dataPoints);
   }
 
   @Override
@@ -245,8 +253,6 @@ public class MockDataService implements DataService {
         }
       }
     });
-    
-
     
   }
 

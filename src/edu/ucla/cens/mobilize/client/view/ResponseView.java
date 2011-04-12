@@ -39,5 +39,6 @@ public interface ResponseView extends IsWidget {
   void renderPrivate(List<SurveyResponse> responses);
   void renderPublic(List<SurveyResponse> responses);
   void renderInvisible(List<SurveyResponse> responses);
+  void renderAll(List<SurveyResponse> responses);
   
 }

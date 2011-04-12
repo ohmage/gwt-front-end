@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.ResponseDelete;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;

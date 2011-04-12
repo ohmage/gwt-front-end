@@ -49,6 +49,8 @@ public class XmlConfigTranslator {
     } catch (XmlParseException xmlException) {
       _logger.severe("Document could not be loaded. XmlParseException: " + 
       		xmlException.getMessage());
+    } catch (Exception exception) {
+      _logger.severe("Document could not be loaded. " + exception.getMessage());
     }
     return success;
   }
