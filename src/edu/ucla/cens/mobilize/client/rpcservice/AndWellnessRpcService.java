@@ -42,14 +42,4 @@ public interface AndWellnessRpcService {
     
     public void fetchConfigData(String authToken, final AsyncCallback<ConfigQueryAwData> callback);
     
-    public void fetchCampaignList(String authToken,
-                                  HashMap<String, String> params,
-                                  final AsyncCallback<List<CampaignInfo>> callback);
-    
-    public void fetchCampaignDetail(String authToken,
-                                    String campaignId,
-                                    final AsyncCallback<CampaignInfo> callback);
-    
-    public void fetchUserInfo(String authToken, final AsyncCallback<UserInfoOld> callback);
-    
 }

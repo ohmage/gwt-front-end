@@ -207,25 +207,4 @@ public class LocalAndWellnessRpcService implements AndWellnessRpcService {
         }
         
     }
-
-    @Override
-    public void fetchUserInfo(String authToken, AsyncCallback<UserInfoOld> callback) {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void fetchCampaignList(String authToken,
-        HashMap<String, String> params,
-        AsyncCallback<List<CampaignInfo>> callback) {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void fetchCampaignDetail(String authToken, String campaignId,
-        AsyncCallback<CampaignInfo> callback) {
-      // TODO Auto-generated method stub
-      
-    }
 }

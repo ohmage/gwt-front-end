@@ -14,17 +14,17 @@ public class AndWellnessConstants {
     public final static DeployStatus status = GWT.create(DeployStatus.class);
     
     // DEBUGGING CONSTANTS
-    private final static String authorizationLocationDebug = "http://127.0.0.1:8080/app/auth_token";
-    private final static String dataPointLocationDebug = "http://127.0.0.1:8080/app/q/dp";
-    private final static String configurationLocationDebug = "http://127.0.0.1:8080/app/q/config";
-    
+    //private final static String authorizationLocationDebug = "http://127.0.0.1:8080/app/auth_token";
+    //private final static String dataPointLocationDebug = "http://127.0.0.1:8080/app/q/dp";
+    //private final static String configurationLocationDebug = "http://127.0.0.1:8080/app/q/config";
+    private final static String authorizationLocationDebug = "http://dev1.andwellness.org/app/user/auth_token"; 
+    private final static String dataPointLocationDebug = "http://dev1.andwellness.org/app/q/dp";
+    private final static String configurationLocationDebug = "http://dev1.andwellness.org/app/q/config";
     
     // RELEASE CONSTANTS
     private final static String authorizationLocationRelease = "../app/user/auth_token";
     private final static String dataPointLocationRelease = "../app/q/dp";
     private final static String configurationLocationRelease = "../app/q/config";
-    
-    
     
         
     /**

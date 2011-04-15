@@ -7,22 +7,25 @@ import java.util.logging.Logger;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.DialogBox;
+
 import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
+import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.AuthorizationTokenQueryAwData;
-import edu.ucla.cens.mobilize.client.rpcservice.AndWellnessRpcService;
+import edu.ucla.cens.mobilize.client.rpcservice.ServerUnavailableException;
 import edu.ucla.cens.mobilize.client.view.LoginView;
 
 public class LoginPresenter implements Presenter,
     LoginView.Presenter {
-    private final AndWellnessRpcService rpcService;
+    private final DataService dataService;
     private final LoginView view;
     private final TokenLoginManager loginManager;
     
     private static Logger _logger = Logger.getLogger(LoginPresenter.class.getName());
     
-    public LoginPresenter(AndWellnessRpcService rpcService, 
+    public LoginPresenter(DataService dataService, 
             EventBus eventBus, LoginView view, TokenLoginManager loginManager) {
-        this.rpcService = rpcService;
+        this.dataService = dataService;
         this.view = view;
         this.view.setPresenter(this);
         this.loginManager = loginManager;
@@ -49,15 +52,22 @@ public class LoginPresenter implements Presenter,
         return;
       } 
       
-      rpcService.fetchAuthorizationToken(userName, password, new AsyncCallback<AuthorizationTokenQueryAwData>() {
+      dataService.fetchAuthorizationToken(userName, password, new AsyncCallback<AuthorizationTokenQueryAwData>() {
         
           /**
            * Notifies the View that the login failed
            */
           public void onFailure(Throwable caught) {
              _logger.warning("User login failed with reason: " + caught.getMessage());
-              
-             view.setLoginFailed("Login failed. Please check name and password and try again.");
+             if (caught.getClass().equals(ServerUnavailableException.class)) {
+               DialogBox errorDialog = new DialogBox();
+               errorDialog.setText("There was a problem contacting the server. Please try again.");
+               errorDialog.setAutoHideEnabled(true);
+               errorDialog.setGlassEnabled(true);
+               errorDialog.center();
+             } else {
+               view.setLoginFailed("Login failed. Please check name and password and try again.");
+             }
           }
 
           /**

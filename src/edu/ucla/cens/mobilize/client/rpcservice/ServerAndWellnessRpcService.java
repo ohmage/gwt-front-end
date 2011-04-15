@@ -118,9 +118,18 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
      
         // Setup the post parameters
         Map<String,String> parameters = new HashMap<String,String>();
+        // params for new api
+        /*
         parameters.put("user", userName);
         parameters.put("password", password);
         parameters.put("client", "2");  // Hack in client ID for now
+        */
+        
+        // params for old api
+        parameters.put("u", userName);
+        parameters.put("p", password);
+        parameters.put("ci", "2");
+        
         String postParams = MapUtils.translateToParameters(parameters);
         
         _logger.fine("Attempting authentication with parameters: " + postParams);
@@ -260,7 +269,7 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
                     }
                 }       
             });
-        // Big error occured, handle it here
+        // Big error occurred, handle it here
         } catch (RequestException e) {
             throw new ServerException("Cannot contact server.");     
         }
@@ -378,76 +387,4 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
         
         return returnError;
     }
-
-    private List<CampaignInfo> campaigns = new ArrayList<CampaignInfo>(); // deletme
-    
-    @Override
-    public void fetchCampaignList(String authToken,
-                                  HashMap<String, String> params,
-                                  AsyncCallback<List<CampaignInfo>> callback) {
-      // FIXME: use real data
-      campaigns.clear();
-      for (int i = 0; i < 3; i++) {
-        CampaignInfo info = new CampaignInfo();
-        info.setCampaignName("NIH_SleepSens" + Integer.toString(i));
-        List<UserRole> roles = new ArrayList<UserRole>();
-        roles.add(UserRole.PARTICIPANT);
-        info.setUserRoles(roles);
-        info.setDescription("Monitor sleeping patterns");
-        info.setPrimaryAuthor("Bill");
-        info.setPrivacy(Privacy.PUBLIC);
-        info.setRunningState(RunningState.RUNNING);
-        campaigns.add(info);
-        
-        info = new CampaignInfo();
-        info.setCampaignName("NIH_DietSens" + Integer.toString(i));
-        roles = new ArrayList<UserRole>();
-        roles.add(UserRole.PARTICIPANT);
-        roles.add(UserRole.AUTHOR);
-        info.setUserRoles(roles);
-        info.setDescription("What people eat");
-        info.setPrimaryAuthor("Mary");
-        info.setPrivacy(Privacy.PUBLIC);
-        info.setRunningState(RunningState.RUNNING);
-        campaigns.add(info);
-        
-        info = new CampaignInfo();
-        info.setCampaignName("Advertising" + Integer.toString(i));
-        roles = new ArrayList<UserRole>();
-        roles.add(UserRole.PARTICIPANT);
-        info.setUserRoles(roles);
-        info.setDescription("Raise awareness of advertisements in the community");
-        info.setPrimaryAuthor("SomeGuy");
-        info.setPrivacy(Privacy.PUBLIC);
-        info.setRunningState(RunningState.STOPPED);
-        campaigns.add(info);
-      }
-      
-      callback.onSuccess(campaigns);
-    }
-
-    @Override
-    public void fetchCampaignDetail(String authToken,
-        String campaignId,
-        AsyncCallback<CampaignInfo> callback) {
-      boolean wasFound = false;
-      for (CampaignInfo info : campaigns) {
-        if (info.getCampaignId().equals(campaignId)) {
-          wasFound = true;
-          callback.onSuccess(info);
-        }
-      }
-      
-      if (!wasFound) callback.onFailure(new Throwable("not found"));
-    }
-
-    @Override
-    public void fetchUserInfo(String authToken, AsyncCallback<UserInfoOld> callback) {
-      UserInfoOld info = new UserInfoOld();
-      info.setUserName("myusername");
-      callback.onSuccess(info);
-      // FIXME
-      
-    }
-    
 }

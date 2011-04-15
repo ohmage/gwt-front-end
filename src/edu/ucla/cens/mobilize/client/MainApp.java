@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.TabPanel;
 import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
+import edu.ucla.cens.mobilize.client.dataaccess.AndWellnessDataService;
 import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
 import edu.ucla.cens.mobilize.client.presenter.DashboardPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ExploreDataPresenter;
@@ -57,8 +58,8 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   EventBus eventBus = new SimpleEventBus();
   
   // classes for accessing data store
-  AndWellnessRpcService rpcService = new ServerAndWellnessRpcService();  
   DataService dataService = new MockDataService(); // FIXME: use real service
+  DataService awDataService = new AndWellnessDataService();
   
   // login management
   TokenLoginManager loginManager = new TokenLoginManager(eventBus);
@@ -119,7 +120,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   
   private void initLogin() {
     loginView = new LoginViewImpl();
-    loginPresenter = new LoginPresenter(rpcService, eventBus, loginView, loginManager);
+    loginPresenter = new LoginPresenter(awDataService, eventBus, loginView, loginManager);
     RootPanel.get("main-content").add(loginView);
   }
   
