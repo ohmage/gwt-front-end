@@ -17,9 +17,9 @@ public interface CampaignView extends IsWidget {
   // presenter management
   public interface Presenter {
     public void setView(CampaignView view);
-    public void onCampaignSelected(String campaignId); // FIXME: CampaignId
+    public void onCampaignSelected(String campaignId);
     public void onCampaignCreate();
-    public void onCampaignDelete(String campaignId); // FIXME: CampaignId
+    public void onCampaignDelete(String campaignId); 
     public void onFilterChange(); // data filters
   }
   void setPresenter(Presenter presenter);

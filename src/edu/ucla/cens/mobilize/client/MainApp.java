@@ -24,6 +24,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
 import edu.ucla.cens.mobilize.client.dataaccess.AndWellnessDataService;
 import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
+import edu.ucla.cens.mobilize.client.presenter.ClassPresenter;
 import edu.ucla.cens.mobilize.client.presenter.DashboardPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ExploreDataPresenter;
 import edu.ucla.cens.mobilize.client.presenter.LoginPresenter;
@@ -34,6 +35,8 @@ import edu.ucla.cens.mobilize.client.ui.Header;
 import edu.ucla.cens.mobilize.client.view.AccountView;
 import edu.ucla.cens.mobilize.client.view.CampaignView;
 import edu.ucla.cens.mobilize.client.view.CampaignViewImpl;
+import edu.ucla.cens.mobilize.client.view.ClassView;
+import edu.ucla.cens.mobilize.client.view.ClassViewImpl;
 import edu.ucla.cens.mobilize.client.view.DashboardViewImpl;
 import edu.ucla.cens.mobilize.client.view.ExploreDataView;
 import edu.ucla.cens.mobilize.client.view.ExploreDataViewImpl;
@@ -78,6 +81,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
 	CampaignView campaignView;
 	ResponseView responseView;
 	ExploreDataView exploreDataView;
+	ClassView classView;
 	AccountView accountView;
 	HelpView helpView;
 	
@@ -86,7 +90,8 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
 	CampaignPresenter campaignPresenter;
 	ResponsePresenter responsePresenter;
 	ExploreDataPresenter exploreDataPresenter;
-
+  ClassPresenter classPresenter;
+	
   // Logging utility
   private static Logger _logger = Logger.getLogger(MainApp.class.getName());	
 	
@@ -155,6 +160,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     campaignView = new CampaignViewImpl();
     responseView = new ResponseViewImpl();
     exploreDataView = new ExploreDataViewImpl();
+    classView = new ClassViewImpl();
     accountView = new AccountView();
     helpView = new HelpView();
     
@@ -163,14 +169,16 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     campaignPresenter = new CampaignPresenter(userInfo, dataService, eventBus);
     responsePresenter = new ResponsePresenter(userInfo, dataService, eventBus);
     exploreDataPresenter = new ExploreDataPresenter();
-    
-    // FIXME: move this stuff into history mgmt
+    classPresenter = new ClassPresenter();
+
+    // connect views and presenters
     dashboardPresenter.setView(dashboardView);
     campaignPresenter.setView(campaignView);
     campaignPresenter.showAllCampaigns();
     responsePresenter.setView(responseView);
     responsePresenter.onFilterChange();
     exploreDataPresenter.setView(exploreDataView);
+    classPresenter.setView(classView);
   }
   
   private void initLayoutAndNavigation() {
@@ -183,12 +191,14 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     tabPanel.add(campaignView, "Campaigns"); // 1 = campaigns
     tabPanel.add(responseView, "Responses"); // 2 = responses
     tabPanel.add(exploreDataView, "Explore Data"); // 3 = explore data
+    tabPanel.add(classView, "Classes"); // 4 = classes
 
     // the nth string in tabHistoryTokens corresponds to the nth tab
     tabHistoryTokens.add("dashboard");
     tabHistoryTokens.add("campaigns");
     tabHistoryTokens.add("responses");
     tabHistoryTokens.add("explore_data");
+    tabHistoryTokens.add("classes");
     
     // tab panel, account page, and help all appear in the same
     // place but only one of them will be visible at a time
@@ -228,6 +238,14 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     tabPanel.setVisible(true);
     if (tabPanel.getTabBar().getSelectedTab() != 3) {
       tabPanel.selectTab(3);
+    }
+  }
+  
+  private void showClasses() {
+    hideAll();
+    tabPanel.setVisible(true);
+    if (tabPanel.getTabBar().getSelectedTab() != 4) {
+      tabPanel.selectTab(4);
     }
   }
 
@@ -290,6 +308,9 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
       // filters and data set from params
       exploreDataPresenter.go(params);
       showExploreData();
+    } else if (view.equals("classes")) {
+      classPresenter.go(params);
+      showClasses();
     } else if (view.equals("account")) {
       showAccount();
     } else if (view.equals("help")) {
