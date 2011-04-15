@@ -4,48 +4,54 @@
 	<ui:style type="edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel.ResponseDisclosurePanelStyle">
 	/* header row is always visible, shows summary info */
 	.checkbox {
-		padding: 3px 0px 8px 2px;
 	}
 	.date {
 		padding-right: 5px;
 	}
 	.header td {
 		color: #222445;
-		height: 26px;
-		padding: 2px 5px 0px;
+		padding: 2px 5px;
 	}
 	.header img {
 		border: none;
 	}
-	/* action image buttons appear when hovering over header or 
-	   when disclosure panel is open*/
-	.shareButton {
-		background: #EEEEEE url('images/accept.png') no-repeat;
+	.campaignName {
+		width: 120px;
 	}
-	.unshareButton {
-		background: #EEEEEE url('images/unshare.png') no-repeat;
-	}
-	.deleteButton {
-		background: #EEEEEE url('images/delete.png') no-repeat;
-	}
-	.shareButton, .unshareButton, .deleteButton {
-		height: 20px;
-		width: 20px;
-	}
-	.toolbarCtr {
-     height: 25px;
-     width: 100px;
+	.surveyName {
+		width: 80px;
   }
-	.toolbar > img {
-		border: solid thin white;
+  .responseWidgetContainer { /* the whole thing, including checkbox */
+    border-top: solid thin #CCC;
+    padding: 0px 10px;
+    width: 100%;
+  }
+  /* underlying style for all privacy state cells */
+	.responsePrivacy { 
+		font-size: 0.8em;
+		padding: 2px 0px 2px 17px;
+		width: 80px;
 	}
-	.toolbar > img:hover {
-		background: #EEE;
-		border: solid thin #CCC;
+	/* dynamically added to privacy state cell for private response */
+	.privacyPrivate { 
+		background-image: url('images/lock_small.png');
+		background-repeat: no-repeat;
 	}
+	/* dynamically added to privacy state cell for public response */
+	.privacyPublic {
+		background-image: url('images/group_small.png');
+		background-repeat: no-repeat;
+  }
+  /* dynamically added to privacy state cell for invisible response */
+  .privacyInvisible { 
+  	background-repeat: no-repeat;
+  }
 	/* prompt responses are visible when disclosure panel is open */
 	.promptResponseCtr {
-		padding-bottom: 10px;
+		padding: 5px 0px;
+		border: solid thin #EEE;
+		background-color: #F8F8FF; /* ghostWhite */
+		margin: 5px 0px 10px;
   }
 	.promptResponse {
 		padding-bottom: 2px;
@@ -62,24 +68,15 @@
     padding: 1px 10px;
   }
 	</ui:style>
- <g:HorizontalPanel>
+ <g:HorizontalPanel addStyleNames='{style.responseWidgetContainer}'>
    <g:CheckBox ui:field='checkbox' addStyleNames='{style.checkbox}' />
 	 <g:DisclosurePanel ui:field='disclosurePanel'>
 	   <g:customHeader>
 	     <g:HorizontalPanel addStyleNames='{style.header} header'>
-	         <g:Label ui:field='campaignName'>campaign name</g:Label>
-		       <g:Label ui:field='surveyName'>survey name</g:Label>
-		       <g:Label ui:field='responseDateLabel' addStyleNames='{style.date}'>response date</g:Label>
-		       <g:cell addStyleNames='{style.toolbarCtr}'>
-			       <g:HTML ui:field='toolbar' addStyleNames='hidden {style.toolbar}'>
-			       <!--
-			         <g:Button ui:field='shareButton' addStyleNames='{style.shareButton}' />
-			         <g:Button ui:field='deleteButton' addStyleNames='{style.deleteButton}' />
-			         -->
-			         <img src='images/accept.png' />
-			         <img src='images/delete.png' />
-			       </g:HTML>
-		       </g:cell>
+	         <g:Label ui:field='campaignName' addStyleNames='{style.campaignName}' />
+		       <g:Label ui:field='surveyName' addStyleNames='{style.surveyName}'>survey name</g:Label>
+		       <g:Label ui:field='responsePrivacy' addStyleNames='{style.responsePrivacy}' />
+		       <g:Label ui:field='responseDateLabel' addStyleNames='{style.date}' />
 	     </g:HorizontalPanel>
 	   </g:customHeader>
 	   <g:HTML ui:field='details' addStyleNames='{style.promptResponseCtr}'>

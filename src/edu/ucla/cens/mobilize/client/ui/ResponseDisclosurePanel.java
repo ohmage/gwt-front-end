@@ -28,6 +28,9 @@ public class ResponseDisclosurePanel extends Composite
 	implements HasMouseOverHandlers, HasMouseOutHandlers {
   
   public interface ResponseDisclosurePanelStyle extends CssResource {
+    String privacyPrivate();
+    String privacyPublic();
+    String privacyInvisible();
     String promptResponse();
     String promptText();
     String promptValue();
@@ -38,11 +41,11 @@ public class ResponseDisclosurePanel extends Composite
 	@UiField CheckBox checkbox;
 	@UiField Label surveyName;
 	@UiField Label responseDateLabel;
-	@UiField HTML toolbar;
+	@UiField Label responsePrivacy;
 	@UiField HTML details;
 	@UiField DisclosurePanel disclosurePanel;
 	
-	DateTimeFormat dateTimeFormat = DateTimeFormat.getShortDateFormat();
+	DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat(); 
 	
 	private static ResponseDisclosurePanelUiBinder uiBinder = GWT
 			.create(ResponseDisclosurePanelUiBinder.class);
@@ -54,19 +57,16 @@ public class ResponseDisclosurePanel extends Composite
 	@SuppressWarnings("deprecation")
   public ResponseDisclosurePanel() {
 		initWidget(uiBinder.createAndBindUi(this));
-		this.addMouseOverHandler(new ResponsePanelMouseEventHandler());
-		this.addMouseOutHandler(new ResponsePanelMouseEventHandler());
 		this.disclosurePanel.setAnimationEnabled(true);
 	}
 	
 	public ResponseDisclosurePanel setResponse(SurveyResponse response) {
 		campaignName.setText(response.getCampaignName()); 
 		surveyName.setText(response.getSurveyName());
-		// responseDate.setText(response.getDateString()); // todo: get date, not string
 		Date date = response.getResponseDate();
 		String dateString = (date != null) ? this.dateTimeFormat.format(date) : "";
 		responseDateLabel.setText(dateString);
-		//details.setHTML(response.getDetails()); // fixme sanitize
+    responsePrivacy.setText(response.getPrivacyState().toString());
 		StringBuilder sb = new StringBuilder();
 		for (PromptResponse promptResponse : response.getPromptResponses()) {
 	    sb.append("<div class='").append(style.promptResponse()).append("'>");
@@ -95,35 +95,30 @@ public class ResponseDisclosurePanel extends Composite
 		return addDomHandler(handler, MouseOverEvent.getType());
 	}
 	
-	public void ShowToolbar() {
-		toolbar.removeStyleName("hidden");
-	}
-	
-	public void HideToolbar() {
-		toolbar.addStyleName("hidden");
-	}
-	
-	public class ResponsePanelMouseEventHandler implements MouseOverHandler, MouseOutHandler {
-
-		@Override
-		public void onMouseOut(MouseOutEvent event) {
-			ResponseDisclosurePanel panel = (ResponseDisclosurePanel)event.getSource();
-			if (panel.disclosurePanel.isOpen()) {
-				panel.ShowToolbar();
-			} else {
-				panel.HideToolbar();
-			}
-		}
-
-		@Override
-		public void onMouseOver(MouseOverEvent event) {
-			ResponseDisclosurePanel panel = (ResponseDisclosurePanel)event.getSource();
-			panel.ShowToolbar();
-		}
-	}
-	
 	public void setChecked(boolean isChecked) {
 	  checkbox.setValue(isChecked);
 	}
-
+	
+	public void setPrivacyStylePrivate() {
+	  clearPrivacyStyles();
+	  this.responsePrivacy.addStyleName(style.privacyPrivate());
+	}
+	
+	public void setPrivacyStylePublic() {
+	  clearPrivacyStyles();
+	  this.responsePrivacy.addStyleName(style.privacyPublic());
+	}
+	
+	public void setPrivacyStyleInvisible() {
+	  clearPrivacyStyles();
+	  this.responsePrivacy.addStyleName(style.privacyInvisible());
+	}
+	
+	// remove privacy specific style but leave underlying campaign name style alone
+	public void clearPrivacyStyles() {
+	  this.responsePrivacy.removeStyleName(style.privacyInvisible());
+	  this.responsePrivacy.removeStyleName(style.privacyPrivate());
+	  this.responsePrivacy.removeStyleName(style.privacyPublic());
+	}
+	
 }

@@ -37,10 +37,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   public interface ResponseViewStyles extends CssResource {
     String sideBarItemSelected();
-    String responsePublic();
-    String responsePrivate();
-    String responseInvisible();
-    String responseUndefined();
   }
 
   @UiField ResponseViewStyles style;
@@ -237,14 +233,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @Override
   public void renderPrivate(List<SurveyResponse> responses) {
-    // TODO: private/public styles
-    this.responseList.clear();
+    // FIXME: fake private/public (deleteme)
     for (SurveyResponse response : responses) {
-      // widget shows survey title, date, etc. when clicked it reveals full response
-      ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
-      responseWidget.setResponse(response);
-      this.responseList.add(responseWidget);
+      response.setPrivacyState(Privacy.PRIVATE);
     }
+    renderResponses(responses);
     this.sectionHeaderTitle.setText("Private Responses");
     this.sectionHeaderDetail.setText("Visible only to you.");
     // FIXME: supervisor should see different text ("Visible only to responder"?)
@@ -252,6 +245,10 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   @Override
   public void renderPublic(List<SurveyResponse> responses) {
+    // FIXME: fake private/public (deleteme)
+    for (SurveyResponse response : responses) {
+      response.setPrivacyState(Privacy.PUBLIC);
+    }
     renderResponses(responses);
     this.sectionHeaderTitle.setText("Public responses");
     this.sectionHeaderDetail.setText("Visible to all campaign participants (?)");
@@ -259,6 +256,10 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   @Override
   public void renderInvisible(List<SurveyResponse> responses) {
+    // FIXME: fake private/public (deleteme)
+    for (SurveyResponse response : responses) {
+      response.setPrivacyState(Privacy.INVISIBLE);
+    }
     renderResponses(responses);
     this.sectionHeaderTitle.setText("Invisible Responses");
     this.sectionHeaderDetail.setText("Visible only to supervisor, not to responder or any other participants.");
@@ -266,6 +267,12 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @Override
   public void renderAll(List<SurveyResponse> responses) {
+    // FIXME: fake private/public (deleteme)
+    int counter = 0;
+    Privacy[] choices = { Privacy.PRIVATE, Privacy.PUBLIC};
+    for (SurveyResponse response : responses) {
+      response.setPrivacyState(choices[counter++ % 2]);
+    }
     renderResponses(responses);
     this.sectionHeaderTitle.setText("All Responses");
     this.sectionHeaderDetail.setText("Private responses are visible only to you. " +
@@ -279,18 +286,20 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       responseWidget.setResponse(response);
       // generate css style name from the enum.
       // one of: responsePublic, responsePrivate, responseInvisible, responseUndefined
-      String cssStyle = "";
       switch (response.getPrivacyState()) {
         case PUBLIC:
-          cssStyle = style.responsePublic();
+          responseWidget.setPrivacyStylePublic();
+          break;
         case PRIVATE:
-          cssStyle = style.responsePrivate();
+          responseWidget.setPrivacyStylePrivate();
+          break;
         case INVISIBLE:
-          cssStyle = style.responseInvisible();
+          responseWidget.setPrivacyStyleInvisible();
+          break;
         default:
-          cssStyle = style.responseUndefined();
+          responseWidget.clearPrivacyStyles();
+          break;
       }
-      responseWidget.setStyleName(cssStyle);
       this.responseList.add(responseWidget);
     }
   }
