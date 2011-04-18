@@ -52,10 +52,10 @@
       text-align: right;
       width: 170px;
     }
-    .participantList {
+    .classList, .authorList {
       margin-bottom: 10px;
     }
-    .participantList button {
+    .classList button, .authorList button {
     	background-color: #DDD;
     	border: solid 1px #AAA;
     	color: #888;
@@ -65,7 +65,7 @@
     	padding: 0px;
     	width: 13px;
     }
-    .participantList td {
+    .classList td, .authorList td {
     	border-bottom: solid thin #CCC;
     	color: #444;
     	font-size: 0.9em;
@@ -83,8 +83,6 @@
       border: solid thin #DDD6A4;
     }
     .sectionHeader {
-    	/*background-color: #FFF7D7;*/
-    	/*background-color:#FFC;*/
     	background-color: #FFFFE0;
     	border-bottom: solid 1px #CCC;
     	margin-bottom: 10px;
@@ -172,17 +170,28 @@
 	             <g:FileUpload ui:field='chooseFileButton' name='xml' />
 	            </td>
 	          </tr>
-	          <tr>
-	            <td class='{style.label}'>
-	              <label>Classes:</label>
-	            </td>
-	            <td>
-	              <g:FlexTable ui:field='classesFlexTable' 
-	                           addStyleNames='{style.participantList}' />
-	              <g:Hidden ui:field='classHiddenField' name='class' />
-	              <g:Button ui:field='addClassesButton'>Add Classes</g:Button>
-	            </td>
-	          </tr>
+            <tr>
+              <td class='{style.label}'>
+                <label>Classes:</label>
+              </td>
+              <td>
+                <g:FlexTable ui:field='classesFlexTable' 
+                             addStyleNames='{style.classList}' />
+                <g:Hidden ui:field='classHiddenField' name='class' />
+                <g:Button ui:field='addClassesButton'>Add Classes</g:Button>
+              </td>
+            </tr>
+            <tr>
+              <td class='{style.label}'>
+                <label>Authors:</label>
+              </td>
+              <td>
+                <g:FlexTable ui:field='authorsFlexTable' 
+                             addStyleNames='{style.authorList}' />
+                <g:Hidden ui:field='authorHiddenField' name='class' />
+                <g:Button ui:field='addAuthorsButton'>Add Authors</g:Button>
+              </td>
+            </tr>
 	          <tr>
 	            <td class='{style.label}'>
 	              <label>Running State:</label>

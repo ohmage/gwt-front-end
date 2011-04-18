@@ -106,6 +106,11 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   
   private void showCampaignCreateForm() {
     this.view.setClassListToChooseFrom(userInfo.getClasses());
+    // FIXME: instead, add all members of a class as potential authors
+    // each time user adds a class to the campaign
+    List<String> authors = new ArrayList<String>();
+    authors.add("Bill"); authors.add("Frank"); authors.add("Mary"); authors.add("Alice");
+    this.view.setAuthorListToChooseFrom(authors);
     this.view.showCreateForm();
   }
   
@@ -119,7 +124,11 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
       
       @Override
       public void onSuccess(CampaignDetailedInfo result) {
-        view.setClassListToChooseFrom(userInfo.getClasses()); 
+        view.setClassListToChooseFrom(userInfo.getClasses());
+        // FIXME: instead, get list of classes in this campaign, get all authors for those classes
+        List<String> authors = new ArrayList<String>();
+        authors.add("Bill"); authors.add("Frank"); authors.add("Mary"); authors.add("Alice");
+        view.setAuthorListToChooseFrom(authors);
         view.setCampaignEdit(result); 
         view.showEditForm();
       }

@@ -16,7 +16,7 @@ public class CampaignDetailedInfo {
   private String description;
   private RunningState runningState;
   private Privacy privacy;
-  private List<String> participantGroups;
+  private List<String> classes;
   private List<UserRole> userRoles; // roles for logged in user
   private List<String> authors;
   private List<String> supervisors;
@@ -26,7 +26,7 @@ public class CampaignDetailedInfo {
   //private List<SurveyInfo> surveys;
   
   public CampaignDetailedInfo() {
-    participantGroups = new ArrayList<String>();
+    classes = new ArrayList<String>();
     authors = new ArrayList<String>();
     supervisors = new ArrayList<String>();
     userRoles = new ArrayList<UserRole>();
@@ -49,8 +49,15 @@ public class CampaignDetailedInfo {
     return authors.contains(username); // && no responses FIXME
   }
   
-  boolean canUpload(String userGroup) {
-    return participantGroups.contains(userGroup);
+  boolean canUpload(UserInfo userInfo) {
+    boolean retval = false;
+    for (String classUserIsMemberOf : userInfo.getClasses()) {
+      if (classes.contains(classUserIsMemberOf)) {
+        retval = true;
+        break;
+      }
+    }
+    return retval;
   }
   
   /************ CONVENIENCE METHODS **************/
@@ -73,8 +80,8 @@ public class CampaignDetailedInfo {
   }
   
   // returns list of group ids
-  public List<String> getParticipantGroups() {
-    return participantGroups;
+  public List<String> getClasses() {
+    return classes;
   }
   
   // returns list of usernames
@@ -136,18 +143,18 @@ public class CampaignDetailedInfo {
     this.description = description;
   }
 
-  public void addParticipantGroup(String participantGroup) {
-    this.participantGroups.add(participantGroup);
+  public void addClass(String classId) {
+    this.classes.add(classId);
   }
   
-  public void removeParticipantGroup(String participantGroup) {
-    if (this.participantGroups.contains(participantGroup)) {
-      this.participantGroups.remove(participantGroup);
+  public void removeClass(String classId) {
+    if (this.classes.contains(classId)) {
+      this.classes.remove(classId);
     }
   }
   
-  public void clearParticipantGroups() {
-    this.participantGroups.clear();
+  public void clearClasses() {
+    this.classes.clear();
   }
 
   public void addAuthor(String author) {

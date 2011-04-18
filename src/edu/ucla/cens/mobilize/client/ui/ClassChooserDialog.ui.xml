@@ -24,7 +24,6 @@
 	  }
 	  .classListBox {
 	  	margin: 10px 40px;
-	  	width: 250px;
 	  }
 	</ui:style>
 	<g:DialogBox ui:field='dialog' 

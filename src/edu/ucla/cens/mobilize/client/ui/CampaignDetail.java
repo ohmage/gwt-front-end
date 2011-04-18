@@ -63,7 +63,7 @@ public class CampaignDetail extends Composite {
       
       // build participant list
       this.classes.clear();
-      for (String s : campaign.getParticipantGroups()) {
+      for (String s : campaign.getClasses()) {
         this.classes.add(new HTML("<span>" + s + "</span>")); //fixme
       }
       

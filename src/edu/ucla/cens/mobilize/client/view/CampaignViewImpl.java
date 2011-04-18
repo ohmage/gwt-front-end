@@ -227,6 +227,11 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   public void setClassListToChooseFrom(List<String> classes) {
     this.campaignEdit.setClassListToChooseFrom(classes);
   }
+  
+  @Override
+  public void setAuthorListToChooseFrom(List<String> authors) {
+    this.campaignEdit.setAuthorListToChooseFrom(authors);
+  }
 
   @Override
   public void showError(String msg) {

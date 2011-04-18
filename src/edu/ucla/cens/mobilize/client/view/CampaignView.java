@@ -45,6 +45,7 @@ public interface CampaignView extends IsWidget {
   void setCampaignDetail(CampaignDetailedInfo campaign, boolean canEdit);
   void setCampaignEdit(CampaignDetailedInfo campaign);
   void setClassListToChooseFrom(List<String> participants);
+  void setAuthorListToChooseFrom(List<String> authors);
   void setPlotSideBarTitle(String title);
   
   // R plots

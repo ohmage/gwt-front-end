@@ -61,6 +61,7 @@ public class MockDataService implements DataService {
       info.setDescription("Monitor sleeping patterns");
       info.setPrivacy(Privacy.PUBLIC);
       info.setRunningState(RunningState.RUNNING);
+      
       info.setXmlConfig(this.getConfigXml());
       
       campaigns.put(info.getCampaignId(), info);
@@ -110,12 +111,12 @@ public class MockDataService implements DataService {
     counts.numUnreadResponses = Random.nextInt(20);
     
     boolean canCreate = true;
-    List<String> groups = new ArrayList<String>();
-    groups.add("CS101");
-    groups.add("CS230");
-    groups.add("MATH105");
+    List<String> classes = new ArrayList<String>();
+    classes.add("ADDAMS_HS_CS101_Fall_2011");
+    classes.add("BH_HS_CS102_Spring_2011");
+    classes.add("Carson_HS_CS103_Spring_2011");
     List<CampaignDetailedInfo> infos = new ArrayList<CampaignDetailedInfo>(this.campaigns.values());
-    UserInfo user = new UserInfo(username, canCreate, infos, groups);
+    UserInfo user = new UserInfo(username, canCreate, infos, classes);
     
     callback.onSuccess(user);
   }

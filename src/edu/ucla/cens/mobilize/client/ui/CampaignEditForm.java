@@ -42,7 +42,10 @@ public class CampaignEditForm extends Composite {
   @UiField TextArea campaignDescriptionTextArea;
   @UiField Button addClassesButton;
   @UiField FlexTable classesFlexTable;
-  @UiField Hidden classHiddenField;
+  @UiField Hidden classHiddenField; // holds serialized class list
+  @UiField Button addAuthorsButton;
+  @UiField FlexTable authorsFlexTable;
+  @UiField Hidden authorHiddenField; // holds serialized author list
   @UiField FileUpload chooseFileButton;
   @UiField ListBox runningStateListBox;
   @UiField ListBox privacyListBox;
@@ -56,14 +59,21 @@ public class CampaignEditForm extends Composite {
   boolean isNewCampaign;
   String campaignId;
   
-  // dialog that lets user select groups of participants (i.e., classes)
-  ClassChooserDialog dialog;
+  // dialog that lets user select groups of classes
+  MultiSelectDialog classChooserDialog;
   List<String> classesToChooseFrom = new ArrayList<String>();
+  
+  // dialog that lets user select groups of authors
+  MultiSelectDialog authorChooserDialog;
+  List<String> authorsToChooseFrom = new ArrayList<String>();
   
   public CampaignEditForm() {
     initWidget(uiBinder.createAndBindUi(this));
     
-    dialog = new ClassChooserDialog();
+    classChooserDialog = new MultiSelectDialog();
+    classChooserDialog.setCaption("Add classes to the campaign");
+    authorChooserDialog = new MultiSelectDialog();
+    authorChooserDialog.setCaption("Add co-authors to the campaign");
 
     // populate list boxes
     // TODO: get allowed privacy states from campaign config    
@@ -78,10 +88,15 @@ public class CampaignEditForm extends Composite {
     form.setEncoding(FormPanel.ENCODING_MULTIPART); 
     form.setMethod(FormPanel.METHOD_POST); 
     
-    // invisible when no participants so add button lines up with label
+    // invisible when empty so add button lines up with label
     classesFlexTable.setVisible(false);
     classesFlexTable.setCellSpacing(0);
     classesFlexTable.setBorderWidth(0);
+    
+    // invisible when empty so add button lines up with label
+    authorsFlexTable.setVisible(false);
+    authorsFlexTable.setCellSpacing(0);
+    authorsFlexTable.setBorderWidth(0);
     
     bind();
   }
@@ -89,22 +104,40 @@ public class CampaignEditForm extends Composite {
   private void bind() {
 
     // Add Classes button opens a dialog showing a list of classes.
-    // Selected names are saved to the participant list on dialog submit.
+    // Selected names are saved to the class list on dialog submit.
     this.addClassesButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        dialog.setClassesToChooseFrom(classesToChooseFrom);
-        dialog.setSubmitHandler(new ClickHandler() {
+        classChooserDialog.setItemsToChooseFrom(classesToChooseFrom);
+        classChooserDialog.setSubmitHandler(new ClickHandler() {
           @Override
           public void onClick(ClickEvent event) {
-            List<String> selected = dialog.getSelectedClasses();
-            for (String participant : selected) {
-              addParticipant(participant);
+            List<String> selected = classChooserDialog.getSelectedItems();
+            for (String classId : selected) {
+              addClass(classId);
             }
-            dialog.hide();
+            classChooserDialog.hide();
           }
         });
-        dialog.show();
+        classChooserDialog.show();
+      }
+    });
+    
+    this.addAuthorsButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        authorChooserDialog.setItemsToChooseFrom(authorsToChooseFrom);
+        authorChooserDialog.setSubmitHandler(new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent event) {
+            List<String> selected = authorChooserDialog.getSelectedItems();
+            for (String author : selected) {
+              addAuthor(author);
+            }
+            authorChooserDialog.hide();
+          }
+        });
+        authorChooserDialog.show();
       }
     });
     
@@ -112,11 +145,12 @@ public class CampaignEditForm extends Composite {
     this.saveButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        // server expects a comma-delimited list of classes
-        classHiddenField.setValue(getCampaignParticipantsSerialized());
+        // server expects a comma-delimited lists of classes and authors
+        classHiddenField.setValue(getCampaignClassesSerialized());
+        authorHiddenField.setValue(getCampaignAuthorsSerialized());
         // TODO: validate form. 
         // - if this is a create, there must be an xml file
-        // - for both edit and create, there must be at least one participant
+        // - for both edit and create, there must be at least one class
         form.submit();
       }
     });
@@ -137,11 +171,16 @@ public class CampaignEditForm extends Composite {
     this.campaignName.setText("");
     this.campaignDescriptionTextArea.setText("");
     this.classesFlexTable.clear();
-    // participants table is invisible when there are no participants
-    // so add button renders on the same line as the label
-    this.classesFlexTable.setVisible(false);
+    this.classHiddenField.setValue("");
+    this.authorsFlexTable.clear();
+    this.authorHiddenField.setValue("");
     this.privacyListBox.setSelectedIndex(0);
     this.runningStateListBox.setSelectedIndex(0);
+    
+    // class and author tables are invisible when empty so their add
+    // buttons render on the same line as the label
+    this.classesFlexTable.setVisible(false);
+    this.authorsFlexTable.setVisible(false);
   }
   
   public String getCampaignId() {
@@ -161,7 +200,7 @@ public class CampaignEditForm extends Composite {
       this.campaignDescriptionTextArea.setText(campaign.getDescription());
       
       // participants
-      this.setCampaignParticipants(campaign.getParticipantGroups());
+      this.setCampaignClasses(campaign.getClasses());
       
       // privacy
       if (campaign.getPrivacy().equals(Privacy.PRIVATE)) {
@@ -223,8 +262,10 @@ public class CampaignEditForm extends Composite {
     return this.runningStateListBox.getValue(selected);
   }
   
-  public String getCampaignParticipantsSerialized() {
-    List<String> list = getCampaignParticipants();
+  /****************** ADD/REMOVE CLASSES ******************/
+  
+  public String getCampaignClassesSerialized() {
+    List<String> list = getCampaignClasses();
     StringBuilder sb = new StringBuilder();
     if (list.size() > 0) {
       sb.append(list.get(0));
@@ -235,46 +276,46 @@ public class CampaignEditForm extends Composite {
     return sb.toString();
   }
   
-  public List<String> getCampaignParticipants() {
-    ArrayList<String> participants = new ArrayList<String>();
+  public List<String> getCampaignClasses() {
+    ArrayList<String> classes = new ArrayList<String>();
     for (int i = 0; i < this.classesFlexTable.getRowCount(); i++) {
       // assumes text displayed to the user is also participant id
-      participants.add(this.classesFlexTable.getText(i, 0));
+      classes.add(this.classesFlexTable.getText(i, 0));
     }
-    return participants;
+    return classes;
   }
   
-  public void setCampaignParticipants(List<String> participants) {
-    this.classesFlexTable.clear(); // FIXME: does this work?
+  public void setCampaignClasses(List<String> classes) {
+    this.classesFlexTable.clear(); 
     this.classesFlexTable.removeAllRows();
     
     // invisible when no participants so add button will line up with label
-    this.classesFlexTable.setVisible(participants.size() > 0);
-    for (int i = 0; i < participants.size(); i++) {
-      addParticipant(participants.get(i));
+    this.classesFlexTable.setVisible(classes.size() > 0);
+    for (int i = 0; i < classes.size(); i++) {
+      addClass(classes.get(i));
     }
     
   }
 
-  private void addParticipant(final String participant) {
-    if (participant == null) return;
+  private void addClass(final String campaignClass) {
+    if (campaignClass == null) return;
     else this.classesFlexTable.setVisible(true);
     
     // check for duplicates
     boolean isAlreadyInTable = false;
     int firstEmptyRowIndex = this.classesFlexTable.getRowCount();
     for (int i = 0; i < firstEmptyRowIndex; i++) {
-      if (this.classesFlexTable.getText(i, 0).equals(participant)) {
+      if (this.classesFlexTable.getText(i, 0).equals(campaignClass)) {
         isAlreadyInTable = true;
         break;
       }
     }
     
-    // if participant is not already in table, add new row with two columns 
-    // 0 = participant name, 1 = "x" button that deletes the row when clicked
+    // if class is not already in table, add new row with two columns 
+    // 0 = class identifier, 1 = "x" button that deletes the row when clicked
     if (!isAlreadyInTable) {
       final int thisRow = firstEmptyRowIndex;
-      classesFlexTable.setText(thisRow, 0, participant);
+      classesFlexTable.setText(thisRow, 0, campaignClass);
       Button deleteButton = new Button("X");
       deleteButton.addClickHandler(new ClickHandler() {
         @Override
@@ -287,9 +328,82 @@ public class CampaignEditForm extends Composite {
     }
   }
   
-  // when adding participants, author selects from this list
-  public void setClassListToChooseFrom(List<String> participants) {
-    this.classesToChooseFrom = participants != null ? participants : new ArrayList<String>();
+  // when adding classes, author selects from this list
+  public void setClassListToChooseFrom(List<String> classes) {
+    this.classesToChooseFrom = classes != null ? classes : new ArrayList<String>();
   }
+
+  /****************** ADD/REMOVE AUTHORS ******************/
+  
+  
+  public String getCampaignAuthorsSerialized() {
+    List<String> list = getCampaignAuthors();
+    StringBuilder sb = new StringBuilder();
+    if (list.size() > 0) {
+      sb.append(list.get(0));
+      for (int i = 1; i < list.size(); i++) {
+        sb.append(",").append(list.get(i));
+      }
+    }
+    return sb.toString();
+  }
+  
+  public List<String> getCampaignAuthors() {
+    ArrayList<String> authors = new ArrayList<String>();
+    for (int i = 0; i < this.authorsFlexTable.getRowCount(); i++) {
+      // assumes text displayed to the user is also author id
+      authors.add(this.authorsFlexTable.getText(i, 0));
+    }
+    return authors;
+  }
+  
+  public void setCampaignAuthors(List<String> authors) {
+    this.authorsFlexTable.clear(); 
+    this.authorsFlexTable.removeAllRows();
+    
+    // invisible when author list is empty so add button will line up with label
+    this.authorsFlexTable.setVisible(authors.size() > 0);
+    for (int i = 0; i < authors.size(); i++) {
+      addAuthor(authors.get(i));
+    }
+    
+  }
+
+  private void addAuthor(final String author) {
+    if (author == null) return;
+    else this.authorsFlexTable.setVisible(true);
+    
+    // check for duplicates
+    boolean isAlreadyInTable = false;
+    int firstEmptyRowIndex = this.authorsFlexTable.getRowCount();
+    for (int i = 0; i < firstEmptyRowIndex; i++) {
+      if (this.authorsFlexTable.getText(i, 0).equals(author)) {
+        isAlreadyInTable = true;
+        break;
+      }
+    }
+    
+    // if author is not already in table, add new row with two columns 
+    // 0 = author identifier, 1 = "x" button that deletes the row when clicked
+    if (!isAlreadyInTable) {
+      final int thisRow = firstEmptyRowIndex;
+      authorsFlexTable.setText(thisRow, 0, author);
+      Button deleteButton = new Button("X");
+      deleteButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          authorsFlexTable.removeRow(thisRow);
+          authorsFlexTable.setVisible(authorsFlexTable.getRowCount() > 0);
+        }
+      });
+      authorsFlexTable.setWidget(thisRow, 1, deleteButton);
+    }
+  }
+  
+  // when adding Authors, author selects from this list
+  public void setAuthorListToChooseFrom(List<String> authors) {
+    this.authorsToChooseFrom = authors != null ? authors : new ArrayList<String>();
+  }
+  
   
 }
