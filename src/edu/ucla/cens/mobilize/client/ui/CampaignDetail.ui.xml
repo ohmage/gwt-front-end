@@ -126,10 +126,10 @@
 	        </tr>
 	        <tr>
 	          <td class='{style.label}'>
-	            <label>Participants:</label>
+	            <label>Classes:</label>
 	          </td>
 	          <td>
-	           <g:VerticalPanel ui:field='participants' addStyleNames='{style.participantList}' />
+	           <g:VerticalPanel ui:field='classes' addStyleNames='{style.participantList}' />
 	          </td>
 	        </tr>
 	        <tr>

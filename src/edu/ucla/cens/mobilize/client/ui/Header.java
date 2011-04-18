@@ -13,14 +13,14 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class Header extends Composite {
 
-  private static AccountMenuUiBinder uiBinder = GWT
-      .create(AccountMenuUiBinder.class);
+  private static HeaderUiBinder uiBinder = GWT
+      .create(HeaderUiBinder.class);
 
   @UiField InlineLabel userNameLabel;
   @UiField InlineLabel appNameLabel;
   @UiField Button logoutButton;
   
-  interface AccountMenuUiBinder extends UiBinder<Widget, Header> {
+  interface HeaderUiBinder extends UiBinder<Widget, Header> {
   }
 
   public Header() {

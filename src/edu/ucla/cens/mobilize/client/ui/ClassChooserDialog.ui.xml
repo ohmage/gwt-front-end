@@ -22,7 +22,7 @@
 			margin-top: 10px;
 			padding: 10px 40px;
 	  }
-	  .participantListBox {
+	  .classListBox {
 	  	margin: 10px 40px;
 	  	width: 250px;
 	  }
@@ -30,14 +30,14 @@
 	<g:DialogBox ui:field='dialog' 
 	             animationEnabled='true' 
 	             modal='true'>
-	 <g:caption addStyleNames='{style.caption}'>Add participants</g:caption>
+	 <g:caption addStyleNames='{style.caption}'>Add classes</g:caption>
 	 <g:HTMLPanel addStyleNames='{style.container}'>
 	   <div class="{style.instructions}">
-	     Use Ctrl-click to select multiple participants.
+	     Use Ctrl-click to select multiple classes.
 	   </div>
-	   <g:ListBox ui:field='participantsToChooseFromListBox' 
+	   <g:ListBox ui:field='classesToChooseFromListBox' 
 	              multipleSelect='true' 
-	              addStyleNames='{style.participantListBox}' />
+	              addStyleNames='{style.classListBox}' />
 	   <div class="{style.buttonDiv}">
 	     <g:Button ui:field='addButton'>Add Selected</g:Button>
 	     <g:Button ui:field='cancelButton'>Cancel</g:Button>

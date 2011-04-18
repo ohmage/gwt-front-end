@@ -40,8 +40,8 @@ public class CampaignEditForm extends Composite {
   @UiField Label header;
   @UiField InlineLabel campaignName;
   @UiField TextArea campaignDescriptionTextArea;
-  @UiField Button addParticipantsButton;
-  @UiField FlexTable participantsFlexTable;
+  @UiField Button addClassesButton;
+  @UiField FlexTable classesFlexTable;
   @UiField Hidden classHiddenField;
   @UiField FileUpload chooseFileButton;
   @UiField ListBox runningStateListBox;
@@ -57,13 +57,13 @@ public class CampaignEditForm extends Composite {
   String campaignId;
   
   // dialog that lets user select groups of participants (i.e., classes)
-  ParticipantChooserDialog dialog;
-  List<String> participantsToChooseFrom = new ArrayList<String>();
+  ClassChooserDialog dialog;
+  List<String> classesToChooseFrom = new ArrayList<String>();
   
   public CampaignEditForm() {
     initWidget(uiBinder.createAndBindUi(this));
     
-    dialog = new ParticipantChooserDialog();
+    dialog = new ClassChooserDialog();
 
     // populate list boxes
     // TODO: get allowed privacy states from campaign config    
@@ -79,25 +79,25 @@ public class CampaignEditForm extends Composite {
     form.setMethod(FormPanel.METHOD_POST); 
     
     // invisible when no participants so add button lines up with label
-    participantsFlexTable.setVisible(false);
-    participantsFlexTable.setCellSpacing(0);
-    participantsFlexTable.setBorderWidth(0);
+    classesFlexTable.setVisible(false);
+    classesFlexTable.setCellSpacing(0);
+    classesFlexTable.setBorderWidth(0);
     
     bind();
   }
   
   private void bind() {
 
-    // Add Participants button opens a dialog showing a list of participants.
+    // Add Classes button opens a dialog showing a list of classes.
     // Selected names are saved to the participant list on dialog submit.
-    this.addParticipantsButton.addClickHandler(new ClickHandler() {
+    this.addClassesButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        dialog.setParticipantsToChooseFrom(participantsToChooseFrom);
+        dialog.setClassesToChooseFrom(classesToChooseFrom);
         dialog.setSubmitHandler(new ClickHandler() {
           @Override
           public void onClick(ClickEvent event) {
-            List<String> selected = dialog.getSelectedParticipants();
+            List<String> selected = dialog.getSelectedClasses();
             for (String participant : selected) {
               addParticipant(participant);
             }
@@ -136,10 +136,10 @@ public class CampaignEditForm extends Composite {
   private void clearFormFields() {
     this.campaignName.setText("");
     this.campaignDescriptionTextArea.setText("");
-    this.participantsFlexTable.clear();
+    this.classesFlexTable.clear();
     // participants table is invisible when there are no participants
     // so add button renders on the same line as the label
-    this.participantsFlexTable.setVisible(false);
+    this.classesFlexTable.setVisible(false);
     this.privacyListBox.setSelectedIndex(0);
     this.runningStateListBox.setSelectedIndex(0);
   }
@@ -237,19 +237,19 @@ public class CampaignEditForm extends Composite {
   
   public List<String> getCampaignParticipants() {
     ArrayList<String> participants = new ArrayList<String>();
-    for (int i = 0; i < this.participantsFlexTable.getRowCount(); i++) {
+    for (int i = 0; i < this.classesFlexTable.getRowCount(); i++) {
       // assumes text displayed to the user is also participant id
-      participants.add(this.participantsFlexTable.getText(i, 0));
+      participants.add(this.classesFlexTable.getText(i, 0));
     }
     return participants;
   }
   
   public void setCampaignParticipants(List<String> participants) {
-    this.participantsFlexTable.clear(); // FIXME: does this work?
-    this.participantsFlexTable.removeAllRows();
+    this.classesFlexTable.clear(); // FIXME: does this work?
+    this.classesFlexTable.removeAllRows();
     
     // invisible when no participants so add button will line up with label
-    this.participantsFlexTable.setVisible(participants.size() > 0);
+    this.classesFlexTable.setVisible(participants.size() > 0);
     for (int i = 0; i < participants.size(); i++) {
       addParticipant(participants.get(i));
     }
@@ -258,13 +258,13 @@ public class CampaignEditForm extends Composite {
 
   private void addParticipant(final String participant) {
     if (participant == null) return;
-    else this.participantsFlexTable.setVisible(true);
+    else this.classesFlexTable.setVisible(true);
     
     // check for duplicates
     boolean isAlreadyInTable = false;
-    int firstEmptyRowIndex = this.participantsFlexTable.getRowCount();
+    int firstEmptyRowIndex = this.classesFlexTable.getRowCount();
     for (int i = 0; i < firstEmptyRowIndex; i++) {
-      if (this.participantsFlexTable.getText(i, 0).equals(participant)) {
+      if (this.classesFlexTable.getText(i, 0).equals(participant)) {
         isAlreadyInTable = true;
         break;
       }
@@ -274,22 +274,22 @@ public class CampaignEditForm extends Composite {
     // 0 = participant name, 1 = "x" button that deletes the row when clicked
     if (!isAlreadyInTable) {
       final int thisRow = firstEmptyRowIndex;
-      participantsFlexTable.setText(thisRow, 0, participant);
+      classesFlexTable.setText(thisRow, 0, participant);
       Button deleteButton = new Button("X");
       deleteButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          participantsFlexTable.removeRow(thisRow);
-          participantsFlexTable.setVisible(participantsFlexTable.getRowCount() > 0);
+          classesFlexTable.removeRow(thisRow);
+          classesFlexTable.setVisible(classesFlexTable.getRowCount() > 0);
         }
       });
-      participantsFlexTable.setWidget(thisRow, 1, deleteButton);
+      classesFlexTable.setWidget(thisRow, 1, deleteButton);
     }
   }
   
   // when adding participants, author selects from this list
-  public void setParticipantsToChooseFrom(List<String> participants) {
-    this.participantsToChooseFrom = participants != null ? participants : new ArrayList<String>();
+  public void setClassListToChooseFrom(List<String> participants) {
+    this.classesToChooseFrom = participants != null ? participants : new ArrayList<String>();
   }
   
 }

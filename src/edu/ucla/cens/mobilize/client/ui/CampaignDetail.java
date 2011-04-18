@@ -43,7 +43,7 @@ public class CampaignDetail extends Composite {
   @UiField CampaignDetailStyle style;
   @UiField InlineLabel name;
   @UiField InlineLabel desc;
-  @UiField VerticalPanel participants;
+  @UiField VerticalPanel classes;
   @UiField SpanElement runningStateSpan;
   @UiField SpanElement privacySpan;
   @UiField Hyperlink editCampaignLink;
@@ -62,9 +62,9 @@ public class CampaignDetail extends Composite {
       this.desc.setText(campaign.getDescription());
       
       // build participant list
-      this.participants.clear();
+      this.classes.clear();
       for (String s : campaign.getParticipantGroups()) {
-        this.participants.add(new HTML("<span>" + s + "</span>")); //fixme
+        this.classes.add(new HTML("<span>" + s + "</span>")); //fixme
       }
       
       // running state style is set dynamically

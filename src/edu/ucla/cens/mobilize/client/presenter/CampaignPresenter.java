@@ -59,7 +59,6 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
       this.showAllCampaigns();
     } else if (params.get("v").get(0).equals("detail") && params.containsKey("id")) {
       // anything after first id is ignored
-      //this.showCampaign(CampaignId.fromString(params.get("id").get(0)));
       this.showCampaign(params.get("id").get(0));
     } else if (params.get("v").get(0).equals("author_center")) {
       this.showAuthorCenter();
@@ -67,7 +66,6 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
       this.showCampaignCreateForm();
     } else if (params.get("v").get(0).equals("edit") && params.containsKey("id")) {
       // anything after first id is ignored
-      //this.showEdit(new CampaignId(params.get("id").get(0)));
       this.showEdit(params.get("id").get(0));
     } else {
       // unrecognized view - do nothing
@@ -107,7 +105,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   }
   
   private void showCampaignCreateForm() {
-    this.view.setParticipantsToChooseFrom(userInfo.getClasses());
+    this.view.setClassListToChooseFrom(userInfo.getClasses());
     this.view.showCreateForm();
   }
   
@@ -121,7 +119,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
       
       @Override
       public void onSuccess(CampaignDetailedInfo result) {
-        view.setParticipantsToChooseFrom(userInfo.getClasses()); 
+        view.setClassListToChooseFrom(userInfo.getClasses()); 
         view.setCampaignEdit(result); 
         view.showEditForm();
       }

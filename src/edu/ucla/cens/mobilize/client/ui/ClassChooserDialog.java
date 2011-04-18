@@ -13,23 +13,23 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ParticipantChooserDialog {
+public class ClassChooserDialog {
 
-  private static ParticipantChooserDialogUiBinder uiBinder = GWT
-      .create(ParticipantChooserDialogUiBinder.class);
+  private static ClassChooserDialogUiBinder uiBinder = GWT
+      .create(ClassChooserDialogUiBinder.class);
 
   @UiField DialogBox dialog;
-  @UiField ListBox participantsToChooseFromListBox;
+  @UiField ListBox classesToChooseFromListBox;
   @UiField Button addButton;
   @UiField Button cancelButton;
   
-  interface ParticipantChooserDialogUiBinder extends
-      UiBinder<Widget, ParticipantChooserDialog> {
+  interface ClassChooserDialogUiBinder extends
+      UiBinder<Widget, ClassChooserDialog> {
   }
 
-  public ParticipantChooserDialog() {
+  public ClassChooserDialog() {
     uiBinder.createAndBindUi(this);
-    ParticipantChooserDialogUiBinder uiBinder = GWT.create(ParticipantChooserDialogUiBinder.class);
+    ClassChooserDialogUiBinder uiBinder = GWT.create(ClassChooserDialogUiBinder.class);
     uiBinder.createAndBindUi(this);
     dialog.setGlassEnabled(true);
     dialog.hide();
@@ -45,11 +45,11 @@ public class ParticipantChooserDialog {
     });
   }
   
-  public void setParticipantsToChooseFrom(List<String> participants) {
-    participantsToChooseFromListBox.clear();
-    for (String participant : participants) {
+  public void setClassesToChooseFrom(List<String> classes) {
+    classesToChooseFromListBox.clear();
+    for (String className : classes) {
       // NOTE: value == text here. We may want value to be id instead.
-      participantsToChooseFromListBox.addItem(participant, participant);
+      classesToChooseFromListBox.addItem(className, className);
     }
   }
   
@@ -57,11 +57,11 @@ public class ParticipantChooserDialog {
     this.addButton.addClickHandler(handler);
   }
 
-  public List<String> getSelectedParticipants() {
+  public List<String> getSelectedClasses() {
     List<String> selected = new ArrayList<String>();
-    for (int i = 0; i < participantsToChooseFromListBox.getItemCount(); i++) {
-      if (participantsToChooseFromListBox.isItemSelected(i)) {
-        selected.add(participantsToChooseFromListBox.getValue(i));
+    for (int i = 0; i < classesToChooseFromListBox.getItemCount(); i++) {
+      if (classesToChooseFromListBox.isItemSelected(i)) {
+        selected.add(classesToChooseFromListBox.getValue(i));
       }
     }
     return selected;

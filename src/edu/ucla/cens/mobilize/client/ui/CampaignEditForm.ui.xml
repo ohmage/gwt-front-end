@@ -174,13 +174,13 @@
 	          </tr>
 	          <tr>
 	            <td class='{style.label}'>
-	              <label>Participants:</label>
+	              <label>Classes:</label>
 	            </td>
 	            <td>
-	              <g:FlexTable ui:field='participantsFlexTable' 
+	              <g:FlexTable ui:field='classesFlexTable' 
 	                           addStyleNames='{style.participantList}' />
 	              <g:Hidden ui:field='classHiddenField' name='class' />
-	              <g:Button ui:field='addParticipantsButton'>Add Participants</g:Button>
+	              <g:Button ui:field='addClassesButton'>Add Classes</g:Button>
 	            </td>
 	          </tr>
 	          <tr>
