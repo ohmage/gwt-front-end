@@ -117,7 +117,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     Privacy privacy = view.getSelectedPrivacyState();
     switch (privacy) {
       case SHARED:
-        view.renderPublic(responses);
+        view.renderShared(responses);
         break;
       case PRIVATE: 
         view.renderPrivate(responses);

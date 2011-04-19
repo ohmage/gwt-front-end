@@ -130,14 +130,14 @@
 	    </g:HTMLPanel>
     </g:north>
     
-    <!-- left sidebar lets you pick private/public/invisible -->
+    <!-- left sidebar lets you pick private/shared/invisible -->
     <g:west size='170'>
       <g:HTMLPanel addStyleNames='{style.leftSideBar}'>
         <g:MenuBar ui:field='leftSideBarMenu'
                    vertical='true'
                    addStyleNames='{style.leftSideBarMenu}'>
           <g:MenuItem ui:field='privateMenuItem'>Private Responses</g:MenuItem>
-          <g:MenuItem ui:field='publicMenuItem'>Public Responses</g:MenuItem>
+          <g:MenuItem ui:field='sharedMenuItem'>Shared Responses</g:MenuItem>
           <g:MenuItem ui:field='allMenuItem'>All Responses</g:MenuItem>
         </g:MenuBar>
       </g:HTMLPanel>

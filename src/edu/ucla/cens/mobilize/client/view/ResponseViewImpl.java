@@ -61,7 +61,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @UiField MenuBar leftSideBarMenu;
   @UiField MenuItem privateMenuItem;
-  @UiField MenuItem publicMenuItem;
+  @UiField MenuItem sharedMenuItem;
   @UiField MenuItem allMenuItem;
   
   ResponseView.Presenter presenter;
@@ -74,7 +74,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   private void clearLeftSideBarStyles() {
     this.allMenuItem.setStyleName("");
-    this.publicMenuItem.setStyleName("");
+    this.sharedMenuItem.setStyleName("");
     this.privateMenuItem.setStyleName("");
   }
   
@@ -89,12 +89,12 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       }
     });
     
-    publicMenuItem.setCommand(new Command() {
+    sharedMenuItem.setCommand(new Command() {
       @Override
       public void execute() {
         selectedPrivacy = Privacy.SHARED;
         clearLeftSideBarStyles();
-        publicMenuItem.setStyleName(style.sideBarItemSelected());
+        sharedMenuItem.setStyleName(style.sideBarItemSelected());
         presenter.onFilterChange();
       }
     });
@@ -244,14 +244,14 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
 
   @Override
-  public void renderPublic(List<SurveyResponse> responses) {
+  public void renderShared(List<SurveyResponse> responses) {
     // FIXME: fake private/public (deleteme)
     for (SurveyResponse response : responses) {
       response.setPrivacyState(Privacy.SHARED);
     }
     renderResponses(responses);
-    this.sectionHeaderTitle.setText("Public responses");
-    this.sectionHeaderDetail.setText("Visible to all campaign participants (?)");
+    this.sectionHeaderTitle.setText("Shared responses");
+    this.sectionHeaderDetail.setText("Visible to all campaign participants.");
   }
 
   @Override
@@ -276,7 +276,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     renderResponses(responses);
     this.sectionHeaderTitle.setText("All Responses");
     this.sectionHeaderDetail.setText("Private responses are visible only to you. " +
-                                     "Public responses are visible to all participants. ");
+                                     "Shared responses are visible to all participants. ");
   }
   
   private void renderResponses(List<SurveyResponse> responses) {

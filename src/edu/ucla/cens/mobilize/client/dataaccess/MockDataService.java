@@ -92,7 +92,7 @@ public class MockDataService implements DataService {
       info.setUserRoles(roles);
       info.setDescription("What people eat");
       info.setPrivacy(Privacy.SHARED);
-      info.setRunningState(RunningState.RUNNING);
+      info.setRunningState(RunningState.STOPPED);
       for (int j = 4; j < classes.size(); j++) {
         info.addClass(classes.get(j));
       }
@@ -113,7 +113,7 @@ public class MockDataService implements DataService {
       roles.add(UserRole.ANALYST);
       info.setUserRoles(roles);
       info.setDescription("Raise awareness of advertisements in the community");
-      info.setPrivacy(Privacy.SHARED);
+      info.setPrivacy(Privacy.PRIVATE);
       info.setRunningState(RunningState.STOPPED);
       for (int j = 3; j < classes.size(); j++) {
         info.addClass(classes.get(j));

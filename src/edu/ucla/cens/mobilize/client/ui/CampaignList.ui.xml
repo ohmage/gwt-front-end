@@ -91,7 +91,7 @@
 	 <div class="{style.filterContainer}">
 	   <label>State:</label>
 	   <g:ListBox ui:field="stateListBox" visibleItemCount="1" />
-	   <label>User Role:</label>
+	   <label>My Role:</label>
 	   <g:ListBox ui:field="userRoleListBox" visibleItemCount="1" />
 	   <label>From:</label>
 	   <dp:DateBox ui:field="fromDateBox" />
