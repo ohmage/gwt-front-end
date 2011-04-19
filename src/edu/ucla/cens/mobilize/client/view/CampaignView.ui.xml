@@ -59,6 +59,7 @@
     .plotSideBarTitle {
     }
     .scrollable {
+    	overflow-x: hidden;
     	overflow-y: auto;
     }
     .separator {
@@ -93,10 +94,10 @@
 	                 ui:field='leftSideBarMenu' 
 	                 addStyleNames='{style.leftSideBarMenu}'>
 	        <g:MenuItem ui:field='quickFilterAll'>Show All</g:MenuItem>
-	        <g:MenuItem ui:field='quickFilterActive'>Active</g:MenuItem>
-	        <g:MenuItem ui:field='quickFilterInactive'>Inactive</g:MenuItem>
+	        <g:MenuItem ui:field='quickFilterActiveLastWeek'>Active last week</g:MenuItem>
+	        <g:MenuItem ui:field='quickFilterActiveLastTwoWeeks'>Active last two weeks</g:MenuItem>
+	        <g:MenuItem ui:field='quickFilterActiveLastMonth'>Active last month</g:MenuItem>
 	        <g:MenuItem ui:field='quickFilterAuthored'>Authored by Me</g:MenuItem>
-	        <g:MenuItem ui:field='quickFilterParticipated'>Participated in by Me</g:MenuItem>
 	      </g:MenuBar>
       </g:HTMLPanel>
     </g:west>

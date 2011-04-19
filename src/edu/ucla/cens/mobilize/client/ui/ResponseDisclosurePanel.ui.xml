@@ -16,7 +16,8 @@
 		border: none;
 	}
 	.campaignName {
-		width: 250px;
+		overflow-x: hidden;
+		width: 230px;
 	}
 	.surveyName {
 		width: 80px;

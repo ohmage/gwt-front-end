@@ -67,10 +67,10 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   @UiField MenuItem authorMenuItem; 
   
   @UiField MenuItem quickFilterAll;
-  @UiField MenuItem quickFilterActive;
-  @UiField MenuItem quickFilterInactive;
+  @UiField MenuItem quickFilterActiveLastWeek;
+  @UiField MenuItem quickFilterActiveLastTwoWeeks;
+  @UiField MenuItem quickFilterActiveLastMonth;
   @UiField MenuItem quickFilterAuthored;
-  @UiField MenuItem quickFilterParticipated;
   
   @UiField HTMLPanel msgBox;
   @UiField Label msgLabel;
