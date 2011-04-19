@@ -75,8 +75,8 @@ public class CampaignList extends Composite {
   private void initComponents() {
     // whether campaign is running
     stateListBox.addItem("Any");
-    stateListBox.addItem("Active");
-    stateListBox.addItem("Inactive");
+    stateListBox.addItem("Running");
+    stateListBox.addItem("Stopped");
 
     // current user's role in the campaign
     // FIXME: only show roles from user's roles list
