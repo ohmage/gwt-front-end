@@ -2,11 +2,8 @@ package edu.ucla.cens.mobilize.client.dataaccess;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.JsArray;
@@ -24,8 +21,6 @@ import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
 import edu.ucla.cens.mobilize.client.model.DataPointAwData;
 import edu.ucla.cens.mobilize.client.model.DataPointQueryAwData;
-import edu.ucla.cens.mobilize.client.model.PromptInfo;
-import edu.ucla.cens.mobilize.client.model.SurveyInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
@@ -36,16 +31,31 @@ public class MockDataService implements DataService {
   List<SurveyResponse> surveyResponses = new ArrayList<SurveyResponse>();
   
   Map<String, CampaignDetailedInfo> campaigns = new HashMap<String, CampaignDetailedInfo>();
+  List<String> classes = new ArrayList<String>();
   
   XmlConfigTranslator configTranslator = new XmlConfigTranslator();
 
   private static Logger _logger = Logger.getLogger(MockDataService.class.getName());
   
   public MockDataService() {
+    loadFakeClasses();
     loadFakeCampaigns();
   }
   
+  private void loadFakeClasses() {
+    classes.clear();
+    classes.add("ADDAMS_HS_CS101_Fall_2011");
+    classes.add("BH_HS_CS102_Spring_2011");
+    classes.add("Carson_HS_CS103_Spring_2011");
+    classes.add("Crenshaw_HS_CS104_Fall_2011");
+    classes.add("Gardena_HS_CS104_Fall_2011");
+  }
+  
   private void loadFakeCampaigns() {
+    List<String> authors = new ArrayList<String>();
+    authors.add("Amy Willerton");
+    authors.add("Greg Mondavi");
+    authors.add("Gary McLauren");
     
     campaigns.clear();
     campaignsConcise.clear();
@@ -53,42 +63,64 @@ public class MockDataService implements DataService {
       CampaignDetailedInfo info = new CampaignDetailedInfo();
       
       // detail 1
-      info.setCampaignName("NIH_SleepSens" + Integer.toString(i));
+      info.setCampaignName("CS202_Fall_2011_Media" + Integer.toString(i));
+      info.setCampaignId("urn:campaign:ca:lausd:ADDAMS_HS:CS202:Fall:2011:media" + Integer.toString(i));
       List<UserRole> roles = new ArrayList<UserRole>();
       roles.add(UserRole.PARTICIPANT);
       roles.add(UserRole.ANALYST);
       info.setUserRoles(roles);
       info.setDescription("Monitor sleeping patterns");
-      info.setPrivacy(Privacy.PUBLIC);
+      info.setPrivacy(Privacy.SHARED);
       info.setRunningState(RunningState.RUNNING);
-      
+      for (int j = 0; j < classes.size(); j++) {
+        info.addClass(classes.get(j));
+      }
+      for (int j = 3; j < authors.size(); j++) {
+        info.addAuthor(authors.get(j));
+      }
       info.setXmlConfig(this.getConfigXml());
       
       campaigns.put(info.getCampaignId(), info);
       
       info = new CampaignDetailedInfo();
       info.setCampaignName("NIH_DietSens" + Integer.toString(i));
+      info.setCampaignName("CS301_Spring_2011_DietSens" + Integer.toString(i));
+      info.setCampaignId("urn:campaign:ca:lausd:ADDAMS_HS:CS301:Spring:2011:dietsens" + Integer.toString(i));
       roles = new ArrayList<UserRole>();
       roles.add(UserRole.PARTICIPANT);
       roles.add(UserRole.AUTHOR);
       info.setUserRoles(roles);
       info.setDescription("What people eat");
-      info.setPrivacy(Privacy.PUBLIC);
+      info.setPrivacy(Privacy.SHARED);
       info.setRunningState(RunningState.RUNNING);
+      for (int j = 4; j < classes.size(); j++) {
+        info.addClass(classes.get(j));
+      }
+      for (int j = 2; j < authors.size(); j++) {
+        info.addAuthor(authors.get(j));
+      }
       info.setXmlConfig(this.getConfigXml());
       
       campaigns.put(info.getCampaignId(), info);
       
       info = new CampaignDetailedInfo();
       info.setCampaignName("Advertising" + Integer.toString(i));
+      info.setCampaignName("CS101_Fall_2011_SleepSens" + Integer.toString(i));
+      info.setCampaignId("urn:campaign:ca:lausd:ADDAMS_HS:CS101:Fall:2011:sleepsens" + Integer.toString(i));
       roles = new ArrayList<UserRole>();
       roles.add(UserRole.ADMIN);
       roles.add(UserRole.PARTICIPANT);
       roles.add(UserRole.ANALYST);
       info.setUserRoles(roles);
       info.setDescription("Raise awareness of advertisements in the community");
-      info.setPrivacy(Privacy.PUBLIC);
+      info.setPrivacy(Privacy.SHARED);
       info.setRunningState(RunningState.STOPPED);
+      for (int j = 3; j < classes.size(); j++) {
+        info.addClass(classes.get(j));
+      }
+      for (int j = 0; j < authors.size(); j++) {
+        info.addAuthor(authors.get(j));
+      }
       info.setXmlConfig(this.getConfigXml());
       campaigns.put(info.getCampaignId(), info);
       

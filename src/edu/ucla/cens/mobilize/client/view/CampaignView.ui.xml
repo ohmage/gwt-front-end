@@ -58,6 +58,9 @@
     }
     .plotSideBarTitle {
     }
+    .scrollable {
+    	overflow-y: auto;
+    }
     .separator {
       padding-right: 2px;
     }
@@ -99,19 +102,19 @@
     </g:west>
     
     <g:center>
-      <g:HTMLPanel>
+      <g:HTMLPanel addStyleNames='{style.scrollable}'>
         <g:HTMLPanel ui:field='msgBox' addStyleNames='{style.msg}'>
           <g:InlineLabel ui:field='msgLabel' />
           <g:Anchor ui:field='closeMsg' addStyleNames='{style.msgHide}'>
             &raquo;hide
           </g:Anchor>
-          <div class='floastop'/>
+          <div class='floatstop'/>
         </g:HTMLPanel>
         <!-- only one of these will be visible at a time depending on selected subview -->
 		    <w:CampaignList ui:field="campaignList"></w:CampaignList>
 		    <w:CampaignDetail ui:field="campaignDetail"></w:CampaignDetail>
 		    <w:CampaignEditForm ui:field="campaignEdit"></w:CampaignEditForm>
-      </g:HTMLPanel>
+		  </g:HTMLPanel>
     </g:center>
     
     <g:east size='200'>

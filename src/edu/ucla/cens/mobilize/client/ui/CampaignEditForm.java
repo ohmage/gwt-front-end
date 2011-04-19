@@ -39,6 +39,7 @@ public class CampaignEditForm extends Composite {
 
   @UiField Label header;
   @UiField InlineLabel campaignName;
+  @UiField InlineLabel campaignUrn;
   @UiField TextArea campaignDescriptionTextArea;
   @UiField Button addClassesButton;
   @UiField FlexTable classesFlexTable;
@@ -169,6 +170,7 @@ public class CampaignEditForm extends Composite {
 
   private void clearFormFields() {
     this.campaignName.setText("");
+    this.campaignUrn.setText("");
     this.campaignDescriptionTextArea.setText("");
     this.classesFlexTable.clear();
     this.classHiddenField.setValue("");
@@ -197,15 +199,19 @@ public class CampaignEditForm extends Composite {
       
       // general info
       this.campaignName.setText(campaign.getCampaignName());
+      this.campaignUrn.setText(campaign.getCampaignId());
       this.campaignDescriptionTextArea.setText(campaign.getDescription());
       
-      // participants
+      // classes
       this.setCampaignClasses(campaign.getClasses());
+      
+      // authors
+      this.setCampaignAuthors(campaign.getAuthors());
       
       // privacy
       if (campaign.getPrivacy().equals(Privacy.PRIVATE)) {
         privacyListBox.setSelectedIndex(0);
-      } else if (campaign.getPrivacy().equals(Privacy.PUBLIC)) {
+      } else if (campaign.getPrivacy().equals(Privacy.SHARED)) {
         privacyListBox.setSelectedIndex(1);
       } else if (campaign.getPrivacy().equals(Privacy.INVISIBLE)) {
         privacyListBox.setSelectedIndex(2);

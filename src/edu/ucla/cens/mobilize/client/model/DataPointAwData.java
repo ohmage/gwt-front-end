@@ -28,8 +28,8 @@ public class DataPointAwData extends JavaScriptObject {
       // FIXME: deleteme
       privacyString = "private";
       Privacy privacy = Privacy.UNDEFINED;
-      if ("public".equals(privacyString)) {
-        privacy = Privacy.PUBLIC;
+      if ("shared".equals(privacyString)) {
+        privacy = Privacy.SHARED;
       } else if ("private".equals(privacyString)) {
         privacy = Privacy.PRIVATE;
       } else if ("invisible".equals(privacyString)) {

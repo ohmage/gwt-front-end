@@ -201,7 +201,7 @@ public class CampaignList extends Composite {
     String styleName = "";
     switch (privacy) {
       case PRIVATE: styleName = style.privacyPrivate(); break;
-      case PUBLIC: styleName = style.privacyShared(); break;
+      case SHARED: styleName = style.privacyShared(); break;
       case INVISIBLE: break;
       default: break;
     }

@@ -92,7 +92,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     publicMenuItem.setCommand(new Command() {
       @Override
       public void execute() {
-        selectedPrivacy = Privacy.PUBLIC;
+        selectedPrivacy = Privacy.SHARED;
         clearLeftSideBarStyles();
         publicMenuItem.setStyleName(style.sideBarItemSelected());
         presenter.onFilterChange();
@@ -247,7 +247,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   public void renderPublic(List<SurveyResponse> responses) {
     // FIXME: fake private/public (deleteme)
     for (SurveyResponse response : responses) {
-      response.setPrivacyState(Privacy.PUBLIC);
+      response.setPrivacyState(Privacy.SHARED);
     }
     renderResponses(responses);
     this.sectionHeaderTitle.setText("Public responses");
@@ -269,7 +269,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   public void renderAll(List<SurveyResponse> responses) {
     // FIXME: fake private/public (deleteme)
     int counter = 0;
-    Privacy[] choices = { Privacy.PRIVATE, Privacy.PUBLIC};
+    Privacy[] choices = { Privacy.PRIVATE, Privacy.SHARED};
     for (SurveyResponse response : responses) {
       response.setPrivacyState(choices[counter++ % 2]);
     }
@@ -287,7 +287,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       // generate css style name from the enum.
       // one of: responsePublic, responsePrivate, responseInvisible, responseUndefined
       switch (response.getPrivacyState()) {
-        case PUBLIC:
+        case SHARED:
           responseWidget.setPrivacyStylePublic();
           break;
         case PRIVATE:

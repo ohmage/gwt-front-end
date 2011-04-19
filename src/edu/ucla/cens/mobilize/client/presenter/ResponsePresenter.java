@@ -116,7 +116,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     view.setSurveyList(surveys);
     Privacy privacy = view.getSelectedPrivacyState();
     switch (privacy) {
-      case PUBLIC:
+      case SHARED:
         view.renderPublic(responses);
         break;
       case PRIVATE: 

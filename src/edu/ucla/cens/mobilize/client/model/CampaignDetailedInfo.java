@@ -134,9 +134,12 @@ public class CampaignDetailedInfo {
   
   /************ SETTERS ***************/
   
+  public void setCampaignId(String campaignId) {
+    this.campaignId = campaignId;
+  }
+  
   public void setCampaignName(String campaignName) {
     this.campaignName = campaignName;
-    this.campaignId = campaignName; // FIXME: urn instead
   }
   
   public void setDescription(String description) {

@@ -153,6 +153,15 @@
 	            </td>
 	          </tr>
 	          <tr>
+              <td class='{style.label}'>
+                <label>Urn:</label>
+              </td>
+              <td>
+               <g:InlineLabel ui:field='campaignUrn' />
+               <div class='formHint'>(defined in xml config)</div>
+              </td>
+            </tr>
+	          <tr>
 	            <td class='{style.label}'>
 	              <label>Description:</label>
 	            </td>

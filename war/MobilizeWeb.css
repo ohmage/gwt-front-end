@@ -132,7 +132,6 @@ a:hover, a:active {
 }
 
 .gwt-TabBar {
-	/*background-color: #666899;*/
 	background-color: #003;
 	padding: 10px 0px 0px 20px;
 }
@@ -174,7 +173,7 @@ a:hover, a:active {
 	border-bottom: none;
 	-moz-border-radius: 2px;
 	border-radius: 2px;
-	height: 500px;
+	height: 550px;
 	margin-bottom: 50px;
 	/* fixme: handle long content better*/
 }

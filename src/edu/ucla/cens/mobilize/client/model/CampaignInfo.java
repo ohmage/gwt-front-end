@@ -22,7 +22,7 @@ public class CampaignInfo {
     private String campaignName;  // The name of this campaign
     private String description; // FIXME: add desc to translator
     private List<String> userList;  // A list of the users in enrolled in the current campaign
-    private List<String> participantGroups; // list of user groups enrolled in the campaign (e.g., classes, for mobilize)
+    private List<String> classes; // List of classes enrolled in the campaign (where one class has multiple users) 
     // FIXME: just one configurationInfo per campaign now
     private List<ConfigurationInfo> configurationList;  // Holds configuration info for each version of the campaign
     //private UserRole userRole;  // Describes the user's campaign permissions
@@ -37,19 +37,19 @@ public class CampaignInfo {
     
     public CampaignInfo() {
         userList = new ArrayList<String>();
-        participantGroups = new ArrayList<String>();
+        classes = new ArrayList<String>();
         configurationList = new ArrayList<ConfigurationInfo>();
         // FIXME: choose defaults
         userRoles = new ArrayList<UserRole>();
         userRoles.add(UserRole.PARTICIPANT);
-        privacy = Privacy.PUBLIC;
-        runningState = RunningState.RUNNING;
+        privacy = Privacy.PRIVATE;
+        runningState = RunningState.STOPPED;
         description = "fixme: campaign description goes here";
         primaryAuthor = "fixme: primary author name goes here";
         // FIXME: real data
-        participantGroups.add("CS101");
-        participantGroups.add("CS210");
-        participantGroups.add("STAT201");
+        classes.add("CS101");
+        classes.add("CS210");
+        classes.add("STAT201");
     };
     
     public Object getKey() {
@@ -91,7 +91,7 @@ public class CampaignInfo {
     }
     
     public List<String> getParticipantGroups() {
-      return participantGroups;
+      return classes;
     }
     
     public ConfigurationInfo getConfigurationInfo() {
@@ -154,17 +154,17 @@ public class CampaignInfo {
     }
 
     public void addParticipantGroup(String participantGroup) {
-      this.participantGroups.add(participantGroup);
+      this.classes.add(participantGroup);
     }
     
     public void removeParticipantGroup(String participantGroup) {
-      if (this.participantGroups.contains(participantGroup)) {
-        this.participantGroups.remove(participantGroup);
+      if (this.classes.contains(participantGroup)) {
+        this.classes.remove(participantGroup);
       }
     }
     
     public void clearParticipantGroups() {
-      this.participantGroups.clear();
+      this.classes.clear();
     }
     
     public void setConfiguration(ConfigurationInfo config) {

@@ -41,9 +41,11 @@ public class CampaignDetail extends Composite {
   }
   
   @UiField CampaignDetailStyle style;
-  @UiField InlineLabel name;
+  @UiField InlineLabel campaignName;
+  @UiField InlineLabel campaignUrn;
   @UiField InlineLabel desc;
   @UiField VerticalPanel classes;
+  @UiField VerticalPanel authors;
   @UiField SpanElement runningStateSpan;
   @UiField SpanElement privacySpan;
   @UiField Hyperlink editCampaignLink;
@@ -58,13 +60,20 @@ public class CampaignDetail extends Composite {
   public void setCampaign(CampaignDetailedInfo campaign, boolean canEdit) {
     if (campaign != null) {
       // copy info from data obj into fields
-      this.name.setText(campaign.getCampaignName());
+      this.campaignName.setText(campaign.getCampaignName());
+      this.campaignUrn.setText(campaign.getCampaignId());
       this.desc.setText(campaign.getDescription());
       
-      // build participant list
+      // build class list
       this.classes.clear();
       for (String s : campaign.getClasses()) {
         this.classes.add(new HTML("<span>" + s + "</span>")); //fixme
+      }
+      
+      // build author list
+      this.authors.clear();
+      for (String s : campaign.getAuthors()) {
+        this.authors.add(new HTML("<span>" + s + "</span>"));
       }
       
       // running state style is set dynamically
@@ -83,7 +92,7 @@ public class CampaignDetail extends Composite {
       if (campaign.getPrivacy().equals(Privacy.PRIVATE)) {
         privacySpan.setInnerText("PRIVATE");
         privacySpan.setClassName(style.privacyPrivate());
-      } else if (campaign.getPrivacy().equals(Privacy.PUBLIC)) {
+      } else if (campaign.getPrivacy().equals(Privacy.SHARED)) {
         privacySpan.setInnerText("SHARED");
         privacySpan.setClassName(style.privacyShared());
       } else {

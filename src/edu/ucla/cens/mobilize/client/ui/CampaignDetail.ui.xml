@@ -41,7 +41,7 @@
     	text-align: right;
     	width: 170px;
     }
-    .participantList {
+    .classList, .authorList {
     	margin-bottom: 10px;
     }
     .privacyPrivate {
@@ -113,9 +113,17 @@
 	            <label>Name:</label>
 	          </td>
 	          <td>
-				     <g:InlineLabel ui:field='name'/>
+				     <g:InlineLabel ui:field='campaignName'/>
 	          </td>
 	        </tr>
+	        <tr>
+            <td class='{style.label}'>
+              <label>Urn:</label>
+            </td>
+            <td>
+             <g:InlineLabel ui:field='campaignUrn'/>
+            </td>
+          </tr>
 	        <tr>
 	          <td class='{style.label}'>
 	            <label>Description:</label>
@@ -129,9 +137,17 @@
 	            <label>Classes:</label>
 	          </td>
 	          <td>
-	           <g:VerticalPanel ui:field='classes' addStyleNames='{style.participantList}' />
+	           <g:VerticalPanel ui:field='classes' addStyleNames='{style.classList}' />
 	          </td>
 	        </tr>
+	        <tr>
+            <td class='{style.label}'>
+              <label>Authors:</label>
+            </td>
+            <td>
+             <g:VerticalPanel ui:field='authors' addStyleNames='{style.authorList}' />
+            </td>
+          </tr>
 	        <tr>
 	          <td class='{style.label}'>
 	            <label>Xml Config:</label>
