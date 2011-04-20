@@ -1,7 +1,8 @@
-package edu.ucla.cens.mobilize.client.model;
+package edu.ucla.cens.mobilize.client.dataaccess.awdataobjects;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
+
 
 public class ConfigQueryAwData extends QueryAwData {
     protected ConfigQueryAwData() {};

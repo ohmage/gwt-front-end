@@ -4,7 +4,9 @@ import com.google.gwt.core.client.GWT;
 
 /**
  * Holds program wide constants.  Use DeployStatus to return different
- * constants based on the deployment status
+ * constants based on the deployment status. 
+ * 
+ * @note DeployStatus is set in the gwt module file
  * 
  * @author jhicks
  *
@@ -20,12 +22,23 @@ public class AndWellnessConstants {
     private final static String authorizationLocationDebug = "http://dev1.andwellness.org/app/user/auth_token"; 
     private final static String dataPointLocationDebug = "http://dev1.andwellness.org/app/q/dp";
     private final static String configurationLocationDebug = "http://dev1.andwellness.org/app/q/config";
+    private final static String userInfoReadLocationDebug = "http://dev1.andwellness.org/app/user/read";
     
     // RELEASE CONSTANTS
     private final static String authorizationLocationRelease = "../app/user/auth_token";
     private final static String dataPointLocationRelease = "../app/q/dp";
     private final static String configurationLocationRelease = "../app/q/config";
+    private final static String userInfoReadLocationRelease = "../app/user/read";
     
+    
+    public static String getUserInfoReadUrl() {
+      if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
+        return userInfoReadLocationDebug;
+      } else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
+        return userInfoReadLocationRelease;
+      }
+      return null;
+    }
         
     /**
      * Returns the authorization server api url based on the deployment status.

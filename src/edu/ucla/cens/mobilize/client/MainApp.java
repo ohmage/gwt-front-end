@@ -101,7 +101,6 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   public void onModuleLoad() {
     if (loginManager.isCurrentlyLoggedIn()) {
       initUser();
-      tabPanel.addTabListener(this);
     } else {
       initLogin();
     }
@@ -109,7 +108,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   
   private void initAppForUser(UserInfo userInfo) {
     this.userInfo = userInfo;
-    initComponents();
+    initComponents(userInfo);
     initLayoutAndNavigation();
     initHistory();
   }
@@ -129,13 +128,23 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     RootPanel.get("main-content").add(loginView);
   }
   
-  private void initUser() {    
+  private void initUser() {
+    if (!loginManager.isCurrentlyLoggedIn()) {
+      _logger.warning("Cannot fetch user info if not logged in.");
+    }
+    
+    // set up data service for this user
     final String userName = loginManager.getLoggedInUserName();
-    dataService.fetchUserInfo(userName, new AsyncCallback<UserInfo>() {
+    final String authToken = loginManager.getAuthorizationToken();
+    awDataService.init(userName, authToken);
+    
+    // get user info 
+    awDataService.fetchUserInfo(userName, new AsyncCallback<UserInfo>() {
 
       @Override
       public void onFailure(Throwable caught) {
-        Window.alert(caught.getMessage()); // FIXME
+        _logger.severe("Failed to fetch user info for user " + userName + ". Forcing logout.");
+        logout(); 
       }
 
       @Override
@@ -144,15 +153,16 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
           initAppForUser(user);
         } else {
           _logger.severe("Failed to fetch user info for user " + userName + ". Forcing logout.");
-          logout();
+           logout(); 
         }
       }
     });
   }
   
-  private void initComponents() {
+  private void initComponents(UserInfo userInfo) {
     header = new Header();
     tabPanel = new TabPanel();
+    tabPanel.addTabListener(this);
     tabHistoryTokens = new ArrayList<String>();
     
     // views

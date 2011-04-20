@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 public class SurveyResponse {

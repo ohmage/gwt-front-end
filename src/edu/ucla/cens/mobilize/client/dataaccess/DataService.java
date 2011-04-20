@@ -3,11 +3,11 @@ import java.util.List;
 import java.util.Map;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
-import edu.ucla.cens.mobilize.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
-import edu.ucla.cens.mobilize.client.model.DataPointAwData;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
@@ -27,6 +27,14 @@ import edu.ucla.cens.mobilize.client.model.UserInfo;
  */
 public interface DataService {
   /**
+   * Initializes the data service for this user. All future calls will 
+   * use auth_token for authentication.
+   * @param userName
+   * @param authToken (see fetchAuthorizationToken)
+   */
+  void init(String username, String authToken);
+  
+  /**
    * Fetches an authorization token plus a list of campaign names from the server.
    * Throws a runtime error if the username/password combination fails authentication.
    * 
@@ -41,6 +49,8 @@ public interface DataService {
   void fetchUserInfo(String username, final AsyncCallback<UserInfo> asyncCallback);
   
   // campaigns
+  void fetchCampaignIds(Map<String, List<String>> params,
+                        final AsyncCallback<List<String>> callback);
   void fetchCampaignList(Map<String, List<String>> params, 
                          final AsyncCallback<List<CampaignConciseInfo>> callback);
   void fetchCampaignDetail(String campaignId, 

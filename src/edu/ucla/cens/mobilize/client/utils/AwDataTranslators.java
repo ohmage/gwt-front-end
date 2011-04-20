@@ -3,7 +3,11 @@ package edu.ucla.cens.mobilize.client.utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
+
+import org.mortbay.util.ajax.JSON;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
@@ -13,18 +17,28 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
 import edu.ucla.cens.mobilize.client.common.UserRole;
+import edu.ucla.cens.mobilize.client.common.UserRoles;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignsAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigurationsAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.QueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoQueryAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignInfo;
-import edu.ucla.cens.mobilize.client.model.CampaignsAwData;
-import edu.ucla.cens.mobilize.client.model.ConfigQueryAwData;
 import edu.ucla.cens.mobilize.client.model.ConfigurationInfo;
-import edu.ucla.cens.mobilize.client.model.ConfigurationsAwData;
-import edu.ucla.cens.mobilize.client.model.DataPointAwData;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
-import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfoOld;
+
+// json
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 
 /**
  * A collection of translators to translate data from the AndWellness server to local
@@ -60,6 +74,24 @@ public class AwDataTranslators {
         }
         
         return userInfo;
+    }
+    
+    // assumes there's just one userinfo  in the list
+    // TODO: method that returns a list
+    public static UserInfo translateUserInfoQueryAwDataToUserInfo(String userName, UserInfoQueryAwData data) {
+      JsArray<UserInfoAwData> items = data.getUserInfoAwDataArray();
+      assert items.length() == 1 : "Expected 1 item in user info array, found " + Integer.toString(items.length());
+      UserInfoAwData dataForOneUser = items.get(0);
+      List<String> classes = dataForOneUser.getClasses();
+      List<String> rolesAsStrings = dataForOneUser.getRoles();
+      List<UserRole> roles = new ArrayList<UserRole>();
+      for (String s : rolesAsStrings) {
+        roles.add(UserRole.valueOf(s));
+      }
+      boolean canCreate = dataForOneUser.getCanCreateFlag();
+      
+      UserInfo userInfo = new UserInfo(userName, canCreate, classes, roles);
+      return userInfo;
     }
     
     /**
@@ -287,4 +319,52 @@ public class AwDataTranslators {
       
       return new ArrayList<SurveyResponse>(responses.values());
     }
+    
+    // Expects json like:
+    // {"result":"success","data":{"temp.user":{"classes":["andwellness"],"roles":["supervisor"],"permissions":{"cancreate":true}}}}
+    public static List<UserInfo> translateUserReadQueryJSONToUserInfoList(String userReadQueryResponseJSON) {
+      List<UserInfo> users = new ArrayList<UserInfo>();
+      
+      // Parse response obj
+      @SuppressWarnings("deprecation")
+      JSONValue value = JSONParser.parse(userReadQueryResponseJSON);
+      JSONObject responseObj = value.isObject();
+      
+      // Get data field from response. It's a hash with usernames as keys and
+      // serialized userinfos as values.
+      if (responseObj == null || !responseObj.containsKey("data")) return null;
+      JSONObject userNameToUserDataHash = responseObj.get("data").isObject();
+      
+      // For each user, translate the serialized info into a UserInfo object and save
+      if (userNameToUserDataHash == null) return null;
+      Set<String> userNames = userNameToUserDataHash.keySet();
+      JSONValue jsonValue = null;
+      for (String userName : userNames) {
+        // wrap in try/catch because it uses a UserInfoAwData
+        try { 
+          jsonValue = userNameToUserDataHash.get(userName);
+          JSONObject userJSONObject = jsonValue.isObject();
+          if (userJSONObject == null) throw new Exception("user data field not a valid JSON object");
+          UserInfoAwData userDataJSObject = (UserInfoAwData)userJSONObject.getJavaScriptObject();
+          boolean canCreateFlag = userDataJSObject.getCanCreateFlag();
+          List<String> classes = userDataJSObject.getClasses();
+          List<String> rolesAsStrings = userDataJSObject.getRoles();
+          List<UserRole> roles = new ArrayList<UserRole>();
+          for (String roleString : rolesAsStrings) {
+            roles.add(UserRole.valueOf(roleString.toUpperCase()));
+            // FIXME: make sure string is valid?
+          }
+          UserInfo userInfo = new UserInfo(userName, canCreateFlag, classes, roles);
+          users.add(userInfo);
+        } catch (Exception e) { // FIXME: which exceptions?
+          _logger.warning("Could not parse json for user: " + userName + ". Skipping record.");
+          _logger.fine(e.getMessage());
+          _logger.finer("jsonValue: " + (jsonValue != null ? jsonValue.toString() : "null"));
+        }
+      }
+      return users;
+    }
+    
+
+    
 }

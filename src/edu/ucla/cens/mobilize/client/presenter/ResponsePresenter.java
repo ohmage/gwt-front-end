@@ -35,7 +35,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   // be changed when campaign is selected
 
   public ResponsePresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
-    this.campaignIds = userInfo.getParticipantCampaigns();
+    //this.campaignIds = userInfo.getParticipantCampaigns();
     this.participants.addAll(userInfo.getVisibleUsers());
     this.eventBus = eventBus;
     this.dataService = dataService;
@@ -86,6 +86,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     params.participantId = this.view.getSelectedParticipant();
     params.privacyState = this.view.getSelectedPrivacyState();
     params.surveyId = this.view.getSelectedSurvey();
+    
+    
     
     // data point api only allows queries for one campaign at a time,
     // so iterate through campaigns and update display after loading 

@@ -1,4 +1,4 @@
-package edu.ucla.cens.mobilize.client.model;
+package edu.ucla.cens.mobilize.client.dataaccess.awdataobjects;
 
 import com.google.gwt.core.client.JavaScriptObject;
 

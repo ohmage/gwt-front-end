@@ -19,4 +19,15 @@ public class UserRoles {
     supervisor = listOfRoles.contains(UserRole.SUPERVISOR);
   }
   
+  public void addRole(UserRole role) {
+    switch (role) {
+      case PARTICIPANT: this.participant = true; break;
+      case ANALYST: this.analyst = true; break;
+      case AUTHOR: this.author = true; break;
+      case SUPERVISOR: this.supervisor = true; break;
+      case ADMIN: this.admin = true; break;
+      default: break;
+    }
+  }
+  
 }

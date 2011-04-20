@@ -4,18 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucla.cens.mobilize.client.common.UserRole;
+import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.common.UserStats;
 
 public class UserInfo {
-  private String userName;
-  private boolean canCreate = false;
-  
-  private List<String> adminCampaigns = new ArrayList<String>();
-  private List<String> supervisorCampaigns = new ArrayList<String>();
-  private List<String> authorCampaigns = new ArrayList<String>();
-  private List<String> participantCampaigns = new ArrayList<String>();
-  private List<String> analystCampaigns = new ArrayList<String>();
-  
+  private String userName; // login id
+  private boolean canCreate = false; // if true, user can create a new campaign
+  private UserRoles roles = new UserRoles(); // flags showing what roles are held by user
   private List<String> classes = new ArrayList<String>(); // user groups
   private List<String> visibleUsers = new ArrayList<String>(); // whose info this user can see
   
@@ -23,34 +18,20 @@ public class UserInfo {
   
   public UserInfo(String username, 
                   boolean canCreate, 
-                  List<CampaignDetailedInfo> campaigns,
-                  List<String> classes) {
+                  List<String> classes,
+                  List<UserRole> roles) {
     this.userName = username;
     this.canCreate = canCreate;
-    
+
     this.visibleUsers.add(this.userName); // most users can only see themselves
     
+    // FIXME: user info service should also return list of users visible to this one
+    
     if (classes != null) this.classes.addAll(classes);
-    
-    if (campaigns != null) {
-      // generate user counts and list of user roles from campaigns
-      for (CampaignDetailedInfo ci : campaigns) {
-        List<UserRole> roles = ci.getUserRoles();
-        if (ci.isActive()) {
-          for (UserRole role : roles) {
-            this.stats.incrementActiveCount(role);
-          }
-        }
-        if (roles.contains(UserRole.ADMIN)) this.adminCampaigns.add(ci.getCampaignId());
-        if (roles.contains(UserRole.ANALYST)) this.analystCampaigns.add(ci.getCampaignId());
-        if (roles.contains(UserRole.AUTHOR)) this.authorCampaigns.add(ci.getCampaignId());
-        if (roles.contains(UserRole.PARTICIPANT)) this.participantCampaigns.add(ci.getCampaignId());
-        if (roles.contains(UserRole.SUPERVISOR)) this.supervisorCampaigns.add(ci.getCampaignId());
-      }
-    }
-    // NOTE: in the future when a user might have 100+ campaigns, we may want
-    // to generate these counts on the server and pass them on login
-    
+
+    for (UserRole role : roles) {
+      this.roles.addRole(role);
+    }    
   }
   
   /******** GETTERS ********/
@@ -64,44 +45,34 @@ public class UserInfo {
   }
   
   public List<String> getClasses() {
-    List<String> retval = new ArrayList<String>();
-    retval.addAll(this.classes);
-    return retval;  // read only list
+    return this.classes;
   }
   
   // gets list of users whose data this user is allowed to see
   public List<String> getVisibleUsers() {
-    List<String> retval = new ArrayList<String>();
-    retval.addAll(this.visibleUsers);
-    return retval;
-  }
-  
-  public List<String> getParticipantCampaigns() {
-    List<String> retval = new ArrayList<String>();
-    retval.addAll(this.participantCampaigns);
-    return retval;
+    return this.visibleUsers;
   }
   
   /******* USER ROLES ******/
   
   public boolean isAdmin(String campaignId) {
-    return this.adminCampaigns.contains(campaignId);
+    return this.roles.admin;
   }
   
   public boolean isSupervisor(String campaignId) {
-    return this.supervisorCampaigns.contains(campaignId);
+    return this.roles.supervisor;
   }
   
   public boolean isAuthor(String campaignId) {
-    return this.authorCampaigns.contains(campaignId);
+    return this.roles.author;
   }
   
   public boolean isParticipant(String campaignId) {
-    return this.participantCampaigns.contains(campaignId);
+    return this.roles.participant;
   }
   
   public boolean isAnalyst(String campaignId) {
-    return this.analystCampaigns.contains(campaignId);
+    return this.roles.analyst;
   }
 
   /********** PERMISSIONS ***********/
@@ -111,20 +82,15 @@ public class UserInfo {
   }
 
   public boolean canUpload() {
-    return !this.adminCampaigns.isEmpty() ||
-           !this.supervisorCampaigns.isEmpty() || 
-           !this.analystCampaigns.isEmpty();
+    return this.roles.admin || this.roles.supervisor || this.roles.analyst;
   }
   
   public boolean canEdit(String campaignId) {
-    return this.adminCampaigns.contains(campaignId) || 
-           this.supervisorCampaigns.contains(campaignId) || 
-           this.authorCampaigns.contains(campaignId);
+    return this.roles.admin || this.roles.supervisor || this.roles.author;
   }
   
   public boolean canDelete(String campaignId) {
-    return this.adminCampaigns.contains(campaignId) ||
-           this.supervisorCampaigns.contains(campaignId) ||
-           this.authorCampaigns.contains(campaignId);
+    return this.roles.admin || this.roles.supervisor || this.roles.author;
   }
+  
 }

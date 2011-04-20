@@ -12,7 +12,7 @@ public class TestDataAccess extends GWTTestCase {
   // Wrap data obj so protected methods can be tested.  
   class TestableDataService extends AndWellnessDataService {
     private String testGetResponseText(RequestBuilder request, Response response) throws Exception {
-      return super.getResponseText(request, response);
+      return super.getResponseTextOrThrowException(request, response);
     }
   }
 

@@ -15,12 +15,12 @@ import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.common.UserStats;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
-import edu.ucla.cens.mobilize.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
-import edu.ucla.cens.mobilize.client.model.DataPointAwData;
-import edu.ucla.cens.mobilize.client.model.DataPointQueryAwData;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
@@ -135,6 +135,11 @@ public class MockDataService implements DataService {
       }
     }
   }
+
+  @Override
+  public void init(String username, String auth_token) {
+    // TODO Auto-generated method stub
+  }
   
   @Override
   public void fetchUserInfo(String username, AsyncCallback<UserInfo> callback) {
@@ -147,12 +152,29 @@ public class MockDataService implements DataService {
     classes.add("ADDAMS_HS_CS101_Fall_2011");
     classes.add("BH_HS_CS102_Spring_2011");
     classes.add("Carson_HS_CS103_Spring_2011");
+    
     List<CampaignDetailedInfo> infos = new ArrayList<CampaignDetailedInfo>(this.campaigns.values());
-    UserInfo user = new UserInfo(username, canCreate, infos, classes);
+    List<UserRole> roles = new ArrayList<UserRole>();
+    for (CampaignDetailedInfo campaign : this.campaigns.values()) {
+      for (UserRole role : campaign.getUserRoles()) {
+        roles.add(role);
+      }
+    }
+    UserInfo user = new UserInfo(username, canCreate, classes, roles);
     
     callback.onSuccess(user);
   }
 
+  @Override
+  public void fetchCampaignIds(Map<String, List<String>> params,
+      AsyncCallback<List<String>> callback) {
+    List<String> ids = new ArrayList<String>(); 
+    for (CampaignConciseInfo info : campaignsConcise) {
+      ids.add(info.getCampaignId());
+    }
+    callback.onSuccess(ids);
+  }
+  
   @Override
   public void fetchCampaignList(Map<String, List<String>> params,
       AsyncCallback<List<CampaignConciseInfo>> callback) {
@@ -281,5 +303,7 @@ public class MockDataService implements DataService {
     });
     
   }
+
+
 
 }

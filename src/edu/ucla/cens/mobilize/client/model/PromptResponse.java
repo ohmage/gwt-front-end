@@ -1,5 +1,7 @@
 package edu.ucla.cens.mobilize.client.model;
 
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
+
 // wraps prompt info and data in one class to make display easier
 public class PromptResponse {
   //PromptInfo info;

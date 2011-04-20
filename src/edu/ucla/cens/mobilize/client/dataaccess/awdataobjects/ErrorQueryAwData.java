@@ -1,6 +1,7 @@
-package edu.ucla.cens.mobilize.client.model;
+package edu.ucla.cens.mobilize.client.dataaccess.awdataobjects;
 
 import com.google.gwt.core.client.JsArray;
+
 
 /**
  * Used to parse and interpret errors when a query from the AndWellness server

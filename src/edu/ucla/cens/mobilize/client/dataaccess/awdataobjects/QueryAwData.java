@@ -1,4 +1,4 @@
-package edu.ucla.cens.mobilize.client.model;
+package edu.ucla.cens.mobilize.client.dataaccess.awdataobjects;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -19,4 +19,5 @@ public abstract class QueryAwData extends JavaScriptObject {
     public static native QueryAwData fromJsonString(String jsonString) /*-{
         return eval('(' + jsonString + ')'); 
     }-*/;
+    
 }

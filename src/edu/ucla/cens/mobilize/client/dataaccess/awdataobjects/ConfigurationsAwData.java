@@ -1,4 +1,5 @@
-package edu.ucla.cens.mobilize.client.model;
+package edu.ucla.cens.mobilize.client.dataaccess.awdataobjects;
+
 
 public class ConfigurationsAwData extends QueryAwData {
     protected ConfigurationsAwData() {};

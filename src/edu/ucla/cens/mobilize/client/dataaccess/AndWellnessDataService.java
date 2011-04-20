@@ -15,14 +15,15 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AndWellnessConstants;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.QueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
-import edu.ucla.cens.mobilize.client.model.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
-import edu.ucla.cens.mobilize.client.model.DataPointAwData;
-import edu.ucla.cens.mobilize.client.model.ErrorAwData;
-import edu.ucla.cens.mobilize.client.model.ErrorQueryAwData;
-import edu.ucla.cens.mobilize.client.model.QueryAwData;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.rpcservice.ApiException;
@@ -30,6 +31,8 @@ import edu.ucla.cens.mobilize.client.rpcservice.AuthenticationException;
 import edu.ucla.cens.mobilize.client.rpcservice.NotLoggedInException;
 import edu.ucla.cens.mobilize.client.rpcservice.ServerException;
 import edu.ucla.cens.mobilize.client.rpcservice.ServerUnavailableException;
+import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
+import edu.ucla.cens.mobilize.client.utils.JsArrayUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 /**
@@ -44,7 +47,12 @@ public class AndWellnessDataService implements DataService {
   RequestBuilder authorizationService;
   RequestBuilder dataPointService;
   RequestBuilder configurationService;
+  RequestBuilder userReadService;
 
+  String userName;
+  String authToken;
+  boolean isInitialized = false;
+  
   private static Logger _logger = Logger.getLogger(AndWellnessDataService.class.getName());
   
   /**
@@ -61,6 +69,14 @@ public class AndWellnessDataService implements DataService {
     dataPointService.setHeader("Content-Type", "application/x-www-form-urlencoded");
     configurationService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getConfigurationUrl()));
     configurationService.setHeader("Content-Type", "application/x-www-form-urlencoded");
+  }
+
+  private RequestBuilder getUserReadRequestBuilder() {
+    if (this.userReadService == null) {
+      this.userReadService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getUserInfoReadUrl()));
+      this.userReadService.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    }
+    return this.userReadService;
   }
   
   /**
@@ -169,7 +185,7 @@ public class AndWellnessDataService implements DataService {
    *   probably pass to your someclass.fromJsonString(responseText) method)
    * @throws Exception 
    */
-  protected String getResponseText(RequestBuilder requestBuilder, 
+  protected String getResponseTextOrThrowException(RequestBuilder requestBuilder, 
                                  Response response) throws Exception {
     _logger.fine("Authentication server response: " + response.getText());
     
@@ -209,13 +225,21 @@ public class AndWellnessDataService implements DataService {
 
   }
 
-  
-  // TODO: store auth token as part of data class?
+  /**
+   * Store username and auth token to be used in data requests.
+   * Must be called before any fetch* methods
+   */
+  @Override
+  public void init(String userName, String authToken) {
+    this.userName = userName;
+    this.authToken = authToken;
+    this.isInitialized = true;
+  }
   
   /**
    * Sends the passed in username and password to the AW server.  Checks the server response
    * to determine whether the login succeeded or failed, and notifies the callback of such.
-   * 
+   * Saves auth info for use in future data fetches.
    * @param userName The user name to authenticate.
    * @param password The password for the user name.
    * @param callback The interface to handle the server response.
@@ -250,8 +274,9 @@ public class AndWellnessDataService implements DataService {
                   String responseText = null;     
                   AuthorizationTokenQueryAwData result = null;
                   try {
-                    responseText = getResponseText(authorizationService, response);
+                    responseText = getResponseTextOrThrowException(authorizationService, response);
                     result = AuthorizationTokenQueryAwData.fromJsonString(responseText);
+                    init(userName, result.getAuthorizationToken()); // save for future fetches
                     callback.onSuccess(result);
                   } catch (Exception exception) {
                     callback.onFailure(exception);
@@ -267,11 +292,55 @@ public class AndWellnessDataService implements DataService {
   }
   
   @Override
-  public void fetchUserInfo(String username, AsyncCallback<UserInfo> callback) {
+  public void fetchUserInfo(final String username, final AsyncCallback<UserInfo> callback) {
+    final RequestBuilder requestBuilder = getUserReadRequestBuilder();
+    Map<String, String> params = new HashMap<String, String>();
+    assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
+    params.put("auth_token", this.authToken);
+    params.put("usernames", username); // FIXME: allow more than one?
+    String postParams = MapUtils.translateToParameters(params);
+    _logger.fine("Attempting to fetch user info with parameters: " + postParams);
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            List<UserInfo> userInfos = AwDataTranslators.translateUserReadQueryJSONToUserInfoList(responseText);
+            if (userInfos.size() > 0) {
+              // FIXME: assumes first user is the one you want. should check id instead
+              callback.onSuccess(userInfos.get(0));
+            } else {
+              callback.onFailure(new Exception("Failed to parse user data."));
+            }
+            
+          } catch (Exception exception) {
+            callback.onFailure(exception);
+          }
+          
+        }
+
+        @Override
+        public void onError(Request request, Throwable exception) {
+          // TODO Auto-generated method stub
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+  }
+
+
+  @Override
+  public void fetchCampaignIds(Map<String, List<String>> params,
+      AsyncCallback<List<String>> callback) {
     // TODO Auto-generated method stub
     
   }
-
+  
   @Override
   public void fetchCampaignList(Map<String, List<String>> params,
       AsyncCallback<List<CampaignConciseInfo>> callback) {
@@ -320,6 +389,7 @@ public class AndWellnessDataService implements DataService {
     // TODO Auto-generated method stub
     
   }
+
 
   
 }

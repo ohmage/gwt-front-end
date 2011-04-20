@@ -13,11 +13,11 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import edu.ucla.cens.mobilize.client.model.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointQueryAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignInfo;
-import edu.ucla.cens.mobilize.client.model.ConfigQueryAwData;
-import edu.ucla.cens.mobilize.client.model.DataPointAwData;
-import edu.ucla.cens.mobilize.client.model.DataPointQueryAwData;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfoOld;
 import edu.ucla.cens.mobilize.client.utils.JsArrayUtils;
