@@ -181,7 +181,7 @@ public class MockDataService implements DataService {
   }
   
   @Override
-  public void fetchCampaignList(CampaignReadParams params,
+  public void fetchCampaignListShort(CampaignReadParams params,
       AsyncCallback<List<CampaignConciseInfo>> callback) {
     callback.onSuccess(campaignsConcise);    
   }
@@ -199,7 +199,7 @@ public class MockDataService implements DataService {
   }
   
   @Override
-  public void fetchCampaignDetailList(List<String> campaignIds,
+  public void fetchCampaignListDetail(List<String> campaignIds,
       AsyncCallback<List<CampaignDetailedInfo>> callback) {
     List<CampaignDetailedInfo> infos = new ArrayList<CampaignDetailedInfo>();
     for (String id : campaignIds) {

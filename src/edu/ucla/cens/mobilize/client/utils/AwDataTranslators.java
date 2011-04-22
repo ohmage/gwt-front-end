@@ -18,6 +18,7 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignsAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigurationsAwData;
@@ -44,6 +45,7 @@ import com.google.gwt.json.client.JSONValue;
  * data structures.
  * 
  * @author jhicks
+ * @author vhajdik
  *
  */
 public class AwDataTranslators {
@@ -74,25 +76,6 @@ public class AwDataTranslators {
         
         return userInfo;
     }
-    
-    // assumes there's just one userinfo  in the list
-    // TODO: method that returns a list
-    /*
-    public static UserInfo translateUserInfoQueryAwDataToUserInfo(String userName, UserInfoQueryAwData data) {
-      JsArray<UserInfoAwData> items = data.getUserInfoAwDataArray();
-      assert items.length() == 1 : "Expected 1 item in user info array, found " + Integer.toString(items.length());
-      UserInfoAwData dataForOneUser = items.get(0);
-      List<String> classes = dataForOneUser.getClasses();
-      List<String> rolesAsStrings = dataForOneUser.getRoles();
-      List<UserRole> roles = new ArrayList<UserRole>();
-      for (String s : rolesAsStrings) {
-        roles.add(UserRole.valueOf(s));
-      }
-      boolean canCreate = dataForOneUser.getCanCreateFlag();
-      
-      UserInfo userInfo = new UserInfo(userName, canCreate, classes, roles);
-      return userInfo;
-    }*/
     
     /**
      * Translates a CampaignsAwData from the AW server config API into a CampaignInfo object.
@@ -424,6 +407,70 @@ public class AwDataTranslators {
                                                                      creationTime);
           // save
           campaigns.add(campaignInfo);    
+          
+        } catch (Exception e) { // FIXME: which exceptions?
+          _logger.warning("Could not parse json for campaign id: " + campaignId + ". Skipping record.");
+          _logger.fine(e.getMessage());
+          _logger.finer("jsonValue: " + (jsonValue != null ? jsonValue.toString() : "null"));
+        }
+      }
+      
+      return campaigns;
+    }
+
+    // {"result":"success","data":[{"urn:andwellness:nih":{"classes":["urn:sys:andwellness"],"user_role_campaign":{"analyst":[],"author":[],"supervisor":["temp.user"],"participant":[]},"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","xml":"","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}}],"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
+    public static List<CampaignDetailedInfo> translateCampaignReadQueryJSONtoCampaignDetailedInfoList(
+        String responseText) {
+      // List that will be returned
+      List<CampaignDetailedInfo> campaigns = new ArrayList<CampaignDetailedInfo>(); 
+      
+      // Parse response obj
+      @SuppressWarnings("deprecation")
+      JSONValue value = JSONParser.parse(responseText);
+      JSONObject responseObj = value.isObject();
+      
+      // Get data field from response. It's a hash with campaign ids as 
+      // keys and serialized campaign info as values.
+      if (responseObj == null || !responseObj.containsKey("data")) return null;
+      
+      // FIXME: deleteme when server response is fixed
+      JSONArray dataArray = responseObj.get("data").isArray();
+      JSONObject dataHash = dataArray.get(0).isObject();
+      
+      //JSONObject dataHash = responseObj.get("data").isObject();
+      
+      // For each campaign, translate json into a CampaignDetailedInfo 
+      if (dataHash == null) return null;
+      Set<String> campaignIds = dataHash.keySet();
+      JSONValue jsonValue = null;
+      for (String campaignId : campaignIds) {
+        try {
+          CampaignDetailedInfo campaign = new CampaignDetailedInfo();
+          JSONObject campaignHash = dataHash.get(campaignId).isObject();
+          CampaignDetailAwData campaignAwData = (CampaignDetailAwData)campaignHash.getJavaScriptObject();
+          campaign.setCampaignId(campaignId);
+          campaign.setCampaignName(campaignAwData.getCampaignName());
+          // user roles
+          JsArrayString supervisors = campaignAwData.getSupervisors();
+          for (int i = 0; i < supervisors.length(); i++) {
+            campaign.addSupervisor(supervisors.get(i));
+          }
+          JsArrayString authors = campaignAwData.getAuthors();
+          for (int i = 0; i < authors.length(); i++) {
+            campaign.addAuthor(authors.get(i));
+          }
+          JsArrayString classes = campaignAwData.getClasses();
+          for (int i = 0; i < classes.length(); i++) {
+            campaign.addClass(classes.get(i));
+          }
+          campaign.setDescription(campaignAwData.getDescription());
+          campaign.setPrivacy(Privacy.valueOf(campaignAwData.getPrivacyState().toUpperCase()));
+          campaign.setRunningState(RunningState.valueOf(campaignAwData.getRunningState().toUpperCase()));
+          campaign.setCreationTime(DateUtils.translateFromServerFormat(campaignAwData.getCreationTime()));
+          campaign.setXmlConfig(campaignAwData.getXmlConfig());
+          
+          // save
+          campaigns.add(campaign);    
           
         } catch (Exception e) { // FIXME: which exceptions?
           _logger.warning("Could not parse json for campaign id: " + campaignId + ". Skipping record.");

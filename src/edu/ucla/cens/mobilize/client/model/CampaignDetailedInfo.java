@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.user.client.Window;
@@ -20,6 +21,7 @@ public class CampaignDetailedInfo {
   private List<UserRole> userRoles; // roles for logged in user
   private List<String> authors;
   private List<String> supervisors;
+  private Date creationTime;
   
   private String xmlConfig;
   private XmlConfigTranslator configTranslator;
@@ -132,6 +134,10 @@ public class CampaignDetailedInfo {
     return this.xmlConfig != null ? this.xmlConfig : "xml config not loaded";
   }
   
+  public Date getCreationTime() {
+    return this.creationTime;
+  }
+  
   /************ SETTERS ***************/
   
   public void setCampaignId(String campaignId) {
@@ -210,5 +216,9 @@ public class CampaignDetailedInfo {
   
   public void setPrivacy(Privacy privacy) {
     this.privacy = privacy;
+  }
+  
+  public void setCreationTime(Date time) {
+    this.creationTime = time;
   }
 }

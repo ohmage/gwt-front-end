@@ -155,9 +155,9 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   /************** METHODS FOR FETCHING DATA FROM ANDWELLNESS DATASERVICE ***************/
   
   private void loadAllCampaigns() {
-    CampaignReadParams params = new CampaignReadParams();
+    CampaignReadParams params = new CampaignReadParams(); // empty params fetches everything
     params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
-    this.dataService.fetchCampaignList(params, new AsyncCallback<List<CampaignConciseInfo>>() {
+    this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignConciseInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
         // TODO
@@ -175,12 +175,13 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   }
   
   private void loadCampaign(String campaignId) {
-    this.dataService.fetchCampaignDetail(campaignId.toString(), 
+    this.dataService.fetchCampaignDetail(campaignId, 
         new AsyncCallback<CampaignDetailedInfo>() {
 
           @Override
           public void onFailure(Throwable caught) {
-            // TODO Auto-generated method stub
+            _logger.fine(caught.getMessage());
+            // TODO: show error to user
           }
 
           @Override

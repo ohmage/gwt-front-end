@@ -1,6 +1,5 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +15,6 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AndWellnessConstants;
-import edu.ucla.cens.mobilize.client.common.Privacy;
-import edu.ucla.cens.mobilize.client.common.RunningState;
-import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorAwData;
@@ -36,7 +32,6 @@ import edu.ucla.cens.mobilize.client.rpcservice.NotLoggedInException;
 import edu.ucla.cens.mobilize.client.rpcservice.ServerException;
 import edu.ucla.cens.mobilize.client.rpcservice.ServerUnavailableException;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
-import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 /**
@@ -370,7 +365,7 @@ public class AndWellnessDataService implements DataService {
   }
 
   @Override
-  public void fetchCampaignList(CampaignReadParams params,
+  public void fetchCampaignListShort(CampaignReadParams params,
                                 final AsyncCallback<List<CampaignConciseInfo>> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
     params.authToken = this.authToken;
@@ -406,14 +401,63 @@ public class AndWellnessDataService implements DataService {
   }
   
   @Override
-  public void fetchCampaignDetail(String campaignId,
-      AsyncCallback<CampaignDetailedInfo> callback) {
-    // TODO Auto-generated method stub
+  public void fetchCampaignDetail(final String campaignId,
+      final AsyncCallback<CampaignDetailedInfo> callback) {
+    
+    CampaignReadParams params = new CampaignReadParams();
+    assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
+    params.authToken = this.authToken;
+    params.client = this.client;
+    params.outputFormat = CampaignReadParams.OutputFormat.LONG;
+    
+    // FIXME: uncomment this when query by urn is working (just getting all campaigns for now)
+    //List<String> campaignIdList = new ArrayList<String>();
+    //campaignIdList.add(campaignId);
+    //params.campaignUrns_opt = campaignIdList;
+    String postParams = params.toString();
+    _logger.fine("Attempting to fetch campaign detail list with parameters: " + postParams);
+    final RequestBuilder requestBuilder = getCampaignReadRequestBuilder();
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            List<CampaignDetailedInfo> campaigns = AwDataTranslators.translateCampaignReadQueryJSONtoCampaignDetailedInfoList(responseText);
+            if (campaigns.size() > 0) {
+              // FIXME: there should just be one campaign here but getting all campaigns
+              // until api to get campaign by urn is finished
+              for (CampaignDetailedInfo campaign : campaigns) {
+                if (campaign.getCampaignId().equals(campaignId)) {
+                  callback.onSuccess(campaign);
+                  break;
+                }
+              }
+              //callback.onSuccess(campaigns.get(0)); // there's just one in the list
+            } else {
+              callback.onFailure(new Exception("Campaign with id not found. Id: " + campaignId));
+            }
+          } catch (Exception exception) {
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
     
   }
 
   @Override
-  public void fetchCampaignDetailList(List<String> campaignIds,
+  public void fetchCampaignListDetail(List<String> campaignIds,
       AsyncCallback<List<CampaignDetailedInfo>> callback) {
     // TODO Auto-generated method stub
     

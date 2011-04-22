@@ -57,17 +57,15 @@ public interface DataService {
   void fetchCampaignIds(Map<String, List<String>> params,
                         final AsyncCallback<List<String>> callback);
   
-  void fetchCampaignList(CampaignReadParams params, 
-                         final AsyncCallback<List<CampaignConciseInfo>> callback);
+  
+  void fetchCampaignListShort(CampaignReadParams params, 
+                              final AsyncCallback<List<CampaignConciseInfo>> callback);
+  
+  void fetchCampaignListDetail(List<String> campaignIds, 
+                             final AsyncCallback<List<CampaignDetailedInfo>> callback);
   
   void fetchCampaignDetail(String campaignId, 
-                           final AsyncCallback<CampaignDetailedInfo> callback);
-  
-  // same as fetchCampaignDetail but fetches multiple campaigns at once
-  void fetchCampaignDetailList(List<String> campaignIds, 
-                               final AsyncCallback<List<CampaignDetailedInfo>> callback);
-  
-  
+      final AsyncCallback<CampaignDetailedInfo> callback);
   
   // get cached detail. returns null if campaigns have not been loaded
   CampaignDetailedInfo getCampaignDetail(String campaignId);
