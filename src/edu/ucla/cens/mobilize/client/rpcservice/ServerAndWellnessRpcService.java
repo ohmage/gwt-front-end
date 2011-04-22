@@ -282,6 +282,7 @@ public class ServerAndWellnessRpcService implements AndWellnessRpcService {
      * 
      * @param callback The callback to accept the config data.
      */
+    
     public void fetchConfigData(String authToken, final AsyncCallback<ConfigQueryAwData> callback) {
         // Setup the post parameters
         Map<String,String> parameters = new HashMap<String,String>();

@@ -1,10 +1,15 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.RunningState;
+import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.request.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
@@ -51,8 +56,10 @@ public interface DataService {
   // campaigns
   void fetchCampaignIds(Map<String, List<String>> params,
                         final AsyncCallback<List<String>> callback);
-  void fetchCampaignList(Map<String, List<String>> params, 
+  
+  void fetchCampaignList(CampaignReadParams params, 
                          final AsyncCallback<List<CampaignConciseInfo>> callback);
+  
   void fetchCampaignDetail(String campaignId, 
                            final AsyncCallback<CampaignDetailedInfo> callback);
   

@@ -22,20 +22,31 @@ public class AndWellnessConstants {
     private final static String authorizationLocationDebug = "http://dev1.andwellness.org/app/user/auth_token"; 
     private final static String dataPointLocationDebug = "http://dev1.andwellness.org/app/q/dp";
     private final static String configurationLocationDebug = "http://dev1.andwellness.org/app/q/config";
-    private final static String userInfoReadLocationDebug = "http://dev1.andwellness.org/app/user/read";
+    private final static String userReadLocationDebug = "http://dev1.andwellness.org/app/user/read";
+    private final static String campaignReadLocationDebug = "http://dev1.andwellness.org/app/campaign/read";
     
     // RELEASE CONSTANTS
     private final static String authorizationLocationRelease = "../app/user/auth_token";
     private final static String dataPointLocationRelease = "../app/q/dp";
     private final static String configurationLocationRelease = "../app/q/config";
-    private final static String userInfoReadLocationRelease = "../app/user/read";
+    private final static String userReadLocationRelease = "../app/user/read";
+    private final static String campaignReadLocationRelease = "../app/campaign/read";
     
     
-    public static String getUserInfoReadUrl() {
+    public static String getUserReadUrl() {
       if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
-        return userInfoReadLocationDebug;
+        return userReadLocationDebug;
       } else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
-        return userInfoReadLocationRelease;
+        return userReadLocationRelease;
+      }
+      return null;
+    }
+    
+    public static String getCampaignReadUrl() {
+      if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
+        return campaignReadLocationDebug;
+      } else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
+        return campaignReadLocationRelease;
       }
       return null;
     }

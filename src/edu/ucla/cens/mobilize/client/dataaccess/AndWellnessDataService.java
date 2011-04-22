@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +16,15 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AndWellnessConstants;
+import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.RunningState;
+import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.QueryAwData;
-import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.request.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
@@ -32,7 +36,7 @@ import edu.ucla.cens.mobilize.client.rpcservice.NotLoggedInException;
 import edu.ucla.cens.mobilize.client.rpcservice.ServerException;
 import edu.ucla.cens.mobilize.client.rpcservice.ServerUnavailableException;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
-import edu.ucla.cens.mobilize.client.utils.JsArrayUtils;
+import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 /**
@@ -48,9 +52,11 @@ public class AndWellnessDataService implements DataService {
   RequestBuilder dataPointService;
   RequestBuilder configurationService;
   RequestBuilder userReadService;
+  RequestBuilder campaignReadService;
 
   String userName;
   String authToken;
+  String client = "gwt";
   boolean isInitialized = false;
   
   private static Logger _logger = Logger.getLogger(AndWellnessDataService.class.getName());
@@ -63,20 +69,41 @@ public class AndWellnessDataService implements DataService {
    * remote for release)
    */
   public AndWellnessDataService() {
+    /*
     authorizationService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getAuthorizationUrl()));
     authorizationService.setHeader("Content-Type", URL.encode("application/x-www-form-urlencoded"));
     dataPointService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getDataPointUrl()));
     dataPointService.setHeader("Content-Type", "application/x-www-form-urlencoded");
     configurationService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getConfigurationUrl()));
     configurationService.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    */
   }
 
-  private RequestBuilder getUserReadRequestBuilder() {
+  // lazy init
+  private RequestBuilder getAuthorizationRequestBuilder() {
+    if (this.authorizationService == null) {
+      this.authorizationService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getAuthorizationUrl()));
+      this.authorizationService.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    }
+    return this.authorizationService;
+  }
+  
+  // lazy init
+  private RequestBuilder getUserRequestBuilder() {
     if (this.userReadService == null) {
-      this.userReadService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getUserInfoReadUrl()));
+      this.userReadService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getUserReadUrl()));
       this.userReadService.setHeader("Content-Type", "application/x-www-form-urlencoded");
     }
     return this.userReadService;
+  }
+  
+  
+  private RequestBuilder getCampaignReadRequestBuilder() {
+    if (this.campaignReadService == null) {
+      this.campaignReadService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getCampaignReadUrl()));
+      this.campaignReadService.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    }
+    return this.campaignReadService;    
   }
   
   /**
@@ -261,8 +288,9 @@ public class AndWellnessDataService implements DataService {
       _logger.finest("Attempting authentication with parameters: " + postParams);
       
       // Send the username/password to the server.
+      RequestBuilder requestBuilder = getAuthorizationRequestBuilder();
       try {
-          authorizationService.sendRequest(postParams, new RequestCallback() {
+          requestBuilder.sendRequest(postParams, new RequestCallback() {
               // Error occurred, handle it here
               public void onError(Request request, Throwable exception) {
                   // Couldn't connect to server (could be timeout, SOP violation, etc.)   
@@ -293,7 +321,7 @@ public class AndWellnessDataService implements DataService {
   
   @Override
   public void fetchUserInfo(final String username, final AsyncCallback<UserInfo> callback) {
-    final RequestBuilder requestBuilder = getUserReadRequestBuilder();
+    final RequestBuilder requestBuilder = getUserRequestBuilder();
     Map<String, String> params = new HashMap<String, String>();
     assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
     params.put("auth_token", this.authToken);
@@ -340,14 +368,43 @@ public class AndWellnessDataService implements DataService {
     // TODO Auto-generated method stub
     
   }
-  
-  @Override
-  public void fetchCampaignList(Map<String, List<String>> params,
-      AsyncCallback<List<CampaignConciseInfo>> callback) {
-    // TODO Auto-generated method stub
-    
-  }
 
+  @Override
+  public void fetchCampaignList(CampaignReadParams params,
+                                final AsyncCallback<List<CampaignConciseInfo>> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
+    params.authToken = this.authToken;
+    params.client = this.client;
+    String postParams = params.toString();
+    _logger.fine("Attempting to fetch campaign list with parameters: " + postParams);
+    final RequestBuilder requestBuilder = getCampaignReadRequestBuilder();
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            List<CampaignConciseInfo> campaigns = AwDataTranslators.translateCampaignReadQueryJSONtoCampaignConciseInfoList(responseText);
+            callback.onSuccess(campaigns);
+          } catch (Exception exception) {
+            callback.onFailure(exception);
+          }
+          
+        }
+
+        @Override
+        public void onError(Request request, Throwable exception) {
+          // TODO Auto-generated method stub
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+  }
+  
   @Override
   public void fetchCampaignDetail(String campaignId,
       AsyncCallback<CampaignDetailedInfo> callback) {
@@ -389,6 +446,7 @@ public class AndWellnessDataService implements DataService {
     // TODO Auto-generated method stub
     
   }
+
 
 
   

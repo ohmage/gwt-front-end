@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import edu.ucla.cens.mobilize.client.common.UserStats;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.request.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
@@ -56,6 +58,8 @@ public class MockDataService implements DataService {
     authors.add("Amy Willerton");
     authors.add("Greg Mondavi");
     authors.add("Gary McLauren");
+    
+    Date dateNow = new Date();
     
     campaigns.clear();
     campaignsConcise.clear();
@@ -130,7 +134,8 @@ public class MockDataService implements DataService {
             cdi.getCampaignName(),
             cdi.getRunningState(),
             cdi.getPrivacy(),
-            new UserRoles(cdi.getUserRoles())
+            new UserRoles(cdi.getUserRoles()),
+            dateNow
             ));
       }
     }
@@ -176,11 +181,11 @@ public class MockDataService implements DataService {
   }
   
   @Override
-  public void fetchCampaignList(Map<String, List<String>> params,
+  public void fetchCampaignList(CampaignReadParams params,
       AsyncCallback<List<CampaignConciseInfo>> callback) {
     callback.onSuccess(campaignsConcise);    
   }
-
+  
   @Override
   public void fetchCampaignDetail(String campaignId,
       AsyncCallback<CampaignDetailedInfo> callback) {
@@ -303,6 +308,7 @@ public class MockDataService implements DataService {
     });
     
   }
+
 
 
 

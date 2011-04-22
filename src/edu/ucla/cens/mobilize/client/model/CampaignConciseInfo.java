@@ -1,5 +1,7 @@
 package edu.ucla.cens.mobilize.client.model;
 
+import java.util.Date;
+
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
@@ -11,17 +13,20 @@ public class CampaignConciseInfo {
   private RunningState runningState;
   private Privacy privacy;
   private UserRoles userRoles;
+  private Date creationTime;
   
   public CampaignConciseInfo(String campaignId,
                              String campaignName,
                              RunningState runningState,
                              Privacy privacy,
-                             UserRoles roles) {
+                             UserRoles roles,
+                             Date creationTime) {
     this.campaignId = campaignId;
     this.campaignName = campaignName;
     this.runningState = runningState;
     this.privacy = privacy;
     this.userRoles = roles;
+    this.creationTime = creationTime;
   }
   
   // ******** GETTERS ********

@@ -29,8 +29,6 @@ import edu.ucla.cens.mobilize.client.presenter.DashboardPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ExploreDataPresenter;
 import edu.ucla.cens.mobilize.client.presenter.LoginPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ResponsePresenter;
-import edu.ucla.cens.mobilize.client.rpcservice.AndWellnessRpcService;
-import edu.ucla.cens.mobilize.client.rpcservice.ServerAndWellnessRpcService;
 import edu.ucla.cens.mobilize.client.ui.Header;
 import edu.ucla.cens.mobilize.client.view.AccountView;
 import edu.ucla.cens.mobilize.client.view.CampaignView;
@@ -99,11 +97,23 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
    * This is the entry point method.
    */
   public void onModuleLoad() {
+    String initialToken = History.getToken();
+    if ("logout".equals(initialToken)) {
+      logout(); // logout and refresh
+    } 
+    
     if (loginManager.isCurrentlyLoggedIn()) {
+      initDataService(loginManager.getLoggedInUserName(), loginManager.getAuthorizationToken());
       initUser();
     } else {
       initLogin();
     }
+  }
+  
+  // must be called before any data service fetches so data access class
+  // has the auth token
+  private void initDataService(String userName, String authToken) {
+    this.awDataService.init(userName, authToken);
   }
   
   private void initAppForUser(UserInfo userInfo) {
@@ -176,7 +186,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     
     // presenters
     dashboardPresenter = new DashboardPresenter(userInfo);
-    campaignPresenter = new CampaignPresenter(userInfo, dataService, eventBus);
+    campaignPresenter = new CampaignPresenter(userInfo, awDataService, eventBus);
     responsePresenter = new ResponsePresenter(userInfo, dataService, eventBus);
     exploreDataPresenter = new ExploreDataPresenter();
     classPresenter = new ClassPresenter();

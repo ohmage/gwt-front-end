@@ -1,13 +1,11 @@
 package edu.ucla.cens.mobilize.client.utils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import org.mortbay.util.ajax.JSON;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
@@ -16,15 +14,16 @@ import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
+import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignsAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigurationsAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
-import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.QueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
-import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoQueryAwData;
+import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignInfo;
 import edu.ucla.cens.mobilize.client.model.ConfigurationInfo;
@@ -78,6 +77,7 @@ public class AwDataTranslators {
     
     // assumes there's just one userinfo  in the list
     // TODO: method that returns a list
+    /*
     public static UserInfo translateUserInfoQueryAwDataToUserInfo(String userName, UserInfoQueryAwData data) {
       JsArray<UserInfoAwData> items = data.getUserInfoAwDataArray();
       assert items.length() == 1 : "Expected 1 item in user info array, found " + Integer.toString(items.length());
@@ -92,7 +92,7 @@ public class AwDataTranslators {
       
       UserInfo userInfo = new UserInfo(userName, canCreate, classes, roles);
       return userInfo;
-    }
+    }*/
     
     /**
      * Translates a CampaignsAwData from the AW server config API into a CampaignInfo object.
@@ -363,6 +363,76 @@ public class AwDataTranslators {
         }
       }
       return users;
+    }
+
+    
+    // FIXME: correct example when server response is fixed to get rid of extra array
+    // {"result":"success","data":[{"urn:andwellness:nih":{"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}}],"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
+    public static List<CampaignConciseInfo> translateCampaignReadQueryJSONtoCampaignConciseInfoList(
+        String responseText) {
+      
+      // List that will be returned
+      List<CampaignConciseInfo> campaigns = new ArrayList<CampaignConciseInfo>(); 
+      
+      // Parse response obj
+      @SuppressWarnings("deprecation")
+      JSONValue value = JSONParser.parse(responseText);
+      JSONObject responseObj = value.isObject();
+      
+      // Get data field from response. It's a hash with campaign ids as 
+      // keys and serialized campaign info as values.
+      if (responseObj == null || !responseObj.containsKey("data")) return null;
+      
+      // FIXME: deleteme when server response is fixed
+      JSONArray dataArray = responseObj.get("data").isArray();
+      JSONObject dataHash = dataArray.get(0).isObject();
+      
+      //JSONObject dataHash = responseObj.get("data").isObject();
+      
+      // For each campaign, translate the serialized info into a 
+      // CampaignConciseInfo object and save
+      if (dataHash == null) return null;
+      Set<String> campaignIds = dataHash.keySet();
+      JSONValue jsonValue = null;
+      for (String campaignId : campaignIds) {
+        try { 
+          JSONObject campaignHash = dataHash.get(campaignId).isObject();
+          // name
+          String campaignName = campaignHash.get("name").isString().stringValue();
+          // user roles
+          JSONArray userRoleStrings = campaignHash.get("user_roles").isArray();
+          UserRoles userRoles = new UserRoles();
+          for (int i = 0; i < userRoleStrings.size(); i++) {
+            String userRoleString = userRoleStrings.get(i).isString().stringValue().toUpperCase();
+            userRoles.addRole(UserRole.valueOf(userRoleString));
+          }
+          // privacy state
+          String privacyStateString = campaignHash.get("privacy_state").isString().stringValue();
+          Privacy privacyState = Privacy.valueOf(privacyStateString.toUpperCase());
+          // running state
+          String runningStateString = campaignHash.get("running_state").isString().stringValue();
+          RunningState runningState = RunningState.valueOf(runningStateString.toUpperCase());
+          // creation time
+          String creationTimeString = campaignHash.get("creation_timestamp").isString().stringValue();
+          Date creationTime = DateUtils.translateFromServerFormat(creationTimeString);
+          // create the object
+          CampaignConciseInfo campaignInfo = new CampaignConciseInfo(campaignId,
+                                                                     campaignName,
+                                                                     runningState,
+                                                                     privacyState,
+                                                                     userRoles,
+                                                                     creationTime);
+          // save
+          campaigns.add(campaignInfo);    
+          
+        } catch (Exception e) { // FIXME: which exceptions?
+          _logger.warning("Could not parse json for campaign id: " + campaignId + ". Skipping record.");
+          _logger.fine(e.getMessage());
+          _logger.finer("jsonValue: " + (jsonValue != null ? jsonValue.toString() : "null"));
+        }
+      }
+      
+      return campaigns;
     }
     
 

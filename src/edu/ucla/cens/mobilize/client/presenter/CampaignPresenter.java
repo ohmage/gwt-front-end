@@ -9,6 +9,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.ResponseDelete;
+import edu.ucla.cens.mobilize.client.dataaccess.request.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -154,7 +155,9 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   /************** METHODS FOR FETCHING DATA FROM ANDWELLNESS DATASERVICE ***************/
   
   private void loadAllCampaigns() {
-    this.dataService.fetchCampaignList(null, new AsyncCallback<List<CampaignConciseInfo>>() {
+    CampaignReadParams params = new CampaignReadParams();
+    params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
+    this.dataService.fetchCampaignList(params, new AsyncCallback<List<CampaignConciseInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
         // TODO
