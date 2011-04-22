@@ -43,7 +43,7 @@ public class MockDataService implements DataService {
     loadFakeClasses();
     loadFakeCampaigns();
   }
-  
+
   private void loadFakeClasses() {
     classes.clear();
     classes.add("ADDAMS_HS_CS101_Fall_2011");
@@ -141,6 +141,12 @@ public class MockDataService implements DataService {
     }
   }
 
+
+  @Override
+  public String authToken() {
+    return "";
+  }
+  
   @Override
   public void init(String username, String auth_token) {
     // TODO Auto-generated method stub
@@ -308,6 +314,7 @@ public class MockDataService implements DataService {
     });
     
   }
+
 
 
 

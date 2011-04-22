@@ -48,6 +48,7 @@ public class AndWellnessDataService implements DataService {
   RequestBuilder configurationService;
   RequestBuilder userReadService;
   RequestBuilder campaignReadService;
+  RequestBuilder campaignCreateService;
 
   String userName;
   String authToken;
@@ -92,13 +93,22 @@ public class AndWellnessDataService implements DataService {
     return this.userReadService;
   }
   
-  
+  // lazy init
   private RequestBuilder getCampaignReadRequestBuilder() {
     if (this.campaignReadService == null) {
       this.campaignReadService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getCampaignReadUrl()));
       this.campaignReadService.setHeader("Content-Type", "application/x-www-form-urlencoded");
     }
     return this.campaignReadService;    
+  }
+  
+  // lazy init
+  private RequestBuilder getCampaignCreateRequestBuilder() {
+    if (this.campaignCreateService == null) {
+      this.campaignCreateService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getCampaignCreateUrl()));
+      this.campaignCreateService.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    } 
+    return this.campaignCreateService;
   }
   
   /**
@@ -256,6 +266,12 @@ public class AndWellnessDataService implements DataService {
     this.userName = userName;
     this.authToken = authToken;
     this.isInitialized = true;
+  }
+
+
+  @Override
+  public String authToken() {
+    return this.authToken;
   }
   
   /**
@@ -490,6 +506,7 @@ public class AndWellnessDataService implements DataService {
     // TODO Auto-generated method stub
     
   }
+
 
 
 

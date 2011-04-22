@@ -5,7 +5,7 @@ package edu.ucla.cens.mobilize.client.common;
  * CampaignInfo.UserRole defines the role a user plays for
  * one specific campaign. 
  *  
- * @author shlurbee
+ * @author vhajdik
  */
 public enum UserRole {
   PARTICIPANT,
@@ -13,6 +13,8 @@ public enum UserRole {
   ANALYST,
   SUPERVISOR,
   ADMIN, 
+  PRIVILEGED, // FIXME: this should be a different enum 
+  RESTRICTED, // FIXME: this should be a different enum
   RESEARCHER; // legacy
   
   public String toString() {

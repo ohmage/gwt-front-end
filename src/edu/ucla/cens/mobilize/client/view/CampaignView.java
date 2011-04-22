@@ -28,12 +28,12 @@ public interface CampaignView extends IsWidget {
   
   // set flags to control display for different roles
   void setCanCreate(boolean canEdit);
-  
+
   // hide/show subviews
   void showList();
   void showDetail();
-  void showCreateForm();
-  void showEditForm();
+  void showCreateForm(String authToken, String serverLocation);
+  void showEditForm(String authToken, String serverLocation);
   
   // show messages to user
   void showError(String msg);
@@ -52,5 +52,5 @@ public interface CampaignView extends IsWidget {
   void clearPlots();
   void addPlot(String imgUrl);
   void showPlots();
- 
+  
 }

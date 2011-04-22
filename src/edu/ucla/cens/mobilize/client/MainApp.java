@@ -153,8 +153,8 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
 
       @Override
       public void onFailure(Throwable caught) {
-        _logger.severe("Failed to fetch user info for user " + userName + ". Forcing logout.");
-        logout(); 
+        _logger.severe("Failed to fetch user info for user " + userName);
+        // TODO: show error message to user
       }
 
       @Override
@@ -162,8 +162,8 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
         if (user != null) {
           initAppForUser(user);
         } else {
-          _logger.severe("Failed to fetch user info for user " + userName + ". Forcing logout.");
-           logout(); 
+          _logger.severe("Failed to fetch user info for user " + userName);
+          // TODO: show error message to user
         }
       }
     });

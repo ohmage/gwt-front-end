@@ -22,9 +22,9 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.AndWellnessConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
@@ -38,6 +38,7 @@ public class CampaignEditForm extends Composite {
   }
 
   @UiField Label header;
+  @UiField Hidden authTokenHiddenField; 
   @UiField InlineLabel campaignName;
   @UiField InlineLabel campaignUrn;
   @UiField TextArea campaignDescriptionTextArea;
@@ -58,6 +59,7 @@ public class CampaignEditForm extends Composite {
   @UiField FormPanel form;
 
   boolean isNewCampaign;
+  boolean formIsInitialized = false;
   String campaignId;
   
   // dialog that lets user select groups of classes
@@ -78,15 +80,16 @@ public class CampaignEditForm extends Composite {
 
     // populate list boxes
     // TODO: get allowed privacy states from campaign config    
-    runningStateListBox.addItem("Stopped"); // 0 = stopped
-    runningStateListBox.addItem("Running"); // 1 = running
-    privacyListBox.addItem("Private"); // 0 = private
-    privacyListBox.addItem("Shared"); // 1 = shared/public
+    runningStateListBox.addItem("Stopped", "stopped"); // 0 = stopped
+    runningStateListBox.addItem("Running", "running"); // 1 = running
+    privacyListBox.addItem("Private", "private"); // 0 = private
+    privacyListBox.addItem("Shared", "shared"); // 1 = shared/public
     // if ... addItem("INVISIBLE")
 
-    // form element with multipart mime type, needed for file upload input to work
-    form.setAction("http://localhost:8000/MobilizeWeb/upload");
-    form.setEncoding(FormPanel.ENCODING_MULTIPART); 
+    String url = isNewCampaign ? AndWellnessConstants.getCampaignCreateUrl() : 
+                                 AndWellnessConstants.getCampaignUpdateUrl();
+    form.setAction(url);
+    form.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
     form.setMethod(FormPanel.METHOD_POST); 
     
     // invisible when empty so add button lines up with label
@@ -146,6 +149,7 @@ public class CampaignEditForm extends Composite {
     this.saveButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
+        assert formIsInitialized : "You must call initializeForm(authToken, serverLocation) before submitting";
         // server expects a comma-delimited lists of classes and authors
         classHiddenField.setValue(getCampaignClassesSerialized());
         authorHiddenField.setValue(getCampaignAuthorsSerialized());
@@ -167,7 +171,16 @@ public class CampaignEditForm extends Composite {
   }
   
   // TODO: some way of keeping track what's changed?
-
+  
+  // must be called before submitting
+  public void initializeForm(String authToken, String serverLocation) {
+    this.authTokenHiddenField.setValue(authToken);
+    this.form.setAction(serverLocation);
+    this.form.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
+    this.form.setMethod(FormPanel.METHOD_POST);
+    this.formIsInitialized = true;
+  }
+  
   private void clearFormFields() {
     this.campaignName.setText("");
     this.campaignUrn.setText("");
@@ -228,7 +241,8 @@ public class CampaignEditForm extends Composite {
   }
   
   // affects display and saving since some fields can only
-  // be edited when creating a new campaign
+  // be edited when creating a new campaign and form needs to
+  // be submitted to a different url for create than for update
   public void setIsNewCampaignFlag(boolean isNew) {
     this.isNewCampaign = isNew;
     if (isNew) {

@@ -82,7 +82,7 @@ public class CampaignViewImpl extends Composite implements CampaignView {
     bind();
     msgBox.setVisible(false);
   }
-  
+
   private void bind() {
     // clicking on the "hide" link closes info message box
     closeMsg.addClickHandler(new ClickHandler() {
@@ -172,17 +172,19 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   }
 
   @Override
-  public void showCreateForm() {
+  public void showCreateForm(String authToken, String serverLocation) {
     hideAllWidgets();
     campaignEdit.setVisible(true);
     campaignEdit.setIsNewCampaignFlag(true);
+    campaignEdit.initializeForm(authToken, serverLocation);
     // TODO: create actions in left sidebar?
   }
   
   @Override
-  public void showEditForm() {
+  public void showEditForm(String authToken, String serverLocation) {
     hideAllWidgets();
     campaignEdit.setVisible(true); 
+    campaignEdit.initializeForm(authToken, serverLocation);
   }
 
   @Override
@@ -260,6 +262,6 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   public void hideMsg() {
     msgBox.setVisible(false);
   }
-  
+
 
 }

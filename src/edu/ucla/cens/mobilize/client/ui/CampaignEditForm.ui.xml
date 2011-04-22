@@ -142,6 +142,7 @@
       <g:HTMLPanel>
         <g:FormPanel ui:field='form'>
           <g:HTMLPanel>
+          <g:Hidden ui:field='authTokenHiddenField' name='auth_token' />
 	        <table class='{style.detailTable}'>
 	          <tr>
 	            <td class='{style.label}'>
@@ -186,7 +187,7 @@
               <td>
                 <g:FlexTable ui:field='classesFlexTable' 
                              addStyleNames='{style.classList}' />
-                <g:Hidden ui:field='classHiddenField' name='class' />
+                <g:Hidden ui:field='classHiddenField' name='class_urn_list' />
                 <g:Button ui:field='addClassesButton'>Add Classes</g:Button>
               </td>
             </tr>
@@ -197,7 +198,8 @@
               <td>
                 <g:FlexTable ui:field='authorsFlexTable' 
                              addStyleNames='{style.authorList}' />
-                <g:Hidden ui:field='authorHiddenField' name='class' />
+                <!--<g:Hidden ui:field='authorHiddenField' name='authors' />-->
+                <g:Hidden ui:field='authorHiddenField' />
                 <g:Button ui:field='addAuthorsButton'>Add Authors</g:Button>
               </td>
             </tr>

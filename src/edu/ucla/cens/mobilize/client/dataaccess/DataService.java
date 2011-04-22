@@ -40,6 +40,13 @@ public interface DataService {
   void init(String username, String authToken);
   
   /**
+   * Accessor for the auth token currently being used by the data service.
+   * Useful so presenters can access the token for use in forms.
+   * @return authToken
+   */
+  String authToken(); 
+  
+  /**
    * Fetches an authorization token plus a list of campaign names from the server.
    * Throws a runtime error if the username/password combination fails authentication.
    * 
@@ -68,7 +75,7 @@ public interface DataService {
       final AsyncCallback<CampaignDetailedInfo> callback);
   
   // get cached detail. returns null if campaigns have not been loaded
-  CampaignDetailedInfo getCampaignDetail(String campaignId);
+  CampaignDetailedInfo getCampaignDetail(String campaignId); // FIXME: still need this?
   
   void deleteCampaign(String campaignId,
                       final AsyncCallback<ResponseDelete> callback);

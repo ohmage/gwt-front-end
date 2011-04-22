@@ -12,93 +12,61 @@ import com.google.gwt.core.client.GWT;
  *
  */
 public class AndWellnessConstants {
-    // Use to determine the deployment status
+  
+    // DeployStatus is set in the gwt module file
     public final static DeployStatus status = GWT.create(DeployStatus.class);
+
+    private final static String debugServerLocation = "http://dev1.andwellness.org/app/";
+    private final static String releaseServerLocation = "../app/"; // same as web server
     
-    // DEBUGGING CONSTANTS
-    //private final static String authorizationLocationDebug = "http://127.0.0.1:8080/app/auth_token";
-    //private final static String dataPointLocationDebug = "http://127.0.0.1:8080/app/q/dp";
-    //private final static String configurationLocationDebug = "http://127.0.0.1:8080/app/q/config";
-    private final static String authorizationLocationDebug = "http://dev1.andwellness.org/app/user/auth_token"; 
-    private final static String dataPointLocationDebug = "http://dev1.andwellness.org/app/q/dp";
-    private final static String configurationLocationDebug = "http://dev1.andwellness.org/app/q/config";
-    private final static String userReadLocationDebug = "http://dev1.andwellness.org/app/user/read";
-    private final static String campaignReadLocationDebug = "http://dev1.andwellness.org/app/campaign/read";
+    // API Endpoints
+    // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/AndWellness_Read_API_2.2
+    private final static String AUTHORIZATION   = "user/auth_token";
+    private final static String USER_READ       = "user/read";
+    private final static String CAMPAIGN_READ   = "campaign/read";
+    private final static String CAMPAIGN_CREATE = "campaign/create";
+    private final static String CAMPAIGN_UPDATE = "campaign/update";
+    private final static String DATA_POINT      = "q/dp";
     
-    // RELEASE CONSTANTS
-    private final static String authorizationLocationRelease = "../app/user/auth_token";
-    private final static String dataPointLocationRelease = "../app/q/dp";
-    private final static String configurationLocationRelease = "../app/q/config";
-    private final static String userReadLocationRelease = "../app/user/read";
-    private final static String campaignReadLocationRelease = "../app/campaign/read";
-    
+    /**
+     * Returns data server url based on value of deployment status variable. 
+     * This setup is useful because you can set your build script to use
+     * different module files for debug vs release instead of trying to 
+     * remember to change the server location every time you deploy.
+     * 
+     * @return String server location or null if the deployment status is not found
+     */
+    public static String getServerLocation() {
+      String serverLocation = null;
+      if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
+        serverLocation = debugServerLocation;
+      } else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
+        serverLocation = releaseServerLocation;
+      } 
+      return serverLocation;
+    }
     
     public static String getUserReadUrl() {
-      if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
-        return userReadLocationDebug;
-      } else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
-        return userReadLocationRelease;
-      }
-      return null;
+      return getServerLocation() + USER_READ;
     }
     
     public static String getCampaignReadUrl() {
-      if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
-        return campaignReadLocationDebug;
-      } else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
-        return campaignReadLocationRelease;
-      }
-      return null;
+      return getServerLocation() + CAMPAIGN_READ;
     }
-        
-    /**
-     * Returns the authorization server api url based on the deployment status.
-     * Returns null if the deploy status cannot be found.
-     * 
-     * @return The authorization API URL.
-     */
+    
+    public static String getCampaignCreateUrl() {
+      return getServerLocation() + CAMPAIGN_CREATE;
+    }
+
+    public static String getCampaignUpdateUrl() {
+      return getServerLocation() + CAMPAIGN_UPDATE;
+    }
+    
     public static String getAuthorizationUrl() {
-        if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
-            return authorizationLocationDebug;
-        }
-        else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
-            return authorizationLocationRelease;
-        }
-        
-        return null;
+      return getServerLocation() + AUTHORIZATION;
     }
     
-    /**
-     * Returns the data point server api url based on the deployment status.
-     * Returns null if the deploy status cannot be found.
-     * 
-     * @return The data point API URL.
-     */
     public static String getDataPointUrl() {
-        if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
-            return dataPointLocationDebug;
-        }
-        else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
-            return dataPointLocationRelease;
-        }
-        
-        return null;
-    }
-    
-    /**
-     * Returns the configuration server api url based on the deployment status.
-     * Returns null if the deploy status cannot be found.
-     * 
-     * @return The configuration API URL.
-     */
-    public static String getConfigurationUrl() {
-        if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
-            return configurationLocationDebug;
-        }
-        else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
-            return configurationLocationRelease;
-        }
-        
-        return null;
+      return getServerLocation() + DATA_POINT;
     }
 }

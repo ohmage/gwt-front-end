@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import edu.ucla.cens.mobilize.client.AndWellnessConstants;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.ResponseDelete;
 import edu.ucla.cens.mobilize.client.dataaccess.request.CampaignReadParams;
@@ -112,7 +114,8 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     List<String> authors = new ArrayList<String>();
     authors.add("Bill"); authors.add("Frank"); authors.add("Mary"); authors.add("Alice");
     this.view.setAuthorListToChooseFrom(authors);
-    this.view.showCreateForm();
+    this.view.showCreateForm(this.dataService.authToken(), 
+                             AndWellnessConstants.getCampaignCreateUrl());
   }
   
   private void showEdit(String campaignId) {
@@ -125,19 +128,18 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
       
       @Override
       public void onSuccess(CampaignDetailedInfo result) {
+        view.clearPlots();
         view.setClassListToChooseFrom(userInfo.getClasses());
         // FIXME: instead, get list of classes in this campaign, get all authors for those classes
         List<String> authors = new ArrayList<String>();
         authors.add("Bill"); authors.add("Frank"); authors.add("Mary"); authors.add("Alice");
         view.setAuthorListToChooseFrom(authors);
         view.setCampaignEdit(result); 
-        view.showEditForm();
+        view.showEditForm(dataService.authToken(),
+                          AndWellnessConstants.getCampaignUpdateUrl());
+        // TODO: set left bar links and plots
       }
     }); 
-    this.view.setCampaignEdit(campaign);
-    this.view.showEditForm();
-    this.view.clearPlots();
-    // TODO: set left bar links and plots
   }
   
   private void showAuthorCenter() {

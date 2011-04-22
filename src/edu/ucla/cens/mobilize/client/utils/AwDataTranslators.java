@@ -350,7 +350,7 @@ public class AwDataTranslators {
 
     
     // FIXME: correct example when server response is fixed to get rid of extra array
-    // {"result":"success","data":[{"urn:andwellness:nih":{"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}}],"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
+    // {"result":"success","data":{"urn:andwellness:nih":{"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}},"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
     public static List<CampaignConciseInfo> translateCampaignReadQueryJSONtoCampaignConciseInfoList(
         String responseText) {
       
@@ -366,11 +366,7 @@ public class AwDataTranslators {
       // keys and serialized campaign info as values.
       if (responseObj == null || !responseObj.containsKey("data")) return null;
       
-      // FIXME: deleteme when server response is fixed
-      JSONArray dataArray = responseObj.get("data").isArray();
-      JSONObject dataHash = dataArray.get(0).isObject();
-      
-      //JSONObject dataHash = responseObj.get("data").isObject();
+      JSONObject dataHash = responseObj.get("data").isObject();
       
       // For each campaign, translate the serialized info into a 
       // CampaignConciseInfo object and save
@@ -418,7 +414,7 @@ public class AwDataTranslators {
       return campaigns;
     }
 
-    // {"result":"success","data":[{"urn:andwellness:nih":{"classes":["urn:sys:andwellness"],"user_role_campaign":{"analyst":[],"author":[],"supervisor":["temp.user"],"participant":[]},"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","xml":"","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}}],"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
+    // {"result":"success","data":{"urn:andwellness:nih":{"classes":["urn:sys:andwellness"],"user_role_campaign":{"analyst":[],"author":[],"supervisor":["temp.user"],"participant":[]},"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","xml":"","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}},"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
     public static List<CampaignDetailedInfo> translateCampaignReadQueryJSONtoCampaignDetailedInfoList(
         String responseText) {
       // List that will be returned
@@ -433,11 +429,7 @@ public class AwDataTranslators {
       // keys and serialized campaign info as values.
       if (responseObj == null || !responseObj.containsKey("data")) return null;
       
-      // FIXME: deleteme when server response is fixed
-      JSONArray dataArray = responseObj.get("data").isArray();
-      JSONObject dataHash = dataArray.get(0).isObject();
-      
-      //JSONObject dataHash = responseObj.get("data").isObject();
+      JSONObject dataHash = responseObj.get("data").isObject();
       
       // For each campaign, translate json into a CampaignDetailedInfo 
       if (dataHash == null) return null;
