@@ -26,6 +26,7 @@ public class UserInfo {
     this.visibleUsers.add(this.userName); // most users can only see themselves
     
     // FIXME: user info service should also return list of users visible to this one
+    // FIXME: classes should have both class name and class urn
     
     if (classes != null) this.classes.addAll(classes);
 
@@ -83,14 +84,5 @@ public class UserInfo {
 
   public boolean canUpload() {
     return this.roles.admin || this.roles.supervisor || this.roles.analyst;
-  }
-  
-  public boolean canEdit(String campaignId) {
-    return this.roles.admin || this.roles.supervisor || this.roles.author;
-  }
-  
-  public boolean canDelete(String campaignId) {
-    return this.roles.admin || this.roles.supervisor || this.roles.author;
-  }
-  
+  }  
 }

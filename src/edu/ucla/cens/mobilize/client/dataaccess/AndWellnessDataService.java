@@ -48,7 +48,10 @@ public class AndWellnessDataService implements DataService {
   RequestBuilder configurationService;
   RequestBuilder userReadService;
   RequestBuilder campaignReadService;
-  RequestBuilder campaignCreateService;
+  RequestBuilder campaignDeleteService;
+  
+  // NOTE: campaignCreate and campaignUpdate services are not included because 
+  // they require file upload and so must be done with a formPanel
 
   String userName;
   String authToken;
@@ -102,13 +105,13 @@ public class AndWellnessDataService implements DataService {
     return this.campaignReadService;    
   }
   
-  // lazy init
-  private RequestBuilder getCampaignCreateRequestBuilder() {
-    if (this.campaignCreateService == null) {
-      this.campaignCreateService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getCampaignCreateUrl()));
-      this.campaignCreateService.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    } 
-    return this.campaignCreateService;
+  //lazy init
+  private RequestBuilder getCampaignDeleteRequestBuilder() {
+    if (this.campaignDeleteService == null) {
+      this.campaignDeleteService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getCampaignDeleteUrl()));
+      this.campaignDeleteService.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    }
+    return this.campaignDeleteService;    
   }
   
   /**
@@ -480,17 +483,41 @@ public class AndWellnessDataService implements DataService {
   }
   
   @Override
-  public CampaignDetailedInfo getCampaignDetail(String campaignId) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public void deleteCampaign(final String campaignId, 
+                             final AsyncCallback<String> callback) {
+    // set up request params
+    Map<String, String> params = new HashMap<String, String>();
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.put("auth_token", this.authToken);
+    params.put("campaign_urn", campaignId);
+    String postParams = MapUtils.translateToParameters(params);
+    _logger.fine("Attempting to delete campaign with parameters: " + postParams);
+    // make the request
+    final RequestBuilder requestBuilder = getCampaignDeleteRequestBuilder();
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            callback.onSuccess(responseText);
+          } catch (Exception exception) {
+            callback.onFailure(exception);
+          }
+          
+        }
   
-  
-  @Override
-  public void deleteCampaign(String campaignId,
-      AsyncCallback<ResponseDelete> asyncCallback) {
-    // TODO Auto-generated method stub
-    
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }    
   }
 
   @Override

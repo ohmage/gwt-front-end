@@ -97,7 +97,8 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
    * This is the entry point method.
    */
   public void onModuleLoad() {
-    String initialToken = History.getToken();
+    // MobilizeWeb.html#logout will log user out immediately (useful for troubleshooting)
+    String initialToken = History.getToken(); 
     if ("logout".equals(initialToken)) {
       logout(); // logout and refresh
     } 

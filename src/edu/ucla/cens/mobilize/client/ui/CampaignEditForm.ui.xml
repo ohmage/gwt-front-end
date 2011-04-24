@@ -140,7 +140,7 @@
        </g:HTMLPanel>
 
       <g:HTMLPanel>
-        <g:FormPanel ui:field='form'>
+        <g:FormPanel ui:field='formPanel'>
           <g:HTMLPanel>
           <g:Hidden ui:field='authTokenHiddenField' name='auth_token' />
 	        <table class='{style.detailTable}'>

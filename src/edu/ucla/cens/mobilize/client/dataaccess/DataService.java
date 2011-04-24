@@ -1,14 +1,11 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import edu.ucla.cens.mobilize.client.common.Privacy;
-import edu.ucla.cens.mobilize.client.common.RunningState;
-import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.QueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.request.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
@@ -74,11 +71,8 @@ public interface DataService {
   void fetchCampaignDetail(String campaignId, 
       final AsyncCallback<CampaignDetailedInfo> callback);
   
-  // get cached detail. returns null if campaigns have not been loaded
-  CampaignDetailedInfo getCampaignDetail(String campaignId); // FIXME: still need this?
-  
-  void deleteCampaign(String campaignId,
-                      final AsyncCallback<ResponseDelete> callback);
+  void deleteCampaign(final String campaignId,
+                      final AsyncCallback<String> callback);
     
   void fetchDataPoints(String campaignId,
                        DataPointFilterParams params,

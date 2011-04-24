@@ -215,15 +215,6 @@ public class MockDataService implements DataService {
     }
     callback.onSuccess(infos);
   }
-
-  @Override
-  public CampaignDetailedInfo getCampaignDetail(String campaignId) {
-    CampaignDetailedInfo info = null;
-    if (campaigns.containsKey(campaignId)) {
-      info = campaigns.get(campaignId); // FIXME: make a copy
-    }
-    return info;
-  }
   
   @Override
   public void fetchAuthorizationToken(String userName, String password,
@@ -233,15 +224,14 @@ public class MockDataService implements DataService {
   }
 
   @Override
-  public void deleteCampaign(String campaignId,
-      AsyncCallback<ResponseDelete> callback) {
+  public void deleteCampaign(String campaignId, AsyncCallback<String> callback) {
     // randomly fakes success or failure
     // FIXME: should onFailure be used when request returns successfully
     // but the operation wasn't completed?
     String responseJson = Random.nextBoolean() ? getSuccessJson() : getFailureJson();
     ResponseDelete resp = ResponseDelete.fromJson(responseJson); 
     if (resp.wasSuccessful()) {
-      callback.onSuccess(resp);
+      callback.onSuccess("");
     } else {
       callback.onFailure(new Exception(resp.getMsg()));
     }

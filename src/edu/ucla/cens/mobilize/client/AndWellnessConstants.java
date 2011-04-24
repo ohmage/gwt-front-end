@@ -26,6 +26,7 @@ public class AndWellnessConstants {
     private final static String CAMPAIGN_READ   = "campaign/read";
     private final static String CAMPAIGN_CREATE = "campaign/create";
     private final static String CAMPAIGN_UPDATE = "campaign/update";
+    private final static String CAMPAIGN_DELETE = "campaign/delete";
     private final static String DATA_POINT      = "q/dp";
     
     /**
@@ -60,6 +61,10 @@ public class AndWellnessConstants {
 
     public static String getCampaignUpdateUrl() {
       return getServerLocation() + CAMPAIGN_UPDATE;
+    }
+    
+    public static String getCampaignDeleteUrl() {
+      return getServerLocation() + CAMPAIGN_DELETE;
     }
     
     public static String getAuthorizationUrl() {

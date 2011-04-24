@@ -43,15 +43,15 @@ public class CampaignDetailedInfo {
   };
 
   /************ ACCESS CONTROL **************/
-  boolean canEdit(String username) {
-    return authors.contains(username);
+  public boolean canEdit(String username) {
+    return authors.contains(username) || supervisors.contains(username);
   }
   
-  boolean canDelete(String username) {
-    return authors.contains(username); // && no responses FIXME
+  public boolean canDelete(String username) {
+    return authors.contains(username) || supervisors.contains(username); // && no responses FIXME
   }
   
-  boolean canUpload(UserInfo userInfo) {
+  public boolean canUpload(UserInfo userInfo) {
     boolean retval = false;
     for (String classUserIsMemberOf : userInfo.getClasses()) {
       if (classes.contains(classUserIsMemberOf)) {
@@ -221,4 +221,5 @@ public class CampaignDetailedInfo {
   public void setCreationTime(Date time) {
     this.creationTime = time;
   }
+
 }

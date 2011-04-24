@@ -16,6 +16,14 @@ public abstract class QueryAwData extends JavaScriptObject {
     // All responses have a result, grab it here
     public final native String getResult() /*-{ return this.result; }-*/;
     
+    public final boolean wasSuccess() {
+      return "success".equals(getResult());
+    }
+    
+    public final boolean wasError() {
+      return "failure".equals(getResult());
+    }
+    
     public static native QueryAwData fromJsonString(String jsonString) /*-{
         return eval('(' + jsonString + ')'); 
     }-*/;

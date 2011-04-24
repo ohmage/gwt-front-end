@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -25,6 +26,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.AndWellnessConstants;
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
@@ -56,7 +58,7 @@ public class CampaignEditForm extends Composite {
   @UiField Button deleteButton;
   @UiField HTMLPanel deletePanel;
 
-  @UiField FormPanel form;
+  @UiField FormPanel formPanel;
 
   boolean isNewCampaign;
   boolean formIsInitialized = false;
@@ -88,9 +90,21 @@ public class CampaignEditForm extends Composite {
 
     String url = isNewCampaign ? AndWellnessConstants.getCampaignCreateUrl() : 
                                  AndWellnessConstants.getCampaignUpdateUrl();
-    form.setAction(url);
-    form.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
-    form.setMethod(FormPanel.METHOD_POST); 
+    formPanel.setAction(url);
+    formPanel.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
+    formPanel.setMethod(FormPanel.METHOD_POST); 
+    formPanel.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+      @Override
+      public void onSubmitComplete(SubmitCompleteEvent event) {
+        clearFormFields();
+        String result = event.getResults();
+        // NOTE: gwt formPanel results can be null if sending to a different domain
+        // TODO: handle failure (should be managed by presenter)
+        
+        // redirect to campaign list so user can see results
+        History.newItem(HistoryTokens.campaignList()); 
+      }
+    });
     
     // invisible when empty so add button lines up with label
     classesFlexTable.setVisible(false);
@@ -152,11 +166,12 @@ public class CampaignEditForm extends Composite {
         assert formIsInitialized : "You must call initializeForm(authToken, serverLocation) before submitting";
         // server expects a comma-delimited lists of classes and authors
         classHiddenField.setValue(getCampaignClassesSerialized());
+        classHiddenField.setValue("urn:class:ca:lausd:Addams_HS:CS101:Fall:2011"); // FIXME: deleteme
         authorHiddenField.setValue(getCampaignAuthorsSerialized());
         // TODO: validate form. 
         // - if this is a create, there must be an xml file
         // - for both edit and create, there must be at least one class
-        form.submit();
+        formPanel.submit();
       }
     });
     
@@ -170,28 +185,24 @@ public class CampaignEditForm extends Composite {
     });
   }
   
-  // TODO: some way of keeping track what's changed?
-  
   // must be called before submitting
   public void initializeForm(String authToken, String serverLocation) {
     this.authTokenHiddenField.setValue(authToken);
-    this.form.setAction(serverLocation);
-    this.form.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
-    this.form.setMethod(FormPanel.METHOD_POST);
+    this.formPanel.setAction(serverLocation);
+    this.formPanel.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
+    this.formPanel.setMethod(FormPanel.METHOD_POST);
     this.formIsInitialized = true;
   }
-  
+
   private void clearFormFields() {
+    // clear all the ordinary form input elements
+    this.formPanel.reset();
+    // clear display-only fields that were auto-filled from xml
     this.campaignName.setText("");
     this.campaignUrn.setText("");
-    this.campaignDescriptionTextArea.setText("");
+    // clear class and author lists 
     this.classesFlexTable.clear();
-    this.classHiddenField.setValue("");
     this.authorsFlexTable.clear();
-    this.authorHiddenField.setValue("");
-    this.privacyListBox.setSelectedIndex(0);
-    this.runningStateListBox.setSelectedIndex(0);
-    
     // class and author tables are invisible when empty so their add
     // buttons render on the same line as the label
     this.classesFlexTable.setVisible(false);
@@ -288,9 +299,9 @@ public class CampaignEditForm extends Composite {
     List<String> list = getCampaignClasses();
     StringBuilder sb = new StringBuilder();
     if (list.size() > 0) {
-      sb.append(list.get(0));
+      sb.append(list.get(0)); // no comma before first urn 
       for (int i = 1; i < list.size(); i++) {
-        sb.append(",").append(list.get(i));
+        sb.append(",").append(list.get(i)); 
       }
     }
     return sb.toString();

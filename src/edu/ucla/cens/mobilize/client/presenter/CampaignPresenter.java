@@ -10,7 +10,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AndWellnessConstants;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
-import edu.ucla.cens.mobilize.client.dataaccess.ResponseDelete;
 import edu.ucla.cens.mobilize.client.dataaccess.request.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
@@ -188,7 +187,8 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
 
           @Override
           public void onSuccess(CampaignDetailedInfo result) {
-            view.setCampaignDetail(result, userInfo.canEdit(result.getCampaignId()));
+            boolean userCanEditCampaign = result.canEdit(userInfo.getUserName());
+            view.setCampaignDetail(result, userCanEditCampaign);
             view.showDetail();
           }
     });
@@ -216,10 +216,10 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   }
 
   @Override
-  public void onCampaignDelete(String campaignId) {
+  public void onCampaignDelete(final String campaignId) {
     if (campaignId != null) {
       dataService.deleteCampaign(campaignId, 
-          new AsyncCallback<ResponseDelete>() {
+          new AsyncCallback<String>() {
             @Override
             public void onFailure(Throwable caught) {
               try {
@@ -233,11 +233,11 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
               
             }
             @Override
-            public void onSuccess(ResponseDelete result) {
+            public void onSuccess(String result) {
               // redirect to campaign list so user can verify that 
               // deleted campaign is gone and display success message
               showAllCampaigns();
-              showMessage("Campaign deleted.");
+              showMessage("Campaign " + campaignId + " has been deleted.");
             }
       });
     }
