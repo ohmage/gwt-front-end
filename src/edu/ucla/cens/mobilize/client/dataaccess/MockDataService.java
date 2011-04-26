@@ -23,6 +23,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.request.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
+import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
@@ -34,6 +35,7 @@ public class MockDataService implements DataService {
   
   Map<String, CampaignDetailedInfo> campaigns = new HashMap<String, CampaignDetailedInfo>();
   List<String> classes = new ArrayList<String>();
+  List<ClassInfo> classInfos = new ArrayList<ClassInfo>();
   
   XmlConfigTranslator configTranslator = new XmlConfigTranslator();
 
@@ -41,6 +43,7 @@ public class MockDataService implements DataService {
   
   public MockDataService() {
     loadFakeClasses();
+    loadFakeClassInfos();
     loadFakeCampaigns();
   }
 
@@ -51,6 +54,39 @@ public class MockDataService implements DataService {
     classes.add("Carson_HS_CS103_Spring_2011");
     classes.add("Crenshaw_HS_CS104_Fall_2011");
     classes.add("Gardena_HS_CS104_Fall_2011");
+  }
+  
+  private void loadFakeClassInfos() {
+    classInfos.clear();
+    ClassInfo class1 = new ClassInfo();
+    class1.setClassId("urn:class:ca:lausd:ADDAMS_HS:CS101:Fall:2011");
+    class1.setClassName("ADDAMS_HS_CS101_Fall_2011");
+    class1.setDistrict("lausd");
+    class1.setSchool("ADDAMS_HS");
+    class1.setState("LA");
+    class1.setTerm("Fall");
+    class1.setYear(2011);
+    classInfos.add(class1);
+    
+    ClassInfo class2 = new ClassInfo();
+    class2.setClassId("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011");
+    class2.setClassName("BH_HS_CS102_Spring_2011");
+    class2.setDistrict("lausd");
+    class2.setSchool("BH_HS");
+    class2.setState("LA");
+    class2.setTerm("Spring");
+    class2.setYear(2011);
+    classInfos.add(class2);
+    
+    ClassInfo class3 = new ClassInfo();
+    class3.setClassId("urn:class:ca:lausd:Carson_HS:CS103:Spring:2011");
+    class3.setClassName("Carson_HS_CS103_Spring_2011");
+    class3.setDistrict("lausd");
+    class3.setSchool("Carson_HS");
+    class3.setState("LA");
+    class3.setTerm("Spring");
+    class3.setYear(2011);
+    classInfos.add(class3);
   }
   
   private void loadFakeCampaigns() {
@@ -305,8 +341,22 @@ public class MockDataService implements DataService {
     
   }
 
+  @Override
+  public void fetchClassList(String schoolId,
+      AsyncCallback<List<ClassInfo>> callback) {
+    callback.onSuccess(this.classInfos);    
+  }
 
 
-
+  @Override
+  public void fetchClass(String classId, AsyncCallback<ClassInfo> callback) {
+    for (ClassInfo info : this.classInfos) {
+      if (info.getClassId().equals(classId)) {
+        callback.onSuccess(info);
+        break;
+      }
+    }
+    callback.onFailure(new Exception("Class with id " + classId + " not found."));
+  }
 
 }

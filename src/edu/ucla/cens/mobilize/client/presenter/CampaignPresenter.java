@@ -58,17 +58,17 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     
     // get subview from url params
     if (params.isEmpty()) {
-      this.showAllCampaigns();
+      this.fetchAndShowAllCampaigns();
     } else if (params.get("v").get(0).equals("detail") && params.containsKey("id")) {
       // anything after first id is ignored
-      this.showCampaign(params.get("id").get(0));
+      this.fetchAndShowCampaignDetail(params.get("id").get(0));
     } else if (params.get("v").get(0).equals("author_center")) {
       this.showAuthorCenter();
     } else if (params.get("v").get(0).equals("create")) {
       this.showCampaignCreateForm();
     } else if (params.get("v").get(0).equals("edit") && params.containsKey("id")) {
       // anything after first id is ignored
-      this.showEdit(params.get("id").get(0));
+      this.fetchAndShowCampaignEdit(params.get("id").get(0));
     } else {
       // unrecognized view - do nothing
       // TODO: log?
@@ -89,21 +89,51 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     this.view.setPresenter(this);
   }
   
-  /************ METHODS TO SWITCH BETWEEN SUBVIEWS **************/
+  /************ METHODS TO LOAD DATA AND DISPLAY SUBVIEWS **************/
   
-  public void showAllCampaigns() {
-    loadAllCampaigns();
-    //TODO: show overall activity?
+  public void fetchAndShowAllCampaigns() {
+    CampaignReadParams params = new CampaignReadParams(); // empty params fetches everything
+    params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
+    this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignConciseInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        // TODO
+      }
+
+      @Override
+      public void onSuccess(List<CampaignConciseInfo> result) {
+        campaigns.clear();
+        campaigns.addAll(result);
+        view.setCampaignList(campaigns);
+        view.showList();
+      }
+    });
     this.view.clearPlots();
   }
-  
-  private void showCampaign(String campaignId) {
-    loadCampaign(campaignId); // FIXME: don't need separate function for this
-    this.view.clearPlots();
-    this.view.setPlotSideBarTitle("Recent Activity");
-    // todo: get plots dynamically (different for different roles)
-    this.view.addPlot("images/histogram_small.png");
-    this.view.addPlot("images/map_small.gif");
+
+  private void fetchAndShowCampaignDetail(String campaignId) {
+    this.dataService.fetchCampaignDetail(campaignId, 
+        new AsyncCallback<CampaignDetailedInfo>() {
+
+          @Override
+          public void onFailure(Throwable caught) {
+            _logger.fine(caught.getMessage());
+            // TODO: show error to user
+          }
+
+          @Override
+          public void onSuccess(CampaignDetailedInfo result) {
+            boolean userCanEditCampaign = result.canEdit(userInfo.getUserName());
+            view.setCampaignDetail(result, userCanEditCampaign);
+            view.showDetail();
+            view.clearPlots();
+            view.setPlotSideBarTitle("Recent Activity");
+            // todo: get plots dynamically (different for different roles)
+            view.addPlot("images/histogram_small.png");
+            view.addPlot("images/map_small.gif");
+          }
+    });
+
   }
   
   private void showCampaignCreateForm() {
@@ -117,7 +147,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
                              AndWellnessConstants.getCampaignCreateUrl());
   }
   
-  private void showEdit(String campaignId) {
+  private void fetchAndShowCampaignEdit(String campaignId) {
     this.dataService.fetchCampaignDetail(campaignId.toString(), 
                                          new AsyncCallback<CampaignDetailedInfo>() {
       @Override
@@ -153,48 +183,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   private void showMessage(String msg) {
     this.view.showMsg(msg);
   }
-  /************** METHODS FOR FETCHING DATA FROM ANDWELLNESS DATASERVICE ***************/
-  
-  private void loadAllCampaigns() {
-    CampaignReadParams params = new CampaignReadParams(); // empty params fetches everything
-    params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
-    this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignConciseInfo>>() {
-      @Override
-      public void onFailure(Throwable caught) {
-        // TODO
-      }
 
-      @Override
-      public void onSuccess(List<CampaignConciseInfo> result) {
-        campaigns.clear();
-        campaigns.addAll(result);
-        view.setCampaignList(campaigns);
-        view.showList();
-      }
-    });
-
-  }
-  
-  private void loadCampaign(String campaignId) {
-    this.dataService.fetchCampaignDetail(campaignId, 
-        new AsyncCallback<CampaignDetailedInfo>() {
-
-          @Override
-          public void onFailure(Throwable caught) {
-            _logger.fine(caught.getMessage());
-            // TODO: show error to user
-          }
-
-          @Override
-          public void onSuccess(CampaignDetailedInfo result) {
-            boolean userCanEditCampaign = result.canEdit(userInfo.getUserName());
-            view.setCampaignDetail(result, userCanEditCampaign);
-            view.showDetail();
-          }
-    });
-
-  }
-  
   /************** METHODS FOR HANDLING VIEW EVENTS ***********/
   
   @Override
@@ -236,7 +225,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
             public void onSuccess(String result) {
               // redirect to campaign list so user can verify that 
               // deleted campaign is gone and display success message
-              showAllCampaigns();
+              fetchAndShowAllCampaigns();
               showMessage("Campaign " + campaignId + " has been deleted.");
             }
       });

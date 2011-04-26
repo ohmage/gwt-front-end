@@ -120,7 +120,7 @@ public class CampaignList extends Composite {
   }
   
   /**
-   * renders an arraylist of campaigns in a celltable
+   * renders a list of campaigns in a table
    * @param campaigns
    */
   public void setCampaigns(List<CampaignConciseInfo> campaigns) {

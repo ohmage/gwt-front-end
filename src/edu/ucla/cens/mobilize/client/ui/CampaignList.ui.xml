@@ -100,11 +100,6 @@
 	   <g:Button ui:field="goButton">Go</g:Button>
 	 </div>
 	 <div class="{style.listContainer}">
-	  <!--
-    <c:CellTable addStyleNames='{style.campaignCellTable}'
-                 pageSize='15'
-                 ui:field='campaignCellTable' />
-    -->
     <g:Grid ui:field='campaignGrid'></g:Grid>
 	 </div>
 	</g:HTMLPanel>

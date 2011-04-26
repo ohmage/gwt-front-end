@@ -1,0 +1,21 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.filterContainer {
+	  }
+	  .listContainer {
+	  }
+	</ui:style>
+	<g:HTMLPanel>
+	  <div class="{style.filterContainer}">
+     <label>District:</label>
+     <g:ListBox ui:field="districtListBox" visibleItemCount="1" />
+     <label>Supervisor:</label>
+     <g:ListBox ui:field="supervisorListBox" visibleItemCount="1" />
+   </div>
+   <div class="{style.listContainer}">
+    <g:Grid ui:field='classGrid'></g:Grid>
+   </div>
+	</g:HTMLPanel>
+</ui:UiBinder> 

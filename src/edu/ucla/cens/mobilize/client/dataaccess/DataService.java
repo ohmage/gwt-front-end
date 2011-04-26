@@ -5,11 +5,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
-import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.QueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.request.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
+import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
@@ -81,5 +81,11 @@ public interface DataService {
   void fetchSurveyResponses(String campaignId,
                             DataPointFilterParams params,
                             final AsyncCallback<List<SurveyResponse>> callback);
+  
+  void fetchClassList(String schoolId,
+                      final AsyncCallback<List<ClassInfo>> callback);
+  
+  void fetchClass(String classId, final AsyncCallback<ClassInfo> callback);
+  
   
 }

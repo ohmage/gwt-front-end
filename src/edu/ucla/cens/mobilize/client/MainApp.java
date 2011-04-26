@@ -59,7 +59,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   EventBus eventBus = new SimpleEventBus();
   
   // classes for accessing data store
-  DataService dataService = new MockDataService(); // FIXME: use real service
+  DataService mockDataService = new MockDataService(); // FIXME: use real service
   DataService awDataService = new AndWellnessDataService();
   
   // login management
@@ -188,14 +188,14 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     // presenters
     dashboardPresenter = new DashboardPresenter(userInfo);
     campaignPresenter = new CampaignPresenter(userInfo, awDataService, eventBus);
-    responsePresenter = new ResponsePresenter(userInfo, dataService, eventBus);
+    responsePresenter = new ResponsePresenter(userInfo, mockDataService, eventBus);
     exploreDataPresenter = new ExploreDataPresenter();
-    classPresenter = new ClassPresenter();
+    classPresenter = new ClassPresenter(userInfo, mockDataService, eventBus);
 
     // connect views and presenters
     dashboardPresenter.setView(dashboardView);
     campaignPresenter.setView(campaignView);
-    campaignPresenter.showAllCampaigns();
+    campaignPresenter.fetchAndShowAllCampaigns();
     responsePresenter.setView(responseView);
     responsePresenter.onFilterChange();
     exploreDataPresenter.setView(exploreDataView);

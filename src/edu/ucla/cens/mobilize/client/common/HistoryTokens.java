@@ -11,7 +11,7 @@ package edu.ucla.cens.mobilize.client.common;
  */
 public class HistoryTokens {
   public static String campaignList() {
-    return "campaign";
+    return "campaigns";
   }
   
   public static String campaignDetail(String campaignId) {
@@ -25,4 +25,17 @@ public class HistoryTokens {
   public static String campaignAnalyze(String campaignId) {
     return "explore_data?cid=" + campaignId;
   }
+
+  public static String classList() {
+    return "classes";
+  }
+  
+  public static String classDetail(String classId) {
+    return "classes?v=detail&id=" + classId;
+  }
+  
+  public static String classEdit(String classId) {
+    return "classes?v=edit&id=" + classId;
+  }
+  
 }

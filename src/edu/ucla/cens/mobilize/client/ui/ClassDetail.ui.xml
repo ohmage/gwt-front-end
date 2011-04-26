@@ -1,0 +1,84 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+	 .backLink {
+   }
+	 .container {
+	 }
+	 .detailPanel {
+	 }
+	 .details {
+	 }
+	 .editButton {
+	 }
+	 span.label {
+	   display: inline-block;
+	   width: 150px;
+	 }
+	 .sectionHeader {
+	 }
+	 .sectionHeaderTitle {
+	 }
+
+	</ui:style>
+  <g:HTMLPanel ui:field='container' addStyleNames='{style.container}'>
+     <g:VerticalPanel addStyleNames='{style.detailPanel}'>
+     
+       <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
+          <g:HTMLPanel addStyleNames='{style.backLink}'>
+            <g:InlineHyperlink ui:field="backLink" targetHistoryToken='classes'>
+              &laquo;&nbsp;Go&nbsp;to&nbsp;class&nbsp;list
+            </g:InlineHyperlink>
+          </g:HTMLPanel>
+          <g:Label addStyleNames='{style.sectionHeaderTitle}'>Class&nbsp;Details</g:Label>
+          <g:InlineHyperlink addStyleNames='{style.editButton}' ui:field='editLink'>
+            Edit&nbsp;Class
+          </g:InlineHyperlink>
+       </g:HTMLPanel>
+     
+			<g:HTMLPanel addStyleNames='{style.details}'>
+		    <div>
+		      <span class='{style.label}'>
+		        Class Name:
+		      </span>
+		      <span>
+		        <g:InlineLabel ui:field='className' />
+		      </span>
+		    </div>
+		    <div>
+		      <span class='{style.label}'>
+		        Class Urn:
+		      </span>
+		      <span>
+		        <g:InlineLabel ui:field='classUrn' />
+		      </span>
+		    </div>
+		    <div>
+          <span class='{style.label}'>
+            Description:
+          </span>
+          <span>
+            <g:TextArea ui:field='descriptionTextArea' />
+          </span>
+        </div>
+		    <div>
+		      <span class='{style.label}'>
+		        Supervisors:
+		      </span>
+		      <span>
+		        <g:VerticalPanel ui:field='supervisorsVerticalPanel' />
+		      </span>
+		    </div>
+		    <div>
+		      <span class='{style.label}'>
+		        Members:
+		      </span>
+		      <span>
+		        <g:VerticalPanel ui:field='membersVerticalPanel' />
+		      </span>
+		    </div>
+      </g:HTMLPanel>      
+    </g:VerticalPanel>
+  </g:HTMLPanel>
+</ui:UiBinder> 

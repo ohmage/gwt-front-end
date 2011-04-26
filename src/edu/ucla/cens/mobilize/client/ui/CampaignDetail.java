@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
@@ -103,7 +104,7 @@ public class CampaignDetail extends Composite {
       // only authors see the edit link
       if (canEdit) {
         this.editCampaignLink.setVisible(true);
-        this.editCampaignLink.setTargetHistoryToken("campaigns?v=edit&id=" + campaign.getCampaignId());
+        this.editCampaignLink.setTargetHistoryToken(HistoryTokens.campaignEdit(campaign.getCampaignId()));
       } else {
         this.editCampaignLink.setVisible(false);
       }

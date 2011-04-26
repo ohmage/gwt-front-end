@@ -24,6 +24,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.request.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.rpcservice.ApiException;
@@ -534,8 +535,18 @@ public class AndWellnessDataService implements DataService {
     
   }
 
+  @Override
+  public void fetchClassList(String schoolId,
+      AsyncCallback<List<ClassInfo>> callback) {
+    // TODO Auto-generated method stub
+    
+  }
 
-
-
+  @Override
+  public void fetchClass(String classId, AsyncCallback<ClassInfo> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+  
   
 }
