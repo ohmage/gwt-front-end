@@ -53,7 +53,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
   }
 
   private void fetchAndShowClassDetail(String classId) {
-    dataService.fetchClass(classId, new AsyncCallback<ClassInfo>() {
+    dataService.fetchClassDetail(classId, new AsyncCallback<ClassInfo>() {
 
       @Override
       public void onFailure(Throwable caught) {
@@ -70,7 +70,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
   }
   
   private void fetchAndShowClassEdit(String classId) {
-    dataService.fetchClass(classId, new AsyncCallback<ClassInfo>() {
+    dataService.fetchClassDetail(classId, new AsyncCallback<ClassInfo>() {
 
       @Override
       public void onFailure(Throwable caught) {

@@ -1,33 +1,48 @@
 package edu.ucla.cens.mobilize.client.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ClassInfo {
   private String classId;
-  private String classUrn;
-  private String state; // e.g., CA
-  private String district;
-  private String school;
   private String className; // e.g., CS101
-  private String term;
-  private int year;
+  private String description;
+  private Map<String, String> supervisorIdToNameMap;
+  private Map<String, String> memberIdToNameMap;
   
   public ClassInfo() {
-    classId = classUrn = state = district = school = className = term = "";
-    year = 0;
+    classId = className = description = "";
+    supervisorIdToNameMap = new HashMap<String, String>();
+    memberIdToNameMap = new HashMap<String, String>();
   }
   
   public String getClassId() { return this.classId; }
-  public String getState() { return this.state; }
-  public String getDistrict() { return this.district; }
-  public String getSchool() { return this.school; }
   public String getClassName() { return this.className; }
-  public String getTerm() { return this.term; }
-  public int getYear() { return this.year; }
+  public String getDescription() { return this.description; }
+  
+  /**
+   * @return Map of supervisor ids to supervisor names
+   */
+  public Map<String, String> getSupervisors() { return this.supervisorIdToNameMap; }
+  
+  /**
+   * @return Map of member ids to member names
+   */
+  public Map<String, String> getMembers() { return this.memberIdToNameMap; }
   
   public void setClassId(String classId) { this.classId = classId; }
-  public void setState(String state) { this.state = state; }
-  public void setDistrict(String district) { this.district = district; }
-  public void setSchool(String school) { this.school = school; }
+  
   public void setClassName(String className) { this.className = className; }
-  public void setTerm(String term) { this.term = term; }
-  public void setYear(int year) { this.year = year; }
+  
+  public void clearSupervisors() { this.supervisorIdToNameMap.clear(); }
+  
+  public void clearMembers() { this.memberIdToNameMap.clear(); }
+  
+  public void addSupervisor(String supervisorId, String supervisorName) {
+    this.supervisorIdToNameMap.put(supervisorId, supervisorName);
+  }
+  
+  public void addMember(String memberId, String memberName) {
+    this.memberIdToNameMap.put(memberId, memberName);
+  }
 }

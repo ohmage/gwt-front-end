@@ -347,18 +347,19 @@ public class AndWellnessDataService implements DataService {
       requestBuilder.sendRequest(postParams, new RequestCallback() {
         @Override
         public void onResponseReceived(Request request, Response response) {
+          List<UserInfo> userInfos = null;
           try {
             String responseText = getResponseTextOrThrowException(requestBuilder, response);
-            List<UserInfo> userInfos = AwDataTranslators.translateUserReadQueryJSONToUserInfoList(responseText);
-            if (userInfos.size() > 0) {
-              // FIXME: assumes first user is the one you want. should check id instead
-              callback.onSuccess(userInfos.get(0));
-            } else {
-              callback.onFailure(new Exception("Failed to parse user data."));
-            }
-            
+            userInfos = AwDataTranslators.translateUserReadQueryJSONToUserInfoList(responseText);
           } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
             callback.onFailure(exception);
+          }
+          if (userInfos != null && userInfos.size() > 0) {
+            // FIXME: assumes first user is the one you want. should check id instead
+            callback.onSuccess(userInfos.get(0));
+          } else {
+            callback.onFailure(new Exception("Failed to parse user data."));
           }
           
         }
@@ -543,7 +544,7 @@ public class AndWellnessDataService implements DataService {
   }
 
   @Override
-  public void fetchClass(String classId, AsyncCallback<ClassInfo> callback) {
+  public void fetchClassDetail(String classId, AsyncCallback<ClassInfo> callback) {
     // TODO Auto-generated method stub
     
   }

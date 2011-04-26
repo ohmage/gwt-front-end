@@ -2,18 +2,20 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
-		.filterContainer {
+	  .container {
+	  	padding: 20px;
+	  }
+	  .instructions {
+	  	font-style: italic;
+	  	padding: 10px 0px;
 	  }
 	  .listContainer {
 	  }
 	</ui:style>
-	<g:HTMLPanel>
-	  <div class="{style.filterContainer}">
-     <label>District:</label>
-     <g:ListBox ui:field="districtListBox" visibleItemCount="1" />
-     <label>Supervisor:</label>
-     <g:ListBox ui:field="supervisorListBox" visibleItemCount="1" />
-   </div>
+	<g:HTMLPanel addStyleNames="{style.container}" >
+	 <div class="{style.instructions}">
+	   Click on a class name to view details.
+	 </div>
    <div class="{style.listContainer}">
     <g:Grid ui:field='classGrid'></g:Grid>
    </div>

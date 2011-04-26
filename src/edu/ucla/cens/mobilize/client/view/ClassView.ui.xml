@@ -3,21 +3,68 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
 	<ui:style>
+	  /* styles copy-pasted from campaignView. fixme: generalize? */
+    .topNav {
+      background-color: #DDD;
+      border-bottom: solid thin #AAA;
+      font-size: 0.9em;
+      margin: 0px;
+      padding: 3px 5px 10px 15px;
+    }
+    .leftSideBarMenu {
+      font-size: 0.9em;
+      padding-left: 5px;
+    }
+    .leftSideBarMenu td {
+      border-bottom: solid thin #DDD;
+      cursor: pointer;
+      padding: 0px 0px 2px 7px;
+    }
+    .leftSideBarMenu td:hover {
+      background-color: #E0E5FF;
+    }
     .leftSideBar {
+      background-color: #EEE;
+      border-right: solid thin #CCC;
+      padding: 10px;
+    }
+    .menuTitle {
+      font-weight: bold;
+      padding: 10px;
     }
     .msg {
+      background-color: #FFF7D7;
+      border: solid thin #DDD6A4;
+      font-size: 0.9em;
+      margin: 10px auto;
+      padding: 5px;
+      text-align: center;
+      width: 80%;
     }
     .msgHide {
+      color: purple;
+      cursor: pointer;
+      float: right;
+      font-size: 0.9em;
+      padding-right: 5px;
+      text-decoration: underline;
     }
     .plotBox {
+     width: 150px;
     }
     .plotDiv {
+      border-left: solid 1px #BBB;
+      padding: 5px;
+      text-align: center;
     }
     .plotSideBarTitle {
     }
     .scrollable {
+      overflow-x: hidden;
+      overflow-y: auto;
     }
     .separator {
+      padding-right: 2px;
     }		
     .topNav {
     }
@@ -41,22 +88,6 @@
     
     <g:west size='170'>
       <g:HTMLPanel addStyleNames='{style.leftSideBar}'>
-      <!--
-        <g:Button ui:field='classCreateButton'>
-          Create Class
-        </g:Button>
-      
-        <g:Label ui:field='leftSideBarMenuTitle' addStyleNames='{style.menuTitle}'>
-          Quick Links
-        </g:Label>
-        <g:MenuBar vertical='true'
-                   ui:field='leftSideBarMenu' 
-                   addStyleNames='{style.leftSideBarMenu}'>
-          <g:MenuItem ui:field='quickLinkClasses'>Browse Classes</g:MenuItem>
-          <g:MenuItem ui:field='quickLinkUsers'>Browse Users</g:MenuItem>
-          <g:MenuItem ui:field='quickLinkMyUsers'>My Users</g:MenuItem>
-        </g:MenuBar>
-        -->
       </g:HTMLPanel>
     </g:west>
     

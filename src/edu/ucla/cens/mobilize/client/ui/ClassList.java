@@ -22,33 +22,24 @@ public class ClassList extends Composite {
   interface ClassListUiBinder extends UiBinder<Widget, ClassList> {
   }
 
-  @UiField ListBox districtListBox;
-  @UiField ListBox supervisorListBox;
   @UiField Grid classGrid;
   
   public ClassList() {
     initWidget(uiBinder.createAndBindUi(this));
   }
   
-  public void setDistricts(List<String> districts) {
-  }
-  
-  public void setSupervisors(List<String> supervisors) {
-  }
-  
+  // NOTE: it's ok for classes to be null - treated same as empty list
   public void setClasses(List<ClassInfo> classes) {
     this.classGrid.clear();
-    this.classGrid.resize(classes.size() + 1, 6); // +1 for header row
-    for (int i = 0; i < classes.size(); i++) {
-      ClassInfo classInfo = classes.get(i);
-      InlineHyperlink classDetailLink = new InlineHyperlink(classInfo.getClassName(), 
-                                                            HistoryTokens.classDetail(classInfo.getClassId()));
-      this.classGrid.setWidget(i, 0, classDetailLink);
-      this.classGrid.setText(i, 1, classInfo.getDistrict());
-      this.classGrid.setText(i, 2, classInfo.getSchool());
-      this.classGrid.setText(i, 3, classInfo.getTerm());
-      this.classGrid.setText(i, 4, Integer.toString(classInfo.getYear()));
-    }
+    if (classes != null && classes.size() > 0) {
+      this.classGrid.resize(classes.size() + 1, 6); // +1 for header row
+      for (int i = 0; i < classes.size(); i++) {
+        ClassInfo classInfo = classes.get(i);
+        InlineHyperlink classDetailLink = new InlineHyperlink(classInfo.getClassName(), 
+                                                              HistoryTokens.classDetail(classInfo.getClassId()));
+        this.classGrid.setWidget(i, 0, classDetailLink);
+      }
+    } 
   }
 
 }

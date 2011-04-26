@@ -1,14 +1,16 @@
 package edu.ucla.cens.mobilize.client.ui;
 
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 
 public class ClassDetail extends Composite {
@@ -21,17 +23,32 @@ public class ClassDetail extends Composite {
 
   @UiField InlineLabel className;
   @UiField InlineLabel classUrn;
-  @UiField TextArea descriptionTextArea;
+  @UiField InlineLabel description;
   @UiField VerticalPanel supervisorsVerticalPanel;
   @UiField VerticalPanel membersVerticalPanel;
+  @UiField InlineHyperlink editLink;
   
   public ClassDetail() {
     initWidget(uiBinder.createAndBindUi(this));
   }
   
-  public void setClass(ClassInfo classDetail) {
+  public void setClassDetail(ClassInfo classDetail) {
+    this.editLink.setTargetHistoryToken(HistoryTokens.classEdit(classDetail.getClassId()));
     this.className.setText(classDetail.getClassName());
     this.classUrn.setText(classDetail.getClassId());
+    this.description.setText(classDetail.getDescription());
+    this.supervisorsVerticalPanel.clear();
+    for (String supervisorId : classDetail.getSupervisors().keySet()) {
+      String supervisorName = classDetail.getSupervisors().get(supervisorId);
+      // TODO: make supervisor name a hyperlink to supervisor info page?
+      this.supervisorsVerticalPanel.add(new InlineLabel(supervisorName));
+    }
+    this.membersVerticalPanel.clear();
+    for (String memberId : classDetail.getMembers().keySet()) {
+      String memberName = classDetail.getMembers().get(memberId);
+      // TODO: make member name a link to member info page?
+      this.membersVerticalPanel.add(new InlineLabel(memberName));
+    }
     
   }
 

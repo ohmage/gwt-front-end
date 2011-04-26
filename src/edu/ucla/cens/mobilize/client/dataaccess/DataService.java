@@ -85,7 +85,7 @@ public interface DataService {
   void fetchClassList(String schoolId,
                       final AsyncCallback<List<ClassInfo>> callback);
   
-  void fetchClass(String classId, final AsyncCallback<ClassInfo> callback);
+  void fetchClassDetail(String classId, final AsyncCallback<ClassInfo> callback);
   
   
 }

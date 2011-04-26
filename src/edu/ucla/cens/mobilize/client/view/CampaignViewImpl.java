@@ -78,9 +78,9 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   
   public CampaignViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
+    hideMsg();
     showList();
     bind();
-    msgBox.setVisible(false);
   }
 
   private void bind() {
@@ -260,6 +260,7 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   
   @Override
   public void hideMsg() {
+    msgLabel.setText("");
     msgBox.setVisible(false);
   }
 

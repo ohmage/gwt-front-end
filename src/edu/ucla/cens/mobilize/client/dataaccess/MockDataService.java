@@ -61,31 +61,32 @@ public class MockDataService implements DataService {
     ClassInfo class1 = new ClassInfo();
     class1.setClassId("urn:class:ca:lausd:ADDAMS_HS:CS101:Fall:2011");
     class1.setClassName("ADDAMS_HS_CS101_Fall_2011");
-    class1.setDistrict("lausd");
-    class1.setSchool("ADDAMS_HS");
-    class1.setState("LA");
-    class1.setTerm("Fall");
-    class1.setYear(2011);
+    class1.addMember("slarson", "Sally Larson");
+    class1.addMember("mhardy", "Marty Hardy");
+    class1.addMember("awhine", "Amy Whine");
+    class1.addMember("rmoran", "Ralph Moran");
+    class1.addMember("ajones", "Art Jones");
+    class1.addMember("smcmike", "Spike McMike");
+    class1.addSupervisor("tuser", "testuser.aa");
     classInfos.add(class1);
     
     ClassInfo class2 = new ClassInfo();
     class2.setClassId("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011");
     class2.setClassName("BH_HS_CS102_Spring_2011");
-    class2.setDistrict("lausd");
-    class2.setSchool("BH_HS");
-    class2.setState("LA");
-    class2.setTerm("Spring");
-    class2.setYear(2011);
+    class2.addMember("testuser.aa", "testuser.aa");
+    class2.addMember("testuser.ab", "testuser.ab");
+    class2.addMember("testuser.ac", "testuser.ac");
+    class2.addMember("testuser.bb", "testuser.bb");
+    class2.addSupervisor("testuser.aa", "testuser.aa");
+    class2.addSupervisor("testuser.ab", "testuser.ab");
     classInfos.add(class2);
     
     ClassInfo class3 = new ClassInfo();
     class3.setClassId("urn:class:ca:lausd:Carson_HS:CS103:Spring:2011");
     class3.setClassName("Carson_HS_CS103_Spring_2011");
-    class3.setDistrict("lausd");
-    class3.setSchool("Carson_HS");
-    class3.setState("LA");
-    class3.setTerm("Spring");
-    class3.setYear(2011);
+    class3.addMember("testuser.ac", "testuser.ac");
+    class3.addMember("testuser.bb", "testuser.bb");
+    class3.addSupervisor("testuser.aa", "testuser.aa");
     classInfos.add(class3);
   }
   
@@ -349,11 +350,11 @@ public class MockDataService implements DataService {
 
 
   @Override
-  public void fetchClass(String classId, AsyncCallback<ClassInfo> callback) {
+  public void fetchClassDetail(String classId, AsyncCallback<ClassInfo> callback) {
     for (ClassInfo info : this.classInfos) {
       if (info.getClassId().equals(classId)) {
         callback.onSuccess(info);
-        break;
+        return;
       }
     }
     callback.onFailure(new Exception("Class with id " + classId + " not found."));

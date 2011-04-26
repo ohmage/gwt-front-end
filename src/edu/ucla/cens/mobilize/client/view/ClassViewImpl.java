@@ -6,8 +6,16 @@ import java.util.Map;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -28,11 +36,21 @@ public class ClassViewImpl extends Composite implements ClassView {
   @UiField ClassList classList;
   @UiField ClassDetail classDetail;
   @UiField ClassEditForm classEdit;
+
+  @UiField HTMLPanel msgBox;
+  @UiField InlineLabel msgLabel;
+  @UiField Anchor closeMsg;
   
   ClassView.Presenter presenter;
   
   public ClassViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
+    hideMsg();     
+    showList(null);
+    bind();
+  }
+  
+  private void bind() {
   }
   
   private void hideAllWidgets() {
@@ -49,7 +67,6 @@ public class ClassViewImpl extends Composite implements ClassView {
   @Override
   public void showList(List<ClassInfo> classes) {
     hideAllWidgets();
-    // TODO: should also set schools, supervisors, etc
     classList.setClasses(classes);
     classList.setVisible(true);
   }
@@ -57,31 +74,44 @@ public class ClassViewImpl extends Composite implements ClassView {
   @Override
   public void showDetail(ClassInfo classDetail) {
     hideAllWidgets();
+    this.classDetail.setClassDetail(classDetail);
     this.classDetail.setVisible(true);
   }
 
   @Override
   public void showEditForm(ClassInfo classDetail) {
     hideAllWidgets();
+    this.classEdit.setClassDetail(classDetail);
     this.classEdit.setVisible(true);
   }
 
   @Override
   public void showError(String msg) {
-    // TODO Auto-generated method stub
-    
+    final DialogBox errorDialog = new DialogBox();
+    errorDialog.setGlassEnabled(true);
+    errorDialog.setText(msg);
+    Button dismissButton = new Button("OK");
+    dismissButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        errorDialog.hide(); 
+      }
+    });
+    errorDialog.add(dismissButton);
+    // TODO: add style
+    errorDialog.center();
   }
 
   @Override
   public void showMsg(String msg) {
-    // TODO Auto-generated method stub
-    
+    msgLabel.setText(msg);
+    msgBox.setVisible(true);
   }
 
   @Override
   public void hideMsg() {
-    // TODO Auto-generated method stub
-    
+    msgLabel.setText("");
+    msgBox.setVisible(false);
   }
 
 }

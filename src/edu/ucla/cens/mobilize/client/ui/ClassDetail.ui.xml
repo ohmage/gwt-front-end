@@ -2,82 +2,110 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
-	 .backLink {
+   .backLink {
+     display: inline-block;
+     float: left;
+     padding-left: 20px;
    }
-	 .container {
-	 }
-	 .detailPanel {
-	 }
-	 .details {
-	 }
-	 .editButton {
-	 }
-	 span.label {
-	   display: inline-block;
-	   width: 150px;
-	 }
-	 .sectionHeader {
-	 }
-	 .sectionHeaderTitle {
-	 }
+   .container {
+   }
+   .detailPanel {
+     width: 100%;
+   }
+   .detailTable {
+     width: 100%;
+   }
+   .detailTable td {
+     vertical-align: top;
+   }
+   .editButton {
+     background-image: url('images/page_white_edit.png');
+     background-repeat: no-repeat;
+     background-position: 2px 50%;
+     float:right;
+     padding: 2px 2px 2px 23px;
+   }
+   td.label {
+     font-weight: bold;
+     height: 25px;
+     padding-right: 10px;
+     text-align: right;
+     width: 170px;
+   }
+   .supervisorList, .memberList {
+     margin-bottom: 10px;
+   }
+	.sectionHeader {
+	  margin-bottom: 10px;
+	  padding: 20px;
+	  text-align: center;
+	  width: 100%;
+	}
+	.sectionHeaderTitle {
+	  font-size: 1.2em;
+	  font-weight: bold;
+	}
 
 	</ui:style>
   <g:HTMLPanel ui:field='container' addStyleNames='{style.container}'>
      <g:VerticalPanel addStyleNames='{style.detailPanel}'>
+       <g:HorizontalPanel addStyleNames='{style.sectionHeader}'>
+         <g:InlineHyperlink ui:field='backLink' targetHistoryToken='classes'>
+           &laquo;&nbsp;Go&nbsp;to&nbsp;class&nbsp;list
+         </g:InlineHyperlink>
+         <g:InlineLabel addStyleNames='{style.sectionHeaderTitle}'>
+           Class&nbsp;Details
+         </g:InlineLabel>
+         <g:InlineHyperlink ui:field='editLink' 
+                            addStyleNames='{style.editButton}' 
+                            targetHistoryToken='dynamicallySet'>
+           Edit&nbsp;Class
+         </g:InlineHyperlink>
+       </g:HorizontalPanel>
      
-       <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
-          <g:HTMLPanel addStyleNames='{style.backLink}'>
-            <g:InlineHyperlink ui:field="backLink" targetHistoryToken='classes'>
-              &laquo;&nbsp;Go&nbsp;to&nbsp;class&nbsp;list
-            </g:InlineHyperlink>
-          </g:HTMLPanel>
-          <g:Label addStyleNames='{style.sectionHeaderTitle}'>Class&nbsp;Details</g:Label>
-          <g:InlineHyperlink addStyleNames='{style.editButton}' ui:field='editLink'>
-            Edit&nbsp;Class
-          </g:InlineHyperlink>
-       </g:HTMLPanel>
-     
-			<g:HTMLPanel addStyleNames='{style.details}'>
-		    <div>
-		      <span class='{style.label}'>
-		        Class Name:
-		      </span>
-		      <span>
-		        <g:InlineLabel ui:field='className' />
-		      </span>
-		    </div>
-		    <div>
-		      <span class='{style.label}'>
-		        Class Urn:
-		      </span>
-		      <span>
-		        <g:InlineLabel ui:field='classUrn' />
-		      </span>
-		    </div>
-		    <div>
-          <span class='{style.label}'>
-            Description:
-          </span>
-          <span>
-            <g:TextArea ui:field='descriptionTextArea' />
-          </span>
-        </div>
-		    <div>
-		      <span class='{style.label}'>
-		        Supervisors:
-		      </span>
-		      <span>
-		        <g:VerticalPanel ui:field='supervisorsVerticalPanel' />
-		      </span>
-		    </div>
-		    <div>
-		      <span class='{style.label}'>
-		        Members:
-		      </span>
-		      <span>
-		        <g:VerticalPanel ui:field='membersVerticalPanel' />
-		      </span>
-		    </div>
+			<g:HTMLPanel addStyleNames='{style.detailPanel}'>
+			  <table class='{style.detailTable}'>
+			    <tr>
+			      <td class='{style.label}'>
+			        Class Name:
+			      </td>
+			      <td>
+			        <g:InlineLabel ui:field='className' />
+			      </td>
+			    </tr>
+			    <tr>
+			      <td class='{style.label}'>
+			        Class Urn:
+			      </td>
+			      <td>
+			        <g:InlineLabel ui:field='classUrn' />
+			      </td>
+			    </tr>
+			    <tr>
+	          <td class='{style.label}'>
+	            Description:
+	          </td>
+	          <td>
+	            <g:InlineLabel ui:field='description' />
+	          </td>
+	        </tr>
+			    <tr>
+			      <td class='{style.label}'>
+			        Supervisors:
+			      </td>
+			      <td>
+			        <g:VerticalPanel ui:field='supervisorsVerticalPanel' />
+			      </td>
+			    </tr>
+			    <tr>
+			      <td class='{style.label}'>
+			        Members:
+			      </td>
+			      <td>
+			        <g:VerticalPanel ui:field='membersVerticalPanel' />
+			      </td>
+			    </tr>
+		    </table>
       </g:HTMLPanel>      
     </g:VerticalPanel>
   </g:HTMLPanel>
