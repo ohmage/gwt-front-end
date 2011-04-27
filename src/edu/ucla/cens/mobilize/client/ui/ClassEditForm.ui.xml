@@ -92,6 +92,61 @@
           </div>
        </g:HTMLPanel>
 
+       <g:HTMLPanel addStyleNames='{style.detailPanel}'>
+        <table class='{style.detailTable}'>
+          <tr>
+            <td class='{style.label}'>
+              Class Name:
+            </td>
+            <td>
+              <g:InlineLabel ui:field='className' />
+            </td>
+          </tr>
+          <tr>
+            <td class='{style.label}'>
+              Class Urn:
+            </td>
+            <td>
+              <g:InlineLabel ui:field='classUrn' />
+            </td>
+          </tr>
+          <tr>
+            <td class='{style.label}'>
+              Description:
+            </td>
+            <td>
+              <g:TextArea ui:field='descriptionTextArea' />
+            </td>
+          </tr>
+          <tr>
+            <td class='{style.label}'>
+              Supervisors:
+            </td>
+            <td>
+              <g:FlexTable ui:field='supervisorsFlexTable' addStyleNames='{style.supervisorList}' />
+            </td>
+          </tr>
+          <tr>
+            <td class='{style.label}'>
+              Members:
+            </td>
+            <td>
+              <g:FlexTable ui:field='membersFlexTable' addStyleNames='{style.memberList}' />
+            </td>
+          </tr>
+          <tr>
+            <td />
+            <td>
+              <g:Button ui:field='saveButton' addStyleNames='{style.saveButton}'>
+                Save
+              </g:Button>
+              <g:Button ui:field='cancelButton' addStyleNames='{style.cancelButton}'>
+                Cancel
+              </g:Button>
+            </td>
+           </tr>
+        </table>
+      </g:HTMLPanel>  
             
      </g:VerticalPanel>
    </g:HTMLPanel>
