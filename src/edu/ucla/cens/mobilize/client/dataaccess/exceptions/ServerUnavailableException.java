@@ -1,4 +1,4 @@
-package edu.ucla.cens.mobilize.client.rpcservice;
+package edu.ucla.cens.mobilize.client.dataaccess.exceptions;
 
 public class ServerUnavailableException extends Exception {
   private static final long serialVersionUID = 1L;

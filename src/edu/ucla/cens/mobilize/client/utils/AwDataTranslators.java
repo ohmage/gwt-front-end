@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
@@ -19,8 +18,6 @@ import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwData;
-import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignsAwData;
-import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigurationsAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
@@ -32,7 +29,6 @@ import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
-import edu.ucla.cens.mobilize.client.model.UserInfoOld;
 
 // json
 import com.google.gwt.json.client.JSONArray;
@@ -51,85 +47,6 @@ import com.google.gwt.json.client.JSONValue;
 public class AwDataTranslators {
     // Logging utility
     private static Logger _logger = Logger.getLogger(AwDataTranslators.class.getName());
-    
-    /**
-     * Translates a ConfigQueryAwData server response into a UserInfo object.  The UserInfo object
-     * is fairly complex, consisting of CampaignInfos, which contain SurveyInfos, which contain PromptInfos.
-     * Most of this is translated from the XML configuration which is contained in the config query response.
-     * 
-     * @param userName The user name to use in the user info object.
-     * @param awData The andwellness json to translate.
-     * @return The translated UserInfo.
-     */
-    public static UserInfoOld translateConfigQueryAwDataToUserInfo(String userName, ConfigQueryAwData awData) {
-        UserInfoOld userInfo = new UserInfoOld();
-        userInfo.setUserName(userName);
-        
-        _logger.finer("Creating a UserInfo for user: " + userName);
-        
-        // Run through the campaigns, storing each in a CampaignInfo
-        JsArray<CampaignsAwData> campaignListJS = awData.getCampaignList();
-        for (int i = 0; i < campaignListJS.length(); ++i) {
-            CampaignInfo newCampaignInfo = translateCampaignsAwDataToCampaignInfo(campaignListJS.get(i));
-            userInfo.addCampaign(newCampaignInfo);
-        }
-        
-        return userInfo;
-    }
-    
-    /**
-     * Translates a CampaignsAwData from the AW server config API into a CampaignInfo object.
-     * 
-     * @param awData The JSON to translate.
-     * @return The translated CampaignInfo object.
-     */
-    public static CampaignInfo translateCampaignsAwDataToCampaignInfo(CampaignsAwData awData) {
-        CampaignInfo campaignInfo = new CampaignInfo();
-        
-        _logger.finer("Creating a CampaignInfo with campaign name: " + awData.getCampaignName());
-
-        // Set the basic campaign information
-        campaignInfo.setCampaignName(awData.getCampaignName());
-        
-        // Now set the correct user role
-        String userRoleString = awData.getUserRole();
-        if ("participant".equals(userRoleString)) {
-          campaignInfo.setUserRole(UserRole.PARTICIPANT);
-        }
-        else if ("administrator".equals(userRoleString)) {
-          campaignInfo.setUserRole(UserRole.ADMIN);
-        }
-        else if ("researcher".equals(userRoleString)) {
-          campaignInfo.setUserRole(UserRole.RESEARCHER);
-        }
-        else if ("author".equals(userRoleString)) {
-          campaignInfo.setUserRole(UserRole.AUTHOR);
-        } 
-        else if ("supervisor".equals(userRoleString)) {
-          campaignInfo.setUserRole(UserRole.SUPERVISOR);
-        } 
-        else if ("analyst".equals(userRoleString)) {
-          campaignInfo.setUserRole(UserRole.ANALYST);
-        }
-        else {
-            _logger.warning("Do not understand the user role in the JSON: " + userRoleString);
-        }
-        
-        // Copy over the list of user names
-        JsArrayString userListJS = awData.getUserList();
-        for (int i = 0; i < userListJS.length(); ++i) {
-            campaignInfo.addUser(userListJS.get(i));
-        }
-        
-        // For each configuration data, add a ConfigurationInfo
-        JsArray<ConfigurationsAwData> configInfoJS = awData.getConfigurations();
-        for (int i = 0; i < configInfoJS.length(); ++i) {
-            ConfigurationInfo configInfo = translateConfigurationsAwDataToConfigurationInfo(configInfoJS.get(i));
-            campaignInfo.addConfiguration(configInfo);
-        }
-        
-        return campaignInfo;
-    }
     
     /**
      * Translates a ConfigurationsAwData from the AW server into a ConfigurationInfo object.

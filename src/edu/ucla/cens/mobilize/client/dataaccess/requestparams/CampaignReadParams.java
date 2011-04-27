@@ -1,4 +1,4 @@
-package edu.ucla.cens.mobilize.client.dataaccess.request;
+package edu.ucla.cens.mobilize.client.dataaccess.requestparams;
 
 import java.util.Date;
 import java.util.HashMap;

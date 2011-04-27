@@ -13,7 +13,7 @@ import edu.ucla.cens.mobilize.client.MainApp;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
-import edu.ucla.cens.mobilize.client.dataaccess.request.DataPointFilterParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 

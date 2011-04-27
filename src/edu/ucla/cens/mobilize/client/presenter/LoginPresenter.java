@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
-import edu.ucla.cens.mobilize.client.rpcservice.ServerUnavailableException;
+import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerUnavailableException;
 import edu.ucla.cens.mobilize.client.view.LoginView;
 
 public class LoginPresenter implements Presenter,
