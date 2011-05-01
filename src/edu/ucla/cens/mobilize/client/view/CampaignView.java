@@ -1,6 +1,8 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import java.util.List;
+import java.util.Map;
+
 import com.google.gwt.user.client.ui.IsWidget;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
@@ -44,7 +46,7 @@ public interface CampaignView extends IsWidget {
   void setCampaignList(List<CampaignConciseInfo> campaigns); 
   void setCampaignDetail(CampaignDetailedInfo campaign, boolean canEdit);
   void setCampaignEdit(CampaignDetailedInfo campaign);
-  void setClassListToChooseFrom(List<String> participants);
+  void setClassListToChooseFrom(Map<String, String> classIdToNameMap);
   void setAuthorListToChooseFrom(List<String> authors);
   void setPlotSideBarTitle(String title);
   

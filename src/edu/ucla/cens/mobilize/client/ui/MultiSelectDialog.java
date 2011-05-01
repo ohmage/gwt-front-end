@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -46,16 +47,29 @@ public class MultiSelectDialog extends Composite {
     });
   }
   
-  public void setItemsToChooseFrom(List<String> items) {
+  // use this version if display text and value (id) are the same
+  public void setItems(List<String> items) {
     listBox.clear();
     for (String item : items) {
-      // NOTE: value == text here. We may want value to be id instead.
-      listBox.addItem(item, item);
+      listBox.addItem(item, item); // value and display text are the same
     }
-    // give list box a minimum width
+    giveListBoxMinimumWidth();
+  }
+  
+  // use this version if you want to display a user friendly string
+  // but get back an id as the selected item value
+  public void setItems(Map<String, String> itemIdToDisplayNameMap) {
+    listBox.clear();
+    for (String key : itemIdToDisplayNameMap.keySet()) {
+      listBox.addItem(itemIdToDisplayNameMap.get(key), key); // key becomes value
+    }
+    giveListBoxMinimumWidth();
+  }
+  
+  public void giveListBoxMinimumWidth() {
     if (listBox.getElement().getClientWidth() < 200) {
       listBox.setWidth("200px");
-    }
+    }    
   }
   
   public void setCaption(String caption) {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -247,14 +248,17 @@ public class AwDataTranslators {
           if (userJSONObject == null) throw new Exception("user data field not a valid JSON object");
           UserInfoAwData userDataJSObject = (UserInfoAwData)userJSONObject.getJavaScriptObject();
           boolean canCreateFlag = userDataJSObject.getCanCreateFlag();
-          List<String> classes = userDataJSObject.getClasses();
+          Map<String, String> classNameToIdMap = userDataJSObject.getClasses();
+          Map<String, String> classIdToNameMap = new HashMap<String, String>();
+          for (String className : classNameToIdMap.keySet()) {
+            classIdToNameMap.put(classNameToIdMap.get(className), className);
+          }
           List<String> rolesAsStrings = userDataJSObject.getRoles();
           List<UserRole> roles = new ArrayList<UserRole>();
           for (String roleString : rolesAsStrings) {
             roles.add(UserRole.valueOf(roleString.toUpperCase()));
-            // FIXME: make sure string is valid?
           }
-          UserInfo userInfo = new UserInfo(userName, canCreateFlag, classes, roles);
+          UserInfo userInfo = new UserInfo(userName, canCreateFlag, classIdToNameMap, roles);
           users.add(userInfo);
         } catch (Exception e) { // FIXME: which exceptions?
           _logger.warning("Could not parse json for user: " + userName + ". Skipping record.");

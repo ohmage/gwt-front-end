@@ -53,7 +53,7 @@ public class CampaignDetailedInfo {
   
   public boolean canUpload(UserInfo userInfo) {
     boolean retval = false;
-    for (String classUserIsMemberOf : userInfo.getClasses()) {
+    for (String classUserIsMemberOf : userInfo.getClassIds()) {
       if (classes.contains(classUserIsMemberOf)) {
         retval = true;
         break;

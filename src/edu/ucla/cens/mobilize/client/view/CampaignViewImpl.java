@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -226,8 +227,8 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   }
 
   @Override
-  public void setClassListToChooseFrom(List<String> classes) {
-    this.campaignEdit.setClassListToChooseFrom(classes);
+  public void setClassListToChooseFrom(Map<String, String> classIdToNameMap) {
+    this.campaignEdit.setClassListToChooseFrom(classIdToNameMap);
   }
   
   @Override

@@ -1,6 +1,8 @@
 package edu.ucla.cens.mobilize.client.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import java.util.List;
 
@@ -66,7 +68,7 @@ public class CampaignEditForm extends Composite {
   
   // dialog that lets user select groups of classes
   MultiSelectDialog classChooserDialog;
-  List<String> classesToChooseFrom = new ArrayList<String>();
+  Map<String, String> classesToChooseFrom;
   
   // dialog that lets user select groups of authors
   MultiSelectDialog authorChooserDialog;
@@ -126,7 +128,9 @@ public class CampaignEditForm extends Composite {
     this.addClassesButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        classChooserDialog.setItemsToChooseFrom(classesToChooseFrom);
+        if (classesToChooseFrom != null) {
+          classChooserDialog.setItems(classesToChooseFrom);
+        }
         classChooserDialog.setSubmitHandler(new ClickHandler() {
           @Override
           public void onClick(ClickEvent event) {
@@ -144,7 +148,7 @@ public class CampaignEditForm extends Composite {
     this.addAuthorsButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        authorChooserDialog.setItemsToChooseFrom(authorsToChooseFrom);
+        authorChooserDialog.setItems(authorsToChooseFrom);
         authorChooserDialog.setSubmitHandler(new ClickHandler() {
           @Override
           public void onClick(ClickEvent event) {
@@ -360,8 +364,8 @@ public class CampaignEditForm extends Composite {
   }
   
   // when adding classes, author selects from this list
-  public void setClassListToChooseFrom(List<String> classes) {
-    this.classesToChooseFrom = classes != null ? classes : new ArrayList<String>();
+  public void setClassListToChooseFrom(Map<String, String> classes) {
+    this.classesToChooseFrom = classes != null ? classes : new HashMap<String, String>();
   }
 
   /****************** ADD/REMOVE AUTHORS ******************/

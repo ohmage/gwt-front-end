@@ -196,10 +196,11 @@ public class MockDataService implements DataService {
     counts.numUnreadResponses = Random.nextInt(20);
     
     boolean canCreate = true;
-    List<String> classes = new ArrayList<String>();
-    classes.add("ADDAMS_HS_CS101_Fall_2011");
-    classes.add("BH_HS_CS102_Spring_2011");
-    classes.add("Carson_HS_CS103_Spring_2011");
+    
+    Map<String, String> classIdToNameMap = new HashMap<String, String>();
+    classIdToNameMap.put("urn:class:ca:lausd:Addams_HS:CS101:Fall:2011", "ADDAMS_HS_CS101_Fall_2011");
+    classIdToNameMap.put("urn:class:ca:lausd:BoyleHeights_HS:CS102:Spring:2011", "BoyleHeights_HS_CS102_Spring_2011");
+    classIdToNameMap.put("urn:class:ca:lausd:Carson_HS:CS103:Spring:2011", "Carson_HS_CS103_Spring_2011");
     
     List<CampaignDetailedInfo> infos = new ArrayList<CampaignDetailedInfo>(this.campaigns.values());
     List<UserRole> roles = new ArrayList<UserRole>();
@@ -208,7 +209,7 @@ public class MockDataService implements DataService {
         roles.add(role);
       }
     }
-    UserInfo user = new UserInfo(username, canCreate, classes, roles);
+    UserInfo user = new UserInfo(username, canCreate, classIdToNameMap, roles);
     
     callback.onSuccess(user);
   }

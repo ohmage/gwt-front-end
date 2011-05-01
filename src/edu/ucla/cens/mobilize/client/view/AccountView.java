@@ -1,20 +1,17 @@
 package edu.ucla.cens.mobilize.client.view;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.IsWidget;
 
-public class AccountView extends Composite {
+public interface AccountView extends IsWidget {
 
-  private static AccountViewUiBinder uiBinder = GWT
-      .create(AccountViewUiBinder.class);
-
-  interface AccountViewUiBinder extends UiBinder<Widget, AccountView> {
+  public interface Presenter {
+    void onPasswordChange();
+    void onPasswordChangeSubmit();
+    void setView(AccountView view);
   }
-
-  public AccountView() {
-    initWidget(uiBinder.createAndBindUi(this));
-  }
-
+  
+  void setPresenter(Presenter presenter);
+  void showPasswordChangeForm();
+  void showUserDetails(String login, String email);
+  
 }

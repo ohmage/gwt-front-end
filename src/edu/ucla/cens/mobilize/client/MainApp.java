@@ -30,7 +30,7 @@ import edu.ucla.cens.mobilize.client.presenter.ExploreDataPresenter;
 import edu.ucla.cens.mobilize.client.presenter.LoginPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ResponsePresenter;
 import edu.ucla.cens.mobilize.client.ui.Header;
-import edu.ucla.cens.mobilize.client.view.AccountView;
+import edu.ucla.cens.mobilize.client.view.AccountViewImpl;
 import edu.ucla.cens.mobilize.client.view.CampaignView;
 import edu.ucla.cens.mobilize.client.view.CampaignViewImpl;
 import edu.ucla.cens.mobilize.client.view.ClassView;
@@ -80,7 +80,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
 	ResponseView responseView;
 	ExploreDataView exploreDataView;
 	ClassView classView;
-	AccountView accountView;
+	AccountViewImpl accountView;
 	HelpView helpView;
 	
 	// presenters
@@ -182,7 +182,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     responseView = new ResponseViewImpl();
     exploreDataView = new ExploreDataViewImpl();
     classView = new ClassViewImpl();
-    accountView = new AccountView();
+    accountView = new AccountViewImpl();
     helpView = new HelpView();
     
     // presenters

@@ -1,7 +1,10 @@
 package edu.ucla.cens.mobilize.client.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
@@ -11,14 +14,14 @@ public class UserInfo {
   private String userName; // login id
   private boolean canCreate = false; // if true, user can create a new campaign
   private UserRoles roles = new UserRoles(); // flags showing what roles are held by user
-  private List<String> classes = new ArrayList<String>(); // user groups
   private List<String> visibleUsers = new ArrayList<String>(); // whose info this user can see
+  private Map<String, String> classIdToNameMap;
   
   private UserStats stats = new UserStats();
   
   public UserInfo(String username, 
                   boolean canCreate, 
-                  List<String> classes,
+                  Map<String, String> classIdToNameMap,
                   List<UserRole> roles) {
     this.userName = username;
     this.canCreate = canCreate;
@@ -26,9 +29,8 @@ public class UserInfo {
     this.visibleUsers.add(this.userName); // most users can only see themselves
     
     // FIXME: user info service should also return list of users visible to this one
-    // FIXME: classes should have both class name and class urn
     
-    if (classes != null) this.classes.addAll(classes);
+    this.classIdToNameMap = classIdToNameMap;
 
     for (UserRole role : roles) {
       this.roles.addRole(role);
@@ -45,8 +47,12 @@ public class UserInfo {
     return this.stats;
   }
   
-  public List<String> getClasses() {
-    return this.classes;
+  public Map<String, String> getClasses() {
+    return this.classIdToNameMap;
+  }
+  
+  public Set<String> getClassIds() {
+    return this.classIdToNameMap.keySet();
   }
   
   // gets list of users whose data this user is allowed to see
