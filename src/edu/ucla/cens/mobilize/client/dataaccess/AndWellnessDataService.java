@@ -366,7 +366,6 @@ public class AndWellnessDataService implements DataService {
 
         @Override
         public void onError(Request request, Throwable exception) {
-          // TODO Auto-generated method stub
           _logger.severe(exception.getMessage());
           callback.onFailure(exception);
         }

@@ -159,6 +159,7 @@
               </td>
               <td>
                <g:InlineLabel ui:field='campaignUrn' />
+               <g:Hidden ui:field='campaignUrnHiddenField' name='campaign_urn' />
                <div class='formHint'>(defined in xml config)</div>
               </td>
             </tr>
@@ -198,8 +199,9 @@
               <td>
                 <g:FlexTable ui:field='authorsFlexTable' 
                              addStyleNames='{style.authorList}' />
-                <!--<g:Hidden ui:field='authorHiddenField' name='authors' />-->
+                   
                 <g:Hidden ui:field='authorHiddenField' />
+                <!--<g:Hidden ui:field='authorHiddenField' name='authors' />-->
                 <g:Button ui:field='addAuthorsButton'>Add Authors</g:Button>
               </td>
             </tr>

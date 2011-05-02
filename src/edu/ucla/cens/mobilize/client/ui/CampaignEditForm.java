@@ -45,6 +45,7 @@ public class CampaignEditForm extends Composite {
   @UiField Hidden authTokenHiddenField; 
   @UiField InlineLabel campaignName;
   @UiField InlineLabel campaignUrn;
+  @UiField Hidden campaignUrnHiddenField;
   @UiField TextArea campaignDescriptionTextArea;
   @UiField Button addClassesButton;
   @UiField FlexTable classesFlexTable;
@@ -64,7 +65,6 @@ public class CampaignEditForm extends Composite {
 
   boolean isNewCampaign;
   boolean formIsInitialized = false;
-  String campaignId;
   
   // dialog that lets user select groups of classes
   MultiSelectDialog classChooserDialog;
@@ -170,7 +170,6 @@ public class CampaignEditForm extends Composite {
         assert formIsInitialized : "You must call initializeForm(authToken, serverLocation) before submitting";
         // server expects a comma-delimited lists of classes and authors
         classHiddenField.setValue(getCampaignClassesSerialized());
-        classHiddenField.setValue("urn:class:ca:lausd:Addams_HS:CS101:Fall:2011"); // FIXME: deleteme
         authorHiddenField.setValue(getCampaignAuthorsSerialized());
         // TODO: validate form. 
         // - if this is a create, there must be an xml file
@@ -214,12 +213,11 @@ public class CampaignEditForm extends Composite {
   }
   
   public String getCampaignId() {
-    return this.campaignId;
+    return this.campaignUrn.getText();
   }
   
   public void setCampaign(CampaignDetailedInfo campaign) {
     if (campaign != null) {
-      this.campaignId = campaign.getCampaignId();
       
       // some fields are only editable when creating new campaign
       setIsNewCampaignFlag(false);
@@ -228,6 +226,7 @@ public class CampaignEditForm extends Composite {
       // general info
       this.campaignName.setText(campaign.getCampaignName());
       this.campaignUrn.setText(campaign.getCampaignId());
+      this.campaignUrnHiddenField.setValue(campaign.getCampaignId());
       this.campaignDescriptionTextArea.setText(campaign.getDescription());
       
       // classes
