@@ -124,10 +124,7 @@ public class CampaignList extends Composite {
    * @param campaigns
    */
   public void setCampaigns(List<CampaignConciseInfo> campaigns) {
-    if (this.campaignGrid.getRowCount() < (campaigns.size() + 1)) {
-      this.campaignGrid.resizeRows(campaigns.size() + 1); // one extra row for header
-    }
-    
+    this.campaignGrid.resizeRows(campaigns.size() + 1); // one extra row for header
     int row = 1; // 0th row is header
     for (CampaignConciseInfo campaignInfo : campaigns) {
       addCampaign(row++, campaignInfo);

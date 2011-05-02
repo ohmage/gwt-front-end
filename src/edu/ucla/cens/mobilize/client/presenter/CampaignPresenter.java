@@ -9,6 +9,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AndWellnessConstants;
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
@@ -225,7 +226,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
             public void onSuccess(String result) {
               // redirect to campaign list so user can verify that 
               // deleted campaign is gone and display success message
-              fetchAndShowAllCampaigns();
+              History.newItem(HistoryTokens.campaignList());
               showMessage("Campaign " + campaignId + " has been deleted.");
             }
       });
