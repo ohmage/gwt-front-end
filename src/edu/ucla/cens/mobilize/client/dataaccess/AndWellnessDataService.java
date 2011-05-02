@@ -340,7 +340,7 @@ public class AndWellnessDataService implements DataService {
     Map<String, String> params = new HashMap<String, String>();
     assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
     params.put("auth_token", this.authToken);
-    params.put("usernames", username); // FIXME: allow more than one?
+    params.put("user_list", username); // FIXME: allow more than one?
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Attempting to fetch user info with parameters: " + postParams);
     try {

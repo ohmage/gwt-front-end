@@ -222,7 +222,7 @@ public class AwDataTranslators {
     }
     
     // Expects json like:
-    // {"result":"success","data":{"temp.user":{"classes":["andwellness"],"roles":["supervisor"],"permissions":{"cancreate":true}}}}
+    // {"result":"success","data":{"user.adv.supa":{"classes":{"urn:class:ca:lausd:BoyleHeights_HS:CS102:Spring:2011":"BH_HS_CS102_Spring_2011","urn:class:ca:lausd:Addams_HS:CS101:Fall:2011":"Addams_HS_CS101_Fall_2011"},"permissions":{"cancreate":true},"campaign_roles":["participant","author","analyst","supervisor"],"class_roles":["privileged"]}}}
     public static List<UserInfo> translateUserReadQueryJSONToUserInfoList(String userReadQueryResponseJSON) {
       List<UserInfo> users = new ArrayList<UserInfo>();
       
@@ -248,11 +248,7 @@ public class AwDataTranslators {
           if (userJSONObject == null) throw new Exception("user data field not a valid JSON object");
           UserInfoAwData userDataJSObject = (UserInfoAwData)userJSONObject.getJavaScriptObject();
           boolean canCreateFlag = userDataJSObject.getCanCreateFlag();
-          Map<String, String> classNameToIdMap = userDataJSObject.getClasses();
-          Map<String, String> classIdToNameMap = new HashMap<String, String>();
-          for (String className : classNameToIdMap.keySet()) {
-            classIdToNameMap.put(classNameToIdMap.get(className), className);
-          }
+          Map<String, String> classIdToNameMap = userDataJSObject.getClasses();
           List<String> rolesAsStrings = userDataJSObject.getRoles();
           List<UserRole> roles = new ArrayList<UserRole>();
           for (String roleString : rolesAsStrings) {
