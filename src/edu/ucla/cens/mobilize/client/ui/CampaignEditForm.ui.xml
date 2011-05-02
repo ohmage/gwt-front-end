@@ -178,7 +178,9 @@
 	              <label>Xml Config:</label>
 	            </td>
 	            <td>
-	             <g:FileUpload ui:field='chooseFileButton' name='xml' />
+	             <g:HTMLPanel ui:field='fileInputContainer'>
+	               <g:FileUpload ui:field='chooseFileButton' name='xml' />
+	             </g:HTMLPanel>
 	            </td>
 	          </tr>
             <tr>

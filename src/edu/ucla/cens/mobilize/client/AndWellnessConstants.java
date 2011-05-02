@@ -16,7 +16,8 @@ public class AndWellnessConstants {
     // DeployStatus is set in the gwt module file
     public final static DeployStatus status = GWT.create(DeployStatus.class);
 
-    private final static String debugServerLocation = "http://dev1.andwellness.org/app/";
+    //private final static String debugServerLocation = "http://dev1.andwellness.org/app/";
+    private final static String debugServerLocation = "http://localhost:8080/app/";
     private final static String releaseServerLocation = "../app/"; // same as web server
     
     // API Endpoints

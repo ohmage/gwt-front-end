@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.ui;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +61,8 @@ public class CampaignEditForm extends Composite {
   @UiField Button cancelButton;
   @UiField Button deleteButton;
   @UiField HTMLPanel deletePanel;
-
+  @UiField HTMLPanel fileInputContainer; // so file input can be removed/reattached
+  
   @UiField FormPanel formPanel;
 
   boolean isNewCampaign;
@@ -174,7 +176,10 @@ public class CampaignEditForm extends Composite {
         // TODO: validate form. 
         // - if this is a create, there must be an xml file
         // - for both edit and create, there must be at least one class
+        // FIXME: hack because back end throws error on empty xml field instead of ignoring it
+        if (chooseFileButton.getFilename().isEmpty()) chooseFileButton.removeFromParent();
         formPanel.submit();
+        if (!chooseFileButton.isAttached()) fileInputContainer.add(chooseFileButton); // reattach
       }
     });
     
@@ -263,8 +268,14 @@ public class CampaignEditForm extends Composite {
       clearFormFields();
       this.deletePanel.setVisible(false);
       this.header.setText("Creating New Campaign");
+      // detach urn field b/c create api doesn't expect it
+      this.campaignUrnHiddenField.removeFromParent();
     } else { // editing existing campaign
       this.deletePanel.setVisible(true);
+      // edit requires a campaign_urn
+      if (this.campaignUrn.getParent() == null) {
+        this.campaignUrn.getParent().getElement().appendChild(this.campaignUrnHiddenField.getElement());
+      }
     }
   }
   
