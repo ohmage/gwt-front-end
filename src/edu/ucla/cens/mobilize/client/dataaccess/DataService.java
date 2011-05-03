@@ -34,7 +34,7 @@ public interface DataService {
    * @param userName
    * @param authToken (see fetchAuthorizationToken)
    */
-  void init(String username, String authToken);
+  void init(String userName, String authToken);
   
   /**
    * Accessor for the auth token currently being used by the data service.
@@ -54,8 +54,13 @@ public interface DataService {
   void fetchAuthorizationToken(String userName, String password, 
                                final AsyncCallback<AuthorizationTokenQueryAwData> callback);
   
+  void changePassword(String userName, 
+                      String oldPassword, 
+                      String newPassword, 
+                      final AsyncCallback<String> callback);
+  
   // users
-  void fetchUserInfo(String username, final AsyncCallback<UserInfo> asyncCallback);
+  void fetchUserInfo(String userName, final AsyncCallback<UserInfo> asyncCallback);
   
   // campaigns
   void fetchCampaignIds(Map<String, List<String>> params,

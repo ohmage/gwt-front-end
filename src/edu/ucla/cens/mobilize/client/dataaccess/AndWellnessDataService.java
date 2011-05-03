@@ -61,22 +61,7 @@ public class AndWellnessDataService implements DataService {
   
   private static Logger _logger = Logger.getLogger(AndWellnessDataService.class.getName());
   
-  /**
-   * Constructor initializes the various RequestBuilders to contact the AW server.
-   * 
-   * @note urls come from AndWellnessConstants.getXUrl() to enable using 
-   * different urls for different deploy type (e.g., local for debug, 
-   * remote for release)
-   */
   public AndWellnessDataService() {
-    /*
-    authorizationService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getAuthorizationUrl()));
-    authorizationService.setHeader("Content-Type", URL.encode("application/x-www-form-urlencoded"));
-    dataPointService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getDataPointUrl()));
-    dataPointService.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    configurationService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getConfigurationUrl()));
-    configurationService.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    */
   }
 
   // lazy init
@@ -333,6 +318,16 @@ public class AndWellnessDataService implements DataService {
       }
       
   }
+
+
+  @Override
+  public void changePassword(String userName, 
+                             String oldPassword, 
+                             String newPassword,
+                             final AsyncCallback<String> callback) {
+    // FIXME: real data
+    callback.onSuccess("fixme");    
+  }
   
   @Override
   public void fetchUserInfo(final String username, final AsyncCallback<UserInfo> callback) {
@@ -547,6 +542,7 @@ public class AndWellnessDataService implements DataService {
     // TODO Auto-generated method stub
     
   }
+
   
   
 }

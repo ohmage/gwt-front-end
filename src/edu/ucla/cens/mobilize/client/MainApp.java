@@ -23,6 +23,7 @@ import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
 import edu.ucla.cens.mobilize.client.dataaccess.AndWellnessDataService;
+import edu.ucla.cens.mobilize.client.presenter.AccountPresenter;
 import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ClassPresenter;
 import edu.ucla.cens.mobilize.client.presenter.DashboardPresenter;
@@ -89,6 +90,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
 	ResponsePresenter responsePresenter;
 	ExploreDataPresenter exploreDataPresenter;
   ClassPresenter classPresenter;
+  AccountPresenter accountPresenter;
 	
   // Logging utility
   private static Logger _logger = Logger.getLogger(MainApp.class.getName());	
@@ -191,6 +193,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     responsePresenter = new ResponsePresenter(userInfo, mockDataService, eventBus);
     exploreDataPresenter = new ExploreDataPresenter();
     classPresenter = new ClassPresenter(userInfo, mockDataService, eventBus);
+    accountPresenter = new AccountPresenter(userInfo, awDataService, eventBus);
 
     // connect views and presenters
     dashboardPresenter.setView(dashboardView);
@@ -200,6 +203,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     responsePresenter.onFilterChange();
     exploreDataPresenter.setView(exploreDataView);
     classPresenter.setView(classView);
+    accountPresenter.setView(accountView);
   }
   
   private void initLayoutAndNavigation() {
@@ -333,6 +337,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
       classPresenter.go(params);
       showClasses();
     } else if (view.equals("account")) {
+      accountPresenter.go(params);
       showAccount();
     } else if (view.equals("help")) {
       showHelp();

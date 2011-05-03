@@ -3,20 +3,53 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
 		.detailRow {
+			padding: 5px;
 	  }
 	  .detailLabel {
+	  	display: inline-block;
+	  	width: 150px;
+	  }
+	  .errorMsg {
+	  	color: red;
+	  	font-weight: bold;
+	  }
+	  .info {
 	  }
 	</ui:style>
 	<g:HTMLPanel>
+	<g:InlineLabel ui:field='messageBox' addStyleNames='{style.info}' />
 	<g:HTMLPanel addStyleNames='{style.detailRow}'>
-		<g:InlineLabel addStyleNames='{style.detailLabel}'>Login:</g:InlineLabel>
-		<g:InlineLabel ui:field='login'></g:InlineLabel>
+		<g:InlineLabel addStyleNames='{style.detailLabel}'>User Login:</g:InlineLabel>
+		<g:InlineLabel ui:field='loginLabel'></g:InlineLabel>
 	</g:HTMLPanel>
 	<g:HTMLPanel addStyleNames='{style.detailRow}'>
-    <g:InlineLabel addStyleNames='{style.detailLabel}'>Email:</g:InlineLabel>
-    <g:InlineLabel ui:field='email'></g:InlineLabel>
+    <g:InlineLabel addStyleNames='{style.detailLabel}'>Can create campaigns:</g:InlineLabel>
+    <g:InlineLabel ui:field='canCreateLabel'></g:InlineLabel>
   </g:HTMLPanel>
-  <g:Button>Change Password</g:Button>
-	<g:Button>Reset Password</g:Button>
+  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+    <g:InlineLabel addStyleNames='{style.detailLabel}'>Classes:</g:InlineLabel>
+    <g:VerticalPanel ui:field='classesVerticalPanel' />
+  </g:HTMLPanel>
+  <g:Button ui:field='passwordChangeButton'>Change Password</g:Button>
+  
+  <g:HTMLPanel ui:field='passwordChangePanel'>
+	  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+	    <g:InlineLabel addStyleNames='{style.detailLabel}'>Old Password:</g:InlineLabel>
+	    <g:PasswordTextBox ui:field='oldPasswordTextBox' />
+	  </g:HTMLPanel>
+	  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+	    <g:InlineLabel addStyleNames='{style.detailLabel}'>New Password:</g:InlineLabel>
+	    <g:PasswordTextBox ui:field='newPasswordTextBox' />
+	  </g:HTMLPanel>
+	  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+	    <g:Label ui:field='passwordMismatchError' addStyleNames='{style.errorMsg}'>
+	      Passwords do not match. Please try again.
+	    </g:Label>
+	    <g:InlineLabel addStyleNames='{style.detailLabel}'>Confirm New Password:</g:InlineLabel>
+	    <g:PasswordTextBox ui:field='newPasswordConfirmTextBox' />
+	  </g:HTMLPanel>
+	  <g:Button ui:field='passwordChangeSubmitButton'>Submit</g:Button>
+  </g:HTMLPanel>
+  
 	</g:HTMLPanel>
 </ui:UiBinder> 

@@ -188,6 +188,16 @@ public class MockDataService implements DataService {
   public void init(String username, String auth_token) {
     // TODO Auto-generated method stub
   }
+
+
+  @Override
+  public void changePassword(String userName, 
+                             String oldPassword,
+                             String newPassword,
+                             final AsyncCallback<String> callback) {
+    // TODO Auto-generated method stub
+    
+  }
   
   @Override
   public void fetchUserInfo(String username, AsyncCallback<UserInfo> callback) {
@@ -360,5 +370,6 @@ public class MockDataService implements DataService {
     }
     callback.onFailure(new Exception("Class with id " + classId + " not found."));
   }
+
 
 }
