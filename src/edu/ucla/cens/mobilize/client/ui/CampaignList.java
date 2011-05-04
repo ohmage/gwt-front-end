@@ -22,7 +22,7 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRole;
-import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 
 public class CampaignList extends Composite {
 
@@ -123,15 +123,15 @@ public class CampaignList extends Composite {
    * renders a list of campaigns in a table
    * @param campaigns
    */
-  public void setCampaigns(List<CampaignConciseInfo> campaigns) {
+  public void setCampaigns(List<CampaignShortInfo> campaigns) {
     this.campaignGrid.resizeRows(campaigns.size() + 1); // one extra row for header
     int row = 1; // 0th row is header
-    for (CampaignConciseInfo campaignInfo : campaigns) {
+    for (CampaignShortInfo campaignInfo : campaigns) {
       addCampaign(row++, campaignInfo);
     }
   }
   
-  private void addCampaign(int row, CampaignConciseInfo campaignInfo) {
+  private void addCampaign(int row, CampaignShortInfo campaignInfo) {
     // stripe odd rows
     if (row % 2 != 0) {
       this.campaignGrid.getRowFormatter().addStyleName(row, style.oddRow());
@@ -167,7 +167,7 @@ public class CampaignList extends Composite {
     
   }
   
-  private Widget getActionsWidget(CampaignConciseInfo campaign) {
+  private Widget getActionsWidget(CampaignShortInfo campaign) {
     Panel panel = new FlowPanel();
     String campaignId = campaign.getCampaignId();
     if (campaign.userCanViewDetails()) {

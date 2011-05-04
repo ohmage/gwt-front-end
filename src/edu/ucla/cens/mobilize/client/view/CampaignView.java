@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 
 /**
@@ -43,7 +43,7 @@ public interface CampaignView extends IsWidget {
   void hideMsg();
 
   // set data for display
-  void setCampaignList(List<CampaignConciseInfo> campaigns); 
+  void setCampaignList(List<CampaignShortInfo> campaigns); 
   void setCampaignDetail(CampaignDetailedInfo campaign, boolean canEdit);
   void setCampaignEdit(CampaignDetailedInfo campaign);
   void setClassListToChooseFrom(Map<String, String> classIdToNameMap);

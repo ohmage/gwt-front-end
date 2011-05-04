@@ -22,9 +22,8 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwDa
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigurationsAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
-import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
-import edu.ucla.cens.mobilize.client.model.CampaignInfo;
 import edu.ucla.cens.mobilize.client.model.ConfigurationInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyInfo;
@@ -268,11 +267,11 @@ public class AwDataTranslators {
     
     // FIXME: correct example when server response is fixed to get rid of extra array
     // {"result":"success","data":{"urn:andwellness:nih":{"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}},"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
-    public static List<CampaignConciseInfo> translateCampaignReadQueryJSONtoCampaignConciseInfoList(
+    public static List<CampaignShortInfo> translateCampaignReadQueryJSONtoCampaignConciseInfoList(
         String responseText) {
       
       // List that will be returned
-      List<CampaignConciseInfo> campaigns = new ArrayList<CampaignConciseInfo>(); 
+      List<CampaignShortInfo> campaigns = new ArrayList<CampaignShortInfo>(); 
       
       // Parse response obj
       @SuppressWarnings("deprecation")
@@ -312,7 +311,7 @@ public class AwDataTranslators {
           String creationTimeString = campaignHash.get("creation_timestamp").isString().stringValue();
           Date creationTime = DateUtils.translateFromServerFormat(creationTimeString);
           // create the object
-          CampaignConciseInfo campaignInfo = new CampaignConciseInfo(campaignId,
+          CampaignShortInfo campaignInfo = new CampaignShortInfo(campaignId,
                                                                      campaignName,
                                                                      runningState,
                                                                      privacyState,

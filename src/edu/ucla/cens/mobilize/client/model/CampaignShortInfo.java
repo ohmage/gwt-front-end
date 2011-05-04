@@ -7,7 +7,7 @@ import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 
 // NOTE: this is a read-only class
-public class CampaignConciseInfo {
+public class CampaignShortInfo {
   private String campaignId;
   private String campaignName;
   private RunningState runningState;
@@ -15,7 +15,7 @@ public class CampaignConciseInfo {
   private UserRoles userRoles;
   private Date creationTime;
   
-  public CampaignConciseInfo(String campaignId,
+  public CampaignShortInfo(String campaignId,
                              String campaignName,
                              RunningState runningState,
                              Privacy privacy,

@@ -22,7 +22,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointQueryAwDa
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
-import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -30,7 +30,7 @@ import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
 import edu.ucla.cens.mobilize.client.utils.XmlConfigTranslator;
 
 public class MockDataService implements DataService {
-  List<CampaignConciseInfo> campaignsConcise = new ArrayList<CampaignConciseInfo>();
+  List<CampaignShortInfo> campaignsConcise = new ArrayList<CampaignShortInfo>();
   List<SurveyResponse> surveyResponses = new ArrayList<SurveyResponse>();
   
   Map<String, CampaignDetailedInfo> campaigns = new HashMap<String, CampaignDetailedInfo>();
@@ -167,7 +167,7 @@ public class MockDataService implements DataService {
       
       // copy over relevant values
       for (CampaignDetailedInfo cdi : campaigns.values()) {
-        campaignsConcise.add(new CampaignConciseInfo(cdi.getCampaignId(),
+        campaignsConcise.add(new CampaignShortInfo(cdi.getCampaignId(),
             cdi.getCampaignName(),
             cdi.getRunningState(),
             cdi.getPrivacy(),
@@ -228,7 +228,7 @@ public class MockDataService implements DataService {
   public void fetchCampaignIds(Map<String, List<String>> params,
       AsyncCallback<List<String>> callback) {
     List<String> ids = new ArrayList<String>(); 
-    for (CampaignConciseInfo info : campaignsConcise) {
+    for (CampaignShortInfo info : campaignsConcise) {
       ids.add(info.getCampaignId());
     }
     callback.onSuccess(ids);
@@ -236,7 +236,7 @@ public class MockDataService implements DataService {
   
   @Override
   public void fetchCampaignListShort(CampaignReadParams params,
-      AsyncCallback<List<CampaignConciseInfo>> callback) {
+      AsyncCallback<List<CampaignShortInfo>> callback) {
     callback.onSuccess(campaignsConcise);    
   }
   

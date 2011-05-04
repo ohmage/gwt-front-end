@@ -27,7 +27,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerException;
 import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerUnavailableException;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DataPointFilterParams;
-import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
@@ -381,7 +381,7 @@ public class AndWellnessDataService implements DataService {
 
   @Override
   public void fetchCampaignListShort(CampaignReadParams params,
-                                final AsyncCallback<List<CampaignConciseInfo>> callback) {
+                                final AsyncCallback<List<CampaignShortInfo>> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
     params.authToken = this.authToken;
     params.client = this.client;
@@ -394,7 +394,7 @@ public class AndWellnessDataService implements DataService {
         public void onResponseReceived(Request request, Response response) {
           try {
             String responseText = getResponseTextOrThrowException(requestBuilder, response);
-            List<CampaignConciseInfo> campaigns = AwDataTranslators.translateCampaignReadQueryJSONtoCampaignConciseInfoList(responseText);
+            List<CampaignShortInfo> campaigns = AwDataTranslators.translateCampaignReadQueryJSONtoCampaignConciseInfoList(responseText);
             callback.onSuccess(campaigns);
           } catch (Exception exception) {
             callback.onFailure(exception);

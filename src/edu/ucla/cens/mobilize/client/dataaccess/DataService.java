@@ -8,7 +8,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DataPointFilterParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
-import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -68,7 +68,7 @@ public interface DataService {
   
   
   void fetchCampaignListShort(CampaignReadParams params, 
-                              final AsyncCallback<List<CampaignConciseInfo>> callback);
+                              final AsyncCallback<List<CampaignShortInfo>> callback);
   
   void fetchCampaignListDetail(List<String> campaignIds, 
                              final AsyncCallback<List<CampaignDetailedInfo>> callback);

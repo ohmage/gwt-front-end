@@ -12,7 +12,7 @@ import edu.ucla.cens.mobilize.client.AndWellnessConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
-import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.view.CampaignView;
@@ -23,7 +23,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   CampaignView view;
   
   // internal data structures  
-  private ArrayList<CampaignConciseInfo> campaigns = new ArrayList<CampaignConciseInfo>();
+  private ArrayList<CampaignShortInfo> campaigns = new ArrayList<CampaignShortInfo>();
   private CampaignDetailedInfo campaign;
   private EventBus eventBus;
   private DataService dataService;
@@ -95,14 +95,14 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   public void fetchAndShowAllCampaigns() {
     CampaignReadParams params = new CampaignReadParams(); // empty params fetches everything
     params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
-    this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignConciseInfo>>() {
+    this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignShortInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
         // TODO
       }
 
       @Override
-      public void onSuccess(List<CampaignConciseInfo> result) {
+      public void onSuccess(List<CampaignShortInfo> result) {
         campaigns.clear();
         campaigns.addAll(result);
         view.setCampaignList(campaigns);

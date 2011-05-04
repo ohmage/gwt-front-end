@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.ucla.cens.mobilize.client.model.CampaignConciseInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.ui.CampaignDetail;
 import edu.ucla.cens.mobilize.client.ui.CampaignEditForm;
@@ -143,7 +143,7 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   }
 
   @Override
-  public void setCampaignList(List<CampaignConciseInfo> campaigns) {
+  public void setCampaignList(List<CampaignShortInfo> campaigns) {
     campaignList.setCampaigns(campaigns);
   }
 
