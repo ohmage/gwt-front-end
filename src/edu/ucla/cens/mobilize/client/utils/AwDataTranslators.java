@@ -224,7 +224,7 @@ public class AwDataTranslators {
       return new ArrayList<SurveyResponse>(responses.values());
     }*/
     
-    public static List<SurveyResponse> translatePromptReadQueryJSONToSurveyResponseList(
+    public static List<SurveyResponse> translateSurveyResponseReadQueryJSONToSurveyResponseList(
         String promptResponseReadQueryJSON,
         String campaignId) throws Exception {
       JSONValue value = JSONParser.parse(promptResponseReadQueryJSON);
@@ -257,7 +257,8 @@ public class AwDataTranslators {
           if (!surveyResponsesByKey.containsKey(surveyResponseKey)) {
             SurveyResponse surveyResponse = new SurveyResponse();
             surveyResponse.setResponseKey(surveyResponseKey);
-            surveyResponse.setCampaignId(campaignId); // campaign name must be filled in later
+            surveyResponse.setCampaignId(campaignId); 
+            // NOTE: campaignName not included in prompt data, must be filled in later
             surveyResponse.setResponseDate(promptAwData.getTimestamp());
             surveyResponse.setUserName(promptAwData.getUser());
             surveyResponse.setSurveyId(promptAwData.getSurveyId());
@@ -324,7 +325,7 @@ public class AwDataTranslators {
     
     // FIXME: correct example when server response is fixed to get rid of extra array
     // {"result":"success","data":{"urn:andwellness:nih":{"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}},"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
-    public static List<CampaignShortInfo> translateCampaignReadQueryJSONtoCampaignConciseInfoList(
+    public static List<CampaignShortInfo> translateCampaignReadQueryJSONtoCampaignShortInfoList(
         String responseText) {
       
       // List that will be returned
@@ -342,7 +343,7 @@ public class AwDataTranslators {
       JSONObject dataHash = responseObj.get("data").isObject();
       
       // For each campaign, translate the serialized info into a 
-      // CampaignConciseInfo object and save
+      // CampaignShortInfo object and save
       if (dataHash == null) return null;
       Set<String> campaignIds = dataHash.keySet();
       JSONValue jsonValue = null;

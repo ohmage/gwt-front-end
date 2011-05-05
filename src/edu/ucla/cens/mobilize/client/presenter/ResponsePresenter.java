@@ -16,6 +16,7 @@ import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
@@ -126,17 +127,17 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     
     CampaignReadParams params = new CampaignReadParams();
     params.userRole_opt = UserRole.PARTICIPANT;
-    this.dataService.fetchCampaignIds(params, new AsyncCallback<List<String>>() {
+    this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignShortInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
         // TODO Auto-generated method stub
       }
 
       @Override
-      public void onSuccess(List<String> result) {
+      public void onSuccess(List<CampaignShortInfo> result) {
         
-        for (String campaignId : result) {
-          fetchAndShowResponsesForCampaign(campaignId);
+        for (CampaignShortInfo campaignInfo : result) {
+          fetchAndShowResponsesForCampaign(campaignInfo.getCampaignId(), campaignInfo.getCampaignName());
         }
       }
     });
@@ -144,7 +145,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   
   // fetch responses for just one campaign, add them to existing list and refresh display
   // TODO: sort after adding
-  private void fetchAndShowResponsesForCampaign(String campaignId) {
+  private void fetchAndShowResponsesForCampaign(String campaignId, final String campaignName) {
     this.dataService.fetchSurveyResponses(this.userInfo.getUserName(),
         campaignId,
         new AsyncCallback<List<SurveyResponse>>() {
@@ -155,6 +156,10 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           
           @Override
           public void onSuccess(List<SurveyResponse> result) {
+            // fill in campaign name before displaying
+            for (SurveyResponse response : result) {
+              response.setCampaignName(campaignName);
+            }
             responses.addAll(result);
             updateDisplay();
           }

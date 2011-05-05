@@ -61,7 +61,7 @@ public class ResponseDisclosurePanel extends Composite
 	}
 	
 	public ResponseDisclosurePanel setResponse(SurveyResponse response) {
-		campaignName.setText(response.getCampaignName()); 
+		campaignName.setText(response.getCampaignName());
 		surveyName.setText(response.getSurveyName());
 		Date date = response.getResponseDate();
 		String dateString = (date != null) ? this.dateTimeFormat.format(date) : "";

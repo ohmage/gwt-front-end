@@ -442,7 +442,7 @@ public class AndWellnessDataService implements DataService {
         public void onResponseReceived(Request request, Response response) {
           try {
             String responseText = getResponseTextOrThrowException(requestBuilder, response);
-            List<CampaignShortInfo> campaigns = AwDataTranslators.translateCampaignReadQueryJSONtoCampaignConciseInfoList(responseText);
+            List<CampaignShortInfo> campaigns = AwDataTranslators.translateCampaignReadQueryJSONtoCampaignShortInfoList(responseText);
             callback.onSuccess(campaigns);
           } catch (Exception exception) {
             callback.onFailure(exception);
@@ -595,7 +595,7 @@ public class AndWellnessDataService implements DataService {
             // no exception thrown? then it was a success
             // TODO: get List of awdatas from the text
             List<SurveyResponse> result =
-              AwDataTranslators.translatePromptReadQueryJSONToSurveyResponseList(responseText, campaignId);
+              AwDataTranslators.translateSurveyResponseReadQueryJSONToSurveyResponseList(responseText, campaignId);
             callback.onSuccess(result);
           } catch (Exception exception) {
             _logger.severe(exception.getMessage());

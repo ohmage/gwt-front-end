@@ -6,7 +6,12 @@ public class PromptResponseAwData extends JavaScriptObject {
   protected PromptResponseAwData() {};
 
   //public final native String getSurveyResponseKey() /*-{ return this.survey_key; }-*/;
-  public final native String getSurveyResponseKey() /*-{ return this.survey_id; }-*/; // FIXME: use key instead
+  
+  // FIXME: hack b/c real survey key not implemented yet
+  public final native String getSurveyResponseKey() /*-{
+    return [this.survey_id, this.timestamp].join(":"); 
+  }-*/; 
+  
   public final native String getDisplayType() /*-{ return this.prompt_display_type; }-*/;
   public final native String getPromptId() /*-{ return this.prompt_id; }-*/;
   

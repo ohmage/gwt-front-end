@@ -194,8 +194,6 @@
       </g:HTMLPanel>
     </g:center>
     
-    <g:east size='200'><g:HTMLPanel /><!--placeholder--></g:east>
-    
     <g:south size='40'>
       <g:HTMLPanel>
          
