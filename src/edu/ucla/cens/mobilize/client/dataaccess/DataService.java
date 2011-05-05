@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Map;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
@@ -85,6 +86,8 @@ public interface DataService {
 
   void fetchSurveyResponses(String userName,
                             String campaignId,
+                            String surveyName,
+                            Privacy privacy,
                             final AsyncCallback<List<SurveyResponse>> callback);
   
   void fetchClassList(String schoolId,

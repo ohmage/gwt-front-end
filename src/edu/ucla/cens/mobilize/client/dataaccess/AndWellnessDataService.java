@@ -16,6 +16,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AndWellnessConstants;
+import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorAwData;
@@ -574,6 +575,8 @@ public class AndWellnessDataService implements DataService {
   @Override
   public void fetchSurveyResponses(String userName,
                                    final String campaignId,
+                                   String surveyName, // ignored if null or ""
+                                   Privacy privacy,
                                    final AsyncCallback<List<SurveyResponse>> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     SurveyResponseReadParams params = new SurveyResponseReadParams();
@@ -581,8 +584,11 @@ public class AndWellnessDataService implements DataService {
     params.client = this.client;
     params.campaignUrn = campaignId;
     params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
-    params.userList.clear();
     params.userList.add(userName);
+    // if surveyName is omitted, readparams object sends special token for all surveys
+    if (surveyName != null && !surveyName.isEmpty())  params.surveyIdList_opt.add(surveyName); 
+    if (privacy != null) params.privacyState_opt = privacy;
+    
     String postParams = params.toString();
     _logger.fine("Fetching survey responses with params: " + postParams);
     final RequestBuilder requestBuilder = getSurveyResponseReadRequestBuilder();

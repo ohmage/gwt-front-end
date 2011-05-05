@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -42,6 +43,7 @@ public class ResponseDisclosurePanel extends Composite
 	@UiField Label surveyName;
 	@UiField Label responseDateLabel;
 	@UiField Label responsePrivacy;
+	@UiField Hidden responseKey;
 	@UiField HTML details;
 	@UiField DisclosurePanel disclosurePanel;
 	
@@ -67,6 +69,8 @@ public class ResponseDisclosurePanel extends Composite
 		String dateString = (date != null) ? this.dateTimeFormat.format(date) : "";
 		responseDateLabel.setText(dateString);
     responsePrivacy.setText(response.getPrivacyState().toString());
+    responseKey.setValue(response.getResponseKey());
+
 		StringBuilder sb = new StringBuilder();
 		for (PromptResponse promptResponse : response.getPromptResponses()) {
 	    sb.append("<div class='").append(style.promptResponse()).append("'>");
@@ -119,6 +123,14 @@ public class ResponseDisclosurePanel extends Composite
 	  this.responsePrivacy.removeStyleName(style.privacyInvisible());
 	  this.responsePrivacy.removeStyleName(style.privacyPrivate());
 	  this.responsePrivacy.removeStyleName(style.privacyPublic());
+	}
+	
+	public boolean isSelected() {
+	  return this.checkbox.getValue();
+	}
+	
+	public String getResponseKey() {
+	  return this.responseKey.getValue();
 	}
 	
 }

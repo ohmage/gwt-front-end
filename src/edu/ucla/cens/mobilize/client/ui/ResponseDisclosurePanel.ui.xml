@@ -77,6 +77,7 @@
 		       <g:Label ui:field='surveyName' addStyleNames='{style.surveyName}'>survey name</g:Label>
 		       <g:Label ui:field='responsePrivacy' addStyleNames='{style.responsePrivacy}' />
 		       <g:Label ui:field='responseDateLabel' addStyleNames='{style.date}' />
+		       <g:Hidden ui:field='responseKey' />
 	     </g:HorizontalPanel>
 	   </g:customHeader>
 	   <g:HTML ui:field='details' addStyleNames='{style.promptResponseCtr}'>

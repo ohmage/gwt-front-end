@@ -1,11 +1,14 @@
 package edu.ucla.cens.mobilize.client.view;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -49,10 +52,10 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField Label sectionHeaderDetail;
   @UiField VerticalPanel responseList;
   @UiField Button shareButtonTop;
-  @UiField Button unshareButtonTop;
+  @UiField Button makePrivateButtonTop;
   @UiField Button deleteButtonTop;
   @UiField Button shareButtonBottom;
-  @UiField Button unshareButtonBottom;
+  @UiField Button makePrivateButtonBottom;
   @UiField Button deleteButtonBottom;
   @UiField Anchor selectAllLinkTop;
   @UiField Anchor selectNoneLinkTop;
@@ -83,8 +86,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       @Override
       public void execute() {
         selectedPrivacy = Privacy.PRIVATE;
-        clearLeftSideBarStyles();
-        privateMenuItem.setStyleName(style.sideBarItemSelected());
         presenter.onFilterChange();
       }
     });
@@ -93,8 +94,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       @Override
       public void execute() {
         selectedPrivacy = Privacy.SHARED;
-        clearLeftSideBarStyles();
-        sharedMenuItem.setStyleName(style.sideBarItemSelected());
         presenter.onFilterChange();
       }
     });
@@ -103,8 +102,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       @Override
       public void execute() {
         selectedPrivacy = Privacy.UNDEFINED;
-        clearLeftSideBarStyles();
-        allMenuItem.setStyleName(style.sideBarItemSelected());
         presenter.onFilterChange();
       }
     });
@@ -163,7 +160,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   @Override
   public void setParticipantList(List<String> participantNames) {
-    // FIXME: if there's only one participant, this should not be a dropdown
     participantFilter.clear();
     for (String name : participantNames) {
       participantFilter.addItem(name); // FIXME: two param method to add value?
@@ -233,50 +229,41 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @Override
   public void renderPrivate(List<SurveyResponse> responses) {
-    // FIXME: fake private/public (deleteme)
-    for (SurveyResponse response : responses) {
-      response.setPrivacyState(Privacy.PRIVATE);
-    }
-    renderResponses(responses);
+    selectedPrivacy = Privacy.PRIVATE;
+    clearLeftSideBarStyles();
+    privateMenuItem.setStyleName(style.sideBarItemSelected());
     this.sectionHeaderTitle.setText("Private Responses");
     this.sectionHeaderDetail.setText("Visible only to you.");
+    renderResponses(responses);
     // FIXME: supervisor should see different text ("Visible only to responder"?)
   }
 
   @Override
   public void renderShared(List<SurveyResponse> responses) {
-    // FIXME: fake private/public (deleteme)
-    for (SurveyResponse response : responses) {
-      response.setPrivacyState(Privacy.SHARED);
-    }
-    renderResponses(responses);
+    selectedPrivacy = Privacy.SHARED;
+    clearLeftSideBarStyles();
+    sharedMenuItem.setStyleName(style.sideBarItemSelected());
     this.sectionHeaderTitle.setText("Shared responses");
     this.sectionHeaderDetail.setText("Visible to all campaign participants.");
+    renderResponses(responses);
   }
 
   @Override
   public void renderInvisible(List<SurveyResponse> responses) {
-    // FIXME: fake private/public (deleteme)
-    for (SurveyResponse response : responses) {
-      response.setPrivacyState(Privacy.INVISIBLE);
-    }
-    renderResponses(responses);
     this.sectionHeaderTitle.setText("Invisible Responses");
     this.sectionHeaderDetail.setText("Visible only to supervisor, not to responder or any other participants.");
+    renderResponses(responses);
   }
   
   @Override
   public void renderAll(List<SurveyResponse> responses) {
-    // FIXME: fake private/public (deleteme)
-    int counter = 0;
-    Privacy[] choices = { Privacy.PRIVATE, Privacy.SHARED};
-    for (SurveyResponse response : responses) {
-      response.setPrivacyState(choices[counter++ % 2]);
-    }
-    renderResponses(responses);
+    selectedPrivacy = Privacy.UNDEFINED;
+    clearLeftSideBarStyles();
+    allMenuItem.setStyleName(style.sideBarItemSelected());
     this.sectionHeaderTitle.setText("All Responses");
     this.sectionHeaderDetail.setText("Private responses are visible only to you. " +
                                      "Shared responses are visible to all participants. ");
+    renderResponses(responses);
   }
   
   private void renderResponses(List<SurveyResponse> responses) {
@@ -284,8 +271,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     for (SurveyResponse response : responses) {
       ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
       responseWidget.setResponse(response);
-      // generate css style name from the enum.
-      // one of: responsePublic, responsePrivate, responseInvisible, responseUndefined
       switch (response.getPrivacyState()) {
         case SHARED:
           responseWidget.setPrivacyStylePublic();
@@ -325,6 +310,50 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public Privacy getSelectedPrivacyState() {
     return this.selectedPrivacy;
+  }
+
+  @Override
+  public List<HasClickHandlers> getShareButtons() {
+    List<HasClickHandlers> retval = new ArrayList<HasClickHandlers>();
+    retval.add(this.shareButtonTop);
+    retval.add(this.shareButtonBottom);
+    return retval;
+  }
+
+  @Override
+  public List<HasClickHandlers> getMakePrivateButtons() {
+    List<HasClickHandlers> retval = new ArrayList<HasClickHandlers>();
+    retval.add(this.makePrivateButtonTop);
+    retval.add(this.makePrivateButtonBottom);
+    return retval;
+  }
+
+  @Override
+  public List<HasClickHandlers> getDeleteButtons() {
+    List<HasClickHandlers> retval = new ArrayList<HasClickHandlers>();
+    retval.add(this.deleteButtonTop);
+    retval.add(this.deleteButtonBottom);
+    return retval;
+  }
+
+  @Override
+  public List<HasValueChangeHandlers<String>> getFilters() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<String> getSelectedSurveyResponseKeys() {
+    List<String> keys = new ArrayList<String>();
+    for (int i = 0; i < responseList.getWidgetCount(); i++) {
+      if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
+        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
+        if (panel.isSelected()) {
+          keys.add(panel.getResponseKey());
+        }
+      }
+    }    
+    return keys;
   }
 
   

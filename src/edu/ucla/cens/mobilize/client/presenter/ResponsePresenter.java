@@ -6,10 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.MainApp;
+import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.UserRole;
@@ -50,84 +55,102 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   @Override
   public void go(Map<String, List<String>> params) {
     // TODO: set filters, fetch and display data based on params
-    loadData(); // gets all responses for this user
-    updateDisplay();
+    fetchAndShowResponses(); 
   }
 
   @Override
   public void setView(ResponseView view) {
     this.view = view;
     this.view.setPresenter(this);
+    setViewEventHandlers();
   }
   
   @Override
   public void onFilterChange() {
-    loadData(); // gets filter values during load
-    updateDisplay();
-  }
-
-  @Override
-  public void onShare() {
-    // rpc set shared
-    // if success, move to shared table
-  }
-
-  @Override
-  public void onUnshare() {
-    // rpc set status to unshared
-    // if success, move to unshared table
-  }
-
-  @Override
-  public void onDelete() {
-    // note: view should have prompted user Are You Sure?
-    // rpc delete
-    // if success, remove from table
-  }
-
-  private void loadData() {
     this.responses.clear();
-    fetchAndShowAllResponses();
-
-    /*
-    // get filter params from gui
-    SurveyResponseReadParams params = new SurveyResponseReadParams();
-    params.participantId = this.view.getSelectedParticipant();
-    params.privacyState = this.view.getSelectedPrivacyState();
-    params.surveyId = this.view.getSelectedSurvey();
-    // data point api only allows queries for one campaign at a time,
-    // so iterate through campaigns and update display after loading 
-    // data for each one
-    for (String campaignId : this.campaignIds) {
-      this.dataService.fetchSurveyResponses(userInfo.getUserName(),
-                                            campaignId,
-                                            new AsyncCallback<List<SurveyResponse>>() {
-
-        @Override
-        public void onFailure(Throwable caught) {
-          // TODO: display error message
-        }
-
-        @Override
-        public void onSuccess(List<SurveyResponse> result) {
-          responses.addAll(result);
-          updateDisplay();
-        }
-      });
-    } */  
+    String userName = this.view.getSelectedParticipant();
+    String campaignId = this.view.getSelectedCampaign();
+    String surveyId = this.view.getSelectedSurvey();
+    Privacy privacy = this.view.getSelectedPrivacyState();
+    fetchAndShowResponses(); // gets filter values during load
   }
   
-  // fetchs list of campaign ids, then fetch responses for each
-  private void fetchAndShowAllResponses() {
-    // TODO: get values from filters
-    //SurveyResponseReadParams params = new SurveyResponseReadParams();
-    //params.participantId = this.view.getSelectedParticipant();
-    //params.privacyState = this.view.getSelectedPrivacyState();
-    //params.surveyId = this.view.getSelectedSurvey();
+  // view must be set before calling this
+  private void setViewEventHandlers() {
+    assert view != null : "view must be set before calling setViewEventHandlers";
+    // clicking a share buttons shares all selected responses
+    for (HasClickHandlers shareButton : this.view.getShareButtons()) {
+      shareButton.addClickHandler(shareClickHandler);
+    }
+    // clicking a make private button makes all selected responses private
+    for (HasClickHandlers makePrivateButton : this.view.getMakePrivateButtons()) {
+      makePrivateButton.addClickHandler(makePrivateClickHandler);
+    }
+    // clicking delete button deletes all selected responses
+    for (HasClickHandlers deleteButton : this.view.getDeleteButtons()) {
+      deleteButton.addClickHandler(deleteClickHandler);
+    }
+  }
+  
+  private ClickHandler shareClickHandler = new ClickHandler() {
+    @Override
+    public void onClick(ClickEvent event) {
+      shareSelectedResponses();
+    }
+  };
+  
+  private ClickHandler makePrivateClickHandler = new ClickHandler() {
+    @Override
+    public void onClick(ClickEvent event) {
+      makeSelectedResponsesPrivate();
+    }
+  };
+
+  private ClickHandler deleteClickHandler = new ClickHandler() {
+    @Override
+    public void onClick(ClickEvent event) {
+      Window.alert("TODO: prompt for delete confirmation");
+      deleteSelectedResponses();
+    }
+  };
+  
+  
+  private void shareSelectedResponses() {
+    List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
+    Window.alert("would have shared: " + CollectionUtils.join(responseKeys, ","));
+  }
+  
+  private void makeSelectedResponsesPrivate() {
+    List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
+    Window.alert("would have made private: " + CollectionUtils.join(responseKeys, ","));
+  }
+  
+  private void deleteSelectedResponses() {
+    List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
+    Window.alert("would have deleted: " + CollectionUtils.join(responseKeys, ","));
+  }
+  
+  // call with defaults (logged in user and other filters set to show all)
+  private void fetchAndShowResponses() { 
+    fetchAndShowResponses(this.userInfo.getUserName(), null, null, null);
+  }
+  
+  // fetches list of campaigns, then fetches responses for each
+  // args are values to filter by. any arg set to null or "" is ignored
+  private void fetchAndShowResponses(final String userName,
+                                     final String campaignId, 
+                                     final String surveyName,
+                                     final Privacy privacy) {
     
-    CampaignReadParams params = new CampaignReadParams();
-    params.userRole_opt = UserRole.PARTICIPANT;
-    this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignShortInfo>>() {
+    CampaignReadParams campaignReadParams = new CampaignReadParams();
+    campaignReadParams.userRole_opt = UserRole.PARTICIPANT;
+    
+    // filter by campaign, if applicable
+    if (campaignId != null && !campaignId.isEmpty()) {
+      campaignReadParams.campaignUrns_opt.add(campaignId);
+    }
+    
+    this.dataService.fetchCampaignListShort(campaignReadParams, new AsyncCallback<List<CampaignShortInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
         // TODO Auto-generated method stub
@@ -137,7 +160,11 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       public void onSuccess(List<CampaignShortInfo> result) {
         
         for (CampaignShortInfo campaignInfo : result) {
-          fetchAndShowResponsesForCampaign(campaignInfo.getCampaignId(), campaignInfo.getCampaignName());
+          fetchAndShowResponsesForCampaign(userName,
+                                           campaignInfo.getCampaignId(), 
+                                           campaignInfo.getCampaignName(),
+                                           surveyName,
+                                           privacy);
         }
       }
     });
@@ -145,9 +172,15 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   
   // fetch responses for just one campaign, add them to existing list and refresh display
   // TODO: sort after adding
-  private void fetchAndShowResponsesForCampaign(String campaignId, final String campaignName) {
-    this.dataService.fetchSurveyResponses(this.userInfo.getUserName(),
+  private void fetchAndShowResponsesForCampaign(String userName,
+                                                String campaignId, 
+                                                final String campaignName,
+                                                String surveyName,
+                                                Privacy privacy) {
+    this.dataService.fetchSurveyResponses(userName,
         campaignId,
+        surveyName,
+        privacy,
         new AsyncCallback<List<SurveyResponse>>() {
           @Override
           public void onFailure(Throwable caught) {
@@ -160,7 +193,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             for (SurveyResponse response : result) {
               response.setCampaignName(campaignName);
             }
+            // add to responses already fetched from other campaigns
             responses.addAll(result);
+            // TODO: sort
             updateDisplay();
           }
     });

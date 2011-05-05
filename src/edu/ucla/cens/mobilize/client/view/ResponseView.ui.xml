@@ -87,7 +87,7 @@
     	padding: 5px 10px;
     }
     .shareButton{
-      background: #EEEEEE url('images/accept.png') no-repeat;
+      background: #EEEEEE url('images/group_small.png') no-repeat;
     }
     .sideBarItemSelected {
     	background-color: #EEE;
@@ -96,10 +96,10 @@
     .deleteButton {
       background: #EEEEEE url('images/delete.png') no-repeat;
     }
-    .unshareButton {
-      background: #EEEEEE url('images/unshare.png') no-repeat;
+    .makePrivateButton {
+      background: #EEEEEE url('images/lock_small.png') no-repeat;
     }
-    .shareButton, .deleteButton, .unshareButton {
+    .shareButton, .deleteButton, .makePrivateButton {
       background-position: 2px 50%;
       padding: 2px 2px 2px 18px;
     }
@@ -176,8 +176,8 @@
 	        <g:Button ui:field='shareButtonTop' addStyleNames='{style.shareButton}'>
 	          Share
 	        </g:Button> 
-	        <g:Button ui:field='unshareButtonTop' addStyleNames='{style.unshareButton}'>
-	          Unshare
+	        <g:Button ui:field='makePrivateButtonTop' addStyleNames='{style.makePrivateButton}'>
+	          Make Private
 	        </g:Button>
 	        <!-- fixme: show confirm dialog for delete -->
 	        <g:Button ui:field='deleteButtonTop' addStyleNames='{style.deleteButton}'>
@@ -219,7 +219,7 @@
 	        <g:Button ui:field='shareButtonBottom' addStyleNames='{style.shareButton}'>
 	          Share
 	        </g:Button> 
-	        <g:Button ui:field='unshareButtonBottom' addStyleNames='{style.unshareButton}'>
+	        <g:Button ui:field='makePrivateButtonBottom' addStyleNames='{style.makePrivateButton}'>
 	          Unshare
 	        </g:Button>
 	        <!-- fixme: show confirm dialog for delete -->
