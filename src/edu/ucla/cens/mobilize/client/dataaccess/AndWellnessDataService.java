@@ -602,7 +602,7 @@ public class AndWellnessDataService implements DataService {
             // TODO: get List of awdatas from the text
             List<SurveyResponse> result =
               AwDataTranslators.translateSurveyResponseReadQueryJSONToSurveyResponseList(responseText, campaignId);
-            callback.onSuccess(result);
+              callback.onSuccess(result);
           } catch (Exception exception) {
             _logger.severe(exception.getMessage());
             callback.onFailure(exception);

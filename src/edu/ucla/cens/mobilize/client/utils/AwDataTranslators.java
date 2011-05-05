@@ -34,6 +34,7 @@ import edu.ucla.cens.mobilize.client.model.UserInfo;
 
 // json
 import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
@@ -224,13 +225,20 @@ public class AwDataTranslators {
       return new ArrayList<SurveyResponse>(responses.values());
     }*/
     
+    // returns null if there were no responses
     public static List<SurveyResponse> translateSurveyResponseReadQueryJSONToSurveyResponseList(
         String promptResponseReadQueryJSON,
         String campaignId) throws Exception {
       JSONValue value = JSONParser.parse(promptResponseReadQueryJSON);
       JSONObject responseHash = value.isObject();
       if (responseHash == null) throw new Exception("Invalid json response: " + responseHash);
-      if (!responseHash.containsKey("data")) throw new Exception("Json response does not have data field.");
+      
+      // if there were no responses for this query (for this campaign) return empty list immediately
+      JSONNumber numberOfPrompts = responseHash.get("metadata").isObject().get("number_of_prompts").isNumber();
+      if (numberOfPrompts.doubleValue() < 1) return new ArrayList<SurveyResponse>();
+      
+      // get list of prompt response aw data objects
+      if (!responseHash.containsKey("data")) throw new Exception("data field missing");
       JSONValue dataValue = responseHash.get("data");
       JSONArray array = dataValue.isArray();
       if (array == null) throw new Exception("Json in data field of response is not an array.");
@@ -245,14 +253,17 @@ public class AwDataTranslators {
           // TODO: log error
         }
       }
-      Map<String, SurveyResponse> surveyResponsesByKey = new HashMap<String, SurveyResponse>();
+      
+      // store prompt responses by survey key
+      // TODO: sort?
+      Map<Integer, SurveyResponse> surveyResponsesByKey = new HashMap<Integer, SurveyResponse>();
       for (PromptResponseAwData promptAwData : promptResponseAwDataList) {
         try {
           PromptResponse promptResponse = new PromptResponse();
           promptResponse.setPromptId(promptAwData.getPromptId());
           promptResponse.setPromptType(PromptType.fromString(promptAwData.getPromptType()));
           promptResponse.setResponse(promptAwData.getPromptResponse());
-          String surveyResponseKey = promptAwData.getSurveyResponseKey();
+          Integer surveyResponseKey = promptAwData.getSurveyResponseKey();
           if (surveyResponseKey == null) throw new Exception("No survey response key found in json: " + promptAwData.toString());
           if (!surveyResponsesByKey.containsKey(surveyResponseKey)) {
             SurveyResponse surveyResponse = new SurveyResponse();

@@ -69,7 +69,7 @@ public class ResponseDisclosurePanel extends Composite
 		String dateString = (date != null) ? this.dateTimeFormat.format(date) : "";
 		responseDateLabel.setText(dateString);
     responsePrivacy.setText(response.getPrivacyState().toString());
-    responseKey.setValue(response.getResponseKey());
+    responseKey.setValue(Integer.toString(response.getResponseKey()));
 
 		StringBuilder sb = new StringBuilder();
 		for (PromptResponse promptResponse : response.getPromptResponses()) {

@@ -15,6 +15,9 @@ public class SurveyResponseReadParams extends RequestParams {
   public String campaignUrn;
   public String client;
   public OutputFormat outputFormat;
+  
+  // tell server to include survey response key (needed for updating response)
+  public boolean returnId = true;
 
   public List<String> userList = new ArrayList<String>();
   
@@ -54,6 +57,8 @@ public class SurveyResponseReadParams extends RequestParams {
     params.put("column_list", getStringOrDefault(this.columnList_opt));
     params.put("survey_id_list", getStringOrDefault(this.surveyIdList_opt));
     //params.put("prompt_id_list", getStringOrDefault(this.promptIdList_opt));
+    
+    params.put("return_id", this.returnId ? "true" : "false");
         
     if (!this.privacyState_opt.equals(Privacy.UNDEFINED)) { // leave off if undefined
       params.put("privacy_state", this.privacyState_opt.toString().toLowerCase());

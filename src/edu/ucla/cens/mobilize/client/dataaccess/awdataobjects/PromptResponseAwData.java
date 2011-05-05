@@ -5,18 +5,15 @@ import com.google.gwt.core.client.JavaScriptObject;
 public class PromptResponseAwData extends JavaScriptObject {
   protected PromptResponseAwData() {};
 
-  //public final native String getSurveyResponseKey() /*-{ return this.survey_key; }-*/;
-  
-  // FIXME: hack b/c real survey key not implemented yet
-  public final native String getSurveyResponseKey() /*-{
-    return [this.survey_id, this.timestamp].join(":"); 
-  }-*/; 
+  public final native int getSurveyResponseKey() /*-{ return this.survey_key; }-*/;
   
   public final native String getDisplayType() /*-{ return this.prompt_display_type; }-*/;
   public final native String getPromptId() /*-{ return this.prompt_id; }-*/;
   
   // response can be text, number, or uuid of an image. use prompt type to determine which
-  public final native String getPromptResponse() /*-{ return this.prompt_response; }-*/;
+  public final native String getPromptResponse() /*-{ 
+    return this.prompt_response + ""; // make sure it's a string 
+  }-*/;
   public final native String getPromptType() /*-{ return this.prompt_type; }-*/;
   
   public final native String getSurveyDescription() /*-{ return this.survey_description; }-*/;

@@ -18,7 +18,7 @@ public class SurveyResponse {
   String campaignId; // urn
 	String campaignName;
 	String surveyId;
-	String dbKey; // needed for updating response in db
+	int dbKey; // needed for updating response in db
 	String surveyName;
 	List<PromptResponse> promptResponses;
 	
@@ -55,8 +55,8 @@ public class SurveyResponse {
 	public void setSurveyId(String id) { setSurveyName(id); }
 	
 	// response key is db id needed for updating or deleting response
-	public String getResponseKey() { return this.dbKey; }
-	public void setResponseKey(String dbKey) { this.dbKey = dbKey; } 
+	public int getResponseKey() { return this.dbKey; }
+	public void setResponseKey(int dbKey) { this.dbKey = dbKey; } 
 	
 	public Date getResponseDate() { return this.responseDate; }
 	public void setResponseDate(String dateStringInServerFormat) {
