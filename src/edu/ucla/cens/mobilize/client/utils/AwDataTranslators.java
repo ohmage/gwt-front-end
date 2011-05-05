@@ -15,17 +15,19 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigurationsAwData;
-import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.PromptResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ConfigurationInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
+import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -34,6 +36,7 @@ import edu.ucla.cens.mobilize.client.model.UserInfo;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 
 /**
@@ -184,6 +187,7 @@ public class AwDataTranslators {
         return promptInfo;
     }
     
+    /*
     // TODO: what exceptions can be thrown and where should they be caught?
     public static List<SurveyResponse> translateDataPointsToSurveyResponses(
         List<DataPointAwData> dataPoints, CampaignDetailedInfo campaignInfo) {
@@ -218,6 +222,59 @@ public class AwDataTranslators {
       }
       
       return new ArrayList<SurveyResponse>(responses.values());
+    }*/
+    
+    public static List<SurveyResponse> translatePromptReadQueryJSONToSurveyResponseList(
+        String promptResponseReadQueryJSON,
+        String campaignId) throws Exception {
+      JSONValue value = JSONParser.parse(promptResponseReadQueryJSON);
+      JSONObject responseHash = value.isObject();
+      if (responseHash == null) throw new Exception("Invalid json response: " + responseHash);
+      if (!responseHash.containsKey("data")) throw new Exception("Json response does not have data field.");
+      JSONValue dataValue = responseHash.get("data");
+      JSONArray array = dataValue.isArray();
+      if (array == null) throw new Exception("Json in data field of response is not an array.");
+      // TODO: create survey response list, translate promptresponses one at a time and add
+      List<PromptResponseAwData> promptResponseAwDataList = new ArrayList<PromptResponseAwData>();
+      for (int i = 0; i < array.size(); i++) {
+        JSONObject obj = array.get(i).isObject();
+        if (obj != null) {
+          promptResponseAwDataList.add((PromptResponseAwData)obj.getJavaScriptObject());
+          // TODO: combine with below - make just one loop
+        } else {
+          // TODO: log error
+        }
+      }
+      Map<String, SurveyResponse> surveyResponsesByKey = new HashMap<String, SurveyResponse>();
+      for (PromptResponseAwData promptAwData : promptResponseAwDataList) {
+        try {
+          PromptResponse promptResponse = new PromptResponse();
+          promptResponse.setPromptId(promptAwData.getPromptId());
+          promptResponse.setPromptType(PromptType.fromString(promptAwData.getPromptType()));
+          promptResponse.setResponse(promptAwData.getPromptResponse());
+          String surveyResponseKey = promptAwData.getSurveyResponseKey();
+          if (surveyResponseKey == null) throw new Exception("No survey response key found in json: " + promptAwData.toString());
+          if (!surveyResponsesByKey.containsKey(surveyResponseKey)) {
+            SurveyResponse surveyResponse = new SurveyResponse();
+            surveyResponse.setResponseKey(surveyResponseKey);
+            surveyResponse.setCampaignId(campaignId); // campaign name must be filled in later
+            surveyResponse.setResponseDate(promptAwData.getTimestamp());
+            surveyResponse.setUserName(promptAwData.getUser());
+            surveyResponse.setSurveyId(promptAwData.getSurveyId());
+            surveyResponse.setSurveyName(promptAwData.getSurveyTitle());
+            // GOTCHA: assumes privacy is same for all prompts within a survey response.
+            // If we enabled per-prompt privacy instead of per-survey, this would break.
+            surveyResponse.setPrivacyState(Privacy.valueOf(promptAwData.getPrivacy().toUpperCase()));
+            surveyResponsesByKey.put(surveyResponse.getResponseKey(), surveyResponse);
+          }
+          surveyResponsesByKey.get(surveyResponseKey).addPromptResponse(promptResponse);
+        } catch (Exception exception) { // FIXME: specific exceptions
+          _logger.severe("Skipping unparseable prompt response. Error was: " + exception.getMessage());          
+        }
+      }
+      List<SurveyResponse> surveyResponses = new ArrayList<SurveyResponse>();
+      surveyResponses.addAll(surveyResponsesByKey.values());
+      return surveyResponses;
     }
     
     // Expects json like:

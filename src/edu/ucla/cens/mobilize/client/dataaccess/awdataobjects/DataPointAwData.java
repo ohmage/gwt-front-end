@@ -16,11 +16,13 @@ public class DataPointAwData extends JavaScriptObject {
     // FIXME: use real data
     private static int counter=0;
     public final String getSurveyId() {
+      
       // NOTE: surveyIds was static class member but caused exception when running compiled version
       String[] surveyIds = {"diet", "excerciseAndActivity", "foodButton"};
       int num = counter++ % 3;
       return surveyIds[num];
     }
+    
     
     // TODO: verify these are correct json string values
     public final Privacy getPrivacyState() {

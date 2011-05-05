@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.exceptions.NotLoggedInException;
 import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerException;
 import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerUnavailableException;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
-import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DataPointFilterParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -50,6 +51,9 @@ public class AndWellnessDataService implements DataService {
   RequestBuilder userReadService;
   RequestBuilder campaignReadService;
   RequestBuilder campaignDeleteService;
+  RequestBuilder surveyResponseReadService;
+  RequestBuilder surveyResponseUpdateService;
+  RequestBuilder surveyResponseDeleteService;
   
   // NOTE: campaignCreate and campaignUpdate services are not included because 
   // they require file upload and so must be done with a formPanel
@@ -98,6 +102,33 @@ public class AndWellnessDataService implements DataService {
       this.campaignDeleteService.setHeader("Content-Type", "application/x-www-form-urlencoded");
     }
     return this.campaignDeleteService;    
+  }
+  
+  //lazy init
+  private RequestBuilder getSurveyResponseReadRequestBuilder() {
+    if (this.surveyResponseReadService == null) {
+      this.surveyResponseReadService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getSurveyResponseReadUrl()));
+      this.surveyResponseReadService.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    }
+    return this.surveyResponseReadService;    
+  }
+  
+  //lazy init
+  private RequestBuilder getSurveyResponseUpdateRequestBuilder() {
+    if (this.surveyResponseUpdateService == null) {
+      this.surveyResponseUpdateService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getSurveyResponseUpdateUrl()));
+      this.surveyResponseUpdateService.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    }
+    return this.surveyResponseUpdateService;    
+  }
+  
+  //lazy init
+  private RequestBuilder getSurveyResponseDeleteRequestBuilder() {
+    if (this.surveyResponseDeleteService == null) {
+      this.surveyResponseDeleteService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getSurveyResponseDeleteUrl()));
+      this.surveyResponseDeleteService.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    }
+    return this.surveyResponseDeleteService;    
   }
   
   /**
@@ -373,11 +404,27 @@ public class AndWellnessDataService implements DataService {
 
 
   @Override
-  public void fetchCampaignIds(Map<String, List<String>> params,
-      AsyncCallback<List<String>> callback) {
-    // TODO Auto-generated method stub
+  public void fetchCampaignIds(CampaignReadParams params, 
+                               final AsyncCallback<List<String>> callback) {
     
+    fetchCampaignListShort(params, new AsyncCallback<List<CampaignShortInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        // TODO Auto-generated method stub
+      }
+
+      @Override
+      public void onSuccess(List<CampaignShortInfo> result) {
+        List<String> campaignIds = new ArrayList<String>();
+        for (CampaignShortInfo info : result) {
+          campaignIds.add(info.getCampaignId());
+        }
+        // invoke original callback
+        callback.onSuccess(campaignIds);
+      }
+    });    
   }
+  
 
   @Override
   public void fetchCampaignListShort(CampaignReadParams params,
@@ -385,6 +432,7 @@ public class AndWellnessDataService implements DataService {
     assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
     params.authToken = this.authToken;
     params.client = this.client;
+    params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
     String postParams = params.toString();
     _logger.fine("Attempting to fetch campaign list with parameters: " + postParams);
     final RequestBuilder requestBuilder = getCampaignReadRequestBuilder();
@@ -517,17 +565,55 @@ public class AndWellnessDataService implements DataService {
   }
 
   @Override
-  public void fetchDataPoints(String campaignId, DataPointFilterParams params,
+  public void fetchDataPoints(String campaignId, SurveyResponseReadParams params,
       AsyncCallback<List<DataPointAwData>> callback) {
     // TODO Auto-generated method stub
     
   }
 
   @Override
-  public void fetchSurveyResponses(String campaignId,
-      DataPointFilterParams params, AsyncCallback<List<SurveyResponse>> callback) {
-    // TODO Auto-generated method stub
-    
+  public void fetchSurveyResponses(String userName,
+                                   final String campaignId,
+                                   final AsyncCallback<List<SurveyResponse>> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    SurveyResponseReadParams params = new SurveyResponseReadParams();
+    params.authToken = this.authToken;
+    params.client = this.client;
+    params.campaignUrn = campaignId;
+    params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
+    params.userList.clear();
+    params.userList.add(userName);
+    String postParams = params.toString();
+    _logger.fine("Fetching survey responses with params: " + postParams);
+    final RequestBuilder requestBuilder = getSurveyResponseReadRequestBuilder();
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            // TODO: get List of awdatas from the text
+            List<SurveyResponse> result =
+              AwDataTranslators.translatePromptReadQueryJSONToSurveyResponseList(responseText, campaignId);
+            callback.onSuccess(result);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }    
   }
 
   @Override

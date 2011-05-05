@@ -12,8 +12,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import edu.ucla.cens.mobilize.client.MainApp;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
-import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DataPointFilterParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
@@ -27,6 +29,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   List<String> campaignIds = new ArrayList<String>();
   List<String> surveys = new ArrayList<String>();
   List<SurveyResponse> responses = new ArrayList<SurveyResponse>();
+  
+  UserInfo userInfo;
 
   private static Logger _logger = Logger.getLogger(MainApp.class.getName());
   
@@ -39,12 +43,14 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.participants.addAll(userInfo.getVisibleUsers());
     this.eventBus = eventBus;
     this.dataService = dataService;
+    this.userInfo = userInfo;
   }
   
   @Override
   public void go(Map<String, List<String>> params) {
     // TODO: set filters, fetch and display data based on params
-    
+    loadData(); // gets all responses for this user
+    updateDisplay();
   }
 
   @Override
@@ -80,21 +86,20 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
   private void loadData() {
     this.responses.clear();
-    
+    fetchAndShowAllResponses();
+
+    /*
     // get filter params from gui
-    DataPointFilterParams params = new DataPointFilterParams();
+    SurveyResponseReadParams params = new SurveyResponseReadParams();
     params.participantId = this.view.getSelectedParticipant();
     params.privacyState = this.view.getSelectedPrivacyState();
     params.surveyId = this.view.getSelectedSurvey();
-    
-    
-    
     // data point api only allows queries for one campaign at a time,
     // so iterate through campaigns and update display after loading 
     // data for each one
     for (String campaignId : this.campaignIds) {
-      this.dataService.fetchSurveyResponses(campaignId,
-                                            params,
+      this.dataService.fetchSurveyResponses(userInfo.getUserName(),
+                                            campaignId,
                                             new AsyncCallback<List<SurveyResponse>>() {
 
         @Override
@@ -108,7 +113,53 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           updateDisplay();
         }
       });
-    }   
+    } */  
+  }
+  
+  // fetchs list of campaign ids, then fetch responses for each
+  private void fetchAndShowAllResponses() {
+    // TODO: get values from filters
+    //SurveyResponseReadParams params = new SurveyResponseReadParams();
+    //params.participantId = this.view.getSelectedParticipant();
+    //params.privacyState = this.view.getSelectedPrivacyState();
+    //params.surveyId = this.view.getSelectedSurvey();
+    
+    CampaignReadParams params = new CampaignReadParams();
+    params.userRole_opt = UserRole.PARTICIPANT;
+    this.dataService.fetchCampaignIds(params, new AsyncCallback<List<String>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        // TODO Auto-generated method stub
+      }
+
+      @Override
+      public void onSuccess(List<String> result) {
+        
+        for (String campaignId : result) {
+          fetchAndShowResponsesForCampaign(campaignId);
+        }
+      }
+    });
+  }
+  
+  // fetch responses for just one campaign, add them to existing list and refresh display
+  // TODO: sort after adding
+  private void fetchAndShowResponsesForCampaign(String campaignId) {
+    this.dataService.fetchSurveyResponses(this.userInfo.getUserName(),
+        campaignId,
+        new AsyncCallback<List<SurveyResponse>>() {
+          @Override
+          public void onFailure(Throwable caught) {
+            // TODO: display error message
+          }
+          
+          @Override
+          public void onSuccess(List<SurveyResponse> result) {
+            responses.addAll(result);
+            updateDisplay();
+          }
+    });
+
   }
   
   private void updateDisplay() {

@@ -13,10 +13,12 @@ import edu.ucla.cens.mobilize.client.utils.DateUtils;
 public class SurveyResponse {
 	
   Date responseDate;
+  String userName;
   Privacy privacyState;
   String campaignId; // urn
 	String campaignName;
 	String surveyId;
+	String dbKey; // needed for updating response in db
 	String surveyName;
 	List<PromptResponse> promptResponses;
 	
@@ -52,6 +54,10 @@ public class SurveyResponse {
 	public String getSurveyId() { return getSurveyName(); }
 	public void setSurveyId(String id) { setSurveyName(id); }
 	
+	// response key is db id needed for updating or deleting response
+	public String getResponseKey() { return this.dbKey; }
+	public void setResponseKey(String dbKey) { this.dbKey = dbKey; } 
+	
 	public Date getResponseDate() { return this.responseDate; }
 	public void setResponseDate(String dateStringInServerFormat) {
 	  try {
@@ -63,6 +69,9 @@ public class SurveyResponse {
 	  }
 	}
 	
+	public String getUserName() { return this.userName; }
+	public void setUserName(String userName) { this.userName = userName; }
+	
 	public Privacy getPrivacyState() { return this.privacyState; }
 	public void setPrivacyState(Privacy privacy) { this.privacyState = privacy; } 
 	
@@ -71,8 +80,8 @@ public class SurveyResponse {
     return retval;
   }
 	
-	public void addPromptResponse(PromptInfo promptInfo, DataPointAwData dataPoint) {
-	  this.promptResponses.add(new PromptResponse(promptInfo, dataPoint));
+	public void addPromptResponse(PromptResponse promptResponse) {
+	  this.promptResponses.add(promptResponse);
 	}
 	
 	public String getDetails() {

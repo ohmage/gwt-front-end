@@ -20,7 +20,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationToken
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
-import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DataPointFilterParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -223,16 +223,6 @@ public class MockDataService implements DataService {
     
     callback.onSuccess(user);
   }
-
-  @Override
-  public void fetchCampaignIds(Map<String, List<String>> params,
-      AsyncCallback<List<String>> callback) {
-    List<String> ids = new ArrayList<String>(); 
-    for (CampaignShortInfo info : campaignsConcise) {
-      ids.add(info.getCampaignId());
-    }
-    callback.onSuccess(ids);
-  }
   
   @Override
   public void fetchCampaignListShort(CampaignReadParams params,
@@ -302,7 +292,7 @@ public class MockDataService implements DataService {
   }
 
   @Override
-  public void fetchDataPoints(String campaignId, DataPointFilterParams params,
+  public void fetchDataPoints(String campaignId, SurveyResponseReadParams params,
       AsyncCallback<List<DataPointAwData>> callback) {
     try {
       DataPointQueryAwData serverResponse = DataPointQueryAwData.fromJsonString(getDataPointArrayJson());
@@ -318,6 +308,7 @@ public class MockDataService implements DataService {
     }
   }
 
+  /*
   @Override
   public void fetchSurveyResponses(final String campaignId,
       final DataPointFilterParams params, 
@@ -351,8 +342,9 @@ public class MockDataService implements DataService {
       }
     });
     
-  }
-
+  }*/
+  
+  
   @Override
   public void fetchClassList(String schoolId,
       AsyncCallback<List<ClassInfo>> callback) {
@@ -369,6 +361,20 @@ public class MockDataService implements DataService {
       }
     }
     callback.onFailure(new Exception("Class with id " + classId + " not found."));
+  }
+
+  @Override
+  public void fetchSurveyResponses(String userName, String campaignId,
+      AsyncCallback<List<SurveyResponse>> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void fetchCampaignIds(CampaignReadParams params,
+      AsyncCallback<List<String>> callback) {
+    // TODO Auto-generated method stub
+    
   }
 
 

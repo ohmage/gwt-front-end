@@ -16,6 +16,10 @@ public class AndWellnessConstants {
     // DeployStatus is set in the gwt module file
     public final static DeployStatus status = GWT.create(DeployStatus.class);
 
+    // special token that tells api to return all values, useful for api params
+    // that don't default to all when omitted
+    public final static String specialAllValuesToken = "urn:ohmage:special:all";
+    
     //private final static String debugServerLocation = "http://dev1.andwellness.org/app/";
     private final static String debugServerLocation = "http://localhost:8080/app/";
     private final static String releaseServerLocation = "../app/"; // same as web server
@@ -28,7 +32,9 @@ public class AndWellnessConstants {
     private final static String CAMPAIGN_CREATE = "campaign/create";
     private final static String CAMPAIGN_UPDATE = "campaign/update";
     private final static String CAMPAIGN_DELETE = "campaign/delete";
-    private final static String DATA_POINT      = "q/dp";
+    private final static String SURVEY_RESPONSE_READ   = "survey_response/read";
+    private final static String SURVEY_RESPONSE_UPDATE = "survey_response/update";
+    private final static String SURVEY_RESPONSE_DELETE = "survey_response/delete";
     
     /**
      * Returns data server url based on value of deployment status variable. 
@@ -72,7 +78,15 @@ public class AndWellnessConstants {
       return getServerLocation() + AUTHORIZATION;
     }
     
-    public static String getDataPointUrl() {
-      return getServerLocation() + DATA_POINT;
+    public static String getSurveyResponseReadUrl() {
+      return getServerLocation() + SURVEY_RESPONSE_READ;
+    }
+    
+    public static String getSurveyResponseUpdateUrl() {
+      return getServerLocation() + SURVEY_RESPONSE_UPDATE;
+    }
+    
+    public static String getSurveyResponseDeleteUrl() {
+      return getServerLocation() + SURVEY_RESPONSE_DELETE;
     }
 }

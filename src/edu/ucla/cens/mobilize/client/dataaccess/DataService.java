@@ -6,7 +6,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
-import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DataPointFilterParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -63,7 +63,7 @@ public interface DataService {
   void fetchUserInfo(String userName, final AsyncCallback<UserInfo> asyncCallback);
   
   // campaigns
-  void fetchCampaignIds(Map<String, List<String>> params,
+  void fetchCampaignIds(CampaignReadParams params,
                         final AsyncCallback<List<String>> callback);
   
   
@@ -80,11 +80,11 @@ public interface DataService {
                       final AsyncCallback<String> callback);
     
   void fetchDataPoints(String campaignId,
-                       DataPointFilterParams params,
+                       SurveyResponseReadParams params,
                        final AsyncCallback<List<DataPointAwData>> callback);
 
-  void fetchSurveyResponses(String campaignId,
-                            DataPointFilterParams params,
+  void fetchSurveyResponses(String userName,
+                            String campaignId,
                             final AsyncCallback<List<SurveyResponse>> callback);
   
   void fetchClassList(String schoolId,

@@ -190,7 +190,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     // presenters
     dashboardPresenter = new DashboardPresenter(userInfo);
     campaignPresenter = new CampaignPresenter(userInfo, awDataService, eventBus);
-    responsePresenter = new ResponsePresenter(userInfo, mockDataService, eventBus);
+    responsePresenter = new ResponsePresenter(userInfo, awDataService, eventBus);
     exploreDataPresenter = new ExploreDataPresenter();
     classPresenter = new ClassPresenter(userInfo, mockDataService, eventBus);
     accountPresenter = new AccountPresenter(userInfo, awDataService, eventBus);
