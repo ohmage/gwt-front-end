@@ -61,6 +61,14 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
         });
       }
     });
+    
+    this.view.getPasswordChangeCancelButton().addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        view.resetPasswordChangeForm();
+        view.hidePasswordChangeForm();
+      }
+    });
   }
   
   @Override

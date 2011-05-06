@@ -16,6 +16,7 @@ public interface AccountView extends IsWidget {
 
   void showPasswordChangeForm();
   void hidePasswordChangeForm();
+  void resetPasswordChangeForm();
   void showPasswordMismatchError();
   void showMessage(String message);
   void showError(String message);
@@ -23,6 +24,7 @@ public interface AccountView extends IsWidget {
   
   HasClickHandlers getPasswordChangeButton();
   HasClickHandlers getPasswordChangeSubmitButton();
+  HasClickHandlers getPasswordChangeCancelButton();
 
   String getUserName();
   String getOldPassword();

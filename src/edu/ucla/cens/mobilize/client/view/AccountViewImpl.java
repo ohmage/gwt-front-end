@@ -32,6 +32,7 @@ public class AccountViewImpl extends Composite implements AccountView {
   @UiField VerticalPanel classesVerticalPanel;
   @UiField HTMLPanel passwordChangePanel;
   @UiField Button passwordChangeButton;
+  @UiField Button passwordChangeCancelButton;
   @UiField PasswordTextBox oldPasswordTextBox;
   @UiField PasswordTextBox newPasswordTextBox;
   @UiField Label passwordMismatchError;
@@ -77,6 +78,13 @@ public class AccountViewImpl extends Composite implements AccountView {
   public void hidePasswordChangeForm() {
     this.passwordChangePanel.setVisible(false);
   }
+
+  @Override
+  public void resetPasswordChangeForm() {
+    this.oldPasswordTextBox.setText("");
+    this.newPasswordTextBox.setText("");
+    this.newPasswordConfirmTextBox.setText("");
+  }
   
   @Override
   public HasClickHandlers getPasswordChangeButton() {
@@ -86,6 +94,11 @@ public class AccountViewImpl extends Composite implements AccountView {
   @Override
   public HasClickHandlers getPasswordChangeSubmitButton() {
     return this.passwordChangeSubmitButton;
+  }
+  
+  @Override
+  public HasClickHandlers getPasswordChangeCancelButton() {
+    return this.passwordChangeCancelButton;
   }
 
   @Override
@@ -115,7 +128,7 @@ public class AccountViewImpl extends Composite implements AccountView {
 
   @Override
   public void showMessage(String message) {
-    // TODO: add style
+    // TODO: add hide link
     this.messageBox.setText(message);
     this.messageBox.setVisible(true);
   }
@@ -132,5 +145,4 @@ public class AccountViewImpl extends Composite implements AccountView {
     this.messageBox.setText("");
     this.messageBox.setVisible(false);
   }
-
 }
