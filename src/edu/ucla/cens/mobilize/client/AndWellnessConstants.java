@@ -35,6 +35,8 @@ public class AndWellnessConstants {
     private final static String SURVEY_RESPONSE_READ   = "survey_response/read";
     private final static String SURVEY_RESPONSE_UPDATE = "survey_response/update";
     private final static String SURVEY_RESPONSE_DELETE = "survey_response/delete";
+    private final static String CLASS_READ      = "class/read";
+    private final static String CLASS_UPDATE    = "class/update";
     
     /**
      * Returns data server url based on value of deployment status variable. 
@@ -89,4 +91,13 @@ public class AndWellnessConstants {
     public static String getSurveyResponseDeleteUrl() {
       return getServerLocation() + SURVEY_RESPONSE_DELETE;
     }
+    
+    public static String getClassReadUrl() {
+      return getServerLocation() + CLASS_READ;
+    }
+    
+    public static String getClassUpdateUrl() {
+      return getServerLocation() + CLASS_UPDATE;
+    }
+    
 }

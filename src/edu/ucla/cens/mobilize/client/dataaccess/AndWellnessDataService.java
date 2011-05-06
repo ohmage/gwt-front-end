@@ -35,6 +35,7 @@ import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
+import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 /**
@@ -130,6 +131,13 @@ public class AndWellnessDataService implements DataService {
       this.surveyResponseDeleteService.setHeader("Content-Type", "application/x-www-form-urlencoded");
     }
     return this.surveyResponseDeleteService;    
+  }
+
+  // convenience method for request builder with common options
+  private RequestBuilder getAwRequestBuilder(String serviceUrl) {
+    RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, URL.encode(serviceUrl));
+    rb.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    return rb;
   }
   
   /**
@@ -240,7 +248,7 @@ public class AndWellnessDataService implements DataService {
    */
   protected String getResponseTextOrThrowException(RequestBuilder requestBuilder, 
                                  Response response) throws Exception {
-    _logger.fine("Authentication server response: " + response.getText());
+    _logger.fine("Server response: " + response.getText());
     
     String responseText = null;
     int statusCode = response.getStatusCode();
@@ -622,19 +630,65 @@ public class AndWellnessDataService implements DataService {
     }    
   }
 
-  @Override
-  public void fetchClassList(String schoolId,
-      AsyncCallback<List<ClassInfo>> callback) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void fetchClassDetail(String classId, AsyncCallback<ClassInfo> callback) {
-    // TODO Auto-generated method stub
-    
-  }
-
   
+  @Override
+  public void fetchClassList(List<String> classIds, final AsyncCallback<List<ClassInfo>> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", this.authToken);
+    params.put("class_urn_list", CollectionUtils.join(classIds, ","));
+    String postParams = MapUtils.translateToParameters(params);
+    _logger.fine("Fetching class list with params: " + postParams);
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AndWellnessConstants.getClassReadUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            List<ClassInfo> result = AwDataTranslators.translateClassReadQueryJSONToClassInfoList(responseText);
+            callback.onSuccess(result);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }        
+  }
+
+  // FIXME: get cached data instead of refetching every time
+  @Override
+  public void fetchClassDetail(final String classId, final AsyncCallback<ClassInfo> callback) {
+    List<String> classIdList = new ArrayList<String>();
+    classIdList.add(classId);
+    fetchClassList(classIdList, new AsyncCallback<List<ClassInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        callback.onFailure(caught);
+      }
+
+      @Override
+      public void onSuccess(List<ClassInfo> result) {
+        if (result != null && result.size() > 0 && result.get(0).getClassId().equals(classId)) {
+          callback.onSuccess(result.get(0));
+        } else {
+          callback.onFailure(new Exception("There was a problem fetching the class info."));
+        }
+      }
+    });
+  }
+
   
 }

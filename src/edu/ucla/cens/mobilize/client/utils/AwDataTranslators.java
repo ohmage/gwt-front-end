@@ -20,11 +20,13 @@ import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigurationsAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.PromptResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.ConfigurationInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
@@ -457,6 +459,36 @@ public class AwDataTranslators {
       }
       
       return campaigns;
+    }
+
+    public static List<ClassInfo> translateClassReadQueryJSONToClassInfoList(String classReadQueryJSON) throws Exception {
+      List<ClassInfo> classInfos = new ArrayList<ClassInfo>(); // retval
+      JSONValue value = JSONParser.parse(classReadQueryJSON);
+      JSONObject obj = value.isObject();
+      if (obj == null || !obj.containsKey("data")) throw new Exception("Invalid json format.");
+      JSONObject dataHash = obj.get("data").isObject();
+      for (String classId : dataHash.keySet()) {
+        try {
+          ClassAwData awData = (ClassAwData)dataHash.get(classId).isObject().getJavaScriptObject();
+          ClassInfo classInfo = new ClassInfo();
+          classInfo.setClassId(classId);
+          classInfo.setClassName(awData.getName());
+          JsArrayString privilegedUsers = awData.getPrivilegedUsers();
+          for (int i = 0; i < privilegedUsers.length(); i++) {
+            classInfo.addSupervisor(privilegedUsers.get(i), privilegedUsers.get(i)); // name == id
+          }
+          JsArrayString restrictedUsers = awData.getRestrictedUsers();
+          for (int i = 0; i < restrictedUsers.length(); i++) {
+            classInfo.addMember(restrictedUsers.get(i), restrictedUsers.get(i)); // name == id
+          }
+          classInfos.add(classInfo);
+        } catch (Exception e) { // FIXME: which exception?
+          _logger.warning("Could not parse json for class id: " + classId + ". Skipping record.");
+          _logger.fine(e.getMessage());
+        }
+      }
+
+      return classInfos;
     }
     
 

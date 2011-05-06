@@ -307,46 +307,10 @@ public class MockDataService implements DataService {
       callback.onFailure(e);
     }
   }
-
-  /*
-  @Override
-  public void fetchSurveyResponses(final String campaignId,
-      final DataPointFilterParams params, 
-      final AsyncCallback<List<SurveyResponse>> fetchSurveyResponsesCallback) {
-    
-    if (this.campaigns == null || this.campaigns.isEmpty()) loadFakeCampaigns();
-    
-    final Map<String, CampaignDetailedInfo> campaigns = this.campaigns;
-    
-    fetchDataPoints(campaignId, params, new AsyncCallback<List<DataPointAwData>>() {
-      @Override
-      public void onFailure(Throwable throwable) {
-        // pass it up
-        fetchSurveyResponsesCallback.onFailure(throwable);
-      }
-
-      @Override
-      public void onSuccess(List<DataPointAwData> dataPoints) {
-        // if campaign info is already loaded, use it to build responses
-        if (campaigns.containsKey(campaignId)) {
-          CampaignDetailedInfo campaignInfo = campaigns.get(campaignId);
-          List<SurveyResponse> responses = 
-            AwDataTranslators.translateDataPointsToSurveyResponses(dataPoints, campaignInfo);
-          // pass list up to the original callback
-          fetchSurveyResponsesCallback.onSuccess(responses); 
-        } else {
-          // otherwise fetch campaigninfo from server and then use it to build responses
-          // TODO: IMPLEMENT THIS
-          _logger.severe("UNIMPLEMENTED");
-        }
-      }
-    });
-    
-  }*/
   
   
   @Override
-  public void fetchClassList(String schoolId,
+  public void fetchClassList(List<String> schoolId,
       AsyncCallback<List<ClassInfo>> callback) {
     callback.onSuccess(this.classInfos);    
   }
@@ -377,6 +341,5 @@ public class MockDataService implements DataService {
     // TODO Auto-generated method stub
     
   }
-
 
 }

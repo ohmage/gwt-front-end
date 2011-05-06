@@ -90,8 +90,9 @@ public interface DataService {
                             Privacy privacy,
                             final AsyncCallback<List<SurveyResponse>> callback);
   
-  void fetchClassList(String schoolId,
+  void fetchClassList(List<String> classIds,
                       final AsyncCallback<List<ClassInfo>> callback);
+  
   
   void fetchClassDetail(String classId, final AsyncCallback<ClassInfo> callback);
   

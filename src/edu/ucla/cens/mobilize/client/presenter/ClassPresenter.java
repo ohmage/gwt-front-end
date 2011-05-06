@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -85,12 +86,13 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
     });
   }
 
-  private void fetchAndShowClasses() {
-    fetchAndShowClasses("");
-  }
-  
-  private void fetchAndShowClasses(String schoolId) {
-    dataService.fetchClassList(schoolId, new AsyncCallback<List<ClassInfo>>() {
+  // fetch and display all classes visible to user (where a class is
+  // visible if it's listed in the user's userinfo)
+  // FIXME: should supervisors be able to see all classes in a school instead?
+  private void fetchAndShowClasses() { 
+    List<String> classIdList = new ArrayList<String>();
+    classIdList.addAll(this.user.getClassIds());
+    dataService.fetchClassList(classIdList, new AsyncCallback<List<ClassInfo>>() {
 
       @Override
       public void onFailure(Throwable caught) {
