@@ -692,7 +692,8 @@ public class AndWellnessDataService implements DataService {
   }
 
   @Override
-  public void updateClass(final ClassUpdateParams params, final AsyncCallback<String> callback) {
+  public void updateClass(final ClassUpdateParams params, 
+                          final AsyncCallback<String> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     params.authToken = this.authToken;
     String postParams = params.toString();

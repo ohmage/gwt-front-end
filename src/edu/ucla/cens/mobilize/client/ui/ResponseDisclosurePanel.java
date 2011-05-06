@@ -75,8 +75,7 @@ public class ResponseDisclosurePanel extends Composite
 		for (PromptResponse promptResponse : response.getPromptResponses()) {
 	    sb.append("<div class='").append(style.promptResponse()).append("'>");
 	    sb.append("<div class='").append(style.promptText()).append("'>");
-        String text = promptResponse.getPromptId();
-        sb.append((text != null) ? text : "unavailable");
+        sb.append(promptResponse.getText());
       sb.append("</div>");
       sb.append("<div class='").append(style.promptValue()).append("'>");
         // FIXME: handle different types (e.g., images)

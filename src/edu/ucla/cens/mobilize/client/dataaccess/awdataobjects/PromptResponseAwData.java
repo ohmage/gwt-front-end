@@ -9,6 +9,7 @@ public class PromptResponseAwData extends JavaScriptObject {
   
   public final native String getDisplayType() /*-{ return this.prompt_display_type; }-*/;
   public final native String getPromptId() /*-{ return this.prompt_id; }-*/;
+  public final native String getPromptText() /*-{ return this.prompt_text; }-*/;
   
   // response can be text, number, or uuid of an image. use prompt type to determine which
   public final native String getPromptResponse() /*-{ 

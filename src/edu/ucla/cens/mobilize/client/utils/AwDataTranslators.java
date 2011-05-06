@@ -190,43 +190,6 @@ public class AwDataTranslators {
         return promptInfo;
     }
     
-    /*
-    // TODO: what exceptions can be thrown and where should they be caught?
-    public static List<SurveyResponse> translateDataPointsToSurveyResponses(
-        List<DataPointAwData> dataPoints, CampaignDetailedInfo campaignInfo) {
-
-      HashMap<String, SurveyResponse> responses = new HashMap<String, SurveyResponse>();
-      
-      for (DataPointAwData dataPoint : dataPoints) {
-        String surveyId = dataPoint.getSurveyId();
-        SurveyInfo surveyInfo = campaignInfo.getSurvey(surveyId);
-        if (surveyInfo != null) {
-          if (!responses.containsKey(surveyId)) {
-            SurveyResponse obj = new SurveyResponse();
-            obj.setCampaignId(campaignInfo.getCampaignId());
-            obj.setCampaignName(campaignInfo.getCampaignName());
-            obj.setResponseDate(dataPoint.getTimeStamp());
-            obj.setPrivacyState(dataPoint.getPrivacyState()); // FIXME: what if datapoints (prompts) have conflicting privacy?
-            obj.setSurveyId(surveyId);
-            if (surveyInfo != null) obj.setSurveyName(surveyInfo.getSurveyName());
-            responses.put(surveyId, obj);
-          }
-          // NOTE: if promptId is not found in the survey info (meaning prompt
-          // did not appear for that survey in the xml config) promptInfo will
-          // be null here. PromptResponse obj checks for null and falls back to 
-          // using the dataPoint label
-          PromptInfo promptInfo = surveyInfo.getPrompt(dataPoint.getPromptId()); // can be null
-          SurveyResponse surveyResponse = responses.get(surveyId);
-          surveyResponse.addPromptResponse(promptInfo, dataPoint);
-        } else {
-          // data point does not match any survey in campaign info
-          // log warning/error
-        }
-      }
-      
-      return new ArrayList<SurveyResponse>(responses.values());
-    }*/
-    
     // returns null if there were no responses
     public static List<SurveyResponse> translateSurveyResponseReadQueryJSONToSurveyResponseList(
         String promptResponseReadQueryJSON,
@@ -263,6 +226,7 @@ public class AwDataTranslators {
         try {
           PromptResponse promptResponse = new PromptResponse();
           promptResponse.setPromptId(promptAwData.getPromptId());
+          promptResponse.setText(promptAwData.getPromptText());
           promptResponse.setPromptType(PromptType.fromString(promptAwData.getPromptType()));
           promptResponse.setResponse(promptAwData.getPromptResponse());
           Integer surveyResponseKey = promptAwData.getSurveyResponseKey();
