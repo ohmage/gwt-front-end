@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -31,14 +32,18 @@ public class ClassEditForm extends Composite {
   @UiField InlineLabel className;
   @UiField InlineLabel classUrn;
   @UiField TextArea descriptionTextArea;
-  @UiField FlexTable supervisorsFlexTable;
+  @UiField FlexTable privilegedMembersFlexTable;
   @UiField FlexTable membersFlexTable;
   @UiField Button cancelButton;
   @UiField Button saveButton;
   
+  private final static int USER_ID_COL = 0;
+  //private final static int USER_NAME_COL = 1;
+  private final static int USER_DELETE_COL = 1;
+  
   public ClassEditForm() {
     initWidget(uiBinder.createAndBindUi(this));
-    this.supervisorsFlexTable.setCellSpacing(0);
+    this.privilegedMembersFlexTable.setCellSpacing(0);
     this.membersFlexTable.setCellSpacing(0);
   }
   
@@ -47,10 +52,10 @@ public class ClassEditForm extends Composite {
     this.className.setText(classDetail.getClassName());
     this.classUrn.setText(classDetail.getClassId());
     this.descriptionTextArea.setText(classDetail.getDescription());
-    for (String supervisorId : classDetail.getSupervisors().keySet()) {
-      addUserToFlexTable(supervisorsFlexTable,
-                         supervisorId,
-                         classDetail.getSupervisors().get(supervisorId));
+    for (String privilegedMemberId : classDetail.getPrivilegedMembers().keySet()) {
+      addUserToFlexTable(privilegedMembersFlexTable,
+                         privilegedMemberId,
+                         classDetail.getPrivilegedMembers().get(privilegedMemberId));
     }
     for (String memberId : classDetail.getMembers().keySet()) {
       addUserToFlexTable(membersFlexTable,
@@ -58,7 +63,15 @@ public class ClassEditForm extends Composite {
                          classDetail.getMembers().get(memberId));
     }
   }
-
+  
+  public void clearForm() {
+    this.header.setText("");
+    this.className.setText("");
+    this.classUrn.setText("");
+    this.descriptionTextArea.setText("");
+    this.membersFlexTable.removeAllRows();
+    this.privilegedMembersFlexTable.removeAllRows();
+  }
   
   private void addUserToFlexTable(final FlexTable flexTable, String userId, String userName) {
     flexTable.setVisible(true);
@@ -78,8 +91,8 @@ public class ClassEditForm extends Composite {
     // 0 = user name, 1 = user login, 2 = "x" button that deletes row when clicked
     if (!isAlreadyInTable) {
       final int thisRow = firstEmptyRowIndex;
-      flexTable.setText(thisRow, 0, userName);
-      flexTable.setText(thisRow, 1, userId);
+      //flexTable.setText(thisRow, USER_NAME_COL, userName); // we only have id for now
+      flexTable.setText(thisRow, USER_ID_COL, userId);
       Button deleteButton = new Button("X");
       deleteButton.addClickHandler(new ClickHandler() {
         @Override
@@ -88,8 +101,40 @@ public class ClassEditForm extends Composite {
           flexTable.setVisible(flexTable.getRowCount() > 0);
         }
       });
-      flexTable.setWidget(thisRow, 2, deleteButton);
+      flexTable.setWidget(thisRow, USER_DELETE_COL, deleteButton);
     }
   }
   
+  public HasClickHandlers getSubmitButton() {
+    return this.saveButton;
+  }
+  
+  public HasClickHandlers getCancelButton() {
+    return this.cancelButton;
+  }
+  
+  public String getClassId() {
+    return this.classUrn.getText();
+  }
+  
+  public String getDescription() {
+    return this.descriptionTextArea.getText();
+  }
+  
+  public List<String> getMembers() {
+    List<String> members = new ArrayList<String>();
+    for (int i = 0; i < this.membersFlexTable.getRowCount(); i++) {
+      members.add(this.membersFlexTable.getText(i, USER_ID_COL));
+    }
+    return members;
+  }
+  
+  public List<String> getPrivilegedMembers() {
+    List<String> privilegedMembers = new ArrayList<String>();
+    for (int i = 0; i < this.privilegedMembersFlexTable.getRowCount(); i++) {
+      privilegedMembers.add(this.privilegedMembersFlexTable.getText(i, USER_ID_COL));
+    }
+    return privilegedMembers;
+  }  
+
 }

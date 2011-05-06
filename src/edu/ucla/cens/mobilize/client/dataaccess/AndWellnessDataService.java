@@ -28,6 +28,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.exceptions.NotLoggedInException;
 import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerException;
 import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerUnavailableException;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
@@ -688,6 +689,40 @@ public class AndWellnessDataService implements DataService {
         }
       }
     });
+  }
+
+  @Override
+  public void updateClass(final ClassUpdateParams params, final AsyncCallback<String> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.authToken = this.authToken;
+    String postParams = params.toString();
+    _logger.fine("Updating class with params: " + postParams);
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AndWellnessConstants.getClassUpdateUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            callback.onSuccess("Class " + params.classId + " updated successfully.");
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
   }
 
   

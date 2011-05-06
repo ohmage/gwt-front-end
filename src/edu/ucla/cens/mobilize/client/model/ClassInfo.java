@@ -7,12 +7,12 @@ public class ClassInfo {
   private String classId;
   private String className; // e.g., CS101
   private String description;
-  private Map<String, String> supervisorIdToNameMap;
+  private Map<String, String> privilegedMemberIdToNameMap;
   private Map<String, String> memberIdToNameMap;
   
   public ClassInfo() {
     classId = className = description = "";
-    supervisorIdToNameMap = new HashMap<String, String>();
+    privilegedMemberIdToNameMap = new HashMap<String, String>();
     memberIdToNameMap = new HashMap<String, String>();
   }
   
@@ -21,9 +21,11 @@ public class ClassInfo {
   public String getDescription() { return this.description; }
   
   /**
-   * @return Map of supervisor ids to supervisor names
+   * @return Map of privileged member (supervisor) ids to  names
    */
-  public Map<String, String> getSupervisors() { return this.supervisorIdToNameMap; }
+  public Map<String, String> getPrivilegedMembers() { 
+    return this.privilegedMemberIdToNameMap; 
+  }
   
   /**
    * @return Map of member ids to member names
@@ -34,12 +36,12 @@ public class ClassInfo {
   
   public void setClassName(String className) { this.className = className; }
   
-  public void clearSupervisors() { this.supervisorIdToNameMap.clear(); }
+  public void clearPrivilegedMembers() { this.privilegedMemberIdToNameMap.clear(); }
   
   public void clearMembers() { this.memberIdToNameMap.clear(); }
   
-  public void addSupervisor(String supervisorId, String supervisorName) {
-    this.supervisorIdToNameMap.put(supervisorId, supervisorName);
+  public void addPrivilegedMember(String privilegedMemberId, String privilegedMemberName) {
+    this.privilegedMemberIdToNameMap.put(privilegedMemberId, privilegedMemberName);
   }
   
   public void addMember(String memberId, String memberName) {

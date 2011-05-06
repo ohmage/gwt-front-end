@@ -475,7 +475,7 @@ public class AwDataTranslators {
           classInfo.setClassName(awData.getName());
           JsArrayString privilegedUsers = awData.getPrivilegedUsers();
           for (int i = 0; i < privilegedUsers.length(); i++) {
-            classInfo.addSupervisor(privilegedUsers.get(i), privilegedUsers.get(i)); // name == id
+            classInfo.addPrivilegedMember(privilegedUsers.get(i), privilegedUsers.get(i)); // name == id
           }
           JsArrayString restrictedUsers = awData.getRestrictedUsers();
           for (int i = 0; i < restrictedUsers.length(); i++) {

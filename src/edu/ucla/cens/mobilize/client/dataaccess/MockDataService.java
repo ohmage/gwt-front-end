@@ -20,6 +20,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationToken
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
@@ -67,7 +68,7 @@ public class MockDataService implements DataService {
     class1.addMember("rmoran", "Ralph Moran");
     class1.addMember("ajones", "Art Jones");
     class1.addMember("smcmike", "Spike McMike");
-    class1.addSupervisor("tuser", "testuser.aa");
+    class1.addPrivilegedMember("tuser", "testuser.aa");
     classInfos.add(class1);
     
     ClassInfo class2 = new ClassInfo();
@@ -77,8 +78,8 @@ public class MockDataService implements DataService {
     class2.addMember("testuser.ab", "testuser.ab");
     class2.addMember("testuser.ac", "testuser.ac");
     class2.addMember("testuser.bb", "testuser.bb");
-    class2.addSupervisor("testuser.aa", "testuser.aa");
-    class2.addSupervisor("testuser.ab", "testuser.ab");
+    class2.addPrivilegedMember("testuser.aa", "testuser.aa");
+    class2.addPrivilegedMember("testuser.ab", "testuser.ab");
     classInfos.add(class2);
     
     ClassInfo class3 = new ClassInfo();
@@ -86,7 +87,7 @@ public class MockDataService implements DataService {
     class3.setClassName("Carson_HS_CS103_Spring_2011");
     class3.addMember("testuser.ac", "testuser.ac");
     class3.addMember("testuser.bb", "testuser.bb");
-    class3.addSupervisor("testuser.aa", "testuser.aa");
+    class3.addPrivilegedMember("testuser.aa", "testuser.aa");
     classInfos.add(class3);
   }
   
@@ -338,6 +339,12 @@ public class MockDataService implements DataService {
   public void fetchSurveyResponses(String userName, String campaignId,
       String surveyName, Privacy privacy,
       AsyncCallback<List<SurveyResponse>> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void updateClass(ClassUpdateParams params, AsyncCallback<String> callback) {
     // TODO Auto-generated method stub
     
   }

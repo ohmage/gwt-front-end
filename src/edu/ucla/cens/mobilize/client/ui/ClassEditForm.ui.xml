@@ -39,11 +39,12 @@
       text-align: right;
       width: 170px;
     }
-    /* lists of current supervisor(s) and members are lists of names with x button to delete */
-    .supervisorList, .memberList {
+    /* lists of members and privileged members (supervisors) are 
+       lists of names with x button to delete */
+    .privilegedMemberList, .memberList {
       margin-bottom: 10px;
     }
-    .supervisorList button, .memberList button {
+    .privilegedMemberList button, .memberList button {
       background-color: #DDD;
       border: solid 1px #AAA;
       color: #888;
@@ -53,7 +54,7 @@
       padding: 0px;
       width: 13px;
     }
-    .supervisorList td, .memberList td {
+    .privilegedMemberList td, .memberList td {
       border-bottom: solid thin #CCC;
       color: #444;
       font-size: 0.9em;
@@ -120,10 +121,10 @@
           </tr>
           <tr>
             <td class='{style.label}'>
-              Supervisors:
+              Privileged members:
             </td>
             <td>
-              <g:FlexTable ui:field='supervisorsFlexTable' addStyleNames='{style.supervisorList}' />
+              <g:FlexTable ui:field='privilegedMembersFlexTable' addStyleNames='{style.privilegedMemberList}' />
             </td>
           </tr>
           <tr>

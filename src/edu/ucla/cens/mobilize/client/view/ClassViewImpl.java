@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.Composite;
 
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -112,6 +113,41 @@ public class ClassViewImpl extends Composite implements ClassView {
   public void hideMsg() {
     msgLabel.setText("");
     msgBox.setVisible(false);
+  }
+
+  @Override
+  public HasClickHandlers getEditFormSubmitButton() {
+    return this.classEdit.getSubmitButton();    
+  }
+
+  @Override
+  public String getDescription() {
+    return this.classEdit.getDescription();
+  }
+
+  @Override
+  public List<String> getMembers() {
+    return this.classEdit.getMembers();
+  }
+
+  @Override
+  public List<String> getPrivilegedMembers() {
+    return this.classEdit.getPrivilegedMembers();
+  }
+
+  @Override
+  public String getClassId() {
+    return this.classEdit.getClassId();
+  }
+
+  @Override
+  public HasClickHandlers getEditFormCancelButton() {
+    return this.classEdit.getCancelButton();
+  }
+
+  @Override
+  public void clearEditForm() {
+    this.classEdit.clearForm();
   }
 
 }

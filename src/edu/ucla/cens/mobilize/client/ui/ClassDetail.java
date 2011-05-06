@@ -38,8 +38,8 @@ public class ClassDetail extends Composite {
     this.classUrn.setText(classDetail.getClassId());
     this.description.setText(classDetail.getDescription());
     this.supervisorsVerticalPanel.clear();
-    for (String supervisorId : classDetail.getSupervisors().keySet()) {
-      String supervisorName = classDetail.getSupervisors().get(supervisorId);
+    for (String supervisorId : classDetail.getPrivilegedMembers().keySet()) {
+      String supervisorName = classDetail.getPrivilegedMembers().get(supervisorId);
       // TODO: make supervisor name a hyperlink to supervisor info page?
       this.supervisorsVerticalPanel.add(new InlineLabel(supervisorName));
     }
