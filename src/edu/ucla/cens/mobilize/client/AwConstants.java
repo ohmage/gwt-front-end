@@ -24,7 +24,7 @@ public class AwConstants {
     private final static String debugServerLocation = "http://localhost:8080/app/";
     private final static String releaseServerLocation = "../app/"; // same as web server
     
-    private final static String imageWrapperLocation = "http://localhost:8080/image_wrapper/";
+    private final static String imageWrapperLocation = "http://localhost:8080/image_wrapper/ImageWrapper.html";
     
     
     

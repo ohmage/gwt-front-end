@@ -32,8 +32,24 @@ public class PromptResponseAwData extends JavaScriptObject {
   public final native String getUser() /*-{ return this.user; }-*/;
   
   // only makes sense for choice prompt_types (single_choice, multi_choice, etc)
-  public final native String getChoiceValueFromGlossary(String key) /*-{
-    return (this.prompt_choice_glossary != undefined) ? this.prompt_choice_glossary[key] : "---";
+  public final native String getChoiceLabelFromGlossary(String key) /*-{
+    // glossary looks like:"prompt_choice_glossary":[{"1":{"label":"Clothes"}},{"0":{"label":"Food"}},{"7":{"label":"Health"}}]
+    // FIXME: ^^^ is that really what they mean it to look like??? Array of objects with only one key each?
+    var retval = "---";
+    if (this.prompt_choice_glossary != undefined) {
+      for (var i = 0; i < this.prompt_choice_glossary.length; i++) {
+        if (this.prompt_choice_glossary[i][key] != undefined) {
+          retval = this.prompt_choice_glossary[i][key].label;
+          break;
+        }
+      }
+    }
+    return retval;
+    
+    // FIXME: uncomment if we change it to hash of hashes instead
+    //return (this.prompt_choice_glossary != undefined && this.prompt_choice_glossary[key] != undefined) ?
+    //  this.prompt_choice_glossary[key].label :
+    //  "---"; 
   }-*/;
   
 }

@@ -11,6 +11,6 @@ public class AwUrlBasedResourceUtils {
     params.put("image_id", imageId);
     params.put("campaign_id", campaignId);
     String paramString = MapUtils.translateToParameters(params);
-    return AwConstants.getImageWrapperUrl() + paramString; 
+    return AwConstants.getImageWrapperUrl() + "?" + paramString; 
   }
 }

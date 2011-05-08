@@ -181,28 +181,20 @@ public class AwDataTranslators {
       JSONNumber numberOfPrompts = responseHash.get("metadata").isObject().get("number_of_prompts").isNumber();
       if (numberOfPrompts.doubleValue() < 1) return new ArrayList<SurveyResponse>();
       
-      // get list of prompt response aw data objects
+      // data field contains a js array of prompt response json objects
       if (!responseHash.containsKey("data")) throw new Exception("data field missing");
       JSONValue dataValue = responseHash.get("data");
       JSONArray array = dataValue.isArray();
       if (array == null) throw new Exception("Json in data field of response is not an array.");
-      // TODO: create survey response list, translate promptresponses one at a time and add
-      List<PromptResponseAwData> promptResponseAwDataList = new ArrayList<PromptResponseAwData>();
-      for (int i = 0; i < array.size(); i++) {
-        JSONObject obj = array.get(i).isObject();
-        if (obj != null) {
-          promptResponseAwDataList.add((PromptResponseAwData)obj.getJavaScriptObject());
-          // TODO: combine with below - make just one loop
-        } else {
-          // TODO: log error
-        }
-      }
-      
-      // store prompt responses by survey key
-      // TODO: sort?
       Map<Integer, SurveyResponse> surveyResponsesByKey = new HashMap<Integer, SurveyResponse>();
-      for (PromptResponseAwData promptAwData : promptResponseAwDataList) {
+      for (int i = 0; i < array.size(); i++) {
         try {
+          // parse as overlay object
+          JSONObject obj = array.get(i).isObject();
+          if (obj == null) throw new Exception("Invalid json: " + array.get(i).toString());
+          PromptResponseAwData promptAwData = (PromptResponseAwData)obj.getJavaScriptObject();
+          
+          // copy data into PromptResponse object
           PromptResponse promptResponse = new PromptResponse();
           promptResponse.setPromptId(promptAwData.getPromptId());
           promptResponse.setText(promptAwData.getPromptText());
@@ -211,6 +203,11 @@ public class AwDataTranslators {
           promptResponse.setResponsePreparedForDisplay(getPromptResponseDisplayString(campaignId, promptResponse.getPromptType(), promptAwData));
           Integer surveyResponseKey = promptAwData.getSurveyResponseKey();
           if (surveyResponseKey == null) throw new Exception("No survey response key found in json: " + promptAwData.toString());
+
+          // One survey response contains many prompt responses. Every prompt response
+          // returned by the data api contains info about its parent survey response
+          // (uniquely identified by the survey response key) but the survey response
+          // info only needs to be saved the first time that key is seen.
           if (!surveyResponsesByKey.containsKey(surveyResponseKey)) {
             SurveyResponse surveyResponse = new SurveyResponse();
             surveyResponse.setResponseKey(surveyResponseKey);
@@ -225,11 +222,16 @@ public class AwDataTranslators {
             surveyResponse.setPrivacyState(Privacy.valueOf(promptAwData.getPrivacy().toUpperCase()));
             surveyResponsesByKey.put(surveyResponse.getResponseKey(), surveyResponse);
           }
+          
+          // store prompt response object in its parent survey response object
           surveyResponsesByKey.get(surveyResponseKey).addPromptResponse(promptResponse);
-        } catch (Exception exception) { // FIXME: specific exceptions
-          _logger.severe("Skipping unparseable prompt response. Error was: " + exception.getMessage());          
+          
+        } catch (Exception e) {
+          _logger.severe("Skipping unparseable prompt response. Error was: " + e.getMessage());
+          _logger.finer("Prompt response json was: " + array.get(i));
         }
       }
+      // TODO: sort responses?      
       List<SurveyResponse> surveyResponses = new ArrayList<SurveyResponse>();
       surveyResponses.addAll(surveyResponsesByKey.values());
       return surveyResponses;
@@ -249,16 +251,17 @@ public class AwDataTranslators {
         // FIXME: assumes choices are stored as comma separated list - is that correct?
         String[] choices = promptResponseAwData.getPromptResponse().split(",");
         StringBuilder sb = new StringBuilder();
-        sb.append(promptResponseAwData.getChoiceValueFromGlossary(choices[0].trim())); // no comma before the first
+        sb.append(promptResponseAwData.getChoiceLabelFromGlossary(choices[0].trim())); // no comma before the first
         for (int i = 1; i < choices.length; i++) {
           sb.append(",");
-          sb.append(promptResponseAwData.getChoiceValueFromGlossary(choices[i].trim()));
+          sb.append(promptResponseAwData.getChoiceLabelFromGlossary(choices[i].trim()));
         }
         displayString = sb.toString();
         break;
       case SINGLE_CHOICE:
       case SINGLE_CHOICE_CUSTOM:
-        displayString = promptResponseAwData.getChoiceValueFromGlossary(promptResponseAwData.getPromptResponse());
+        String promptResponseStringValue = promptResponseAwData.getPromptResponse();
+        displayString = promptResponseAwData.getChoiceLabelFromGlossary(promptResponseStringValue);
         break;
       default: // for all other types, just use the original string
         displayString = promptResponseAwData.getPromptResponse();
