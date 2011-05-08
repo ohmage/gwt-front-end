@@ -23,6 +23,7 @@ import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
 import edu.ucla.cens.mobilize.client.dataaccess.AndWellnessDataService;
+import edu.ucla.cens.mobilize.client.dataaccess.exceptions.AuthenticationException;
 import edu.ucla.cens.mobilize.client.presenter.AccountPresenter;
 import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ClassPresenter;
@@ -156,8 +157,13 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
 
       @Override
       public void onFailure(Throwable caught) {
-        _logger.severe("Failed to fetch user info for user " + userName);
-        // TODO: show error message to user
+        // auth exception would be thrown here if user still has login cookie 
+        // in the browser but has been logged out on the server
+        if (caught.getClass().equals(AuthenticationException.class)) {
+          logout(); // update cookie and refresh so user sees login page
+        } else {
+          _logger.severe("Failed to fetch user info: " + caught.getMessage());
+        }
       }
 
       @Override
