@@ -24,6 +24,10 @@ public class AndWellnessConstants {
     private final static String debugServerLocation = "http://localhost:8080/app/";
     private final static String releaseServerLocation = "../app/"; // same as web server
     
+    private final static String imageWrapperLocation = "http://localhost:8080/image_wrapper/";
+    
+    
+    
     // API Endpoints
     // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/AndWellness_Read_API_2.2
     private final static String AUTHORIZATION   = "user/auth_token";
@@ -98,6 +102,10 @@ public class AndWellnessConstants {
     
     public static String getClassUpdateUrl() {
       return getServerLocation() + CLASS_UPDATE;
+    }
+    
+    public static String getImageWrapperUrl() {
+      return imageWrapperLocation;
     }
     
 }

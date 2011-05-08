@@ -39,7 +39,6 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 
 /**
@@ -194,6 +193,7 @@ public class AwDataTranslators {
     public static List<SurveyResponse> translateSurveyResponseReadQueryJSONToSurveyResponseList(
         String promptResponseReadQueryJSON,
         String campaignId) throws Exception {
+      @SuppressWarnings("deprecation")
       JSONValue value = JSONParser.parse(promptResponseReadQueryJSON);
       JSONObject responseHash = value.isObject();
       if (responseHash == null) throw new Exception("Invalid json response: " + responseHash);
@@ -229,6 +229,7 @@ public class AwDataTranslators {
           promptResponse.setText(promptAwData.getPromptText());
           promptResponse.setPromptType(PromptType.fromString(promptAwData.getPromptType()));
           promptResponse.setResponse(promptAwData.getPromptResponse());
+          promptResponse.setResponsePreparedForDisplay(getPromptResponseDisplayString(campaignId, promptResponse.getPromptType(), promptAwData));
           Integer surveyResponseKey = promptAwData.getSurveyResponseKey();
           if (surveyResponseKey == null) throw new Exception("No survey response key found in json: " + promptAwData.toString());
           if (!surveyResponsesByKey.containsKey(surveyResponseKey)) {
@@ -253,6 +254,38 @@ public class AwDataTranslators {
       List<SurveyResponse> surveyResponses = new ArrayList<SurveyResponse>();
       surveyResponses.addAll(surveyResponsesByKey.values());
       return surveyResponses;
+    }
+    
+    public static String getPromptResponseDisplayString(String campaignId,
+                                                        PromptType promptType,
+                                                        PromptResponseAwData promptResponseAwData) {
+      String displayString = null;
+      switch (promptType) {
+      case PHOTO:
+        // prompt response is the image uuid
+        displayString = AwUrlBasedResourceUtils.getImageUrl(campaignId, promptResponseAwData.getPromptResponse());
+        break;
+      case MULTI_CHOICE:
+      case MULTI_CHOICE_CUSTOM:
+        // FIXME: assumes choices are stored as comma separated list - is that correct?
+        String[] choices = promptResponseAwData.getPromptResponse().split(",");
+        StringBuilder sb = new StringBuilder();
+        sb.append(promptResponseAwData.getChoiceValueFromGlossary(choices[0].trim())); // no comma before the first
+        for (int i = 1; i < choices.length; i++) {
+          sb.append(",");
+          sb.append(promptResponseAwData.getChoiceValueFromGlossary(choices[i].trim()));
+        }
+        displayString = sb.toString();
+        break;
+      case SINGLE_CHOICE:
+      case SINGLE_CHOICE_CUSTOM:
+        displayString = promptResponseAwData.getChoiceValueFromGlossary(promptResponseAwData.getPromptResponse());
+        break;
+      default: // for all other types, just use the original string
+        displayString = promptResponseAwData.getPromptResponse();
+        break;
+      }
+      return displayString;  
     }
     
     // Expects json like:
@@ -427,6 +460,7 @@ public class AwDataTranslators {
 
     public static List<ClassInfo> translateClassReadQueryJSONToClassInfoList(String classReadQueryJSON) throws Exception {
       List<ClassInfo> classInfos = new ArrayList<ClassInfo>(); // retval
+      @SuppressWarnings("deprecation")
       JSONValue value = JSONParser.parse(classReadQueryJSON);
       JSONObject obj = value.isObject();
       if (obj == null || !obj.containsKey("data")) throw new Exception("Invalid json format.");

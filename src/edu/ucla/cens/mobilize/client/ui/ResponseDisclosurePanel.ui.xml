@@ -80,9 +80,7 @@
 		       <g:Hidden ui:field='responseKey' />
 	     </g:HorizontalPanel>
 	   </g:customHeader>
-	   <g:HTML ui:field='details' addStyleNames='{style.promptResponseCtr}'>
-	     <b>response</b> display template goes here
-	   </g:HTML>
+	   <g:VerticalPanel ui:field='promptResponseVerticalPanel' />
 	 </g:DisclosurePanel>
    </g:HorizontalPanel>
 </ui:UiBinder> 

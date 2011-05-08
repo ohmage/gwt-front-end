@@ -1,6 +1,9 @@
 package edu.ucla.cens.mobilize.client.ui;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasMouseOutHandlers;
@@ -18,12 +21,15 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.ucla.cens.mobilize.client.model.PromptResponse;
-import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 
 public class ResponseDisclosurePanel extends Composite
 	implements HasMouseOverHandlers, HasMouseOutHandlers {
@@ -44,7 +50,7 @@ public class ResponseDisclosurePanel extends Composite
 	@UiField Label responseDateLabel;
 	@UiField Label responsePrivacy;
 	@UiField Hidden responseKey;
-	@UiField HTML details;
+	@UiField VerticalPanel promptResponseVerticalPanel;
 	@UiField DisclosurePanel disclosurePanel;
 	
 	DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat(); 
@@ -56,12 +62,117 @@ public class ResponseDisclosurePanel extends Composite
 			UiBinder<Widget, ResponseDisclosurePanel> {
 	}
 
-	@SuppressWarnings("deprecation")
-  public ResponseDisclosurePanel() {
+	public ResponseDisclosurePanel() {
 		initWidget(uiBinder.createAndBindUi(this));
 		this.disclosurePanel.setAnimationEnabled(true);
 	}
 	
+	public void setCampaignName(String campaignName) {
+	  this.campaignName.setText(campaignName);
+	}
+	
+	public void setSurveyName(String surveyName) {
+	  this.surveyName.setText(surveyName);
+	}
+	
+	public void setDate(Date date) {
+	  String dateString = (date != null) ? this.dateTimeFormat.format(date) : "";
+	  this.responseDateLabel.setText(dateString);
+	}
+	
+	public void setPrivacy(Privacy privacy) {
+    this.responsePrivacy.setText(privacy.toString());
+    switch (privacy) {
+      case SHARED:
+        setPrivacyStylePublic();
+        break;
+      case PRIVATE:
+        setPrivacyStylePrivate();
+        break;
+      case INVISIBLE:
+        setPrivacyStyleInvisible();
+        break;
+      default:
+        clearPrivacyStyles();        
+        break;
+    }
+	}
+	
+	public void setResponseKey(int surveyResponseDatabaseId) {
+    this.responseKey.setValue(Integer.toString(surveyResponseDatabaseId));
+	}
+	
+	public void clearPromptResponses() {
+	  this.promptResponseVerticalPanel.clear();
+	}
+	
+	private void addPromptResponse(String promptText, Widget typeSpecificDisplayWidget) {
+    // wrap prompt text in styled div
+	  HTML promptTextHtml = new HTML(promptText);
+	  promptTextHtml.setStyleName(style.promptText());
+	  
+	  // add style to the value widget
+	  typeSpecificDisplayWidget.addStyleName(style.promptValue());
+	  
+	  // wrap in a div with style
+	  HTMLPanel promptResponseContainer = new HTMLPanel("");
+	  promptResponseContainer.setStyleName(style.promptResponse());
+	  promptResponseContainer.add(promptTextHtml);
+	  promptResponseContainer.add(typeSpecificDisplayWidget);
+	  
+	  // add the whole thing to the prompt list
+	  this.promptResponseVerticalPanel.add(promptResponseContainer);
+	}
+	
+	public void addPromptResponseTimestamp(String promptText, Date timestamp) {
+	  // TODO: try/catch?
+	  HTML timestampHtml = new HTML(this.dateTimeFormat.format(timestamp));
+	  addPromptResponse(promptText, timestampHtml);
+	}
+	
+	// integers only
+	public void addPromptResponseNumber(String promptText, int number) {
+	  // TODO: try/catch/
+	  HTML numberHtml = new HTML(Integer.toString(number));
+	  addPromptResponse(promptText, numberHtml);
+	}
+	
+	public void addPromptResponseText(String promptText, String userInputText) {
+	  addPromptResponse(promptText, new HTML(userInputText));
+	}
+	
+	// also works for multi-choice custom
+	public void addPromptResponseMultiChoice(String promptText, 
+	                                         List<String> choiceKeys, 
+	                                         Map<String, String> glossary) {
+	  List<String> choiceValues = new ArrayList<String>();
+	  for (String choiceKey : choiceKeys) {
+	    if (glossary.containsKey(choiceKey)) {
+	      choiceValues.add(glossary.get(choiceKey));
+	    } else {
+	      choiceValues.add("unrecognized choice");
+	    }
+	  }
+	  HTML listOfChoices = new HTML(CollectionUtils.join(choiceValues, ","));
+	  addPromptResponse(promptText, listOfChoices);
+	}
+	
+	// also works for single choice custom
+	public void addPromptResponseSingleChoice(String promptText,
+	                                          String choiceKey,
+	                                          Map<String, String> glossary) {
+	  String promptValue = glossary.containsKey(choiceKey) ? 
+	                       glossary.get(choiceKey) : "unrecognized choice";
+	  addPromptResponse(promptText, new HTML(promptValue));
+	}
+	
+	public void addPromptResponsePhoto(String promptText, String imageUrl) {
+	  Image image = new Image();
+	  image.setUrl(imageUrl);
+	  addPromptResponse(promptText, image);
+	}
+	
+	/*
 	public ResponseDisclosurePanel setResponse(SurveyResponse response) {
 		campaignName.setText(response.getCampaignName());
 		surveyName.setText(response.getSurveyName());
@@ -86,7 +197,7 @@ public class ResponseDisclosurePanel extends Composite
 		}
 		details.setHTML(sb.toString());
 		return this; // for chaining
-	}
+	}*/
 
 	@Override
 	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {

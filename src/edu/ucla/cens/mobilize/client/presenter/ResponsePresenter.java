@@ -20,7 +20,6 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
-import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -67,12 +66,11 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   
   @Override
   public void onFilterChange() {
-    this.responses.clear();
     String userName = this.view.getSelectedParticipant();
     String campaignId = this.view.getSelectedCampaign();
     String surveyId = this.view.getSelectedSurvey();
     Privacy privacy = this.view.getSelectedPrivacyState();
-    fetchAndShowResponses(); // gets filter values during load
+    fetchAndShowResponses(userName, campaignId, surveyId, privacy);
   }
   
   // view must be set before calling this
@@ -141,6 +139,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                      final String campaignId, 
                                      final String surveyName,
                                      final Privacy privacy) {
+    this.responses.clear();
     
     CampaignReadParams campaignReadParams = new CampaignReadParams();
     campaignReadParams.userRole_opt = UserRole.PARTICIPANT;
@@ -210,16 +209,16 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     Privacy privacy = view.getSelectedPrivacyState();
     switch (privacy) {
       case SHARED:
-        view.renderShared(responses);
+        view.renderShared(this.responses);
         break;
       case PRIVATE: 
-        view.renderPrivate(responses);
+        view.renderPrivate(this.responses);
         break;
       case INVISIBLE:
-        view.renderInvisible(responses);
+        view.renderInvisible(this.responses);
         break;
       default:
-        view.renderAll(responses);
+        view.renderAll(this.responses);
         break;
     }
   }

@@ -120,7 +120,7 @@ public class CampaignEditForm extends Composite {
     authorsFlexTable.setCellSpacing(0);
     authorsFlexTable.setBorderWidth(0);
     
-    bind();
+    bind(); 
   }
   
   private void bind() {

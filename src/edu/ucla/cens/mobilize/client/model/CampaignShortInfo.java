@@ -39,6 +39,10 @@ public class CampaignShortInfo {
     return this.campaignName;
   }
   
+  public Date getCreationTime() {
+    return this.creationTime;
+  }
+  
   public RunningState getRunningState() {
     return this.runningState;
   }

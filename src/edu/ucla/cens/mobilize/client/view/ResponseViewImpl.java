@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -26,8 +27,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 public class ResponseViewImpl extends Composite implements ResponseView {
   
@@ -266,26 +269,32 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     renderResponses(responses);
   }
   
+  
   private void renderResponses(List<SurveyResponse> responses) {
     this.responseList.clear();
     for (SurveyResponse response : responses) {
       ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
-      responseWidget.setResponse(response);
-      switch (response.getPrivacyState()) {
-        case SHARED:
-          responseWidget.setPrivacyStylePublic();
-          break;
-        case PRIVATE:
-          responseWidget.setPrivacyStylePrivate();
-          break;
-        case INVISIBLE:
-          responseWidget.setPrivacyStyleInvisible();
-          break;
-        default:
-          responseWidget.clearPrivacyStyles();
-          break;
+      responseWidget.setCampaignName(response.getCampaignName());
+      responseWidget.setDate(response.getResponseDate());
+      responseWidget.setPrivacy(response.getPrivacyState());
+      responseWidget.setResponseKey(response.getResponseKey());
+      responseWidget.setSurveyName(response.getSurveyName());
+      for (PromptResponse promptResponse : response.getPromptResponses()) {
+        switch (promptResponse.getPromptType()) {
+          case TIMESTAMP:
+            Date timestamp = DateUtils.translateFromServerFormat(promptResponse.getResponseRaw());
+            responseWidget.addPromptResponseTimestamp(promptResponse.getText(), timestamp);
+            break;
+          case PHOTO:
+            responseWidget.addPromptResponsePhoto(promptResponse.getText(), promptResponse.getResponsePrepared());
+            break;
+          default:
+            responseWidget.addPromptResponseText(promptResponse.getText(), promptResponse.getResponsePrepared());
+            break;
+        }
       }
       this.responseList.add(responseWidget);
+      
     }
   }
 
@@ -354,6 +363,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       }
     }    
     return keys;
+  }
+
+  @Override
+  public void clearResponseList() {
+    this.responseList.clear();
   }
 
   

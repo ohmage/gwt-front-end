@@ -45,6 +45,7 @@ public interface ResponseView extends IsWidget {
   void renderShared(List<SurveyResponse> responses);
   void renderInvisible(List<SurveyResponse> responses);
   void renderAll(List<SurveyResponse> responses);
+  void clearResponseList();
 
   // gui elements needed by presenter for event handling
   List<HasClickHandlers> getShareButtons();

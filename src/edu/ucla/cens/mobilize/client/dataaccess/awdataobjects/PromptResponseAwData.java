@@ -31,4 +31,9 @@ public class PromptResponseAwData extends JavaScriptObject {
   
   public final native String getUser() /*-{ return this.user; }-*/;
   
+  // only makes sense for choice prompt_types (single_choice, multi_choice, etc)
+  public final native String getChoiceValueFromGlossary(String key) /*-{
+    return (this.prompt_choice_glossary != undefined) ? this.prompt_choice_glossary[key] : "---";
+  }-*/;
+  
 }

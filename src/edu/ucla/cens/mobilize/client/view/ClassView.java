@@ -1,7 +1,6 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import java.util.List;
-import java.util.Map;
 
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
