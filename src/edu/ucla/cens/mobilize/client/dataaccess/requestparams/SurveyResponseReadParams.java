@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.ucla.cens.mobilize.client.AndWellnessConstants;
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
@@ -72,7 +72,7 @@ public class SurveyResponseReadParams extends RequestParams {
     if (optionalList != null && !optionalList.isEmpty()) {
       retval = CollectionUtils.join(optionalList, ",");
     } else {
-      retval = AndWellnessConstants.specialAllValuesToken;
+      retval = AwConstants.specialAllValuesToken;
     }
     return retval;
   }

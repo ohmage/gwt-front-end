@@ -28,7 +28,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.ucla.cens.mobilize.client.AndWellnessConstants;
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
@@ -92,8 +92,8 @@ public class CampaignEditForm extends Composite {
     privacyListBox.addItem("Shared", "shared"); // 1 = shared/public
     // if ... addItem("INVISIBLE")
 
-    String url = isNewCampaign ? AndWellnessConstants.getCampaignCreateUrl() : 
-                                 AndWellnessConstants.getCampaignUpdateUrl();
+    String url = isNewCampaign ? AwConstants.getCampaignCreateUrl() : 
+                                 AwConstants.getCampaignUpdateUrl();
     formPanel.setAction(url);
     formPanel.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
     formPanel.setMethod(FormPanel.METHOD_POST); 

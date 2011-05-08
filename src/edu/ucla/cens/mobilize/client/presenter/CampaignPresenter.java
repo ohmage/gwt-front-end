@@ -8,7 +8,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import edu.ucla.cens.mobilize.client.AndWellnessConstants;
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
@@ -145,7 +145,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     authors.add("Bill"); authors.add("Frank"); authors.add("Mary"); authors.add("Alice");
     this.view.setAuthorListToChooseFrom(authors);
     this.view.showCreateForm(this.dataService.authToken(), 
-                             AndWellnessConstants.getCampaignCreateUrl());
+                             AwConstants.getCampaignCreateUrl());
   }
   
   private void fetchAndShowCampaignEdit(String campaignId) {
@@ -166,7 +166,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
         view.setAuthorListToChooseFrom(authors);
         view.setCampaignEdit(result); 
         view.showEditForm(dataService.authToken(),
-                          AndWellnessConstants.getCampaignUpdateUrl());
+                          AwConstants.getCampaignUpdateUrl());
         // TODO: set left bar links and plots
       }
     }); 

@@ -15,7 +15,7 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import edu.ucla.cens.mobilize.client.AndWellnessConstants;
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
@@ -48,18 +48,9 @@ import edu.ucla.cens.mobilize.client.utils.MapUtils;
  * @author vhajdik
  */
 public class AndWellnessDataService implements DataService {
-  RequestBuilder authorizationService;
-  RequestBuilder dataPointService;
-  RequestBuilder configurationService;
-  RequestBuilder userReadService;
-  RequestBuilder campaignReadService;
-  RequestBuilder campaignDeleteService;
-  RequestBuilder surveyResponseReadService;
-  RequestBuilder surveyResponseUpdateService;
-  RequestBuilder surveyResponseDeleteService;
-  
-  // NOTE: campaignCreate and campaignUpdate services are not included because 
-  // they require file upload and so must be done with a formPanel
+
+  // NOTE: campaignCreate and campaiggUpdate are not included in the DataService
+  // because they require file upload and so much be done with a formPanel
 
   String userName;
   String authToken;
@@ -69,69 +60,6 @@ public class AndWellnessDataService implements DataService {
   private static Logger _logger = Logger.getLogger(AndWellnessDataService.class.getName());
   
   public AndWellnessDataService() {
-  }
-
-  // lazy init
-  private RequestBuilder getAuthorizationRequestBuilder() {
-    if (this.authorizationService == null) {
-      this.authorizationService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getAuthorizationUrl()));
-      this.authorizationService.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    }
-    return this.authorizationService;
-  }
-  
-  // lazy init
-  private RequestBuilder getUserRequestBuilder() {
-    if (this.userReadService == null) {
-      this.userReadService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getUserReadUrl()));
-      this.userReadService.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    }
-    return this.userReadService;
-  }
-  
-  // lazy init
-  private RequestBuilder getCampaignReadRequestBuilder() {
-    if (this.campaignReadService == null) {
-      this.campaignReadService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getCampaignReadUrl()));
-      this.campaignReadService.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    }
-    return this.campaignReadService;    
-  }
-  
-  //lazy init
-  private RequestBuilder getCampaignDeleteRequestBuilder() {
-    if (this.campaignDeleteService == null) {
-      this.campaignDeleteService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getCampaignDeleteUrl()));
-      this.campaignDeleteService.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    }
-    return this.campaignDeleteService;    
-  }
-  
-  //lazy init
-  private RequestBuilder getSurveyResponseReadRequestBuilder() {
-    if (this.surveyResponseReadService == null) {
-      this.surveyResponseReadService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getSurveyResponseReadUrl()));
-      this.surveyResponseReadService.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    }
-    return this.surveyResponseReadService;    
-  }
-  
-  //lazy init
-  private RequestBuilder getSurveyResponseUpdateRequestBuilder() {
-    if (this.surveyResponseUpdateService == null) {
-      this.surveyResponseUpdateService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getSurveyResponseUpdateUrl()));
-      this.surveyResponseUpdateService.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    }
-    return this.surveyResponseUpdateService;    
-  }
-  
-  //lazy init
-  private RequestBuilder getSurveyResponseDeleteRequestBuilder() {
-    if (this.surveyResponseDeleteService == null) {
-      this.surveyResponseDeleteService = new RequestBuilder(RequestBuilder.POST, URL.encode(AndWellnessConstants.getSurveyResponseDeleteUrl()));
-      this.surveyResponseDeleteService.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    }
-    return this.surveyResponseDeleteService;    
   }
 
   // convenience method for request builder with common options
@@ -329,7 +257,7 @@ public class AndWellnessDataService implements DataService {
       _logger.finest("Attempting authentication with parameters: " + postParams);
       
       // Send the username/password to the server.
-      RequestBuilder requestBuilder = getAuthorizationRequestBuilder();
+      final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getAuthorizationUrl());
       try {
           requestBuilder.sendRequest(postParams, new RequestCallback() {
               // Error occurred, handle it here
@@ -343,7 +271,7 @@ public class AndWellnessDataService implements DataService {
                   String responseText = null;     
                   AuthorizationTokenQueryAwData result = null;
                   try {
-                    responseText = getResponseTextOrThrowException(authorizationService, response);
+                    responseText = getResponseTextOrThrowException(requestBuilder, response);
                     result = AuthorizationTokenQueryAwData.fromJsonString(responseText);
                     init(userName, result.getAuthorizationToken()); // save for future fetches
                     callback.onSuccess(result);
@@ -372,7 +300,7 @@ public class AndWellnessDataService implements DataService {
   
   @Override
   public void fetchUserInfo(final String username, final AsyncCallback<UserInfo> callback) {
-    final RequestBuilder requestBuilder = getUserRequestBuilder();
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserReadUrl());
     Map<String, String> params = new HashMap<String, String>();
     assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
     params.put("auth_token", this.authToken);
@@ -445,7 +373,7 @@ public class AndWellnessDataService implements DataService {
     params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
     String postParams = params.toString();
     _logger.fine("Attempting to fetch campaign list with parameters: " + postParams);
-    final RequestBuilder requestBuilder = getCampaignReadRequestBuilder();
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getCampaignReadUrl());
     try {
       requestBuilder.sendRequest(postParams, new RequestCallback() {
         @Override
@@ -489,7 +417,7 @@ public class AndWellnessDataService implements DataService {
     //params.campaignUrns_opt = campaignIdList;
     String postParams = params.toString();
     _logger.fine("Attempting to fetch campaign detail list with parameters: " + postParams);
-    final RequestBuilder requestBuilder = getCampaignReadRequestBuilder();
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getCampaignReadUrl());
     try {
       requestBuilder.sendRequest(postParams, new RequestCallback() {
         @Override
@@ -547,7 +475,7 @@ public class AndWellnessDataService implements DataService {
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Attempting to delete campaign with parameters: " + postParams);
     // make the request
-    final RequestBuilder requestBuilder = getCampaignDeleteRequestBuilder();
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getCampaignDeleteUrl());
     try {
       requestBuilder.sendRequest(postParams, new RequestCallback() {
         @Override
@@ -600,7 +528,7 @@ public class AndWellnessDataService implements DataService {
     
     String postParams = params.toString();
     _logger.fine("Fetching survey responses with params: " + postParams);
-    final RequestBuilder requestBuilder = getSurveyResponseReadRequestBuilder();
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getSurveyResponseReadUrl());
     try {
       requestBuilder.sendRequest(postParams, new RequestCallback() {
         @Override
@@ -640,7 +568,7 @@ public class AndWellnessDataService implements DataService {
     params.put("class_urn_list", CollectionUtils.join(classIds, ","));
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Fetching class list with params: " + postParams);
-    final RequestBuilder requestBuilder = getAwRequestBuilder(AndWellnessConstants.getClassReadUrl());
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getClassReadUrl());
     try {
       requestBuilder.sendRequest(postParams, new RequestCallback() {
         @Override
@@ -698,13 +626,13 @@ public class AndWellnessDataService implements DataService {
     params.authToken = this.authToken;
     String postParams = params.toString();
     _logger.fine("Updating class with params: " + postParams);
-    final RequestBuilder requestBuilder = getAwRequestBuilder(AndWellnessConstants.getClassUpdateUrl());
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getClassUpdateUrl());
     try {
       requestBuilder.sendRequest(postParams, new RequestCallback() {
         @Override
         public void onResponseReceived(Request request, Response response) {          
           try {
-            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            getResponseTextOrThrowException(requestBuilder, response);
             // no exception thrown? then it was a success
             callback.onSuccess("Class " + params.classId + " updated successfully.");
           } catch (Exception exception) {

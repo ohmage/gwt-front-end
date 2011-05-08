@@ -3,7 +3,7 @@ package edu.ucla.cens.mobilize.client.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.ucla.cens.mobilize.client.AndWellnessConstants;
+import edu.ucla.cens.mobilize.client.AwConstants;
 
 public class AwUrlBasedResourceUtils {
   public static String getImageUrl(String campaignId, String imageId) {
@@ -11,6 +11,6 @@ public class AwUrlBasedResourceUtils {
     params.put("image_id", imageId);
     params.put("campaign_id", campaignId);
     String paramString = MapUtils.translateToParameters(params);
-    return AndWellnessConstants.getImageWrapperUrl() + paramString; 
+    return AwConstants.getImageWrapperUrl() + paramString; 
   }
 }
