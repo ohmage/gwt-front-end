@@ -21,13 +21,11 @@ import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassAwData;
-import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ConfigurationsAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.PromptResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
-import edu.ucla.cens.mobilize.client.model.ConfigurationInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyInfo;
@@ -53,25 +51,6 @@ import com.google.gwt.json.client.JSONValue;
 public class AwDataTranslators {
     // Logging utility
     private static Logger _logger = Logger.getLogger(AwDataTranslators.class.getName());
-    
-    /**
-     * Translates a ConfigurationsAwData from the AW server into a ConfigurationInfo object.
-     * 
-     * @param awData The server data to translate.
-     * @return The translated ConfigurationInfo.
-     */
-    public static ConfigurationInfo translateConfigurationsAwDataToConfigurationInfo(ConfigurationsAwData awData) {
-        ConfigurationInfo configInfo = new ConfigurationInfo();
-     
-        _logger.finer("Creating a ConfigurationInfo with campaign version: " + awData.getCampaignVersion());
-        
-        configInfo.setXmlConfiguration(awData.getCampaignConfiguration());
-        
-        // Now setup the surveys based on the xml configuration
-        configInfo.setSurveyList(translateCampaignConfigurationToSurveyList(awData.getCampaignConfiguration()));
-        
-        return configInfo;
-    }
     
     /**
      * Translates a campaign configuration file from the AW server config API into a list of
