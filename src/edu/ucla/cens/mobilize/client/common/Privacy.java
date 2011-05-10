@@ -4,5 +4,9 @@ public enum Privacy {
   UNDEFINED,
   PRIVATE,
   SHARED,
-  INVISIBLE
+  INVISIBLE;
+  
+  public String toServerString() {
+    return this.toString().toLowerCase();
+  }
 }

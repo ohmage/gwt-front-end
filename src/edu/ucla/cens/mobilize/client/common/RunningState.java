@@ -2,5 +2,9 @@ package edu.ucla.cens.mobilize.client.common;
 
 public enum RunningState {
   STOPPED,
-  RUNNING
+  RUNNING;
+  
+  public String toServerString() {
+    return this.toString().toLowerCase();
+  }
 }
