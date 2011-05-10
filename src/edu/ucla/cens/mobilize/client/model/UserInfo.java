@@ -16,6 +16,11 @@ public class UserInfo {
   private List<String> visibleUsers = new ArrayList<String>(); // whose info this user can see
   private Map<String, String> classIdToNameMap;
   
+  private String msgInfo;
+  private boolean hasUnreadInfoMsg = false;
+  private String msgError;
+  private boolean hasUnreadErrorMsg = false;
+  
   private UserStats stats = new UserStats();
   
   public UserInfo(String username, 
@@ -34,6 +39,30 @@ public class UserInfo {
     for (UserRole role : roles) {
       this.roles.addRole(role);
     }    
+  }
+  
+  /******** MESSAGING ********/
+  
+  
+  public boolean hasInfoMessage() { return this.hasUnreadInfoMsg; }
+  public boolean hasErrorMessage() { return this.hasUnreadErrorMsg; }
+  
+  public String getInfoMessage() { return this.msgInfo; }
+  public String getErrorMessage() { return this.msgError; }
+  
+  public void setInfoMessage(String message) {
+    this.msgInfo = message;
+    this.hasUnreadInfoMsg = true;
+  }
+  
+  public void setErrorMessage(String error) {
+    this.msgError = error;
+    this.hasUnreadErrorMsg = true;
+  }
+  
+  public void clearMessages() {
+    this.msgInfo = this.msgError = null;
+    this.hasUnreadInfoMsg = this.hasUnreadErrorMsg = false;
   }
   
   /******** GETTERS ********/
@@ -89,5 +118,6 @@ public class UserInfo {
 
   public boolean canUpload() {
     return this.roles.admin || this.roles.supervisor || this.roles.analyst;
-  }  
+  }
+  
 }

@@ -163,13 +163,13 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
     if (!oldClassInfo.getDescription().equals(description)) {
       params.description_opt = description;
     }
-    Set<String> oldMembers = oldClassInfo.getMembers().keySet();
+    List<String> oldMembers = oldClassInfo.getMemberLogins();
     // if users are selected in the form but weren't in the old members, add them
     params.usersToAdd_opt.addAll(CollectionUtils.setDiff(selectedMembers, oldMembers));
     // if users were in the old member list but aren't in the form, remove them
     params.usersToRemove_opt.addAll(CollectionUtils.setDiff(oldMembers, selectedMembers));
     
-    Set<String> oldPrivilegedMembers = oldClassInfo.getPrivilegedMembers().keySet();
+    List<String> oldPrivilegedMembers = oldClassInfo.getPrivilegedMemberLogins();
     // if users are selected in the form but weren't in the old members, add them
     params.usersToAddAsPrivileged_opt.addAll(CollectionUtils.setDiff(selectedPrivilegedMembers, oldPrivilegedMembers));
     // note: just one list for removing both privileged and restricted users

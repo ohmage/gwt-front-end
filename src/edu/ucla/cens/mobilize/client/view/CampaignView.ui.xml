@@ -114,7 +114,7 @@
         <!-- only one of these will be visible at a time depending on selected subview -->
 		    <w:CampaignList ui:field="campaignList"></w:CampaignList>
 		    <w:CampaignDetail ui:field="campaignDetail"></w:CampaignDetail>
-		    <w:CampaignEditForm ui:field="campaignEdit"></w:CampaignEditForm>
+		    <w:CampaignEditFormView ui:field="campaignEdit"></w:CampaignEditFormView>
 		  </g:HTMLPanel>
     </g:center>
     

@@ -15,12 +15,16 @@ import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.ui.CampaignEditFormPresenter;
 import edu.ucla.cens.mobilize.client.view.CampaignView;
 
 public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   
   // view used in rendering
   CampaignView view;
+
+  // edit form has a lot of data logic, so gets its own presenter
+  CampaignEditFormPresenter campaignEditPresenter;
   
   // internal data structures  
   private ArrayList<CampaignShortInfo> campaigns = new ArrayList<CampaignShortInfo>();
@@ -43,6 +47,8 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     this.eventBus = eventBus;
     this.dataService = dataService;
     this.canCreate = this.userInfo.canCreate();
+    
+    this.campaignEditPresenter = new CampaignEditFormPresenter(userInfo, dataService, eventBus);
   }
   
   @Override
@@ -69,7 +75,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
       this.showCampaignCreateForm();
     } else if (params.get("v").get(0).equals("edit") && params.containsKey("id")) {
       // anything after first id is ignored
-      this.fetchAndShowCampaignEdit(params.get("id").get(0));
+      this.fetchCampaignAndShowEditForm(params.get("id").get(0));
     } else {
       // unrecognized view - do nothing
       // TODO: log?
@@ -88,6 +94,8 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   public void setView(CampaignView view) {
     this.view = view;
     this.view.setPresenter(this);
+    // FIXME: better way to connect subview to presenter?
+    this.campaignEditPresenter.setView(view.getCampaignEditForm());
   }
   
   /************ METHODS TO LOAD DATA AND DISPLAY SUBVIEWS **************/
@@ -138,38 +146,13 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   }
   
   private void showCampaignCreateForm() {
-    this.view.setClassListToChooseFrom(userInfo.getClasses());
-    // FIXME: instead, add all members of a class as potential authors
-    // each time user adds a class to the campaign
-    List<String> authors = new ArrayList<String>();
-    authors.add("Bill"); authors.add("Frank"); authors.add("Mary"); authors.add("Alice");
-    this.view.setAuthorListToChooseFrom(authors);
-    this.view.showCreateForm(this.dataService.authToken(), 
-                             AwConstants.getCampaignCreateUrl());
+    this.campaignEditPresenter.initFormForCreate();
+    this.view.showEditForm();
   }
   
-  private void fetchAndShowCampaignEdit(String campaignId) {
-    this.dataService.fetchCampaignDetail(campaignId.toString(), 
-                                         new AsyncCallback<CampaignDetailedInfo>() {
-      @Override
-      public void onFailure(Throwable caught) {
-      // TODO Auto-generated method stub
-      }
-      
-      @Override
-      public void onSuccess(CampaignDetailedInfo result) {
-        view.clearPlots();
-        view.setClassListToChooseFrom(userInfo.getClasses());
-        // FIXME: instead, get list of classes in this campaign, get all authors for those classes
-        List<String> authors = new ArrayList<String>();
-        authors.add("Bill"); authors.add("Frank"); authors.add("Mary"); authors.add("Alice");
-        view.setAuthorListToChooseFrom(authors);
-        view.setCampaignEdit(result); 
-        view.showEditForm(dataService.authToken(),
-                          AwConstants.getCampaignUpdateUrl());
-        // TODO: set left bar links and plots
-      }
-    }); 
+  private void fetchCampaignAndShowEditForm(String campaignId) {
+    this.campaignEditPresenter.fetchCampaignAndInitFormForEdit(campaignId);
+    this.view.showEditForm();
   }
   
   private void showAuthorCenter() {
@@ -205,31 +188,4 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     History.newItem("campaigns?v=create");
   }
 
-  @Override
-  public void onCampaignDelete(final String campaignId) {
-    if (campaignId != null) {
-      dataService.deleteCampaign(campaignId, 
-          new AsyncCallback<String>() {
-            @Override
-            public void onFailure(Throwable caught) {
-              try {
-                throw caught;
-              } catch (Throwable e) {
-                String msg = e.getMessage();
-                if (msg == null || msg.isEmpty()) msg = "There was a problem completing the operation.";
-                showError(msg);
-              }
-              // FIXME: catch specific exceptions
-              
-            }
-            @Override
-            public void onSuccess(String result) {
-              // redirect to campaign list so user can verify that 
-              // deleted campaign is gone and display success message
-              History.newItem(HistoryTokens.campaignList());
-              showMessage("Campaign " + campaignId + " has been deleted.");
-            }
-      });
-    }
-  }
 }

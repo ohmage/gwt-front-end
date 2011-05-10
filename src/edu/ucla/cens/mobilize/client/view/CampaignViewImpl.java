@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.view;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ import com.google.gwt.user.client.ui.Widget;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.ui.CampaignDetail;
-import edu.ucla.cens.mobilize.client.ui.CampaignEditForm;
+import edu.ucla.cens.mobilize.client.ui.CampaignEditFormView;
 import edu.ucla.cens.mobilize.client.ui.CampaignList;
 
 /**
@@ -60,7 +61,7 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   
   @UiField CampaignList campaignList;
   @UiField CampaignDetail campaignDetail;
-  @UiField CampaignEditForm campaignEdit;
+  @UiField CampaignEditFormView campaignEdit;
   
   @UiField Label plotSideBarTitle;
   @UiField VerticalPanel plotPanel;
@@ -102,39 +103,6 @@ public class CampaignViewImpl extends Composite implements CampaignView {
         }
       }
     });
-    
-    // When user clicks delete in the campaign edit form, a dialog pops
-    // up asking are you sure. Clicking "delete" in the dialog passes
-    // the event to the presenter. ("cancel" closes the dialog with no effect)
-    this.campaignEdit.getDeleteButton().addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        final DialogBox dialog = new DialogBox();
-        dialog.setGlassEnabled(true);
-        dialog.setText("Are you sure you want to delete this campaign?");
-        dialog.setModal(true);
-        Button deleteButton = new Button("Delete");
-        deleteButton.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-            dialog.hide();
-            presenter.onCampaignDelete(campaignEdit.getCampaignId());
-          }
-        });
-        Button cancelButton = new Button("Cancel");
-        cancelButton.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-            dialog.hide();
-          }
-        });
-        FlowPanel panel = new FlowPanel(); 
-        panel.add(deleteButton);
-        panel.add(cancelButton);
-        dialog.add(panel);
-        dialog.center();
-      }
-    });
   }
   
   @Override
@@ -171,26 +139,28 @@ public class CampaignViewImpl extends Composite implements CampaignView {
     campaignDetail.setVisible(true);
     // TODO: campaign actions in left sidebar
   }
-
-  @Override
-  public void showCreateForm(String authToken, String serverLocation) {
-    hideAllWidgets();
-    campaignEdit.setVisible(true);
-    campaignEdit.setIsNewCampaignFlag(true);
-    campaignEdit.initializeForm(authToken, serverLocation);
-    // TODO: create actions in left sidebar?
-  }
   
   @Override
-  public void showEditForm(String authToken, String serverLocation) {
+  public void showEditForm() {
     hideAllWidgets();
     campaignEdit.setVisible(true); 
-    campaignEdit.initializeForm(authToken, serverLocation);
   }
 
   @Override
   public void setCampaignEdit(CampaignDetailedInfo campaign) {
-    this.campaignEdit.setCampaign(campaign);
+    this.campaignEdit.setCampaignUrn(campaign.getCampaignId());
+    this.campaignEdit.setCampaignName(campaign.getCampaignName());
+    this.campaignEdit.setDescription(campaign.getDescription());
+    this.campaignEdit.setPrivacy(campaign.getPrivacy());
+    this.campaignEdit.setRunningState(campaign.getRunningState());
+    this.campaignEdit.setSelectedAuthors(campaign.getAuthors());
+    // FIXME: get class names from somewhere
+    Map<String, String> classUrnToClassNameMap = new HashMap<String, String>();
+    for (String classUrn : campaign.getClasses()) {
+      classUrnToClassNameMap.put(classUrn, classUrn);
+    }
+    this.campaignEdit.setSelectedClasses(classUrnToClassNameMap);
+    this.campaignEdit.setHeader("Editing " + campaign.getCampaignName());
   }
 
 
@@ -227,16 +197,6 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   }
 
   @Override
-  public void setClassListToChooseFrom(Map<String, String> classIdToNameMap) {
-    this.campaignEdit.setClassListToChooseFrom(classIdToNameMap);
-  }
-  
-  @Override
-  public void setAuthorListToChooseFrom(List<String> authors) {
-    this.campaignEdit.setAuthorListToChooseFrom(authors);
-  }
-
-  @Override
   public void showError(String msg) {
     final DialogBox errorDialog = new DialogBox();
     errorDialog.setGlassEnabled(true);
@@ -265,5 +225,10 @@ public class CampaignViewImpl extends Composite implements CampaignView {
     msgBox.setVisible(false);
   }
 
+  @Override
+  public CampaignEditFormView getCampaignEditForm() {
+    // FIXME: how can this be hooked to presenter without needing to expose form?
+    return this.campaignEdit;
+  }
 
 }

@@ -37,8 +37,7 @@ public class ClassEditForm extends Composite {
   @UiField Button cancelButton;
   @UiField Button saveButton;
   
-  private final static int USER_ID_COL = 0;
-  //private final static int USER_NAME_COL = 1;
+  private final static int USER_LOGIN_COL = 0;
   private final static int USER_DELETE_COL = 1;
   
   public ClassEditForm() {
@@ -52,15 +51,11 @@ public class ClassEditForm extends Composite {
     this.className.setText(classDetail.getClassName());
     this.classUrn.setText(classDetail.getClassId());
     this.descriptionTextArea.setText(classDetail.getDescription());
-    for (String privilegedMemberId : classDetail.getPrivilegedMembers().keySet()) {
-      addUserToFlexTable(privilegedMembersFlexTable,
-                         privilegedMemberId,
-                         classDetail.getPrivilegedMembers().get(privilegedMemberId));
+    for (String privilegedMemberLogin : classDetail.getPrivilegedMemberLogins()) {
+      addUserToFlexTable(privilegedMembersFlexTable, privilegedMemberLogin);
     }
-    for (String memberId : classDetail.getMembers().keySet()) {
-      addUserToFlexTable(membersFlexTable,
-                         memberId,
-                         classDetail.getMembers().get(memberId));
+    for (String memberLogin : classDetail.getMemberLogins()) {
+      addUserToFlexTable(membersFlexTable, memberLogin);
     }
   }
   
@@ -73,7 +68,7 @@ public class ClassEditForm extends Composite {
     this.privilegedMembersFlexTable.removeAllRows();
   }
   
-  private void addUserToFlexTable(final FlexTable flexTable, String userId, String userName) {
+  private void addUserToFlexTable(final FlexTable flexTable, String userLogin) {
     flexTable.setVisible(true);
     
     // check for duplicates
@@ -81,18 +76,18 @@ public class ClassEditForm extends Composite {
     int firstEmptyRowIndex = flexTable.getRowCount();
     for (int i = 0; i < firstEmptyRowIndex; i++) {
       // gotcha: this only checks against name, not unique id
-      if (flexTable.getText(i, 1).equals(userId)) {
+      if (flexTable.getText(i, 1).equals(userLogin)) {
         isAlreadyInTable = true;
         break;
       }
     }
     
     // if user is not already in table, add new row with 3 columns 
-    // 0 = user name, 1 = user login, 2 = "x" button that deletes row when clicked
+    // 0 = user login, 1 = "x" button that deletes row when clicked
     if (!isAlreadyInTable) {
       final int thisRow = firstEmptyRowIndex;
       //flexTable.setText(thisRow, USER_NAME_COL, userName); // we only have id for now
-      flexTable.setText(thisRow, USER_ID_COL, userId);
+      flexTable.setText(thisRow, USER_LOGIN_COL, userLogin);
       Button deleteButton = new Button("X");
       deleteButton.addClickHandler(new ClickHandler() {
         @Override
@@ -124,7 +119,7 @@ public class ClassEditForm extends Composite {
   public List<String> getMembers() {
     List<String> members = new ArrayList<String>();
     for (int i = 0; i < this.membersFlexTable.getRowCount(); i++) {
-      members.add(this.membersFlexTable.getText(i, USER_ID_COL));
+      members.add(this.membersFlexTable.getText(i, USER_LOGIN_COL));
     }
     return members;
   }
@@ -132,7 +127,7 @@ public class ClassEditForm extends Composite {
   public List<String> getPrivilegedMembers() {
     List<String> privilegedMembers = new ArrayList<String>();
     for (int i = 0; i < this.privilegedMembersFlexTable.getRowCount(); i++) {
-      privilegedMembers.add(this.privilegedMembersFlexTable.getText(i, USER_ID_COL));
+      privilegedMembers.add(this.privilegedMembersFlexTable.getText(i, USER_LOGIN_COL));
     }
     return privilegedMembers;
   }  

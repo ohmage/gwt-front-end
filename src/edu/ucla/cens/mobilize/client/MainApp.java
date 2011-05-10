@@ -204,7 +204,6 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     // connect views and presenters
     dashboardPresenter.setView(dashboardView);
     campaignPresenter.setView(campaignView);
-    campaignPresenter.fetchAndShowAllCampaigns();
     responsePresenter.setView(responseView);
     exploreDataPresenter.setView(exploreDataView);
     classPresenter.setView(classView);

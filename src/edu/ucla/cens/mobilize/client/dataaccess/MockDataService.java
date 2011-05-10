@@ -62,32 +62,32 @@ public class MockDataService implements DataService {
     ClassInfo class1 = new ClassInfo();
     class1.setClassId("urn:class:ca:lausd:ADDAMS_HS:CS101:Fall:2011");
     class1.setClassName("ADDAMS_HS_CS101_Fall_2011");
-    class1.addMember("slarson", "Sally Larson");
-    class1.addMember("mhardy", "Marty Hardy");
-    class1.addMember("awhine", "Amy Whine");
-    class1.addMember("rmoran", "Ralph Moran");
-    class1.addMember("ajones", "Art Jones");
-    class1.addMember("smcmike", "Spike McMike");
-    class1.addPrivilegedMember("tuser", "testuser.aa");
+    class1.addMember("slarson");
+    class1.addMember("mhardy");
+    class1.addMember("awhine");
+    class1.addMember("rmoran");
+    class1.addMember("ajones");
+    class1.addMember("smcmike");
+    class1.addPrivilegedMember("tuser");
     classInfos.add(class1);
     
     ClassInfo class2 = new ClassInfo();
     class2.setClassId("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011");
     class2.setClassName("BH_HS_CS102_Spring_2011");
-    class2.addMember("testuser.aa", "testuser.aa");
-    class2.addMember("testuser.ab", "testuser.ab");
-    class2.addMember("testuser.ac", "testuser.ac");
-    class2.addMember("testuser.bb", "testuser.bb");
-    class2.addPrivilegedMember("testuser.aa", "testuser.aa");
-    class2.addPrivilegedMember("testuser.ab", "testuser.ab");
+    class2.addMember("testuser.aa");
+    class2.addMember("testuser.ab");
+    class2.addMember("testuser.ac");
+    class2.addMember("testuser.bb");
+    class2.addPrivilegedMember("testuser.aa");
+    class2.addPrivilegedMember("testuser.ab");
     classInfos.add(class2);
     
     ClassInfo class3 = new ClassInfo();
     class3.setClassId("urn:class:ca:lausd:Carson_HS:CS103:Spring:2011");
     class3.setClassName("Carson_HS_CS103_Spring_2011");
-    class3.addMember("testuser.ac", "testuser.ac");
-    class3.addMember("testuser.bb", "testuser.bb");
-    class3.addPrivilegedMember("testuser.aa", "testuser.aa");
+    class3.addMember("testuser.ac");
+    class3.addMember("testuser.bb");
+    class3.addPrivilegedMember("testuser.aa");
     classInfos.add(class3);
   }
   

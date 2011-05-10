@@ -38,16 +38,12 @@ public class ClassDetail extends Composite {
     this.classUrn.setText(classDetail.getClassId());
     this.description.setText(classDetail.getDescription());
     this.supervisorsVerticalPanel.clear();
-    for (String supervisorId : classDetail.getPrivilegedMembers().keySet()) {
-      String supervisorName = classDetail.getPrivilegedMembers().get(supervisorId);
-      // TODO: make supervisor name a hyperlink to supervisor info page?
-      this.supervisorsVerticalPanel.add(new InlineLabel(supervisorName));
+    for (String privilegedUserLogin : classDetail.getPrivilegedMemberLogins()) {
+      this.supervisorsVerticalPanel.add(new InlineLabel(privilegedUserLogin));
     }
     this.membersVerticalPanel.clear();
-    for (String memberId : classDetail.getMembers().keySet()) {
-      String memberName = classDetail.getMembers().get(memberId);
-      // TODO: make member name a link to member info page?
-      this.membersVerticalPanel.add(new InlineLabel(memberName));
+    for (String memberLogin : classDetail.getMemberLogins()) {
+      this.membersVerticalPanel.add(new InlineLabel(memberLogin));
     }
     
   }

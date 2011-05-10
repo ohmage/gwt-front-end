@@ -455,11 +455,11 @@ public class AwDataTranslators {
           classInfo.setClassName(awData.getName());
           JsArrayString privilegedUsers = awData.getPrivilegedUsers();
           for (int i = 0; i < privilegedUsers.length(); i++) {
-            classInfo.addPrivilegedMember(privilegedUsers.get(i), privilegedUsers.get(i)); // name == id
+            classInfo.addPrivilegedMember(privilegedUsers.get(i)); 
           }
           JsArrayString restrictedUsers = awData.getRestrictedUsers();
           for (int i = 0; i < restrictedUsers.length(); i++) {
-            classInfo.addMember(restrictedUsers.get(i), restrictedUsers.get(i)); // name == id
+            classInfo.addMember(restrictedUsers.get(i));
           }
           classInfos.add(classInfo);
         } catch (Exception e) { // FIXME: which exception?

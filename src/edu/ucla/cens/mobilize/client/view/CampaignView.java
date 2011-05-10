@@ -6,6 +6,7 @@ import java.util.Map;
 import com.google.gwt.user.client.ui.IsWidget;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.ui.CampaignEditFormView;
 
 /**
  * Everything in the campaigns tab is part of the CampaignView.
@@ -21,7 +22,6 @@ public interface CampaignView extends IsWidget {
     public void setView(CampaignView view);
     public void onCampaignSelected(String campaignId);
     public void onCampaignCreate();
-    public void onCampaignDelete(String campaignId); 
     public void onFilterChange(); // data filters
   }
   void setPresenter(Presenter presenter);
@@ -30,12 +30,13 @@ public interface CampaignView extends IsWidget {
   
   // set flags to control display for different roles
   void setCanCreate(boolean canEdit);
+  
+  CampaignEditFormView getCampaignEditForm(); // FIXME use interface instead 
 
   // hide/show subviews
   void showList();
   void showDetail();
-  void showCreateForm(String authToken, String serverLocation);
-  void showEditForm(String authToken, String serverLocation);
+  void showEditForm();
   
   // show messages to user
   void showError(String msg);
@@ -46,8 +47,6 @@ public interface CampaignView extends IsWidget {
   void setCampaignList(List<CampaignShortInfo> campaigns); 
   void setCampaignDetail(CampaignDetailedInfo campaign, boolean canEdit);
   void setCampaignEdit(CampaignDetailedInfo campaign);
-  void setClassListToChooseFrom(Map<String, String> classIdToNameMap);
-  void setAuthorListToChooseFrom(List<String> authors);
   void setPlotSideBarTitle(String title);
   
   // R plots
