@@ -3,7 +3,6 @@ package edu.ucla.cens.mobilize.client.ui;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -268,9 +267,9 @@ public class CampaignEditFormView extends Composite {
   }
 
   public void setRunningState(RunningState runningState) {
-    String runningStateText = runningState.toString();
+    String runningStateLower = runningState.toString().toLowerCase();
     for (int i = 0; i < this.runningStateListBox.getItemCount(); i++) {
-      if (this.runningStateListBox.getItemText(i).equals(runningStateText)) {
+      if (this.runningStateListBox.getItemText(i).toLowerCase().equals(runningStateLower)) {
         this.runningStateListBox.setSelectedIndex(i);
         break;
       }
