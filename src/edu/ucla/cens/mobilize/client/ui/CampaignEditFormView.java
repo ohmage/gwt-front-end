@@ -2,6 +2,8 @@ package edu.ucla.cens.mobilize.client.ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
+import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 
 public class CampaignEditFormView extends Composite {
@@ -38,7 +41,7 @@ public class CampaignEditFormView extends Composite {
   private static CampaignEditViewUiBinder uiBinder = GWT
       .create(CampaignEditViewUiBinder.class);
 
-  @UiTemplate("CampaignEditForm.ui.xml")
+  @UiTemplate("CampaignEditFormView.ui.xml")
   interface CampaignEditViewUiBinder extends UiBinder<Widget, CampaignEditFormView> {
   }
 
@@ -53,7 +56,8 @@ public class CampaignEditFormView extends Composite {
   @UiField Hidden classHiddenField; // holds serialized class list
   @UiField Button addAuthorsButton;
   @UiField FlexTable authorsFlexTable;
-  @UiField Hidden authorHiddenField; // holds serialized author list
+  @UiField Hidden authorsToAddHiddenField; // list of authors with roles
+  @UiField Hidden authorsToRemoveHiddenField; // list of authors with roles
   @UiField FileUpload chooseFileButton;
   @UiField ListBox runningStateListBox;
   @UiField ListBox privacyListBox;
@@ -72,6 +76,8 @@ public class CampaignEditFormView extends Composite {
   private final int AUTHOR_DELETE_COL = 1;
 
   private boolean formIsInitialized = false;
+  
+  private List<String> originalAuthors;
   
   public CampaignEditFormView() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -92,7 +98,8 @@ public class CampaignEditFormView extends Composite {
   }
   
   public void prepareFormForSubmit() {
-    this.authorHiddenField.setValue(getAuthorLoginsSerialized());
+    this.authorsToAddHiddenField.setValue(getAuthorsToAddSerialized());
+    this.authorsToRemoveHiddenField.setValue(getAuthorsToRemoveSerialized());
     this.classHiddenField.setValue(getClassUrnsSerialized());
     this.campaignUrnHiddenField.setValue(this.campaignUrn.getText());
   }
@@ -176,7 +183,7 @@ public class CampaignEditFormView extends Composite {
     }
   }
   
-  public List<String> getAuthorLogins() {
+  public List<String> getSelectedAuthors() {
     ArrayList<String> authors = new ArrayList<String>();
     for (int i = 0; i < this.authorsFlexTable.getRowCount(); i++) {
       // assumes text displayed to the user is also author id
@@ -185,9 +192,42 @@ public class CampaignEditFormView extends Composite {
     return authors;
   }
   
-  private String getAuthorLoginsSerialized() {
-    return CollectionUtils.join(getAuthorLogins(), ",");
+  // Author list will be diffed against this when constructing server
+  // query because author adds and author removes are different params.
+  // Presenter must set this when campaign is first loaded for editing.
+  public void storeOriginalAuthors(List<String> authorLogins) {
+    this.originalAuthors = authorLogins;
   }
+  
+  private Collection<String> getAuthorsToAdd() {
+    List<String> selectedAuthors = getSelectedAuthors();
+    return CollectionUtils.setDiff(selectedAuthors, this.originalAuthors);
+  }
+  
+  private String getAuthorsToAddSerialized() {
+    Collection<String> authorsToAdd = getAuthorsToAdd();
+    Collection<String> authorsToAddWithRoles = new ArrayList<String>();
+    for (String authorLogin : authorsToAdd) {
+      authorsToAddWithRoles.add(authorLogin + ":" + UserRole.AUTHOR.toServerString());
+    }
+    return CollectionUtils.join(authorsToAddWithRoles, ",");
+  }
+  
+  private Collection<String> getAuthorsToRemove() {
+    List<String> selectedAuthors = getSelectedAuthors();
+    return CollectionUtils.setDiff(this.originalAuthors, selectedAuthors);
+  }
+  
+  private String getAuthorsToRemoveSerialized() {
+    Collection<String> authorsToRemove = getAuthorsToRemove();
+    Collection<String> authorsToRemoveWithRoles = new ArrayList<String>();
+    for (String authorLogin : authorsToRemove) {
+      authorsToRemoveWithRoles.add(authorLogin + ":" + UserRole.AUTHOR.toServerString());
+    }
+    return CollectionUtils.join(authorsToRemoveWithRoles, ",");
+  }
+  
+  
   
   public HasClickHandlers getSaveButton() {
     return this.saveButton;
@@ -253,6 +293,7 @@ public class CampaignEditFormView extends Composite {
   }
 
   public void setSelectedAuthors(List<String> userLogins) {
+    assert this.originalAuthors != null : "Save list of original authors before selecting authors.";
     this.authorsFlexTable.removeAllRows();
     for (String authorLogin : userLogins) {
       addAuthor(authorLogin);

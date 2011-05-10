@@ -76,6 +76,7 @@ public class CampaignEditFormPresenter {
           view.setDescription(result.getDescription());
           view.setPrivacy(result.getPrivacy());
           view.setRunningState(result.getRunningState());
+          view.storeOriginalAuthors(result.getAuthors()); // used for diff
           view.setSelectedAuthors(result.getAuthors());
           // fill in class names
           Map<String, String> classes = new HashMap<String, String>();

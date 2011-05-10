@@ -17,17 +17,11 @@ public enum UserRole {
   RESTRICTED, // FIXME: this should be a different enum
   RESEARCHER; // legacy
   
-  public String toString() {
-    String str = null;
-    switch (this) {
-      case PARTICIPANT: str = "Participant"; break;
-      case AUTHOR: str = "Author"; break;
-      case ANALYST: str = "Analyst"; break;
-      case SUPERVISOR: str = "Supervisor"; break;
-      case ADMIN: str = "Admin"; break;
-      case RESEARCHER: str = "Researcher"; break;
-      default: str = "Other"; break;
-    }
-    return str;
+  public String toUserFriendlyString() {
+    return this.toString().substring(0, 1).concat(this.toString().substring(1).toLowerCase());
+  }
+
+  public String toServerString() {
+    return this.toString().toLowerCase();
   }
 }
