@@ -13,7 +13,8 @@ import com.google.gwt.i18n.client.DateTimeFormat;
  */
 public class DateUtils {
     // Format of the timestamp string returned from the server
-    public final static String timeStampFormat = "yyyy-MM-dd HH:mm:ss.S";
+    //public final static String timeStampFormat = "yyyy-MM-dd HH:mm:ss.S"; // old format
+    public final static String timeStampFormat = "yyyy-MM-dd HH:mm:ss"; // as of May 2011
     // Format of the timestamp string to upload to server POST api
     public final static String uploadTimeStampFormat = "yyyy-MM-dd";
     
