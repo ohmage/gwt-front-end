@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.presenter;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +12,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
@@ -57,6 +59,36 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       public void onClick(ClickEvent event) {
         view.clearEditForm();
         History.back();
+      }
+    });
+    
+    this.view.getEditFormAddMembersButton().addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // FIXME: hard coded users because we don't have this api yet
+        List<String> hardCodedUsers = Arrays.asList(new String[] {
+            "user.adv.supa", "user.adv.upa", "user.adv.spa", "user.adv.sup", 
+            "user.adv.sa", "user.adv.ua", "user.adv.su", "user.adv.sp", 
+            "user.adv.sa", "user.adv.up", "user.adv.a", "user.adv.p", 
+            "user.adv.u", "user.adv.s"
+        });
+        _logger.warning("FIXME: hard-coded users in class tab");
+        view.showEditFormAddMembersDialog(hardCodedUsers);
+      }
+    });
+    
+    this.view.getEditFormAddPrivilegedMembersButton().addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // FIXME: hard coded users because we don't have this api yet
+        List<String> hardCodedUsers = Arrays.asList(new String[] {
+            "user.adv.supa", "user.adv.upa", "user.adv.spa", "user.adv.sup", 
+            "user.adv.sa", "user.adv.ua", "user.adv.su", "user.adv.sp", 
+            "user.adv.sa", "user.adv.up", "user.adv.a", "user.adv.p", 
+            "user.adv.u", "user.adv.s"
+        });
+        _logger.warning("FIXME: hard-coded users in class tab");
+        view.showEditFormAddPrivilegedMembersDialog(hardCodedUsers);
       }
     });
   }
@@ -142,7 +174,8 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
 
       @Override
       public void onFailure(Throwable caught) {
-        // TODO Auto-generated method stub
+        _logger.fine(caught.getMessage());
+        view.showError("Update failed.");
       }
 
       @Override

@@ -32,7 +32,7 @@
      text-align: right;
      width: 170px;
    }
-   .supervisorList, .memberList {
+   .privilegedMemberList, .memberList {
      margin-bottom: 10px;
    }
 	.sectionHeader {
@@ -91,10 +91,10 @@
 	        </tr>
 			    <tr>
 			      <td class='{style.label}'>
-			        Supervisors:
+			        Privileged Members:
 			      </td>
 			      <td>
-			        <g:VerticalPanel ui:field='supervisorsVerticalPanel' />
+			        <g:VerticalPanel ui:field='privilegedMembersVerticalPanel' />
 			      </td>
 			    </tr>
 			    <tr>

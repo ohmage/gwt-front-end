@@ -125,6 +125,7 @@
             </td>
             <td>
               <g:FlexTable ui:field='privilegedMembersFlexTable' addStyleNames='{style.privilegedMemberList}' />
+              <g:Button ui:field='addPrivilegedMembersButton'>Add Privileged Members</g:Button>
             </td>
           </tr>
           <tr>
@@ -133,6 +134,7 @@
             </td>
             <td>
               <g:FlexTable ui:field='membersFlexTable' addStyleNames='{style.memberList}' />
+              <g:Button ui:field='addMembersButton'>Add Members</g:Button>
             </td>
           </tr>
           <tr>

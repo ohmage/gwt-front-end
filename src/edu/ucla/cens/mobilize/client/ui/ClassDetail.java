@@ -24,7 +24,7 @@ public class ClassDetail extends Composite {
   @UiField InlineLabel className;
   @UiField InlineLabel classUrn;
   @UiField InlineLabel description;
-  @UiField VerticalPanel supervisorsVerticalPanel;
+  @UiField VerticalPanel privilegedMembersVerticalPanel;
   @UiField VerticalPanel membersVerticalPanel;
   @UiField InlineHyperlink editLink;
   
@@ -37,9 +37,9 @@ public class ClassDetail extends Composite {
     this.className.setText(classDetail.getClassName());
     this.classUrn.setText(classDetail.getClassId());
     this.description.setText(classDetail.getDescription());
-    this.supervisorsVerticalPanel.clear();
+    this.privilegedMembersVerticalPanel.clear();
     for (String privilegedUserLogin : classDetail.getPrivilegedMemberLogins()) {
-      this.supervisorsVerticalPanel.add(new InlineLabel(privilegedUserLogin));
+      this.privilegedMembersVerticalPanel.add(new InlineLabel(privilegedUserLogin));
     }
     this.membersVerticalPanel.clear();
     for (String memberLogin : classDetail.getMemberLogins()) {

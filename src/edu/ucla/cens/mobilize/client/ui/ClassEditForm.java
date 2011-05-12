@@ -33,7 +33,9 @@ public class ClassEditForm extends Composite {
   @UiField InlineLabel classUrn;
   @UiField TextArea descriptionTextArea;
   @UiField FlexTable privilegedMembersFlexTable;
+  @UiField Button addPrivilegedMembersButton;
   @UiField FlexTable membersFlexTable;
+  @UiField Button addMembersButton;
   @UiField Button cancelButton;
   @UiField Button saveButton;
   
@@ -51,9 +53,11 @@ public class ClassEditForm extends Composite {
     this.className.setText(classDetail.getClassName());
     this.classUrn.setText(classDetail.getClassId());
     this.descriptionTextArea.setText(classDetail.getDescription());
+    privilegedMembersFlexTable.removeAllRows();
     for (String privilegedMemberLogin : classDetail.getPrivilegedMemberLogins()) {
       addUserToFlexTable(privilegedMembersFlexTable, privilegedMemberLogin);
     }
+    membersFlexTable.removeAllRows();
     for (String memberLogin : classDetail.getMemberLogins()) {
       addUserToFlexTable(membersFlexTable, memberLogin);
     }
@@ -76,7 +80,7 @@ public class ClassEditForm extends Composite {
     int firstEmptyRowIndex = flexTable.getRowCount();
     for (int i = 0; i < firstEmptyRowIndex; i++) {
       // gotcha: this only checks against name, not unique id
-      if (flexTable.getText(i, 1).equals(userLogin)) {
+      if (flexTable.getText(i, 0).equals(userLogin)) {
         isAlreadyInTable = true;
         break;
       }
@@ -100,6 +104,49 @@ public class ClassEditForm extends Composite {
     }
   }
   
+  public HasClickHandlers getAddPrivilegedMembersButton() {
+    return this.addPrivilegedMembersButton;
+  }
+  
+  public void showPrivilegedMemberChoices(List<String> userLogins) {
+    if (userLogins == null) return;
+    final MultiSelectDialog userChooserDialog = new MultiSelectDialog();
+    userChooserDialog.setCaption("Select users to add as privileged members.");
+    userChooserDialog.setItems(userLogins);    
+    userChooserDialog.setSubmitHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        List<String> selected = userChooserDialog.getSelectedItems();
+        for (String userLogin : selected) {
+          addUserToFlexTable(privilegedMembersFlexTable, userLogin);
+        }
+        userChooserDialog.hide();
+      }
+    });
+    userChooserDialog.show();
+  }
+  
+  public HasClickHandlers getAddMembersButton() {
+    return this.addMembersButton;
+  }
+  
+  public void showMemberChoices(List<String> userLogins) {
+    if (userLogins == null) return;
+    final MultiSelectDialog userChooserDialog = new MultiSelectDialog();
+    userChooserDialog.setCaption("Select users to add as restricted members.");
+    userChooserDialog.setItems(userLogins);    
+    userChooserDialog.setSubmitHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        List<String> selected = userChooserDialog.getSelectedItems();
+        for (String userLogin : selected) {
+          addUserToFlexTable(membersFlexTable, userLogin);
+        }
+        userChooserDialog.hide();
+      }
+    });
+    userChooserDialog.show();
+  }  
   public HasClickHandlers getSubmitButton() {
     return this.saveButton;
   }
@@ -116,7 +163,7 @@ public class ClassEditForm extends Composite {
     return this.descriptionTextArea.getText();
   }
   
-  public List<String> getMembers() {
+  public List<String> getRestrictedMembers() {
     List<String> members = new ArrayList<String>();
     for (int i = 0; i < this.membersFlexTable.getRowCount(); i++) {
       members.add(this.membersFlexTable.getText(i, USER_LOGIN_COL));
@@ -131,5 +178,7 @@ public class ClassEditForm extends Composite {
     }
     return privilegedMembers;
   }  
+  
+  
 
 }

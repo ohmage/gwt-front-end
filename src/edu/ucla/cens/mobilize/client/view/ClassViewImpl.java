@@ -125,7 +125,7 @@ public class ClassViewImpl extends Composite implements ClassView {
 
   @Override
   public List<String> getMembers() {
-    return this.classEdit.getMembers();
+    return this.classEdit.getRestrictedMembers();
   }
 
   @Override
@@ -146,6 +146,26 @@ public class ClassViewImpl extends Composite implements ClassView {
   @Override
   public void clearEditForm() {
     this.classEdit.clearForm();
+  }
+
+  @Override
+  public void showEditFormAddMembersDialog(List<String> userLoginsToChooseFrom) {
+    this.classEdit.showMemberChoices(userLoginsToChooseFrom);
+  }
+
+  @Override
+  public void showEditFormAddPrivilegedMembersDialog(List<String> userLoginsToChooseFrom) {
+    this.classEdit.showPrivilegedMemberChoices(userLoginsToChooseFrom);
+  }
+
+  @Override
+  public HasClickHandlers getEditFormAddMembersButton() {
+    return this.classEdit.getAddMembersButton();
+  }
+
+  @Override
+  public HasClickHandlers getEditFormAddPrivilegedMembersButton() {
+    return this.classEdit.getAddPrivilegedMembersButton();
   }
 
 }
