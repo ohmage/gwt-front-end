@@ -8,17 +8,21 @@ import java.util.Map;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
+// {"classes":{"urn:class:ca:lausd:BoyleHeights_HS:CS102:Spring:2011":"BH_HS_CS102_Spring_2011","urn:class:ca:lausd:Addams_HS:CS101:Fall:2011":"Addams_HS_CS101_Fall_2011"},"permissions":{"cancreate":true},"campaign_roles":["participant","author","supervisor"],"class_roles":["privileged"]}
+
 public class UserInfoAwData extends JavaScriptObject {
   protected UserInfoAwData() {};
   
   public static native UserInfoAwData fromJsonString(String jsonString) /*-{
       return eval('(' + jsonString + ')'); 
   }-*/;
-
-  private final native JsArrayString getClassesAsJsArray() /*-{ return this.classes; }-*/;
-  
-  private final native JsArrayString getRolesAsJsArray() /*-{ return this.roles;}-*/;
     
+  // restricted or privileged
+  private final native JsArrayString getClassRolesAsJsArray() /*-{ return this.class_roles; }-*/;
+  
+  // author, participant, supervisor, analyst
+  private final native JsArrayString getCampaignRolesAsJsArray() /*-{ return this.campaign_roles }-*/;
+
   public final native boolean getCanCreateFlag() /*-{ 
     return (this.permissions != undefined) ? this.permissions.cancreate : false; 
   }-*/;
@@ -43,8 +47,8 @@ public class UserInfoAwData extends JavaScriptObject {
     return this.classes[classKey];
   }-*/;
   
-  public final List<String> getRoles() {
-    JsArrayString toTranslate = getRolesAsJsArray();
+  public final List<String> getCampaignRoles() {
+    JsArrayString toTranslate = getCampaignRolesAsJsArray();
     List<String> toReturn = new ArrayList<String>();
     
     // Translate the array one by one
@@ -55,4 +59,5 @@ public class UserInfoAwData extends JavaScriptObject {
     
     return toReturn;
   }
+  
 }
