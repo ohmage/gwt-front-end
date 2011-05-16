@@ -1,6 +1,5 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -8,8 +7,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import edu.ucla.cens.mobilize.client.AwConstants;
-import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
@@ -27,8 +24,6 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   CampaignEditFormPresenter campaignEditPresenter;
   
   // internal data structures  
-  private ArrayList<CampaignShortInfo> campaigns = new ArrayList<CampaignShortInfo>();
-  private CampaignDetailedInfo campaign;
   private EventBus eventBus;
   private DataService dataService;
   private UserInfo userInfo;
@@ -111,9 +106,6 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
 
       @Override
       public void onSuccess(List<CampaignShortInfo> result) {
-        campaigns.clear();
-        campaigns.addAll(result);
-        view.setCampaignList(campaigns);
         view.showList();
       }
     });

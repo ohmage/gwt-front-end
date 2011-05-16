@@ -33,6 +33,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseRead
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
+import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
@@ -559,6 +560,13 @@ public class AndWellnessDataService implements DataService {
     }    
   }
 
+
+  @Override
+  public void fetchDocumentList(AsyncCallback<List<DocumentInfo>> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    // TODO Auto-generated method stub
+    
+  }
   
   @Override
   public void fetchClassList(List<String> classIds, final AsyncCallback<List<ClassInfo>> callback) {
@@ -653,6 +661,7 @@ public class AndWellnessDataService implements DataService {
       throw new ServerException("Cannot contact server.");
     }
   }
+
 
   
 }

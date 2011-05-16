@@ -12,6 +12,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseRead
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
+import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
@@ -91,6 +92,8 @@ public interface DataService {
                             Privacy privacy,
                             final AsyncCallback<List<SurveyResponse>> callback);
   
+  void fetchDocumentList(final AsyncCallback<List<DocumentInfo>> callback);
+  
   void fetchClassList(List<String> classIds,
                       final AsyncCallback<List<ClassInfo>> callback);
   
@@ -98,5 +101,6 @@ public interface DataService {
   void fetchClassDetail(String classId, final AsyncCallback<ClassInfo> callback);
   
   void updateClass(ClassUpdateParams params, final AsyncCallback<String> callback);
+  
   
 }

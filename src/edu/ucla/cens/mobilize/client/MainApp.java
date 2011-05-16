@@ -28,6 +28,7 @@ import edu.ucla.cens.mobilize.client.presenter.AccountPresenter;
 import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ClassPresenter;
 import edu.ucla.cens.mobilize.client.presenter.DashboardPresenter;
+import edu.ucla.cens.mobilize.client.presenter.DocumentPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ExploreDataPresenter;
 import edu.ucla.cens.mobilize.client.presenter.LoginPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ResponsePresenter;
@@ -38,6 +39,8 @@ import edu.ucla.cens.mobilize.client.view.CampaignViewImpl;
 import edu.ucla.cens.mobilize.client.view.ClassView;
 import edu.ucla.cens.mobilize.client.view.ClassViewImpl;
 import edu.ucla.cens.mobilize.client.view.DashboardViewImpl;
+import edu.ucla.cens.mobilize.client.view.DocumentView;
+import edu.ucla.cens.mobilize.client.view.DocumentViewImpl;
 import edu.ucla.cens.mobilize.client.view.ExploreDataView;
 import edu.ucla.cens.mobilize.client.view.ExploreDataViewImpl;
 import edu.ucla.cens.mobilize.client.view.HelpView;
@@ -81,6 +84,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
 	CampaignView campaignView;
 	ResponseView responseView;
 	ExploreDataView exploreDataView;
+	DocumentView documentView;
 	ClassView classView;
 	AccountViewImpl accountView;
 	HelpView helpView;
@@ -90,9 +94,15 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
 	CampaignPresenter campaignPresenter;
 	ResponsePresenter responsePresenter;
 	ExploreDataPresenter exploreDataPresenter;
+	DocumentPresenter documentPresenter;
   ClassPresenter classPresenter;
   AccountPresenter accountPresenter;
-	
+
+  // convenience class for readability
+  private static class TabIndex {
+    public static int DASHBOARD, CAMPAIGNS, RESPONSES, EXPLORE_DATA, DOCUMENTS, CLASSES = 0;
+  }
+  
   // Logging utility
   private static Logger _logger = Logger.getLogger(MainApp.class.getName());	
 	
@@ -189,6 +199,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     campaignView = new CampaignViewImpl();
     responseView = new ResponseViewImpl();
     exploreDataView = new ExploreDataViewImpl();
+    documentView = new DocumentViewImpl();
     classView = new ClassViewImpl();
     accountView = new AccountViewImpl();
     helpView = new HelpView();
@@ -198,6 +209,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     campaignPresenter = new CampaignPresenter(userInfo, awDataService, eventBus);
     responsePresenter = new ResponsePresenter(userInfo, awDataService, eventBus);
     exploreDataPresenter = new ExploreDataPresenter();
+    documentPresenter = new DocumentPresenter(userInfo, awDataService, eventBus);
     classPresenter = new ClassPresenter(userInfo, awDataService, eventBus);
     accountPresenter = new AccountPresenter(userInfo, awDataService, eventBus);
 
@@ -206,6 +218,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     campaignPresenter.setView(campaignView);
     responsePresenter.setView(responseView);
     exploreDataPresenter.setView(exploreDataView);
+    documentPresenter.setView(documentView);
     classPresenter.setView(classView);
     accountPresenter.setView(accountView);
   }
@@ -215,18 +228,26 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     header.setUserName(loginManager.getLoggedInUserName());
     RootPanel.get("header").add(header);
     
-    // create tabs
+    // create tabs (order should match that in TabIndex enum)
     tabPanel.add(dashboardView, "Dashboard"); // 0 = dashboard
+    TabIndex.DASHBOARD = 0;
     tabPanel.add(campaignView, "Campaigns"); // 1 = campaigns
+    TabIndex.CAMPAIGNS = 1;
     tabPanel.add(responseView, "Responses"); // 2 = responses
+    TabIndex.RESPONSES = 2;
     tabPanel.add(exploreDataView, "Explore Data"); // 3 = explore data
-    tabPanel.add(classView, "Classes"); // 4 = classes
+    TabIndex.EXPLORE_DATA = 3;
+    tabPanel.add(documentView, "Documents"); // 4 = documents
+    TabIndex.DOCUMENTS = 4;
+    tabPanel.add(classView, "Classes"); // 5 = classes
+    TabIndex.CLASSES = 5;
 
     // the nth string in tabHistoryTokens corresponds to the nth tab
     tabHistoryTokens.add("dashboard");
     tabHistoryTokens.add("campaigns");
     tabHistoryTokens.add("responses");
     tabHistoryTokens.add("explore_data");
+    tabHistoryTokens.add("documents");
     tabHistoryTokens.add("classes");
     
     // tab panel, account page, and help all appear in the same
@@ -241,40 +262,48 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   private void showDashboard() {
     hideAll();
     tabPanel.setVisible(true);
-    if (tabPanel.getTabBar().getSelectedTab() != 0) {
-      tabPanel.selectTab(0);
+    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.DASHBOARD) {
+      tabPanel.selectTab(TabIndex.DASHBOARD);
     }
   }
  
   private void showCampaigns() {
     hideAll();
     tabPanel.setVisible(true);
-    if (tabPanel.getTabBar().getSelectedTab() != 1) {
-      tabPanel.selectTab(1);
+    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.CAMPAIGNS) {
+      tabPanel.selectTab(TabIndex.CAMPAIGNS);
     }
   }
   
   private void showResponses() {
     hideAll();
     tabPanel.setVisible(true);
-    if (tabPanel.getTabBar().getSelectedTab() != 2) {
-      tabPanel.selectTab(2);
+    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.RESPONSES) {
+      tabPanel.selectTab(TabIndex.RESPONSES);
     }
   }
   
   private void showExploreData() {
     hideAll();
     tabPanel.setVisible(true);
-    if (tabPanel.getTabBar().getSelectedTab() != 3) {
-      tabPanel.selectTab(3);
+    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.EXPLORE_DATA) {
+      tabPanel.selectTab(TabIndex.EXPLORE_DATA);
+    }
+  }
+  
+  private void showDocuments() {
+    hideAll();
+    tabPanel.setVisible(true);
+    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.DOCUMENTS) {
+      tabPanel.selectTab(TabIndex.DOCUMENTS);
     }
   }
   
   private void showClasses() {
     hideAll();
     tabPanel.setVisible(true);
-    if (tabPanel.getTabBar().getSelectedTab() != 4) {
-      tabPanel.selectTab(4);
+    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.CLASSES) {
+      tabPanel.selectTab(TabIndex.CLASSES);
     }
   }
 
@@ -337,6 +366,9 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
       // filters and data set from params
       exploreDataPresenter.go(params);
       showExploreData();
+    } else if (view.equals("documents")) {
+      documentPresenter.go(params);
+      showDocuments();
     } else if (view.equals("classes")) {
       classPresenter.go(params);
       showClasses();

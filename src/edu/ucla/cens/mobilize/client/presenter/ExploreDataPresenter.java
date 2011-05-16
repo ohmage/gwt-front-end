@@ -12,9 +12,8 @@ public class ExploreDataPresenter implements ExploreDataView.Presenter, Presente
 
   @Override
   public void go(Map<String, List<String>> params) {
-    // TODO Auto-generated method stub
   }
-  
+    
   @Override
   public void setView(ExploreDataView view) {
     this.view = view;

@@ -25,6 +25,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseRead
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
+import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
@@ -35,6 +36,7 @@ public class MockDataService implements DataService {
   List<SurveyResponse> surveyResponses = new ArrayList<SurveyResponse>();
   
   Map<String, CampaignDetailedInfo> campaigns = new HashMap<String, CampaignDetailedInfo>();
+  List<DocumentInfo> documents = new ArrayList<DocumentInfo>();
   List<String> classes = new ArrayList<String>();
   List<ClassInfo> classInfos = new ArrayList<ClassInfo>();
   
@@ -179,6 +181,50 @@ public class MockDataService implements DataService {
     }
   }
 
+  public void loadFakeDocuments() {
+    documents.clear();
+    
+    DocumentInfo docInfo0 = new DocumentInfo();
+    docInfo0.setCreationTimestamp(new Date()); // now
+    docInfo0.setCreator("user.adv.supa");
+    docInfo0.setDescription("Analysis doc for campaign");
+    docInfo0.setDocumentId(123);
+    docInfo0.setDocumentName("file.txt");
+    docInfo0.setEditPermission(true);
+    docInfo0.setLastModifiedTimestamp(new Date());
+    docInfo0.setPrivacy(Privacy.PRIVATE);
+    docInfo0.setSize(100); // MB
+    docInfo0.addCampaign("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011:advertisting");
+    docInfo0.addCampaign("urn:campaign:ca:lausd:ADDAMS_HS:CS101:Fall:2011:sleepsens");
+    documents.add(docInfo0);
+    
+    DocumentInfo docInfo1 = new DocumentInfo();
+    docInfo1.setCreationTimestamp(new Date()); // now
+    docInfo1.setCreator("user.adv.supa");
+    docInfo1.setDescription("Analysis doc for campaign");
+    docInfo1.setDocumentId(123);
+    docInfo1.setDocumentName("file.txt");
+    docInfo1.setEditPermission(true);
+    docInfo1.setLastModifiedTimestamp(new Date());
+    docInfo1.setPrivacy(Privacy.SHARED);
+    docInfo1.setSize(100); // MB
+    docInfo1.addCampaign("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011:advertising");
+    documents.add(docInfo1);
+    
+    DocumentInfo docInfo2 = new DocumentInfo();
+    docInfo2.setCreationTimestamp(new Date()); // now
+    docInfo2.setCreator("user.adv.supa");
+    docInfo2.setDescription("Analysis doc for campaign");
+    docInfo2.setDocumentId(123);
+    docInfo2.setDocumentName("file.txt");
+    docInfo2.setEditPermission(true);
+    docInfo2.setLastModifiedTimestamp(new Date());
+    docInfo2.setPrivacy(Privacy.PRIVATE);
+    docInfo2.setSize(100); // MB
+    docInfo2.addCampaign("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011:advertising");
+    docInfo2.addCampaign("urn:campaign:ca:lausd:ADDAMS_HS:CS101:Fall:2011:sleepsens");
+    documents.add(docInfo2);
+  }
 
   @Override
   public String authToken() {
@@ -347,6 +393,12 @@ public class MockDataService implements DataService {
   public void updateClass(ClassUpdateParams params, AsyncCallback<String> callback) {
     // TODO Auto-generated method stub
     
+  }
+
+  @Override
+  public void fetchDocumentList(AsyncCallback<List<DocumentInfo>> callback) {
+    if (documents.isEmpty()) loadFakeDocuments();
+    callback.onSuccess(documents);
   }
 
 }

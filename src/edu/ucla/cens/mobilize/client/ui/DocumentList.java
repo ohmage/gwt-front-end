@@ -53,6 +53,7 @@ public class DocumentList extends Composite {
 
   private void initComponents() {
     // set up table heading
+    documentGrid.resize(1, Column.values().length);
     documentGrid.getRowFormatter().setStyleName(0, style.documentGridHeader());
     documentGrid.setText(0, Column.DOCUMENT_NAME.ordinal(), "Document Name");
     documentGrid.setText(0, Column.SIZE.ordinal(), "Size");
