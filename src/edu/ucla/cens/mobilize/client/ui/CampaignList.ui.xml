@@ -1,8 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
-	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client"
-  xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
 	<ui:style type="edu.ucla.cens.mobilize.client.ui.CampaignList.CampaignListStyle">
 	  .campaignGrid {
       width: 100%;
@@ -68,7 +67,7 @@
       background-image: url('images/bullet_red.png');
     }
     /* action links are all small text with icons */
-    .analyzeLink, .deleteLink, .detailsLink, .editLink {
+    .analyzeLink, .detailsLink, .editLink {
     	background-repeat: no-repeat;
       background-position: 2px 50%;
       font-size: 0.8em;
@@ -76,9 +75,6 @@
     } 
     .analyzeLink {
       background-image: url('images/chart_bar_small.png');
-    }
-    .deleteLink {
-      background-image: url('images/delete_small.png');
     }
     .detailsLink {
       background-image: url('images/page_white_magnify_small.png'); 

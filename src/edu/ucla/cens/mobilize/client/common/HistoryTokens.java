@@ -37,5 +37,17 @@ public class HistoryTokens {
   public static String classEdit(String classId) {
     return "classes?v=edit&id=" + classId;
   }
+
+  public static String documentList() {
+    return "documents";
+  }
+  
+  public static String documentDetail(int documentUUID) {
+    return "documents?v=detail&id=" + documentUUID;
+  }
+
+  public static String documentEdit(int documentUUID) {
+    return "documents?v=edit&id=" + documentUUID;
+  }
   
 }

@@ -1,0 +1,62 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+<ui:style type="edu.ucla.cens.mobilize.client.ui.DocumentList.DocumentListStyle">
+    .documentGrid {
+      width: 100%;
+    }
+    .documentGridNameColumn {
+      padding-left: 20px;
+    }
+    .documentGridHeader {
+      background-color: #CCC;
+      font-weight: bold;
+    }
+    .documentGridHeader td {
+      border-bottom: solid 1px #AAA;
+    }
+    .listContainer {
+    }
+    .listContainer th {
+      background-color: #DDD;
+      border-bottom-color: #AAA;
+      border-bottom-width: 1px;
+    }
+    .oddRow { /* stripe odd rows for easier viewing */
+      background-color: #EEE;
+    }
+    .documentNamePrivate {
+      background-image: url('images/lock_small.png');
+    }
+    .documentNameShared {
+      background-image: url('images/page_white_small.png');
+    }
+    .documentNamePrivate, .documentNameShared {
+      background-repeat: no-repeat;
+      background-position: 2px 50%;
+      font-size: 0.8em;
+      padding: 3px 18px 3px 20px;
+    }
+    /* action links are all small text with icons */
+    .downloadLink, .detailsLink, .editLink {
+      background-repeat: no-repeat;
+      background-position: 2px 50%;
+      font-size: 0.8em;
+      padding: 2px 5px 2px 18px;
+    } 
+    .downloadLink {
+    	background-image: url('images/page_white_put.png');
+    }
+    .detailsLink {
+      background-image: url('images/page_white_magnify_small.png'); 
+    }
+    .editLink {
+      background-image: url('images/page_white_edit_small.png');
+    }
+  </ui:style>
+  <g:HTMLPanel>
+   <div class="{style.listContainer}">
+    <g:Grid ui:field='documentGrid'></g:Grid>
+   </div>
+  </g:HTMLPanel>
+</ui:UiBinder> 

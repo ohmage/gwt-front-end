@@ -181,7 +181,7 @@ public class AwDataTranslators {
           UserInfoAwData userDataJSObject = (UserInfoAwData)userJSONObject.getJavaScriptObject();
           boolean canCreateFlag = userDataJSObject.getCanCreateFlag();
           Map<String, String> classIdToNameMap = userDataJSObject.getClasses();
-          List<String> rolesAsStrings = userDataJSObject.getRoles();
+          List<String> rolesAsStrings = userDataJSObject.getCampaignRoles();
           List<UserRole> roles = new ArrayList<UserRole>();
           for (String roleString : rolesAsStrings) {
             roles.add(UserRole.valueOf(roleString.toUpperCase()));

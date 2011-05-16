@@ -109,7 +109,7 @@ public class CampaignDetail extends Composite {
       // hidden form with target set to _blank does a post request to fetch
       // the file and displays the result in a new window. 
       final FormPanel viewForm = new FormPanel("_blank"); // target="_blank" to open new window
-      viewForm.setAction("http://localhost:8000/MobilizeWeb/getfile");
+      viewForm.setAction("http://localhost:8000/MobilizeWeb/getfile"); // FIXME
       viewForm.setMethod(FormPanel.METHOD_POST);
       final Hidden fmt = new Hidden();
       fmt.setName("fmt"); // if fmt=download, set content-disposition header

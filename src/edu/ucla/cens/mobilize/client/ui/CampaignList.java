@@ -1,7 +1,6 @@
 package edu.ucla.cens.mobilize.client.ui;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -40,7 +39,6 @@ public class CampaignList extends Composite {
     String stopped();
     // action links
     String analyzeLink();
-    String deleteLink();
     String detailsLink();
     String editLink();
   }
@@ -52,10 +50,6 @@ public class CampaignList extends Composite {
       UiBinder<Widget, CampaignList> {
   }
   
-  Logger _logger = Logger.getLogger(CampaignList.class.getName());
-  int maxCampaigns = 100;
-  String[] rowIndexToCampaignId = new String[maxCampaigns];
-  
   // declare uibinder fields
   @UiField ListBox stateListBox;
   @UiField ListBox userRoleListBox;
@@ -64,7 +58,7 @@ public class CampaignList extends Composite {
   @UiField Grid campaignGrid;
   @UiField CampaignListStyle style;
   
-  // table columns (id column is invisible)
+  // table columns 
   private enum Column { NAME, RUNNING_STATE, PRIVACY, ACTIONS };
   
   public CampaignList() {
