@@ -75,4 +75,21 @@ public class DocumentViewImpl extends Composite implements DocumentView {
     this.msgWidget.hide();
   }
 
+  @Override
+  public void showDocumentDetail(DocumentInfo documentInfo, boolean canEdit) {
+    this.documentDetail.setDocumentDetail(documentInfo, canEdit);
+    showDetailSubview();
+  }
+
+  @Override
+  public void showDocumentEdit(DocumentInfo document) {
+
+  }
+
+  @Override
+  public void showDocumentCreate() {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

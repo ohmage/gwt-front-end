@@ -401,4 +401,15 @@ public class MockDataService implements DataService {
     callback.onSuccess(documents);
   }
 
+  @Override
+  public void fetchDocumentDetail(int documentUUID,
+      AsyncCallback<DocumentInfo> callback) {
+    for (DocumentInfo docInfo : documents) {
+      if (docInfo.getDocumentId() == documentUUID) {
+        callback.onSuccess(docInfo);
+      }
+    }
+    callback.onFailure(new Exception("document not found"));
+  }
+
 }

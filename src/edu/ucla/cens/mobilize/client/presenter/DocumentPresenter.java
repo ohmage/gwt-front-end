@@ -67,8 +67,20 @@ public class DocumentPresenter implements Presenter {
     });    
   }
 
-  private void fetchAndShowDocumentDetail(String documentUUIDString) {
-    // TODO Auto-generated method stub
+  private void fetchAndShowDocumentDetail(final String documentUUIDString) {
+    int documentUUID = Integer.parseInt(documentUUIDString);
+    this.dataService.fetchDocumentDetail(documentUUID, new AsyncCallback<DocumentInfo>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        _logger.severe(caught.getMessage());
+        view.showError("Could not load details for " + documentUUIDString);
+      }
+
+      @Override
+      public void onSuccess(DocumentInfo result) {
+        view.showDocumentDetail(result, result.userCanEdit());
+      }
+    });
     
   }
 
@@ -78,7 +90,20 @@ public class DocumentPresenter implements Presenter {
   }
 
   private void fetchDocumentAndShowEditForm(String documentUUIDString) {
-    // TODO Auto-generated method stub
+    int documentUUID = Integer.parseInt(documentUUIDString);
+    this.dataService.fetchDocumentDetail(documentUUID, new AsyncCallback<DocumentInfo>() {
+
+      @Override
+      public void onFailure(Throwable caught) {
+        _logger.severe(caught.getMessage());
+        view.showError("Document could not be opened for editing.");
+      }
+
+      @Override
+      public void onSuccess(DocumentInfo result) {
+        view.showDocumentEdit(result);
+      }
+    });
     
   }
 

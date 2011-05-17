@@ -565,7 +565,14 @@ public class AndWellnessDataService implements DataService {
   public void fetchDocumentList(AsyncCallback<List<DocumentInfo>> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     // TODO Auto-generated method stub
-    
+    throw new ServerException("unimplemented");    
+  }
+
+  @Override
+  public void fetchDocumentDetail(int documentUUID,
+      AsyncCallback<DocumentInfo> callback) {
+    // TODO Auto-generated method stub
+    throw new ServerException("unimplemented");
   }
   
   @Override
@@ -661,6 +668,8 @@ public class AndWellnessDataService implements DataService {
       throw new ServerException("Cannot contact server.");
     }
   }
+
+
 
 
   

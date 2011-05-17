@@ -94,6 +94,9 @@ public interface DataService {
   
   void fetchDocumentList(final AsyncCallback<List<DocumentInfo>> callback);
   
+  void fetchDocumentDetail(int documentUUID,
+                           final AsyncCallback<DocumentInfo> callback);
+  
   void fetchClassList(List<String> classIds,
                       final AsyncCallback<List<ClassInfo>> callback);
   
