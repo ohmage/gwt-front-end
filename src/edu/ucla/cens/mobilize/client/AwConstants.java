@@ -26,8 +26,6 @@ public class AwConstants {
     
     private final static String imageWrapperLocation = "http://localhost:8080/image_wrapper/ImageWrapper.html";
     
-    
-    
     // API Endpoints
     // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/AndWellness_Read_API_2.2
     private final static String AUTHORIZATION   = "user/auth_token";
@@ -107,5 +105,7 @@ public class AwConstants {
     public static String getImageWrapperUrl() {
       return imageWrapperLocation;
     }
+
+    
     
 }

@@ -209,7 +209,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     campaignPresenter = new CampaignPresenter(userInfo, awDataService, eventBus);
     responsePresenter = new ResponsePresenter(userInfo, awDataService, eventBus);
     exploreDataPresenter = new ExploreDataPresenter();
-    documentPresenter = new DocumentPresenter(userInfo, awDataService, eventBus);
+    documentPresenter = new DocumentPresenter(userInfo, mockDataService, eventBus);
     classPresenter = new ClassPresenter(userInfo, awDataService, eventBus);
     accountPresenter = new AccountPresenter(userInfo, awDataService, eventBus);
 

@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
+import edu.ucla.cens.mobilize.client.model.DocumentInfo;
+
 public interface DocumentView extends IsWidget {
 
   void showDocumentList(List<DocumentInfo> documents);

@@ -3,6 +3,7 @@ package edu.ucla.cens.mobilize.client.ui;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -16,7 +17,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
-import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 
 public class DocumentList extends Composite {
@@ -42,9 +42,18 @@ public class DocumentList extends Composite {
 
   @UiField Grid documentGrid;
   @UiField DocumentListStyle style;
+
+  private DateTimeFormat dateFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM);
   
-  // table columns 
-  private enum Column { DOCUMENT_NAME, SIZE, CREATION_TIME, CREATOR, ACTIONS };
+  // convenience class for column indices
+  private class Column { 
+    private static final int DOCUMENT_NAME = 0;
+    private static final int SIZE          = 1;
+    private static final int CREATION_TIME = 2;
+    private static final int CREATOR       = 3;
+    private static final int ACTIONS       = 4;
+    private static final int count         = 5; // num columns above
+  }
   
   public DocumentList() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -53,20 +62,20 @@ public class DocumentList extends Composite {
 
   private void initComponents() {
     // set up table heading
-    documentGrid.resize(1, Column.values().length);
+    documentGrid.resize(1, Column.count);
     documentGrid.getRowFormatter().setStyleName(0, style.documentGridHeader());
-    documentGrid.setText(0, Column.DOCUMENT_NAME.ordinal(), "Document Name");
-    documentGrid.setText(0, Column.SIZE.ordinal(), "Size");
-    documentGrid.setText(0, Column.CREATION_TIME.ordinal(), "Created on");
-    documentGrid.setText(0, Column.CREATOR.ordinal(), "Created by");
-    documentGrid.setText(0, Column.ACTIONS.ordinal(), "Actions");
+    documentGrid.setText(0, Column.DOCUMENT_NAME, "Document Name");
+    documentGrid.setText(0, Column.SIZE, "Size");
+    documentGrid.setText(0, Column.CREATION_TIME, "Created on");
+    documentGrid.setText(0, Column.CREATOR, "Created by");
+    documentGrid.setText(0, Column.ACTIONS, "Actions");
     
     // css styles
     documentGrid.addStyleName(style.documentGrid());
     documentGrid.setCellSpacing(0);
     documentGrid.setCellPadding(4);
     documentGrid.getCellFormatter().setStyleName(0, 
-                                                 Column.DOCUMENT_NAME.ordinal(), 
+                                                 Column.DOCUMENT_NAME, 
                                                  style.documentGridNameColumn());
   }
 
@@ -90,14 +99,29 @@ public class DocumentList extends Composite {
     Hyperlink documentNameDownloadLink = 
       new Hyperlink(documentInfo.getDocumentName(), 
                     HistoryTokens.documentDetail(documentInfo.getDocumentId()));
-    this.documentGrid.setWidget(row, Column.DOCUMENT_NAME.ordinal(), documentNameDownloadLink); 
+    this.documentGrid.setWidget(row, Column.DOCUMENT_NAME, documentNameDownloadLink); 
     this.documentGrid.getCellFormatter().setStyleName(row, 
-                                                      Column.DOCUMENT_NAME.ordinal(), 
+                                                      Column.DOCUMENT_NAME, 
                                                       getDocumentNameStyle(documentInfo.getPrivacy()));
 
+    // size
+    this.documentGrid.setText(row, 
+                              Column.SIZE, 
+                              Float.toString(documentInfo.getSize()) + "Mb");
+    
+    // created on
+    this.documentGrid.setText(row,
+                              Column.CREATION_TIME,
+                              dateFormat.format(documentInfo.getCreationTimestamp()));    
+    
+    // created by
+    this.documentGrid.setText(row,
+                              Column.CREATOR,
+                              documentInfo.getCreator());
+    
     // actions column
     this.documentGrid.setWidget(row, 
-                               Column.ACTIONS.ordinal(), 
+                               Column.ACTIONS, 
                                getActionsWidget(documentInfo.getDocumentId(),
                                                 documentInfo.userCanEdit()));
     

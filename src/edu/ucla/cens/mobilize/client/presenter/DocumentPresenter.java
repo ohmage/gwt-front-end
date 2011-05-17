@@ -2,10 +2,12 @@ package edu.ucla.cens.mobilize.client.presenter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.MainApp;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -18,6 +20,9 @@ public class DocumentPresenter implements Presenter {
   EventBus eventBus;
   
   DocumentView view;
+
+  // Logging utility
+  private static Logger _logger = Logger.getLogger(MainApp.class.getName());
   
   public DocumentPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
     this.userInfo = userInfo;
@@ -51,12 +56,13 @@ public class DocumentPresenter implements Presenter {
     this.dataService.fetchDocumentList(new AsyncCallback<List<DocumentInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
-        // TODO Auto-generated method stub
+        _logger.severe(caught.getMessage());
+        view.showError("There was a problem loading the document list.");
       }
 
       @Override
       public void onSuccess(List<DocumentInfo> result) {
-        
+        view.showDocumentList(result);
       }
     });    
   }

@@ -71,18 +71,22 @@
     
     <!-- Top menu bar. Items change depending on role. (e.g., Author Center)-->
     <g:north size='25'>
-      <g:MenuBar ui:field='topMenuBar' addStyleNames='{style.topNav}'>
-        <g:MenuItem ui:field='myDocumentsMenuItem'>
-          <a href='#'>My Documents</a>
-        </g:MenuItem>
-        <g:MenuItem ui:field='browseMenuItem'>
-          <a href='#'>Browse Documents</a>
-        </g:MenuItem>
-        <g:MenuItem ui:field='uploadMenuItem'>
-          <span class='{style.separator}'>|</span>
-          <a href='#'>Upload</a>
-        </g:MenuItem>
-      </g:MenuBar>
+      <g:HTMLPanel>
+	      <g:MenuBar ui:field='topMenuBar' addStyleNames='{style.topNav}'>
+	        <g:MenuItem ui:field='myDocumentsMenuItem'>
+	          <a href='#'>My Documents</a>
+	        </g:MenuItem>
+	        <g:MenuItem ui:field='browseMenuItem'>
+	          <span class='{style.separator}'>|</span>
+	          <a href='#'>Browse Documents</a>
+	        </g:MenuItem>
+	        <g:MenuItem ui:field='uploadMenuItem'>
+	          <span class='{style.separator}'>|</span>
+	          <a href='#'>Upload</a>
+	        </g:MenuItem>
+	      </g:MenuBar>
+	      <w:MessageWidget ui:field='msgWidget' />
+      </g:HTMLPanel>
     </g:north>
     
     <g:west size='170'>
@@ -96,13 +100,8 @@
     
     <g:center>
       <g:HTMLPanel addStyleNames='{style.scrollable}'>
-        <g:HTMLPanel ui:field='msgBox' addStyleNames='{style.msg}'>
-          <g:InlineLabel ui:field='msgLabel' />
-          <g:Anchor ui:field='closeMsg' addStyleNames='{style.msgHide}'>
-            &raquo;hide
-          </g:Anchor>
-          <div class='floatstop'/>
-        </g:HTMLPanel>
+        <!-- msg box is visible only when there is a message to display -->
+        <w:MessageWidget ui:field='msg' />
         <!-- only one of these will be visible at a time depending on selected subview -->
         <w:DocumentList ui:field="documentList"></w:DocumentList>
         <w:DocumentDetail ui:field="documentDetail"></w:DocumentDetail>
