@@ -83,13 +83,14 @@ public class DocumentViewImpl extends Composite implements DocumentView {
 
   @Override
   public void showDocumentEdit(DocumentInfo document) {
-
+    this.documentEdit.setDocument(document);
+    showEditSubview();
   }
 
   @Override
   public void showDocumentCreate() {
-    // TODO Auto-generated method stub
-    
+    this.documentEdit.setDocument(null);
+    showEditSubview();
   }
 
 }

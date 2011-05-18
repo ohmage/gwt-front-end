@@ -2,15 +2,6 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
   <ui:style>
-    .actionLinks {
-      font-size: 0.9em;
-      padding: 20px;
-    }
-    .backLink {
-      display: inline-block;
-      float: left;
-      padding-left: 20px;
-    }
     .campaignDescription {
       height: 40px;
       width: 280px;
@@ -71,16 +62,6 @@
       padding-right: 5px;
       vertical-align: middle;
     }
-    .privacyPrivate {
-      background-image: url('images/lock.png');
-      background-color: #FFCCCC;
-      border: solid 1px #EE99AA;
-    }
-    .privacyShared {
-      background-image: url('images/group.png');
-      background-color: #FFF8C6;
-      border: solid thin #DDD6A4;
-    }
     .sectionHeader {
       background-color: #FFFFE0;
       border-bottom: solid 1px #CCC;
@@ -95,25 +76,6 @@
     .sectionHeaderTitle {
       font-size: 1.2em;
       font-weight: bold;
-    }
-    .running, .stopped, .other, .privacyShared, .privacyPrivate {
-      background-repeat: no-repeat;
-      background-position: 2px 50%;
-      font-weight: bold;
-      display: inline-block;
-      padding: 3px 20px 3px 20px;
-      text-align: center;
-      width: 55px;
-    }
-    .stopped {
-      background-image: url('images/bullet_red.png');
-      background-color: #EEE;
-      border: solid 1px #BBB;
-    }
-    .running {
-      background-image: url('images/bullet_green.png');
-      background-color: #CDFECD;
-      border: solid 1px #99D999;
     }
     /* button styles */
     .cancelButton {
