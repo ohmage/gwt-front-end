@@ -106,6 +106,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
 
       @Override
       public void onSuccess(List<CampaignShortInfo> result) {
+        view.setCampaignList(result);
         view.showList();
       }
     });

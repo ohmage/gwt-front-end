@@ -147,11 +147,12 @@ Test targets suppressed because -junit argument was not specified when running w
   <target name="default" depends="buildwar,buildwar-nossl"></target>
  
   <target name="buildwar">
-    <war basedir="war" destfile="MobilizeWeb.war" webxml="war/WEB-INF/web.xml">
+    <war basedir="war" destfile="MobilizeWeb.war" webxml="war/WEB-INF/web-remote.xml">
       <exclude name="WEB-INF/**" />
       <webinf dir="war/WEB-INF/">
         <include name="**/*.jar" />
       	<exclude name="web-remote-nossl.xml" />
+      	<exclude name="web.xml" />
       </webinf>
     </war>
   </target>
@@ -162,6 +163,7 @@ Test targets suppressed because -junit argument was not specified when running w
       <webinf dir="war/WEB-INF/">
       	<include name="**/*.jar" />
         <exclude name="web.xml"/>
+      	<exclude name="web-remote.xml"/>
       </webinf>
     </war>
    </target>

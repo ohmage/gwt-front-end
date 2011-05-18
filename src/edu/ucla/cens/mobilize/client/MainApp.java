@@ -228,27 +228,26 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     header.setUserName(loginManager.getLoggedInUserName());
     RootPanel.get("header").add(header);
     
-    // create tabs (order should match that in TabIndex enum)
-    tabPanel.add(dashboardView, "Dashboard"); // 0 = dashboard
-    TabIndex.DASHBOARD = 0;
-    tabPanel.add(campaignView, "Campaigns"); // 1 = campaigns
-    TabIndex.CAMPAIGNS = 1;
-    tabPanel.add(responseView, "Responses"); // 2 = responses
-    TabIndex.RESPONSES = 2;
-    tabPanel.add(exploreDataView, "Explore Data"); // 3 = explore data
-    TabIndex.EXPLORE_DATA = 3;
-    tabPanel.add(documentView, "Documents"); // 4 = documents
-    TabIndex.DOCUMENTS = 4;
-    tabPanel.add(classView, "Classes"); // 5 = classes
-    TabIndex.CLASSES = 5;
-
-    // the nth string in tabHistoryTokens corresponds to the nth tab
+    // create tabs (use class to keep track of tab index b/c it may change for different users)
+    int index = 0;
+    tabPanel.add(dashboardView, "Dashboard");
     tabHistoryTokens.add("dashboard");
-    tabHistoryTokens.add("campaigns");
+    TabIndex.DASHBOARD = index++;
+    tabPanel.add(campaignView, "Campaigns");
+    tabHistoryTokens.add("campaigns");    
+    TabIndex.CAMPAIGNS = index++;
+    tabPanel.add(responseView, "Responses");
     tabHistoryTokens.add("responses");
-    tabHistoryTokens.add("explore_data");
+    TabIndex.RESPONSES = index++;
+    //tabPanel.add(exploreDataView, "Explore Data");
+    //tabHistoryTokens.add("explore_data");
+    //TabIndex.EXPLORE_DATA = index++;
+    tabPanel.add(documentView, "Documents");
     tabHistoryTokens.add("documents");
+    TabIndex.DOCUMENTS = index++;
+    tabPanel.add(classView, "Classes");
     tabHistoryTokens.add("classes");
+    TabIndex.CLASSES = index++;
     
     // tab panel, account page, and help all appear in the same
     // place but only one of them will be visible at a time
