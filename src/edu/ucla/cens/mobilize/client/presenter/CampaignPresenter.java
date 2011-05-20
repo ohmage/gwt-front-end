@@ -90,44 +90,44 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   public void fetchAndShowAllCampaigns() {
     CampaignReadParams params = new CampaignReadParams(); // empty params fetches everything
     params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
+    this.view.clearPlots();
+    this.view.showList();
     this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignShortInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
-        // TODO
+        _logger.severe(caught.getMessage());
+        view.showError("There was a problem loading the campaigns.");
       }
 
       @Override
       public void onSuccess(List<CampaignShortInfo> result) {
         view.setCampaignList(result);
-        view.showList();
       }
     });
-    this.view.clearPlots();
   }
 
   private void fetchAndShowCampaignDetail(String campaignId) {
+    view.showDetail();
+    view.clearPlots();
+    view.setPlotSideBarTitle("Recent Activity");
     this.dataService.fetchCampaignDetail(campaignId, 
         new AsyncCallback<CampaignDetailedInfo>() {
 
           @Override
           public void onFailure(Throwable caught) {
             _logger.fine(caught.getMessage());
-            // TODO: show error to user
+            view.showError("There was a problem loading the campaign.");
           }
 
           @Override
           public void onSuccess(CampaignDetailedInfo result) {
             boolean userCanEditCampaign = result.canEdit(userInfo.getUserName());
             view.setCampaignDetail(result, userCanEditCampaign);
-            view.showDetail();
-            view.clearPlots();
-            view.setPlotSideBarTitle("Recent Activity");
-            // todo: get plots dynamically (different for different roles)
+            // TODO: get plots dynamically (different for different roles)
             view.addPlot("images/histogram_small.png");
             view.addPlot("images/map_small.gif");
           }
     });
-
   }
   
   private void showCampaignCreateForm() {

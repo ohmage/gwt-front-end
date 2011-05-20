@@ -87,6 +87,7 @@ public class CampaignEditFormPresenter {
             classes.put(classUrn, className);
           }
           view.setSelectedClasses(classes);
+          view.setDeletePanelVisible(true); 
           view.initializeForm(dataService.authToken(), AwConstants.getCampaignUpdateUrl());
         }
     });
