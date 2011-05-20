@@ -22,9 +22,8 @@ public class AwConstants {
     
     //private final static String debugServerLocation = "http://dev1.andwellness.org/app/";
     private final static String debugServerLocation = "http://localhost:8080/app/";
+    //private final static String debugServerLocation = "https://dev.mobilizingcs.org/app/";
     private final static String releaseServerLocation = "../app/"; // same as web server
-    
-    private final static String imageWrapperLocation = "http://localhost:8080/image_wrapper/ImageWrapper.html";
     
     // API Endpoints
     // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/AndWellness_Read_API_2.2
@@ -101,11 +100,5 @@ public class AwConstants {
     public static String getClassUpdateUrl() {
       return getServerLocation() + CLASS_UPDATE;
     }
-    
-    public static String getImageWrapperUrl() {
-      return imageWrapperLocation;
-    }
-
-    
     
 }

@@ -76,14 +76,6 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
       // TODO: log?
     }
   }
-
-  // wire up event handlers
-  private void bind() {
-    // on save campaign
-    
-    // on delete campaign
-
-  }
   
   @Override
   public void setView(CampaignView view) {

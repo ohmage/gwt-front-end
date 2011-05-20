@@ -127,7 +127,8 @@ public class AwDataTranslators {
       switch (promptType) {
       case PHOTO:
         // prompt response is the image uuid
-        displayString = AwUrlBasedResourceUtils.getImageUrl(campaignId, promptResponseAwData.getPromptResponse());
+        displayString = "[image]";
+        //displayString = AwUrlBasedResourceUtils.getImageUrl(campaignId, promptResponseAwData.getPromptResponse());
         break;
       case MULTI_CHOICE:
       case MULTI_CHOICE_CUSTOM:

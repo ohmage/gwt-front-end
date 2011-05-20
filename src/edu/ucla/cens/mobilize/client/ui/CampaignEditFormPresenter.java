@@ -38,7 +38,7 @@ public class CampaignEditFormPresenter {
   
   private CampaignEditFormView view;
 
-  private static Logger _logger = Logger.getLogger(CampaignPresenter.class.getName());
+  private static Logger _logger = Logger.getLogger(CampaignEditFormPresenter.class.getName());
   
   public CampaignEditFormPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
     this.userInfo = userInfo;

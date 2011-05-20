@@ -1,9 +1,9 @@
 package edu.ucla.cens.mobilize.client.view;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.presenter.ResponsePresenter;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
@@ -268,7 +269,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
                                      "Shared responses are visible to all participants. ");
     renderResponses(responses);
   }
-  
   
   private void renderResponses(List<SurveyResponse> responses) {
     this.responseList.clear();

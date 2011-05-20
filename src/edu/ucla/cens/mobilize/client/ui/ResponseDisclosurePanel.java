@@ -20,10 +20,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -115,13 +114,13 @@ public class ResponseDisclosurePanel extends Composite
 	  typeSpecificDisplayWidget.addStyleName(style.promptValue());
 	  
 	  // wrap in a div with style
-	  HTMLPanel promptResponseContainer = new HTMLPanel("");
+	  FlowPanel promptResponseContainer = new FlowPanel();
 	  promptResponseContainer.setStyleName(style.promptResponse());
 	  promptResponseContainer.add(promptTextHtml);
 	  promptResponseContainer.add(typeSpecificDisplayWidget);
-	  
 	  // add the whole thing to the prompt list
 	  this.promptResponseVerticalPanel.add(promptResponseContainer);
+	 
 	}
 	
 	public void addPromptResponseTimestamp(String promptText, Date timestamp) {
@@ -167,37 +166,13 @@ public class ResponseDisclosurePanel extends Composite
 	}
 	
 	public void addPromptResponsePhoto(String promptText, String imageUrl) {
-	  Image image = new Image();
+	  addPromptResponse(promptText, new HTML("[image]"));
+	  // FIXME: use new image get api
+	  /*Image image = new Image();
 	  image.setUrl(imageUrl);
 	  addPromptResponse(promptText, image);
+	  */
 	}
-	
-	/*
-	public ResponseDisclosurePanel setResponse(SurveyResponse response) {
-		campaignName.setText(response.getCampaignName());
-		surveyName.setText(response.getSurveyName());
-		Date date = response.getResponseDate();
-		String dateString = (date != null) ? this.dateTimeFormat.format(date) : "";
-		responseDateLabel.setText(dateString);
-    responsePrivacy.setText(response.getPrivacyState().toString());
-    responseKey.setValue(Integer.toString(response.getResponseKey()));
-
-		StringBuilder sb = new StringBuilder();
-		for (PromptResponse promptResponse : response.getPromptResponses()) {
-	    sb.append("<div class='").append(style.promptResponse()).append("'>");
-	    sb.append("<div class='").append(style.promptText()).append("'>");
-        sb.append(promptResponse.getText());
-      sb.append("</div>");
-      sb.append("<div class='").append(style.promptValue()).append("'>");
-        // FIXME: handle different types (e.g., images)
-        String value = promptResponse.getResponse();
-        sb.append((value != null) ? value : "unavailable");
-      sb.append("</div>");
-      sb.append("</div>");
-		}
-		details.setHTML(sb.toString());
-		return this; // for chaining
-	}*/
 
 	@Override
 	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {

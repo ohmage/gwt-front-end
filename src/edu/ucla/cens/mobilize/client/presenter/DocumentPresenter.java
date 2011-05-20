@@ -22,7 +22,7 @@ public class DocumentPresenter implements Presenter {
   DocumentView view;
 
   // Logging utility
-  private static Logger _logger = Logger.getLogger(MainApp.class.getName());
+  private static Logger _logger = Logger.getLogger(DocumentPresenter.class.getName());
   
   public DocumentPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
     this.userInfo = userInfo;

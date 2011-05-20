@@ -37,7 +37,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   
   UserInfo userInfo;
 
-  private static Logger _logger = Logger.getLogger(MainApp.class.getName());
+  private static Logger _logger = Logger.getLogger(ResponsePresenter.class.getName());
   
   // TODO: contents of campaign filter should be updated when
   // participant name changes. contents of survey filter should
