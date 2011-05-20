@@ -49,8 +49,9 @@ public class CollectionUtils {
     
     public static <T> Collection<T> setDiff(Collection<T> itemsToStartWith, Collection<T> itemsToSubtract) {
       Collection<T> retval = new ArrayList<T>(); 
+      if (itemsToStartWith == null) return new ArrayList<T>();
       retval.addAll(itemsToStartWith); // make copy so you don't mutate original
-      retval.removeAll(itemsToSubtract);
+      if (itemsToSubtract != null) retval.removeAll(itemsToSubtract);
       return retval;
     }
 }
