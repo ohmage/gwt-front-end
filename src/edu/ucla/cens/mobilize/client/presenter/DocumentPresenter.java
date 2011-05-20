@@ -58,11 +58,13 @@ public class DocumentPresenter implements Presenter {
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());
         view.showError("There was a problem loading the document list.");
+        view.showListSubview();
       }
 
       @Override
       public void onSuccess(List<DocumentInfo> result) {
-        view.showDocumentList(result);
+        view.setDocumentList(result);
+        view.showListSubview();
       }
     });    
   }
@@ -74,19 +76,22 @@ public class DocumentPresenter implements Presenter {
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());
         view.showError("Could not load details for " + documentUUIDString);
+        view.showListSubview();
       }
 
       @Override
       public void onSuccess(DocumentInfo result) {
-        view.showDocumentDetail(result, result.userCanEdit());
+        view.setDocumentDetail(result, result.userCanEdit());
+        view.showDetailSubview();
       }
     });
     
   }
 
   private void showDocumentCreateForm() {
-    // TODO Auto-generated method stub
-    
+    // TODO: set title for create
+    view.setDocumentEdit(null);
+    view.showEditSubview();
   }
 
   private void fetchDocumentAndShowEditForm(String documentUUIDString) {
@@ -101,7 +106,8 @@ public class DocumentPresenter implements Presenter {
 
       @Override
       public void onSuccess(DocumentInfo result) {
-        view.showDocumentEdit(result);
+        view.setDocumentEdit(result);
+        view.showEditSubview();
       }
     });
     

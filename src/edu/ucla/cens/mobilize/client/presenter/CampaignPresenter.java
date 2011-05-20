@@ -91,23 +91,23 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     CampaignReadParams params = new CampaignReadParams(); // empty params fetches everything
     params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
     this.view.clearPlots();
-    this.view.showList();
     this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignShortInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());
+        view.showList();
         view.showError("There was a problem loading the campaigns.");
       }
 
       @Override
       public void onSuccess(List<CampaignShortInfo> result) {
         view.setCampaignList(result);
+        view.showList();
       }
     });
   }
 
   private void fetchAndShowCampaignDetail(String campaignId) {
-    view.showDetail();
     view.clearPlots();
     view.setPlotSideBarTitle("Recent Activity");
     this.dataService.fetchCampaignDetail(campaignId, 
@@ -126,6 +126,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
             // TODO: get plots dynamically (different for different roles)
             view.addPlot("images/histogram_small.png");
             view.addPlot("images/map_small.gif");
+            view.showDetail();
           }
     });
   }

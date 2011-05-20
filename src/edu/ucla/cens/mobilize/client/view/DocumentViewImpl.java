@@ -33,17 +33,20 @@ public class DocumentViewImpl extends Composite implements DocumentView {
     initWidget(uiBinder.createAndBindUi(this));
   }
 
-  private void showListSubview() {
+  @Override
+  public void showListSubview() {
     hideAllSubviews();
     this.documentList.setVisible(true);
   }
-  
-  private void showDetailSubview() {
+
+  @Override
+  public void showDetailSubview() {
     hideAllSubviews();
     this.documentDetail.setVisible(true);
   }
   
-  private void showEditSubview() {
+  @Override
+  public void showEditSubview() {
     hideAllSubviews();
     this.documentEdit.setVisible(true);
   }
@@ -55,10 +58,23 @@ public class DocumentViewImpl extends Composite implements DocumentView {
   }
   
   @Override
-  public void showDocumentList(List<DocumentInfo> documents) {
+  public void setDocumentList(List<DocumentInfo> documents) {
     this.documentList.setDocuments(documents);
     showListSubview();
   }
+
+  @Override
+  public void setDocumentDetail(DocumentInfo documentInfo, boolean canEdit) {
+    this.documentDetail.setDocumentDetail(documentInfo, canEdit);
+    showDetailSubview();
+  }
+
+  @Override
+  public void setDocumentEdit(DocumentInfo document) {
+    this.documentEdit.setDocument(document);
+    showEditSubview();
+  }
+
 
   @Override
   public void showMsg(String msg) {
@@ -74,23 +90,6 @@ public class DocumentViewImpl extends Composite implements DocumentView {
   public void hideMsg() {
     this.msgWidget.hide();
   }
-
-  @Override
-  public void showDocumentDetail(DocumentInfo documentInfo, boolean canEdit) {
-    this.documentDetail.setDocumentDetail(documentInfo, canEdit);
-    showDetailSubview();
-  }
-
-  @Override
-  public void showDocumentEdit(DocumentInfo document) {
-    this.documentEdit.setDocument(document);
-    showEditSubview();
-  }
-
-  @Override
-  public void showDocumentCreate() {
-    this.documentEdit.setDocument(null);
-    showEditSubview();
-  }
+  
 
 }

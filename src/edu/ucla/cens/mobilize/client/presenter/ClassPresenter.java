@@ -108,8 +108,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       // anything after first id is ignored
       this.fetchAndShowClassEdit(params.get("id").get(0));
     } else {
-      // unrecognized view - do nothing
-      // TODO: log?
+      _logger.warning("Unrecognized subview: " + params.get("v"));
     }
   }
 
@@ -119,12 +118,14 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       @Override
       public void onFailure(Throwable caught) {
         _logger.fine(caught.getMessage());
+        view.showListSubview();
         view.showError("There was a problem retrieving the class data.");
       }
 
       @Override
       public void onSuccess(ClassInfo result) {
-        view.showDetail(result);
+        view.setDetail(result);
+        view.showDetailSubview();
       }
     });
     
@@ -136,13 +137,14 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       @Override
       public void onFailure(Throwable caught) {
         _logger.fine(caught.getMessage());
-        view.showError("There was a problem retrieving the class data.");        
+        view.showError("There was a problem retrieving the class data.");
       }
 
       @Override
       public void onSuccess(ClassInfo result) {
         oldClassInfo = result;
-        view.showEditForm(result);
+        view.setEdit(result);
+        view.showEditSubview();
       }
     });
   }
@@ -158,12 +160,15 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       @Override
       public void onFailure(Throwable caught) {
         _logger.fine(caught.getMessage());
+        view.setList(null);
+        view.showListSubview();
         view.showError("There was a problem loading the class list.");
       }
 
       @Override
       public void onSuccess(List<ClassInfo> result) {
-        view.showList(result);
+        view.setList(result);
+        view.showListSubview();
       }
     });
   }
@@ -180,6 +185,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
 
       @Override
       public void onSuccess(String result) {
+        view.showListSubview();
         view.showMsg("Successfully updated class: " + params.classId);
       }
     });

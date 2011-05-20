@@ -16,9 +16,12 @@ public interface ClassView extends IsWidget {
   }
   void setPresenter(Presenter presenter);
   
-  void showList(List<ClassInfo> classes);
-  void showDetail(ClassInfo classDetail);
-  void showEditForm(ClassInfo classDetail);
+  void showListSubview();
+  void showDetailSubview();
+  void showEditSubview();
+  void setList(List<ClassInfo> classes);
+  void setDetail(ClassInfo classDetail);
+  void setEdit(ClassInfo classDetail);
   void showEditFormAddMembersDialog(List<String> userLoginsToChooseFrom);
   void showEditFormAddPrivilegedMembersDialog(List<String> userLoginsToChooseFrom);
   

@@ -45,7 +45,7 @@ public class ClassViewImpl extends Composite implements ClassView {
   public ClassViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
     hideMsg();     
-    showList(null);
+    setList(null);
     bind();
   }
   
@@ -63,25 +63,38 @@ public class ClassViewImpl extends Composite implements ClassView {
     this.presenter = presenter;
   }
 
+
   @Override
-  public void showList(List<ClassInfo> classes) {
+  public void showListSubview() {
     hideAllWidgets();
-    classList.setClasses(classes);
     classList.setVisible(true);
   }
 
   @Override
-  public void showDetail(ClassInfo classDetail) {
+  public void showDetailSubview() {
     hideAllWidgets();
-    this.classDetail.setClassDetail(classDetail);
     this.classDetail.setVisible(true);
   }
 
   @Override
-  public void showEditForm(ClassInfo classDetail) {
+  public void showEditSubview() {
     hideAllWidgets();
-    this.classEdit.setClassDetail(classDetail);
     this.classEdit.setVisible(true);
+  }
+  
+  @Override
+  public void setList(List<ClassInfo> classes) {
+    this.classList.setClasses(classes);
+  }
+
+  @Override
+  public void setDetail(ClassInfo classDetail) {
+    this.classDetail.setClassDetail(classDetail);
+  }
+
+  @Override
+  public void setEdit(ClassInfo classDetail) {
+    this.classEdit.setClassDetail(classDetail);
   }
 
   @Override
