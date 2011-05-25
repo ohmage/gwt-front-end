@@ -16,6 +16,12 @@ public class AwConstants {
     // DeployStatus is set in the gwt module file
     public final static DeployStatus status = GWT.create(DeployStatus.class);
 
+    // login cookie management
+    public final static String cookieAuthToken = "authToken";
+    public final static String cookieUserName = "userName";
+    
+    public final static String apiClientString = "gwt";
+    
     // special token that tells api to return all values, useful for api params
     // that don't default to all when omitted
     public final static String specialAllValuesToken = "urn:ohmage:special:all";
@@ -38,6 +44,7 @@ public class AwConstants {
     private final static String SURVEY_RESPONSE_DELETE = "survey_response/delete";
     private final static String CLASS_READ      = "class/read";
     private final static String CLASS_UPDATE    = "class/update";
+    private final static String IMAGE_READ      = "image/read";
     
     /**
      * Returns data server url based on value of deployment status variable. 
@@ -99,6 +106,10 @@ public class AwConstants {
     
     public static String getClassUpdateUrl() {
       return getServerLocation() + CLASS_UPDATE;
+    }
+    
+    public static String getImageReadUrl() {
+      return getServerLocation() + IMAGE_READ;
     }
     
 }

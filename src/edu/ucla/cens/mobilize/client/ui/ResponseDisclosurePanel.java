@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -166,12 +167,9 @@ public class ResponseDisclosurePanel extends Composite
 	}
 	
 	public void addPromptResponsePhoto(String promptText, String imageUrl) {
-	  addPromptResponse(promptText, new HTML("[image]"));
-	  // FIXME: use new image get api
-	  /*Image image = new Image();
+	  Image image = new Image();
 	  image.setUrl(imageUrl);
 	  addPromptResponse(promptText, image);
-	  */
 	}
 
 	@Override

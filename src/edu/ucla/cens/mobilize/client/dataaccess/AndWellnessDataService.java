@@ -56,7 +56,7 @@ public class AndWellnessDataService implements DataService {
 
   String userName;
   String authToken;
-  String client = "gwt";
+  String client = AwConstants.apiClientString;
   boolean isInitialized = false;
   
   private static Logger _logger = Logger.getLogger(AndWellnessDataService.class.getName());

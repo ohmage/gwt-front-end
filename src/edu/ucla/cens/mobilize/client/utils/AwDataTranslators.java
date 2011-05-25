@@ -120,6 +120,8 @@ public class AwDataTranslators {
       return surveyResponses;
     }
     
+    // display strings are generated at translation time to avoid having to pass around
+    // a choice glossary with every response
     public static String getPromptResponseDisplayString(String campaignId,
                                                         PromptType promptType,
                                                         PromptResponseAwData promptResponseAwData) {
@@ -127,8 +129,7 @@ public class AwDataTranslators {
       switch (promptType) {
       case PHOTO:
         // prompt response is the image uuid
-        displayString = "[image]";
-        //displayString = AwUrlBasedResourceUtils.getImageUrl(campaignId, promptResponseAwData.getPromptResponse());
+        displayString = AwUrlBasedResourceUtils.getImageUrl(promptResponseAwData.getPromptResponse(), campaignId);
         break;
       case MULTI_CHOICE:
       case MULTI_CHOICE_CUSTOM:
