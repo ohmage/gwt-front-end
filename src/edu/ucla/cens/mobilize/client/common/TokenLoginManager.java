@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Cookies;
 
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.dataaccess.exceptions.NotLoggedInException;
 import edu.ucla.cens.mobilize.client.event.RequestLogoutEvent;
 import edu.ucla.cens.mobilize.client.event.RequestLogoutEventHandler;
@@ -35,8 +36,8 @@ public class TokenLoginManager {
     private final EventBus eventBus;
     
     // Constant cookie names
-    private final static String AUTH_TOKEN_COOKIE = "authToken";
-    private final static String USER_NAME_COOKIE = "userName";
+    private final static String AUTH_TOKEN_COOKIE = AwConstants.cookieAuthToken;
+    private final static String USER_NAME_COOKIE = AwConstants.cookieUserName;
     
     // Logging utility
     private static Logger _logger = Logger.getLogger(TokenLoginManager.class.getName());

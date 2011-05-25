@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
+import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 
 public class AccountViewImpl extends Composite implements AccountView {
 
@@ -26,7 +27,7 @@ public class AccountViewImpl extends Composite implements AccountView {
   interface AccountViewUiBinder extends UiBinder<Widget, AccountViewImpl> {
   }
 
-  @UiField InlineLabel messageBox;
+  @UiField MessageWidget messageWidget;
   @UiField InlineLabel loginLabel;
   @UiField InlineLabel canCreateLabel;
   @UiField VerticalPanel classesVerticalPanel;
@@ -35,7 +36,6 @@ public class AccountViewImpl extends Composite implements AccountView {
   @UiField Button passwordChangeCancelButton;
   @UiField PasswordTextBox oldPasswordTextBox;
   @UiField PasswordTextBox newPasswordTextBox;
-  @UiField Label passwordMismatchError;
   @UiField PasswordTextBox newPasswordConfirmTextBox;
   @UiField Button passwordChangeSubmitButton;
   
@@ -43,8 +43,6 @@ public class AccountViewImpl extends Composite implements AccountView {
     initWidget(uiBinder.createAndBindUi(this));
     
     // some elements stay hidden unless needed
-    hideMessage();
-    passwordMismatchError.setVisible(false);
     hidePasswordChangeForm();
   }
 
@@ -123,26 +121,22 @@ public class AccountViewImpl extends Composite implements AccountView {
 
   @Override
   public void showPasswordMismatchError() {
-    this.passwordMismatchError.setVisible(true);
+    this.messageWidget.showErrorMessage("Passwords do not match. Please try again.");
   }
 
   @Override
   public void showMessage(String message) {
-    // TODO: add hide link
-    this.messageBox.setText(message);
-    this.messageBox.setVisible(true);
+    this.messageWidget.showInfoMessage(message);
   }
 
   @Override
   public void showError(String message) {
-    // TODO: add style
-    this.messageBox.setText(message);
-    this.messageBox.setVisible(true);
+    this.messageWidget.showErrorMessage(message);
   }
 
   @Override
   public void hideMessage() {
-    this.messageBox.setText("");
-    this.messageBox.setVisible(false);
+    this.messageWidget.hide();
   }
+  
 }

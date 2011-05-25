@@ -296,8 +296,38 @@ public class AndWellnessDataService implements DataService {
                              String oldPassword, 
                              String newPassword,
                              final AsyncCallback<String> callback) {
-    // FIXME: real data
-    callback.onSuccess("fixme");    
+    assert this.isInitialized : "You must call init(username, auth_token) before making any api calls";
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserChangePasswordUrl());
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", this.authToken);
+    params.put("new_password", newPassword);
+    String postParams = MapUtils.translateToParameters(params);
+    _logger.fine("Attempting to change password with parameters: " + postParams);
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          try {
+            getResponseTextOrThrowException(requestBuilder, response);
+            // no exception? then it was successful
+            callback.onSuccess("");
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+        }
+
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+    
   }
   
   @Override

@@ -48,8 +48,8 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
 
           @Override
           public void onFailure(Throwable caught) {
-            // TODO Auto-generated method stub
-            // FIXME: show error
+            
+            view.showError("There was a problem completing the password change request.");
           }
 
           @Override
