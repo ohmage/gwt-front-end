@@ -30,6 +30,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerUnavailableExce
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseUpdateParams;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -559,7 +560,86 @@ public class AndWellnessDataService implements DataService {
       throw new ServerException("Cannot contact server.");
     }    
   }
+  
+  @Override
+  public void updateSurveyResponse(String campaignId, int surveyKey,
+      Privacy newPrivacyState, final AsyncCallback<String> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    SurveyResponseUpdateParams params = new SurveyResponseUpdateParams();
+    params.authToken = this.authToken;
+    params.client = this.client;
+    params.campaignUrn = campaignId;
+    params.privacy = newPrivacyState;
+    params.surveyKey = surveyKey;
+    String postParams = params.toString();
+    _logger.fine("Updating survey response with params: " + postParams);
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getSurveyResponseUpdateUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            callback.onSuccess(""); // TODO: message?
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+    
+  }
 
+  @Override
+  public void deleteSurveyResponse(String campaignId, 
+                                    int surveyKey, 
+                                    final AsyncCallback<String> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", this.authToken);
+    params.put("client", this.client);
+    params.put("campaign_urn", campaignId);
+    params.put("survey_key", Integer.toString(surveyKey));
+    String postParams = MapUtils.translateToParameters(params);
+    _logger.fine("Deleting survey response with params: " + postParams);
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getSurveyResponseDeleteUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            callback.onSuccess(""); // TODO: message?
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }    
+  }
 
   @Override
   public void fetchDocumentList(AsyncCallback<List<DocumentInfo>> callback) {
@@ -668,9 +748,5 @@ public class AndWellnessDataService implements DataService {
       throw new ServerException("Cannot contact server.");
     }
   }
-
-
-
-
   
 }

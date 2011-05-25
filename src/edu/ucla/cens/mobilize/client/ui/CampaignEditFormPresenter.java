@@ -37,6 +37,8 @@ public class CampaignEditFormPresenter {
   private EventBus eventBus;
   
   private CampaignEditFormView view;
+  
+  private boolean isCreate = false;
 
   private static Logger _logger = Logger.getLogger(CampaignEditFormPresenter.class.getName());
   
@@ -52,6 +54,7 @@ public class CampaignEditFormPresenter {
   }
 
   public void initFormForCreate() {
+    this.isCreate = true;
     view.clearFormFields();
     view.setHeader("Creating New Campaign");
     view.initializeForm(dataService.authToken(), AwConstants.getCampaignCreateUrl());
@@ -61,7 +64,7 @@ public class CampaignEditFormPresenter {
   public void fetchCampaignAndInitFormForEdit(String campaignUrn) {
     // GOTCHA: assumes user is member of any class that will show up in campaign
     final Map<String, String> classUrnToClassNameMap = userInfo.getClasses();
-    
+    this.isCreate = false;    
     this.dataService.fetchCampaignDetail(campaignUrn, 
       new AsyncCallback<CampaignDetailedInfo>() {
         @Override
@@ -102,9 +105,6 @@ public class CampaignEditFormPresenter {
               String msg = caught.getMessage();
               if (msg == null || msg.isEmpty()) msg = "There was a problem completing the operation.";
               _logger.severe("Could not delete campaign: " + caught.getMessage());
-
-              // FIXME: catch specific exceptions
-              
             }
             @Override
             public void onSuccess(String result) {
@@ -129,7 +129,7 @@ public class CampaignEditFormPresenter {
         dataService.fetchClassList(campaignClasses, new AsyncCallback<List<ClassInfo>>() {
           @Override
           public void onFailure(Throwable caught) {
-            // TODO Auto-generated method stub
+            _logger.severe(caught.getMessage());
           }
           @Override
           public void onSuccess(List<ClassInfo> result) {
@@ -205,11 +205,19 @@ public class CampaignEditFormPresenter {
   
   // also marks errors
   private boolean validateForm() {
-    // TODO: validate form. 
-    // - if this is a create, there must be an xml file
-    // - for both edit and create, there must be at least one class
-    // TODO: mark errors on form and display error message
-    return true;
+    boolean isValid = true;
+    List<String> errors = new ArrayList<String>();
+    if (this.isCreate && this.view.getXmlFilename().isEmpty()) {
+      errors.add("You must upload an xml file.");
+    }
+    if (this.view.getClassUrns().isEmpty()) {
+      errors.add("Campaign must belong to at least one class.");
+    }
+    if (!errors.isEmpty()) {
+      isValid = false;
+      String errorMsg = "Campaign could not be saved.";
+    }
+    return isValid;
   }
   
   private void clearValidationErrors() {

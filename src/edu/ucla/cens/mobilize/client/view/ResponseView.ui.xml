@@ -1,6 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
   <ui:style type="edu.ucla.cens.mobilize.client.view.ResponseViewImpl.ResponseViewStyles">    
     .buttonPanel {
     	padding: 4px 12px;
@@ -145,6 +146,7 @@
     
     <g:center>
       <g:HTMLPanel addStyleNames='{style.scrollable}'>
+        <w:MessageWidget ui:field='messageWidget' />
         <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
             <!-- description changes depending on left menubar selection -->
             <g:Label ui:field='sectionHeaderTitle' addStyleNames='{style.sectionHeaderTitle}'>

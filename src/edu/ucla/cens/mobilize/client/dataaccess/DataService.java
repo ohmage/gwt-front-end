@@ -91,6 +91,13 @@ public interface DataService {
                             String surveyName,
                             Privacy privacy,
                             final AsyncCallback<List<SurveyResponse>> callback);
+  void updateSurveyResponse(String campaignId,
+                            int surveyKey,
+                            Privacy newPrivacyState,
+                            final AsyncCallback<String> callback);
+  void deleteSurveyResponse(String campaignId,
+                             int surveyKey,
+                             final AsyncCallback<String> callback);
   
   void fetchDocumentList(final AsyncCallback<List<DocumentInfo>> callback);
   

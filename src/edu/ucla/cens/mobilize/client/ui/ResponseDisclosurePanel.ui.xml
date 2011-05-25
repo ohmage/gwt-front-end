@@ -38,7 +38,7 @@
 		background-repeat: no-repeat;
 	}
 	/* dynamically added to privacy state cell for public response */
-	.privacyPublic {
+	.privacyShared {
 		background-image: url('images/group_small.png');
 		background-repeat: no-repeat;
   }

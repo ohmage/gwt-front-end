@@ -57,7 +57,7 @@ public class CampaignEditFormView extends Composite {
   @UiField FlexTable authorsFlexTable;
   @UiField Hidden authorsToAddHiddenField; // list of authors with roles
   @UiField Hidden authorsToRemoveHiddenField; // list of authors with roles
-  @UiField FileUpload chooseFileButton;
+  @UiField FileUpload fileInput;
   @UiField ListBox runningStateListBox;
   @UiField ListBox privacyListBox;
   @UiField Button saveButton;
@@ -354,7 +354,7 @@ public class CampaignEditFormView extends Composite {
   public void showConfirmDelete(final ClickHandler onConfirmDelete) {
     final DialogBox dialog = new DialogBox();
     dialog.setGlassEnabled(true);
-    dialog.setText("Are you sure you want to delete this campaign???");
+    dialog.setText("Are you sure you want to delete this campaign?");
     dialog.setModal(true);
     Button deleteButton = new Button("Delete");
     deleteButton.addClickHandler(new ClickHandler() {
@@ -439,5 +439,18 @@ public class CampaignEditFormView extends Composite {
   public void setDeletePanelVisible(boolean isVisible) {
     this.deletePanel.setVisible(isVisible);
   }
+
+  public String getXmlFilename() {
+    return this.fileInput.getFilename();
+  }
+  
+  public void showValidationErrors(List<String> errors) {
+    // TODO
+  }
+  
+  public void clearValidationErrors() {
+    // TODO
+  }
+  
 
 }

@@ -412,4 +412,16 @@ public class MockDataService implements DataService {
     callback.onFailure(new Exception("document not found"));
   }
 
+  @Override
+  public void updateSurveyResponse(String campaignId, int surveyKey,
+      Privacy newPrivacyState, AsyncCallback<String> callback) {
+    callback.onSuccess("");    
+  }
+
+  @Override
+  public void deleteSurveyResponse(String campaignId, int surveyKey,
+      AsyncCallback<String> callback) {
+    callback.onSuccess("");
+  }
+
 }

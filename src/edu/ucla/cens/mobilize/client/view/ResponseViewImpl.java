@@ -18,6 +18,8 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -29,7 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
-import edu.ucla.cens.mobilize.client.presenter.ResponsePresenter;
+import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
@@ -52,6 +54,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField ListBox participantFilter;
   @UiField ListBox campaignFilter;
   @UiField ListBox surveyFilter;
+  @UiField MessageWidget messageWidget;
   @UiField Label sectionHeaderTitle;
   @UiField Label sectionHeaderDetail;
   @UiField VerticalPanel responseList;
@@ -73,7 +76,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   ResponseView.Presenter presenter;
   Privacy selectedPrivacy = Privacy.UNDEFINED;
-
+  
   public ResponseViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
     setEventHandlers();
@@ -277,7 +280,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       responseWidget.setCampaignName(response.getCampaignName());
       responseWidget.setDate(response.getResponseDate());
       responseWidget.setPrivacy(response.getPrivacyState());
-      responseWidget.setResponseKey(response.getResponseKey());
+      responseWidget.setSurveyResponseKey(response.getResponseKey());
       responseWidget.setSurveyName(response.getSurveyName());
       for (PromptResponse promptResponse : response.getPromptResponses()) {
         switch (promptResponse.getPromptType()) {
@@ -358,7 +361,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
         ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
         if (panel.isSelected()) {
-          keys.add(panel.getResponseKey());
+          keys.add(Integer.toString(panel.getResponseKey()));
         }
       }
     }    
@@ -370,5 +373,80 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     this.responseList.clear();
   }
 
+  @Override
+  public void markShared(int responseKey) {
+    int numWidgets = this.responseList.getWidgetCount();
+    for (int i = 0; i < numWidgets; i++) {
+      ResponseDisclosurePanel responseWidget = (ResponseDisclosurePanel)responseList.getWidget(i);
+      if (responseWidget.getResponseKey() == responseKey) {
+        responseWidget.setPrivacy(Privacy.SHARED);
+        break;
+      }
+    }
+  }
+
+  @Override
+  public void markPrivate(int responseKey) {
+    int numWidgets = this.responseList.getWidgetCount();
+    for (int i = 0; i < numWidgets; i++) {
+      ResponseDisclosurePanel responseWidget = (ResponseDisclosurePanel)responseList.getWidget(i);
+      if (responseWidget.getResponseKey() == responseKey) {
+        responseWidget.setPrivacy(Privacy.PRIVATE);
+        break;
+      }
+    }
+  }
+  
+  @Override
+  public void removeResponse(int responseKey) {
+    int numWidgets = this.responseList.getWidgetCount();
+    for (int i = 0; i < numWidgets; i++) {
+      ResponseDisclosurePanel responseWidget = (ResponseDisclosurePanel)responseList.getWidget(i);
+      if (responseWidget.getResponseKey() == responseKey) {
+        this.responseList.remove(i);
+        break;
+      }
+    }    
+  }
+
+  @Override
+  public void showInfoMessage(String info) {
+    this.messageWidget.showInfoMessage(info);
+  }
+
+  @Override
+  public void showErrorMessage(String error) {
+    this.messageWidget.showErrorMessage(error);
+  }
+
+  @Override
+  public void showConfirmDelete(final ClickHandler onConfirmDelete) {
+    final DialogBox dialog = new DialogBox();
+    dialog.setGlassEnabled(true);
+    dialog.setText("Are you sure you want to delete the selected responses? " +
+                   "This action cannot be undone.");
+    dialog.setModal(true);
+    Button deleteButton = new Button("Delete");
+    deleteButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        if (onConfirmDelete != null) onConfirmDelete.onClick(event);
+        dialog.hide();
+      }
+    });
+    Button cancelButton = new Button("Cancel");
+    cancelButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        dialog.hide();
+      }
+    });
+    FlowPanel panel = new FlowPanel(); 
+    panel.add(deleteButton);
+    panel.add(cancelButton);
+    dialog.add(panel);
+    dialog.center();
+    
+  }
   
 }

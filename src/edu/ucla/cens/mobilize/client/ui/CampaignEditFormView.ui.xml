@@ -140,7 +140,7 @@
               </td>
               <td>
                <g:HTMLPanel ui:field='fileInputContainer'>
-                 <g:FileUpload ui:field='chooseFileButton' name='xml' />
+                 <g:FileUpload ui:field='fileInput' name='xml' />
                </g:HTMLPanel>
               </td>
             </tr>

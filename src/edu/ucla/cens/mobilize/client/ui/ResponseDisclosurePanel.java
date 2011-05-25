@@ -35,7 +35,7 @@ public class ResponseDisclosurePanel extends Composite
   
   public interface ResponseDisclosurePanelStyle extends CssResource {
     String privacyPrivate();
-    String privacyPublic();
+    String privacyShared();
     String privacyInvisible();
     String promptResponse();
     String promptText();
@@ -83,7 +83,7 @@ public class ResponseDisclosurePanel extends Composite
     this.responsePrivacy.setText(privacy.toString());
     switch (privacy) {
       case SHARED:
-        setPrivacyStylePublic();
+        setPrivacyStyleShared();
         break;
       case PRIVATE:
         setPrivacyStylePrivate();
@@ -97,8 +97,8 @@ public class ResponseDisclosurePanel extends Composite
     }
 	}
 	
-	public void setResponseKey(int surveyResponseDatabaseId) {
-    this.responseKey.setValue(Integer.toString(surveyResponseDatabaseId));
+	public void setSurveyResponseKey(int surveyResponseKey) {
+    this.responseKey.setValue(Integer.toString(surveyResponseKey));
 	}
 	
 	public void clearPromptResponses() {
@@ -188,17 +188,17 @@ public class ResponseDisclosurePanel extends Composite
 	  checkbox.setValue(isChecked);
 	}
 	
-	public void setPrivacyStylePrivate() {
+	private void setPrivacyStylePrivate() {
 	  clearPrivacyStyles();
 	  this.responsePrivacy.addStyleName(style.privacyPrivate());
 	}
 	
-	public void setPrivacyStylePublic() {
+	private void setPrivacyStyleShared() {
 	  clearPrivacyStyles();
-	  this.responsePrivacy.addStyleName(style.privacyPublic());
+	  this.responsePrivacy.addStyleName(style.privacyShared());
 	}
 	
-	public void setPrivacyStyleInvisible() {
+	private void setPrivacyStyleInvisible() {
 	  clearPrivacyStyles();
 	  this.responsePrivacy.addStyleName(style.privacyInvisible());
 	}
@@ -207,15 +207,15 @@ public class ResponseDisclosurePanel extends Composite
 	public void clearPrivacyStyles() {
 	  this.responsePrivacy.removeStyleName(style.privacyInvisible());
 	  this.responsePrivacy.removeStyleName(style.privacyPrivate());
-	  this.responsePrivacy.removeStyleName(style.privacyPublic());
+	  this.responsePrivacy.removeStyleName(style.privacyShared());
 	}
 	
 	public boolean isSelected() {
 	  return this.checkbox.getValue();
 	}
 	
-	public String getResponseKey() {
-	  return this.responseKey.getValue();
+	public int getResponseKey() {
+	  return Integer.parseInt(this.responseKey.getValue());
 	}
 	
 }

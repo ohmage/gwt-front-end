@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.view;
 
 import java.util.List;
 
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -14,15 +15,15 @@ public interface ResponseView extends IsWidget {
   interface Presenter {
     
     void onFilterChange();
-    /*
-    void onShare(); // response param
-    void onUnshare(); // response
-    void onDelete(); // response
-    */
     void setView(ResponseView view);
   }
 
   void setPresenter(Presenter presenter);
+  
+  // messaging
+  void showInfoMessage(String info);
+  void showErrorMessage(String error);
+  void showConfirmDelete(ClickHandler onConfirmDelete);
   
   // load values in filters
   void setParticipantList(List<String> participantNames);
@@ -46,7 +47,10 @@ public interface ResponseView extends IsWidget {
   void renderInvisible(List<SurveyResponse> responses);
   void renderAll(List<SurveyResponse> responses);
   void clearResponseList();
-
+  void markShared(int responseKey);
+  void markPrivate(int responseKey);
+  void removeResponse(int responseKey);
+  
   // gui elements needed by presenter for event handling
   List<HasClickHandlers> getShareButtons();
   List<HasClickHandlers> getMakePrivateButtons();

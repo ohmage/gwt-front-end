@@ -13,7 +13,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import edu.ucla.cens.mobilize.client.MainApp;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.common.Privacy;
@@ -107,25 +106,123 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   private ClickHandler deleteClickHandler = new ClickHandler() {
     @Override
     public void onClick(ClickEvent event) {
-      Window.alert("TODO: prompt for delete confirmation");
-      deleteSelectedResponses();
+      view.showConfirmDelete(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          deleteSelectedResponses();          
+        }
+      });
     }
   };
   
+  // GOTCHA: assumes the response you care about is in this.responses
+  private String getCampaignUrnForSurveyKey(int surveyKey) {
+    String campaignUrn = null;
+    for (SurveyResponse surveyResponse : this.responses) {
+      if (surveyResponse.getResponseKey() == surveyKey) {
+        campaignUrn = surveyResponse.getCampaignId();
+        break;
+      }
+    }
+    return campaignUrn;
+  }
   
+  // Loops through responses, sending a data request to update each one. 
+  // Responses in the display are updated one at a time when their request returns.
   private void shareSelectedResponses() {
     List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
-    Window.alert("would have shared: " + CollectionUtils.join(responseKeys, ","));
+    for (String responseKey : responseKeys) {
+      final int surveyKey = Integer.parseInt(responseKey);
+      String campaignUrn = getCampaignUrnForSurveyKey(surveyKey);
+      if (campaignUrn == null) {
+        _logger.severe("Could not find campaign urn for survey key: " + 
+                        Integer.toString(surveyKey) + 
+                        ". Response will not be shared.");
+        view.showErrorMessage("One or more responses may not have been shared.");
+        continue;
+      }
+      dataService.updateSurveyResponse(campaignUrn, 
+           surveyKey, 
+           Privacy.SHARED, 
+           new AsyncCallback<String>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+              _logger.severe(caught.getMessage());
+              view.showErrorMessage("One or more responses may not have been shared.");
+            }
+
+            @Override
+            public void onSuccess(String result) {
+              view.markShared(surveyKey);
+            }
+      });
+    }
   }
-  
+
+  // Loops through responses, sending a data request to update each one. 
+  // Responses in the display are updated one at a time when their request returns.
   private void makeSelectedResponsesPrivate() {
     List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
-    Window.alert("would have made private: " + CollectionUtils.join(responseKeys, ","));
+    for (String responseKey : responseKeys) {
+      final int surveyKey = Integer.parseInt(responseKey);
+      String campaignUrn = getCampaignUrnForSurveyKey(surveyKey);
+      if (campaignUrn == null) {
+        _logger.severe("Could not find campaign urn for survey key: " + 
+                        Integer.toString(surveyKey) + 
+                        ". Response will not be marked private.");
+        view.showErrorMessage("One or more responses may not have been updated.");
+        continue;
+      }
+      dataService.updateSurveyResponse(campaignUrn, 
+           surveyKey, 
+           Privacy.SHARED, 
+           new AsyncCallback<String>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+              _logger.severe(caught.getMessage());
+              view.showErrorMessage("One or more responses may not have been updated.");
+            }
+
+            @Override
+            public void onSuccess(String result) {
+              view.markPrivate(surveyKey);
+            }
+      });
+    }
   }
   
+  // Loops through responses, sending a data request to delete each one. 
+  // Responses are removed from the display one at a time as their request returns.
   private void deleteSelectedResponses() {
     List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
-    Window.alert("would have deleted: " + CollectionUtils.join(responseKeys, ","));
+    for (String responseKey : responseKeys) {
+      final int surveyKey = Integer.parseInt(responseKey);
+      String campaignUrn = getCampaignUrnForSurveyKey(surveyKey);
+      if (campaignUrn == null) {
+        _logger.severe("Could not find campaign urn for survey key: " + 
+                        Integer.toString(surveyKey) + 
+                        ". Response will not be deleted.");
+        view.showErrorMessage("One or more responses may not have been deleted.");
+        continue;
+      }
+      dataService.deleteSurveyResponse(campaignUrn, 
+           surveyKey, 
+           new AsyncCallback<String>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+              _logger.severe(caught.getMessage());
+              view.showErrorMessage("One or more responses may not have been deleted.");
+            }
+
+            @Override
+            public void onSuccess(String result) {
+              view.removeResponse(surveyKey);
+            }
+      });
+    }
   }
   
   // call with defaults (logged in user and other filters set to show all)
@@ -200,10 +297,12 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     });
 
   }
-  
+
+  // Sets content of filter drop downs. Renders header text and response
+  // list differently depending on currently selected privacy state. 
   private void updateDisplay() {
     view.setParticipantList(participants);
-    view.selectParticipant("Joe Brown"); // fixme: what if not there?
+    view.selectParticipant("Joe Brown"); // FIXME: set based on url params or current user
     view.setCampaignList(campaignIds);
     view.setSurveyList(surveys);
     Privacy privacy = view.getSelectedPrivacyState();
