@@ -65,7 +65,8 @@ public class CampaignEditFormView extends Composite {
   @UiField Button deleteButton;
   @UiField HTMLPanel deletePanel;
   @UiField HTMLPanel fileInputContainer; // so file input can be removed/reattached
-  
+
+  @UiField MessageWidget messageWidget;
   @UiField FormPanel formPanel;  
 
   private final int CLASS_NAME_COL = 0;
@@ -444,12 +445,12 @@ public class CampaignEditFormView extends Composite {
     return this.fileInput.getFilename();
   }
   
-  public void showValidationErrors(List<String> errors) {
-    // TODO
+  public void showValidationErrors(String errorMessage, List<String> errors) {
+    this.messageWidget.showErrorMessage(errorMessage, errors);
   }
   
   public void clearValidationErrors() {
-    // TODO
+    this.messageWidget.hide();
   }
   
 

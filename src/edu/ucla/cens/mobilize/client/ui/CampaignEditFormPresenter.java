@@ -216,12 +216,13 @@ public class CampaignEditFormPresenter {
     if (!errors.isEmpty()) {
       isValid = false;
       String errorMsg = "Campaign could not be saved.";
+      view.showValidationErrors(errorMsg, errors);
     }
     return isValid;
   }
   
   private void clearValidationErrors() {
-    // TODO
+    view.clearValidationErrors();
   }
 
 }

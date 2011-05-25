@@ -7,6 +7,11 @@
 	  	color: maroon;
 	  	border: solid thin maroon;
 	  }
+	  .errorList {
+	  	margin: auto;
+	  	text-align: left;
+	  	width: 80%;
+	  }
 	  .hideLink {
 	  	color: purple;
 	  	cursor: pointer;
@@ -26,14 +31,20 @@
       text-align: center;
       width: 80%;
     }
+    .msg {
+    	font-weight: bold;
+    }
 
 	</ui:style>
 	<g:HTMLPanel ui:field='msgBox' addStyleNames='{style.msgBox}'>
-    <g:InlineLabel ui:field='msg' />
+    <g:InlineLabel ui:field='msg' addStyleNames='{style.msg}' />
     <g:Anchor ui:field='hideLink' addStyleNames='{style.hideLink}'>
       &raquo;hide
     </g:Anchor>
     <div class='floatstop'/>
+    <div class='{style.errorList}'>
+      <ul ui:field='errorList' />
+    </div>
   </g:HTMLPanel>
 	
 </ui:UiBinder> 
