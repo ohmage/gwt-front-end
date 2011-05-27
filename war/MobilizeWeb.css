@@ -29,7 +29,7 @@ input, textarea {
 	text-decoration: underline;
 }
 
-a:link, .small-action-link {
+a:link, .small-action-link, .link {
 	color: #238;
 }
 

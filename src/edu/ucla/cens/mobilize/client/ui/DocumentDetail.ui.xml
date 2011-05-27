@@ -7,9 +7,11 @@
       padding: 20px;
     }
     .backLink {
+    	cursor: pointer;
       display: inline-block;
       float: left;
       padding-left: 20px;
+      text-decoration: underline;
     }
     .container {
     }
@@ -88,10 +90,9 @@
      
        <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
               <g:HTMLPanel addStyleNames='{style.backLink}'>
-                <g:InlineHyperlink ui:field="backLinkTop" targetHistoryToken='#'>
-                <!--fixme: go back to last page, may not be list-->
+                <g:Anchor ui:field='backLinkTop' addStyleNames='link'>
                   &laquo;&nbsp;Back
-                </g:InlineHyperlink>
+                </g:Anchor>
               </g:HTMLPanel>
           <span class='{style.sectionHeaderTitle}'>Document&nbsp;Details</span>
           <g:InlineHyperlink addStyleNames='{style.editButton}' 
@@ -152,8 +153,7 @@
           <tr>
             <td>
               <g:HTMLPanel addStyleNames='{style.actionLinks}'>
-                <g:InlineHyperlink ui:field="backLinkBottom" targetHistoryToken='#'>
-                <!--fixme: go back to last page, may not be list-->
+                <g:InlineHyperlink ui:field="backLinkBottom" targetHistoryToken='documents'>
                   &laquo;&nbsp;Go&nbsp;to&nbsp;document&nbsp;list
                 </g:InlineHyperlink>
               </g:HTMLPanel>

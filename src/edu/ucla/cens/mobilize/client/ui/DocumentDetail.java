@@ -8,6 +8,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -39,7 +40,7 @@ public class DocumentDetail extends Composite {
   @UiField DocumentDetailStyle style;
   @UiField HTMLPanel container;
   @UiField InlineHyperlink editDocumentLink;
-  @UiField InlineHyperlink backLinkTop;
+  @UiField Anchor backLinkTop;
   @UiField InlineHyperlink backLinkBottom;
   @UiField InlineLabel creatorLabel;
   @UiField InlineLabel creationDateLabel;
