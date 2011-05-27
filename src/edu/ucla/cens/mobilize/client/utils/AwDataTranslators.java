@@ -18,7 +18,7 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.common.RoleDocument;
 import edu.ucla.cens.mobilize.client.common.RunningState;
-import edu.ucla.cens.mobilize.client.common.UserRole;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassAwData;
@@ -187,9 +187,9 @@ public class AwDataTranslators {
           boolean canCreateFlag = userDataJSObject.getCanCreateFlag();
           Map<String, String> classIdToNameMap = userDataJSObject.getClasses();
           List<String> rolesAsStrings = userDataJSObject.getCampaignRoles();
-          List<UserRole> roles = new ArrayList<UserRole>();
+          List<RoleCampaign> roles = new ArrayList<RoleCampaign>();
           for (String roleString : rolesAsStrings) {
-            roles.add(UserRole.valueOf(roleString.toUpperCase()));
+            roles.add(RoleCampaign.valueOf(roleString.toUpperCase()));
           }
           UserInfo userInfo = new UserInfo(userName, canCreateFlag, classIdToNameMap, roles);
           users.add(userInfo);
@@ -237,7 +237,7 @@ public class AwDataTranslators {
           UserRoles userRoles = new UserRoles();
           for (int i = 0; i < userRoleStrings.size(); i++) {
             String userRoleString = userRoleStrings.get(i).isString().stringValue().toUpperCase();
-            userRoles.addRole(UserRole.valueOf(userRoleString));
+            userRoles.addRole(RoleCampaign.valueOf(userRoleString));
           }
           // privacy state
           String privacyStateString = campaignHash.get("privacy_state").isString().stringValue();

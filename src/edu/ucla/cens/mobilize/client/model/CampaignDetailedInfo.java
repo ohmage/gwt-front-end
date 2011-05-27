@@ -6,7 +6,7 @@ import java.util.List;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
-import edu.ucla.cens.mobilize.client.common.UserRole;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.utils.XmlConfigTranslator;
 
 public class CampaignDetailedInfo {
@@ -16,7 +16,7 @@ public class CampaignDetailedInfo {
   private RunningState runningState;
   private Privacy privacy;
   private List<String> classes;
-  private List<UserRole> userRoles; // roles for logged in user
+  private List<RoleCampaign> userRoles; // roles for logged in user
   private List<String> authors;
   private List<String> supervisors;
   private Date creationTime;
@@ -29,7 +29,7 @@ public class CampaignDetailedInfo {
     classes = new ArrayList<String>();
     authors = new ArrayList<String>();
     supervisors = new ArrayList<String>();
-    userRoles = new ArrayList<UserRole>();
+    userRoles = new ArrayList<RoleCampaign>();
     campaignId = "";
     campaignName = "";
     description = "";
@@ -123,8 +123,8 @@ public class CampaignDetailedInfo {
   }
   
   // permissions 
-  public List<UserRole> getUserRoles() {
-    return this.userRoles != null ? this.userRoles : new ArrayList<UserRole>();
+  public List<RoleCampaign> getUserRoles() {
+    return this.userRoles != null ? this.userRoles : new ArrayList<RoleCampaign>();
   }
 
   // returns xml config as a string, useful for when user wants to view config
@@ -204,7 +204,7 @@ public class CampaignDetailedInfo {
   }
 
   // FIXME: add/remove user role
-  public void setUserRoles (List<UserRole> userRoles) {
+  public void setUserRoles (List<RoleCampaign> userRoles) {
     this.userRoles = userRoles;
   }
   

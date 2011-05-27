@@ -16,7 +16,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.common.Privacy;
-import edu.ucla.cens.mobilize.client.common.UserRole;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
@@ -239,7 +239,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.responses.clear();
     
     CampaignReadParams campaignReadParams = new CampaignReadParams();
-    campaignReadParams.userRole_opt = UserRole.PARTICIPANT;
+    campaignReadParams.userRole_opt = RoleCampaign.PARTICIPANT;
     
     // filter by campaign, if applicable
     if (campaignId != null && !campaignId.isEmpty()) {

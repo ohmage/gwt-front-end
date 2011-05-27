@@ -11,15 +11,15 @@ public class UserRoles {
   
   public UserRoles() {}
   
-  public UserRoles(List<UserRole> listOfRoles) {
-    admin = listOfRoles.contains(UserRole.ADMIN);
-    author = listOfRoles.contains(UserRole.AUTHOR);
-    participant = listOfRoles.contains(UserRole.PARTICIPANT);
-    analyst = listOfRoles.contains(UserRole.ANALYST);
-    supervisor = listOfRoles.contains(UserRole.SUPERVISOR);
+  public UserRoles(List<RoleCampaign> listOfRoles) {
+    admin = listOfRoles.contains(RoleCampaign.ADMIN);
+    author = listOfRoles.contains(RoleCampaign.AUTHOR);
+    participant = listOfRoles.contains(RoleCampaign.PARTICIPANT);
+    analyst = listOfRoles.contains(RoleCampaign.ANALYST);
+    supervisor = listOfRoles.contains(RoleCampaign.SUPERVISOR);
   }
   
-  public void addRole(UserRole role) {
+  public void addRole(RoleCampaign role) {
     switch (role) {
       case PARTICIPANT: this.participant = true; break;
       case ANALYST: this.analyst = true; break;

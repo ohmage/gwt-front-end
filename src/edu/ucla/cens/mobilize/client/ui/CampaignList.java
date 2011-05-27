@@ -20,7 +20,7 @@ import com.google.gwt.user.datepicker.client.DateBox;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
-import edu.ucla.cens.mobilize.client.common.UserRole;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 
 public class CampaignList extends Composite {
@@ -75,10 +75,10 @@ public class CampaignList extends Composite {
     // current user's role in the campaign
     // FIXME: only show roles from user's roles list
     userRoleListBox.addItem("Any");
-    userRoleListBox.addItem(UserRole.ANALYST.toString());
-    userRoleListBox.addItem(UserRole.PARTICIPANT.toString());
-    userRoleListBox.addItem(UserRole.AUTHOR.toString());
-    userRoleListBox.addItem(UserRole.SUPERVISOR.toString());
+    userRoleListBox.addItem(RoleCampaign.ANALYST.toString());
+    userRoleListBox.addItem(RoleCampaign.PARTICIPANT.toString());
+    userRoleListBox.addItem(RoleCampaign.AUTHOR.toString());
+    userRoleListBox.addItem(RoleCampaign.SUPERVISOR.toString());
     userRoleListBox.setSelectedIndex(0);
     
     // start and end dates

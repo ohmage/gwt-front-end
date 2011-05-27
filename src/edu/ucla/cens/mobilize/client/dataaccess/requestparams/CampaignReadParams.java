@@ -6,7 +6,7 @@ import java.util.List;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
-import edu.ucla.cens.mobilize.client.common.UserRole;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
@@ -19,7 +19,7 @@ public class CampaignReadParams {
   public Date endDate_opt; 
   public Privacy privacyState_opt;
   public RunningState runningState_opt; 
-  public UserRole userRole_opt;
+  public RoleCampaign userRole_opt;
   public List<String> classUrns_opt;
 
   public enum OutputFormat { SHORT, LONG }

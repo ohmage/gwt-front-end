@@ -32,7 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
-import edu.ucla.cens.mobilize.client.common.UserRole;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 
 public class CampaignEditFormView extends Composite {
@@ -208,7 +208,7 @@ public class CampaignEditFormView extends Composite {
     Collection<String> authorsToAdd = getAuthorsToAdd();
     Collection<String> authorsToAddWithRoles = new ArrayList<String>();
     for (String authorLogin : authorsToAdd) {
-      authorsToAddWithRoles.add(authorLogin + ":" + UserRole.AUTHOR.toServerString());
+      authorsToAddWithRoles.add(authorLogin + ":" + RoleCampaign.AUTHOR.toServerString());
     }
     return CollectionUtils.join(authorsToAddWithRoles, ",");
   }
@@ -222,7 +222,7 @@ public class CampaignEditFormView extends Composite {
     Collection<String> authorsToRemove = getAuthorsToRemove();
     Collection<String> authorsToRemoveWithRoles = new ArrayList<String>();
     for (String authorLogin : authorsToRemove) {
-      authorsToRemoveWithRoles.add(authorLogin + ":" + UserRole.AUTHOR.toServerString());
+      authorsToRemoveWithRoles.add(authorLogin + ":" + RoleCampaign.AUTHOR.toServerString());
     }
     return CollectionUtils.join(authorsToRemoveWithRoles, ",");
   }

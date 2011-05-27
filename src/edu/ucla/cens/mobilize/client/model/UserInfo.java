@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import edu.ucla.cens.mobilize.client.common.UserRole;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.common.UserStats;
 
@@ -26,7 +26,7 @@ public class UserInfo {
   public UserInfo(String username, 
                   boolean canCreate, 
                   Map<String, String> classIdToNameMap,
-                  List<UserRole> roles) {
+                  List<RoleCampaign> roles) {
     this.userName = username;
     this.canCreate = canCreate;
 
@@ -36,7 +36,7 @@ public class UserInfo {
     
     this.classIdToNameMap = classIdToNameMap;
 
-    for (UserRole role : roles) {
+    for (RoleCampaign role : roles) {
       this.roles.addRole(role);
     }    
   }
