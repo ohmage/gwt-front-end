@@ -13,7 +13,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Label;
@@ -119,7 +121,7 @@ public class DocumentEdit extends Composite {
     
     headerLabel.setText("Editing " + documentInfo.getDocumentName());
     documentNameTextBox.setText(documentInfo.getDocumentName());
-    documentIdHiddenField.setValue(Integer.toString(documentInfo.getDocumentId()));
+    documentIdHiddenField.setValue(documentInfo.getDocumentId());
     descriptionTextArea.setText(documentInfo.getDescription());
     String privacyString = documentInfo.getPrivacy().toUserFriendlyString();
     
@@ -201,6 +203,30 @@ public class DocumentEdit extends Composite {
   }
   
   public void showConfirmDelete(final ClickHandler onConfirmDelete) {
+    final DialogBox dialog = new DialogBox();
+    dialog.setGlassEnabled(true);
+    dialog.setText("Are you sure you want to delete this document?");
+    dialog.setModal(true);
+    Button deleteButton = new Button("Delete");
+    deleteButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        if (onConfirmDelete != null) onConfirmDelete.onClick(event);
+        dialog.hide();
+      }
+    });
+    Button cancelButton = new Button("Cancel");
+    cancelButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        dialog.hide();
+      }
+    });
+    FlowPanel panel = new FlowPanel(); 
+    panel.add(deleteButton);
+    panel.add(cancelButton);
+    dialog.add(panel);
+    dialog.center();
   }
   
   public HasClickHandlers getCampaignsAddButton() {

@@ -12,6 +12,7 @@ import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.RoleDocument;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
@@ -21,6 +22,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
@@ -188,41 +190,46 @@ public class MockDataService implements DataService {
     docInfo0.setCreationTimestamp(new Date()); // now
     docInfo0.setCreator("user.adv.supa");
     docInfo0.setDescription("Analysis doc for campaign");
-    docInfo0.setDocumentId(123);
+    docInfo0.setDocumentId("123");
     docInfo0.setDocumentName("file.txt");
-    docInfo0.setEditPermission(true);
+    docInfo0.setUserRole(RoleDocument.OWNER);
     docInfo0.setLastModifiedTimestamp(new Date());
     docInfo0.setPrivacy(Privacy.PRIVATE);
     docInfo0.setSize(100); // MB
-    docInfo0.addCampaign("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011:advertisting");
-    docInfo0.addCampaign("urn:campaign:ca:lausd:ADDAMS_HS:CS101:Fall:2011:sleepsens");
+    docInfo0.addCampaign("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011:advertisting",
+                         RoleDocument.READER);
+    docInfo0.addCampaign("urn:campaign:ca:lausd:ADDAMS_HS:CS101:Fall:2011:sleepsens",
+                         RoleDocument.READER);
     documents.add(docInfo0);
     
     DocumentInfo docInfo1 = new DocumentInfo();
     docInfo1.setCreationTimestamp(new Date()); // now
     docInfo1.setCreator("user.adv.supa");
     docInfo1.setDescription("Analysis doc for campaign");
-    docInfo1.setDocumentId(123);
+    docInfo1.setDocumentId("321");
     docInfo1.setDocumentName("file.txt");
-    docInfo1.setEditPermission(true);
+    docInfo1.setUserRole(RoleDocument.WRITER);
     docInfo1.setLastModifiedTimestamp(new Date());
     docInfo1.setPrivacy(Privacy.SHARED);
     docInfo1.setSize(100); // MB
-    docInfo1.addCampaign("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011:advertising");
+    docInfo1.addCampaign("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011:advertising",
+                         RoleDocument.READER);
     documents.add(docInfo1);
     
     DocumentInfo docInfo2 = new DocumentInfo();
     docInfo2.setCreationTimestamp(new Date()); // now
     docInfo2.setCreator("user.adv.supa");
     docInfo2.setDescription("Analysis doc for campaign");
-    docInfo2.setDocumentId(123);
+    docInfo2.setDocumentId("123squee");
     docInfo2.setDocumentName("file.txt");
-    docInfo2.setEditPermission(true);
+    docInfo2.setUserRole(RoleDocument.READER);
     docInfo2.setLastModifiedTimestamp(new Date());
     docInfo2.setPrivacy(Privacy.PRIVATE);
     docInfo2.setSize(100); // MB
-    docInfo2.addCampaign("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011:advertising");
-    docInfo2.addCampaign("urn:campaign:ca:lausd:ADDAMS_HS:CS101:Fall:2011:sleepsens");
+    docInfo2.addCampaign("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011:advertising",
+                         RoleDocument.READER);
+    docInfo2.addCampaign("urn:campaign:ca:lausd:ADDAMS_HS:CS101:Fall:2011:sleepsens",
+                         RoleDocument.READER);
     documents.add(docInfo2);
   }
 
@@ -396,16 +403,9 @@ public class MockDataService implements DataService {
   }
 
   @Override
-  public void fetchDocumentList(AsyncCallback<List<DocumentInfo>> callback) {
-    if (documents.isEmpty()) loadFakeDocuments();
-    callback.onSuccess(documents);
-  }
-
-  @Override
-  public void fetchDocumentDetail(int documentUUID,
-      AsyncCallback<DocumentInfo> callback) {
+  public void fetchDocumentDetail(String documentId, AsyncCallback<DocumentInfo> callback) {
     for (DocumentInfo docInfo : documents) {
-      if (docInfo.getDocumentId() == documentUUID) {
+      if (docInfo.getDocumentId().equals(documentId)) {
         callback.onSuccess(docInfo);
       }
     }
@@ -421,6 +421,19 @@ public class MockDataService implements DataService {
   @Override
   public void deleteSurveyResponse(String campaignId, int surveyKey,
       AsyncCallback<String> callback) {
+    callback.onSuccess("");
+  }
+
+  @Override
+  public void fetchDocumentList(DocumentReadParams params,
+      AsyncCallback<List<DocumentInfo>> callback) {
+    this.loadFakeDocuments();
+    callback.onSuccess(this.documents);
+    
+  }
+
+  @Override
+  public void deleteDocument(String documentId, AsyncCallback<String> callback) {
     callback.onSuccess("");
   }
 

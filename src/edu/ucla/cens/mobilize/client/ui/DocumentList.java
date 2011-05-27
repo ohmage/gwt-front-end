@@ -128,17 +128,17 @@ public class DocumentList extends Composite {
     
   }
   
-  private Widget getActionsWidget(int documentUUID, boolean canEdit) {
+  private Widget getActionsWidget(String documentId, boolean canEdit) {
     Panel panel = new FlowPanel();
     // link to view document details
     InlineHyperlink detailsLink = 
-      new InlineHyperlink("details", HistoryTokens.documentDetail(documentUUID));
+      new InlineHyperlink("details", HistoryTokens.documentDetail(documentId));
     detailsLink.setStyleName(style.detailsLink());
     panel.add(detailsLink);
     // link to edit document (only visible to creator/supervisor)
     if (canEdit) {      
       InlineHyperlink editLink = 
-        new InlineHyperlink("edit", HistoryTokens.documentEdit(documentUUID));
+        new InlineHyperlink("edit", HistoryTokens.documentEdit(documentId));
       editLink.setStyleName(style.editLink());
       panel.add(editLink);
     }

@@ -1,41 +1,43 @@
 package edu.ucla.cens.mobilize.client.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.RoleDocument;
 
 public class DocumentInfo {
 
-  int UUID;
+  String documentId;
   String documentName;
   String creator;
   Date creationTimestamp;
   Date lastModifiedTimestamp;
   List<String> authors = new ArrayList<String>();
-  List<String> campaigns = new ArrayList<String>();
-  List<String> classes = new ArrayList<String>();
+  //List<String> campaigns = new ArrayList<String>();
+  //List<String> classes = new ArrayList<String>();
+  Map<String, RoleDocument> campaignUrnToRoleMap = new HashMap<String, RoleDocument>();
+  Map<String, RoleDocument> classUrnToRoleMap = new HashMap<String, RoleDocument>();
   String description;
   Privacy privacy;
+  RoleDocument userRole;
   float size;
   
-  boolean userCanEdit = false;
-  
-  public void setEditPermission(boolean userCanEdit) {
-    this.userCanEdit = userCanEdit;
-  }
-  
   public boolean userCanEdit () {
-    return this.userCanEdit;
+    return this.userRole.equals(RoleDocument.OWNER) ||
+           this.userRole.equals(RoleDocument.WRITER);
   }
   
-  public int getDocumentId() {
-    return this.UUID;
+  public String getDocumentId() {
+    return this.documentId;
   }
   
-  public void setDocumentId(int UUID) {
-    this.UUID = UUID;
+  public void setDocumentId(String id) {
+    this.documentId = id;
   }
   
   public String getDocumentName() {
@@ -62,32 +64,28 @@ public class DocumentInfo {
     this.lastModifiedTimestamp = lastModifiedTimestamp;
   }
 
-  public List<String> getCampaigns() {
-    return campaigns;
+  public Collection<String> getCampaigns() {
+    return this.campaignUrnToRoleMap.keySet();
   }
   
-  public void addCampaign(String campaignUrn) {
-    if (!this.campaigns.contains(campaignUrn)) {
-      this.campaigns.add(campaignUrn);
-    }
+  public void addCampaign(String campaignUrn, RoleDocument role) {
+    this.campaignUrnToRoleMap.put(campaignUrn, role);
   }
 
   public void clearCampaigns() {
-    this.campaigns.clear();
+    this.campaignUrnToRoleMap.clear();
   }
 
-  public List<String> getClasses() {
-    return this.classes;
+  public Collection<String> getClasses() {
+    return this.classUrnToRoleMap.keySet();
   }
   
-  public void addClass(String classUrn) {
-    if (!this.classes.contains(classUrn)) {
-      this.classes.add(classUrn);
-    }
+  public void addClass(String classUrn, RoleDocument role) {
+    this.classUrnToRoleMap.put(classUrn, role);
   }
   
   public void clearClasses() {
-    this.classes.clear();
+    this.classUrnToRoleMap.clear();
   }
 
   public String getDescription() {
@@ -122,5 +120,12 @@ public class DocumentInfo {
     this.creator = creator;
   }
 
+  public RoleDocument getUserRole() {
+    return this.userRole;
+  }
+  
+  public void setUserRole(RoleDocument role) {
+    this.userRole = role;
+  }
   
 }

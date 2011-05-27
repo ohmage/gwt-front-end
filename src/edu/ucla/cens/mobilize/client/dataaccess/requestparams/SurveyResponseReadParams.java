@@ -39,6 +39,7 @@ public class SurveyResponseReadParams extends RequestParams {
     }
   }
   
+  @Override
   public String toString() {
     assert this.authToken != null : "authToken is required";
     assert this.campaignUrn != null : "campaignUrn is required";

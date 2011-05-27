@@ -7,8 +7,8 @@ import java.util.logging.Logger;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import edu.ucla.cens.mobilize.client.MainApp;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.view.DocumentView;
@@ -28,6 +28,11 @@ public class DocumentPresenter implements Presenter {
     this.userInfo = userInfo;
     this.dataService = dataService;
     this.eventBus = eventBus;
+  }
+  
+  private void bind() {
+    assert this.view != null : "view must be set before calling bind()";
+    
   }
   
   @Override
@@ -53,7 +58,8 @@ public class DocumentPresenter implements Presenter {
   }
 
   private void fetchAndShowAllDocuments() {
-    this.dataService.fetchDocumentList(new AsyncCallback<List<DocumentInfo>>() {
+    DocumentReadParams params = new DocumentReadParams(); // just use defaults
+    this.dataService.fetchDocumentList(params, new AsyncCallback<List<DocumentInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());
@@ -69,13 +75,12 @@ public class DocumentPresenter implements Presenter {
     });    
   }
 
-  private void fetchAndShowDocumentDetail(final String documentUUIDString) {
-    int documentUUID = Integer.parseInt(documentUUIDString);
-    this.dataService.fetchDocumentDetail(documentUUID, new AsyncCallback<DocumentInfo>() {
+  private void fetchAndShowDocumentDetail(final String documentId) {
+    this.dataService.fetchDocumentDetail(documentId, new AsyncCallback<DocumentInfo>() {
       @Override
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());
-        view.showError("Could not load details for " + documentUUIDString);
+        view.showError("Could not load details for " + documentId);
         view.showListSubview();
       }
 
@@ -94,9 +99,8 @@ public class DocumentPresenter implements Presenter {
     view.showEditSubview();
   }
 
-  private void fetchDocumentAndShowEditForm(String documentUUIDString) {
-    int documentUUID = Integer.parseInt(documentUUIDString);
-    this.dataService.fetchDocumentDetail(documentUUID, new AsyncCallback<DocumentInfo>() {
+  private void fetchDocumentAndShowEditForm(String documentId) {
+    this.dataService.fetchDocumentDetail(documentId, new AsyncCallback<DocumentInfo>() {
 
       @Override
       public void onFailure(Throwable caught) {

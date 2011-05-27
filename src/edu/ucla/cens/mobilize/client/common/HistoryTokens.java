@@ -42,12 +42,12 @@ public class HistoryTokens {
     return "documents";
   }
   
-  public static String documentDetail(int documentUUID) {
-    return "documents?v=detail&id=" + documentUUID;
+  public static String documentDetail(String documentId) {
+    return "documents?v=detail&id=" + documentId;
   }
 
-  public static String documentEdit(int documentUUID) {
-    return "documents?v=edit&id=" + documentUUID;
+  public static String documentEdit(String documentId) {
+    return "documents?v=edit&id=" + documentId;
   }
   
 }

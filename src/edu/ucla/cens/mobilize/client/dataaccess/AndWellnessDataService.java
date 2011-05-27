@@ -29,6 +29,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerException;
 import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerUnavailableException;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseUpdateParams;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
@@ -670,20 +671,6 @@ public class AndWellnessDataService implements DataService {
       throw new ServerException("Cannot contact server.");
     }    
   }
-
-  @Override
-  public void fetchDocumentList(AsyncCallback<List<DocumentInfo>> callback) {
-    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
-    // TODO Auto-generated method stub
-    throw new ServerException("unimplemented");    
-  }
-
-  @Override
-  public void fetchDocumentDetail(int documentUUID,
-      AsyncCallback<DocumentInfo> callback) {
-    // TODO Auto-generated method stub
-    throw new ServerException("unimplemented");
-  }
   
   @Override
   public void fetchClassList(List<String> classIds, final AsyncCallback<List<ClassInfo>> callback) {
@@ -777,6 +764,74 @@ public class AndWellnessDataService implements DataService {
       _logger.severe(e.getMessage());
       throw new ServerException("Cannot contact server.");
     }
+  }
+
+  @Override
+  public void fetchDocumentList(DocumentReadParams params,
+      final AsyncCallback<List<DocumentInfo>> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.authToken = this.authToken;
+    String postParams = params.toString();
+    _logger.fine("Fetching document list with params: " + postParams);
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getDocumentReadUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            List<DocumentInfo> result = AwDataTranslators.translateDocumentReadQueryJSONToDocumentInfoList(responseText);
+            callback.onSuccess(result);            
+            // no exception thrown? then it was a success
+            callback.onSuccess(result);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+  }
+
+  @Override
+  public void fetchDocumentDetail(final String documentId, final AsyncCallback<DocumentInfo> callback) {
+    // TODO: get from cached data instead
+    fetchDocumentList(new DocumentReadParams(), new AsyncCallback<List<DocumentInfo>>() {
+
+      @Override
+      public void onFailure(Throwable caught) {
+        callback.onFailure(caught);
+      }
+
+      @Override
+      public void onSuccess(List<DocumentInfo> result) {
+        boolean wasFound = false;
+        for (DocumentInfo docInfo : result) {
+          if (docInfo.getDocumentId().equals(documentId)) {
+            wasFound = true;
+            callback.onSuccess(docInfo);
+            break;
+          }
+        }
+        if (!wasFound) {
+          callback.onFailure(new RuntimeException("Could not find document with id: " + documentId));
+        }
+      }
+    });
+  }
+  
+  @Override
+  public void deleteDocument(String documentId, AsyncCallback<String> callback) {
   }
   
 }

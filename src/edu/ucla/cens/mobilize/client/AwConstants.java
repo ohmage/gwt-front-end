@@ -46,6 +46,11 @@ public class AwConstants {
     private final static String CLASS_READ      = "class/read";
     private final static String CLASS_UPDATE    = "class/update";
     private final static String IMAGE_READ      = "image/read";
+    private final static String DOCUMENT_READ   = "document/read";
+    private final static String DOCUMENT_READ_CONTENTS = "document/read/contents";
+    private final static String DOCUMENT_CREATE = "document/create";
+    private final static String DOCUMENT_DELETE = "document/delete";
+    
     
     /**
      * Returns data server url based on value of deployment status variable. 
@@ -115,6 +120,22 @@ public class AwConstants {
     
     public static String getImageReadUrl() {
       return getServerLocation() + IMAGE_READ;
+    }
+    
+    public static String getDocumentReadUrl() {
+      return getServerLocation() + DOCUMENT_READ;
+    }
+    
+    public static String getDocumentReadContentsUrl() {
+      return getServerLocation() + DOCUMENT_READ_CONTENTS;
+    }
+    
+    public static String getDocumentCreateUrl() {
+      return getServerLocation() + DOCUMENT_CREATE;
+    }
+    
+    public static String getDocumentDeleteUrl() {
+      return getServerLocation() + DOCUMENT_DELETE;
     }
     
 }

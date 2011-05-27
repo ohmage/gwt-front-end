@@ -16,16 +16,19 @@ import com.google.gwt.xml.client.XMLParser;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;
+import edu.ucla.cens.mobilize.client.common.RoleDocument;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRole;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DocumentAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.PromptResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
+import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyInfo;
@@ -354,6 +357,40 @@ public class AwDataTranslators {
       }
 
       return classInfos;
+    }
+
+    // {"result":"success","data":{"7bf3ab79-d30d-4cec-91b0-75d5d337be5d":{"class_role":{},"user_role":"owner","last_modified":"2011-05-26 13:01:03","description":"","name":"testdoc1.txt","privacy_state":"private","campaign_roles":{"urn:campaign:ca:lausd:Addams_HS:CS101:Fall:2011:Advertisement":"reader"},"size":27},"35e795c7-c6dc-4f22-8293-aa3369729b35":{"class_role":{},"user_role":"owner","last_modified":"2011-05-26 13:02:08","description":"","name":"testdoc3.txt","privacy_state":"private","campaign_roles":{"urn:campaign:ca:lausd:Addams_HS:CS101:Fall:2011:Advertisement":"reader"},"size":27},"0c61e063-cc11-46fa-aa13-20f9fbc560e6":{"class_role":{},"user_role":"owner","last_modified":"2011-05-26 13:01:46","description":"","name":"testdoc2.txt","privacy_state":"private","campaign_roles":{"urn:campaign:ca:lausd:Addams_HS:CS101:Fall:2011:Advertisement":"reader"},"size":27}}}
+    public static List<DocumentInfo> translateDocumentReadQueryJSONToDocumentInfoList(String documentReadQueryJSON) throws Exception {
+      List<DocumentInfo> documentInfos = new ArrayList<DocumentInfo>(); // retval
+      JSONValue value = JSONParser.parse(documentReadQueryJSON);
+      JSONObject obj = value.isObject();
+      if (obj == null || !obj.containsKey("data")) throw new Exception("Invalid json format.");
+      JSONObject dataHash = obj.get("data").isObject();
+      for (String documentId : dataHash.keySet()) {
+        try {
+          DocumentAwData awData = (DocumentAwData)dataHash.get(documentId).isObject().getJavaScriptObject();
+          DocumentInfo docInfo = new DocumentInfo();
+          docInfo.setCreationTimestamp(DateUtils.translateFromServerFormat(awData.getLastModified()));
+          docInfo.setDescription(awData.getDescription());
+          docInfo.setDocumentId(documentId);
+          docInfo.setDocumentName(awData.getDocumentName());
+          docInfo.setPrivacy(Privacy.valueOf(awData.getPrivacyState().trim().toUpperCase()));
+          docInfo.setSize(awData.getSize());
+          docInfo.setUserRole(RoleDocument.valueOf(awData.getUserRole().trim().toUpperCase()));
+          for (String classUrn : awData.getClassUrns()) {
+            docInfo.addClass(classUrn, RoleDocument.valueOf(awData.getClassRole(classUrn).trim().toUpperCase()));
+          }
+          for (String campaignUrn : awData.getCampaignUrns()) {
+            docInfo.addCampaign(campaignUrn, RoleDocument.valueOf(awData.getCampaignRole(campaignUrn).trim().toUpperCase()));
+          }
+          documentInfos.add(docInfo);
+          // FIXME: do we know document creator?
+        } catch (Exception e) {
+          _logger.warning("Could not parse json for document id: " + documentId + ". Skipping record.");
+          _logger.fine(e.getMessage());
+        }
+      }
+      return documentInfos;
     }
     
 

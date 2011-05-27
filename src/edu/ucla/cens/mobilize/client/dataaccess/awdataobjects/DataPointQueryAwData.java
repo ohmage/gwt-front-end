@@ -9,7 +9,7 @@ public class DataPointQueryAwData extends QueryAwData {
     // Grab the data
     public final native JsArray<DataPointAwData> getData() /*-{ return this.data; }-*/;
     
-    // Create an AuthorizationTokenQueryAwData from a JSON string
+    // Create a DataPointQueryAwData from a JSON string
     public static native DataPointQueryAwData fromJsonString(String jsonString) /*-{
         return eval('(' + jsonString + ')'); 
     }-*/;

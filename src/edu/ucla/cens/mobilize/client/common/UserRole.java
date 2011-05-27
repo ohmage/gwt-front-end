@@ -13,8 +13,6 @@ public enum UserRole {
   ANALYST,
   SUPERVISOR,
   ADMIN, 
-  PRIVILEGED, // FIXME: this should be a different enum 
-  RESTRICTED, // FIXME: this should be a different enum
   RESEARCHER; // legacy
   
   public String toUserFriendlyString() {

@@ -8,6 +8,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationToken
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
@@ -99,11 +100,6 @@ public interface DataService {
                              int surveyKey,
                              final AsyncCallback<String> callback);
   
-  void fetchDocumentList(final AsyncCallback<List<DocumentInfo>> callback);
-  
-  void fetchDocumentDetail(int documentUUID,
-                           final AsyncCallback<DocumentInfo> callback);
-  
   void fetchClassList(List<String> classIds,
                       final AsyncCallback<List<ClassInfo>> callback);
   
@@ -112,5 +108,14 @@ public interface DataService {
   
   void updateClass(ClassUpdateParams params, final AsyncCallback<String> callback);
   
+  void fetchDocumentList(DocumentReadParams params, 
+      final AsyncCallback<List<DocumentInfo>> callback);
+
+  void fetchDocumentDetail(String documentId, final AsyncCallback<DocumentInfo> callback);
+  //void fetchDocumentContents(String documentId, final AsyncCallback<WhatGoesHere?>);
+  
+  // NOTE: create document must be done through a form (?)
+  
+  void deleteDocument(String documentId, final AsyncCallback<String> callback);
   
 }
