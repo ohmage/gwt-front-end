@@ -437,4 +437,11 @@ public class MockDataService implements DataService {
     callback.onSuccess("");
   }
 
+  @Override
+  public void fetchCampaignIdToNameMap(CampaignReadParams params,
+      AsyncCallback<Map<String, String>> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

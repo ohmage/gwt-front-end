@@ -116,23 +116,23 @@
 				  <w:MessageWidget ui:field='messageWidget' />
 				  <g:Hidden ui:field='authTokenHiddenField' name='auth_token' />
 				  <g:Hidden ui:field='documentIdHiddenField' name='document_id' />
-				  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+				  <g:HTMLPanel ui:field='fileUploadPanel' addStyleNames='{style.detailRow}'>
 	          <g:InlineLabel addStyleNames='{style.detailLabel}'>Choose File:</g:InlineLabel>
-	          <g:FileUpload ui:field='fileUploadInput' />
+	          <g:FileUpload ui:field='fileUploadInput' name='document' />
 	        </g:HTMLPanel>
 				  <g:HTMLPanel addStyleNames='{style.detailRow}'>
 				    <g:InlineLabel addStyleNames='{style.detailLabel}'>Document Name:</g:InlineLabel>
-				    <g:TextBox ui:field='documentNameTextBox' />
+				    <g:TextBox ui:field='documentNameTextBox' name='document_name' />
 				  </g:HTMLPanel>
 				  <g:HTMLPanel addStyleNames='{style.detailRow}'>
 				    <g:InlineLabel addStyleNames='{style.detailLabel} {style.labelForMultilineDetail}'>
 				      Description:
 				    </g:InlineLabel>
-				    <g:TextArea ui:field='descriptionTextArea' />
+				    <g:TextArea ui:field='descriptionTextArea' name='description' />
 				  </g:HTMLPanel>
 				  <g:HTMLPanel addStyleNames='{style.detailRow}'>
 	          <g:InlineLabel addStyleNames='{style.detailLabel}'>Privacy Setting:</g:InlineLabel>
-	          <g:ListBox ui:field='privacyListBox' />
+	          <g:ListBox ui:field='privacyListBox' name='privacy_state' />
 	        </g:HTMLPanel>
 				  <g:HTMLPanel addStyleNames='{style.detailRow}'>
 	          <g:InlineLabel addStyleNames='{style.detailLabel} {style.labelForMultilineDetail}'>
@@ -141,8 +141,9 @@
 	          <g:HTMLPanel addStyleNames='{style.listWidgetContainer}'>
 		          <w:ListWidget ui:field='campaignsListWidget' addStyleNames='{style.listWidget}' />
 		          <g:Button ui:field='campaignsAddButton' addStyleNames='{style.addButton}'>Add Campaigns</g:Button>
-		          <g:Hidden ui:field='campaignsToAddHiddenField' />
-		          <g:Hidden ui:field='campaignsToRemoveHiddenField' />
+		          <g:Hidden ui:field='campaignsToAddHiddenField' name='document_campaign_role_list' />
+		          <!-- FIXME: should be add and remove, not just campaign_role_list -->
+		          <g:Hidden ui:field='campaignsToRemoveHiddenField' /> <!-- FIXME: add name -->
 	          </g:HTMLPanel>
 	        </g:HTMLPanel>
 	        <g:HTMLPanel addStyleNames='{style.detailRow}'>

@@ -49,5 +49,9 @@ public class HistoryTokens {
   public static String documentEdit(String documentId) {
     return "documents?v=edit&id=" + documentId;
   }
+
+  public static String documentCreate() {
+    return "documents?v=create";
+  }
   
 }

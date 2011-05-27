@@ -11,12 +11,15 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -28,12 +31,13 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 
-public class DocumentEdit extends Composite {
+public class DocumentEditView extends Composite {
 
   private static DocumentEditUiBinder uiBinder = GWT
       .create(DocumentEditUiBinder.class);
 
-  interface DocumentEditUiBinder extends UiBinder<Widget, DocumentEdit> {
+  @UiTemplate("DocumentEdit.ui.xml")
+  interface DocumentEditUiBinder extends UiBinder<Widget, DocumentEditView> {
   }
 
   @UiField Label headerLabel;
@@ -45,6 +49,7 @@ public class DocumentEdit extends Composite {
   @UiField MessageWidget messageWidget;
   @UiField Hidden authTokenHiddenField;
   @UiField Hidden documentIdHiddenField;
+  @UiField HTMLPanel fileUploadPanel;
   @UiField FileUpload fileUploadInput;
   @UiField TextBox documentNameTextBox;
   @UiField TextArea descriptionTextArea;
@@ -60,12 +65,15 @@ public class DocumentEdit extends Composite {
 
   @UiField Button saveButton;
   @UiField Button cancelButton;
+  @UiField HTMLPanel deletePanel;
   @UiField Button deleteButton;
 
-  List<String> originalCampaignUrns = new ArrayList<String>();
-  List<String> originalClassUrns = new ArrayList<String>();
+  private List<String> originalCampaignUrns = new ArrayList<String>();
+  private List<String> originalClassUrns = new ArrayList<String>();
+  private boolean formIsInitialized = false;
   
-  public DocumentEdit() {
+  
+  public DocumentEditView() {
     initWidget(uiBinder.createAndBindUi(this));
     
     privacyListBox.addItem(Privacy.PRIVATE.toUserFriendlyString(), Privacy.PRIVATE.toServerString());
@@ -74,13 +82,6 @@ public class DocumentEdit extends Composite {
     campaignsListWidget.addItem("test1", "test1");
     campaignsListWidget.addItem("test1", "test2");
     campaignsListWidget.addItem("test3", "test3");
-  }
-
-  private void prepareFormForSubmit() {
-    campaignsToAddHiddenField.setValue(serializeList(getCampaignsToAdd()));
-    campaignsToRemoveHiddenField.setValue(serializeList(getCampaignsToRemove()));
-    classesToAddHiddenField.setValue(serializeList(getClassesToAdd()));
-    classesToRemoveHiddenField.setValue(serializeList(getClassesToRemove()));
   }
   
   // serialize list into format expected by server in form submission
@@ -106,14 +107,71 @@ public class DocumentEdit extends Composite {
     return CollectionUtils.setDiff(originalCampaignUrns, campaignsListWidget.getItems());
   }
   
-  public void clearForm() {
+  public String getDocumentId() {
+    return documentIdHiddenField.getValue();
+  }
+  
+  public String getDocumentName() {
+    return documentNameTextBox.getText();
+  }
+  
+  public void initializeForm(String authToken, String serverLocation) {
+    this.authTokenHiddenField.setValue(authToken);
+    this.formPanel.setAction(serverLocation);
+    this.formPanel.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
+    this.formPanel.setMethod(FormPanel.METHOD_POST);
+    this.formIsInitialized = true;    
+  }
+  
+  public boolean formIsInitialized() {
+    return this.formIsInitialized;
+  }
+
+  public void prepareFormForSubmit() {
+    Collection<String> campaignsToAdd = getCampaignsToAdd();
+    campaignsToAddHiddenField.setValue(serializeCollectionAsReaders(campaignsToAdd));
+    //campaignsToAddHiddenField.setValue(serializeList(getCampaignsToAdd()));
+    campaignsToRemoveHiddenField.setValue(serializeList(getCampaignsToRemove()));
+    classesToAddHiddenField.setValue(serializeList(getClassesToAdd()));
+    classesToRemoveHiddenField.setValue(serializeList(getClassesToRemove()));
+  }
+  
+  private String serializeCollectionAsReaders(Collection<String> items) {
+    if (items == null || items.isEmpty()) return "";
+    StringBuilder sb = new StringBuilder();
+    for (String item : items) {
+      sb.append(",").append(item).append(";").append("reader");
+    }
+    String retval = sb.toString().substring(1);
+    return retval;
+  }
+  
+  public void submitForm() {
+    prepareFormForSubmit();
+    formPanel.submit();
+  }
+  
+  public void clearFormFields() {
     formPanel.reset();
     campaignsListWidget.clear();
     classesListWidget.clear();
   }
   
+  public void setDeletePanelVisible(boolean isVisible) {
+    deletePanel.setVisible(isVisible);    
+  }
+  
+  public void setUploadPanelVisible(boolean isVisible) {
+    fileUploadPanel.setVisible(isVisible);
+    fileUploadInput.setEnabled(isVisible);
+  }
+  
+  public void setHeader(String headerText) {
+    headerLabel.setText(headerText);
+  }
+  
   public void setDocument(DocumentInfo documentInfo) {
-    clearForm();
+    clearFormFields();
     if (documentInfo == null) return;
     
     originalCampaignUrns.addAll(documentInfo.getCampaigns());
@@ -140,31 +198,6 @@ public class DocumentEdit extends Composite {
       classesListWidget.addItem(classUrn);
     }
   }
-
-  /*
-  public void setDocumentName(String documentName) {
-  }
-  
-  public void setDescription(String description) {
-  }
-  
-  public void setPrivacy(Privacy privacy) {
-  }
-  
-  public void addCampaign(String campaignName, String campaignUrn) {
-  }
-  
-  public void setSelectedCampaigns() {
-    assert this.originalCampaigns != null : "Save list of original campaigns before selecting campaigns.";
-  }
-  
-  public void setSelectedClasses() {
-    assert this.originalClasses != null : "Save list of original classes before selecting classes.";
-  }
-  
-  public void addClass(String classUrn) {
-  }*/ 
-
   
   public void showCampaignChoices(final Map<String, String> campaignUrnToCampaignNameMap) {
     if (campaignUrnToCampaignNameMap == null) return;
@@ -228,6 +261,25 @@ public class DocumentEdit extends Composite {
     dialog.add(panel);
     dialog.center();
   }
+
+  // TODO: make this a generic gui element somewhere?
+  public void showError(String msg) {
+    final DialogBox errorDialog = new DialogBox();
+    errorDialog.setGlassEnabled(true);
+    errorDialog.setText(msg);
+    Button dismissButton = new Button("OK");
+    dismissButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        errorDialog.hide(); 
+      }
+    });
+    errorDialog.add(dismissButton);
+    errorDialog.center();
+  }
+  
+  /******* METHODS THAT RETURN GUI ELEMENTS FOR EVENT HANDLING *****/
+  /* Presenter uses these to wire up event handling to buttons, etc */
   
   public HasClickHandlers getCampaignsAddButton() {
     return campaignsAddButton;
@@ -248,5 +300,11 @@ public class DocumentEdit extends Composite {
   public HasClickHandlers getDeleteButton() {
     return deleteButton;
   }
+
+  public void addSubmitCompleteHandler(SubmitCompleteHandler onSubmitComplete) {
+    this.formPanel.addSubmitCompleteHandler(onSubmitComplete);    
+  }
+  
+  /******* END OF METHODS THAT RETURN GUI ELEMENTS FOR EVENT HANDLING *****/
 
 }

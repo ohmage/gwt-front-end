@@ -70,6 +70,8 @@ public interface DataService {
   void fetchCampaignIds(CampaignReadParams params,
                         final AsyncCallback<List<String>> callback);
   
+  void fetchCampaignIdToNameMap(CampaignReadParams params,
+                                final AsyncCallback<Map<String, String>> callback);
   
   void fetchCampaignListShort(CampaignReadParams params, 
                               final AsyncCallback<List<CampaignShortInfo>> callback);

@@ -49,6 +49,7 @@ public class AwConstants {
     private final static String DOCUMENT_READ   = "document/read";
     private final static String DOCUMENT_READ_CONTENTS = "document/read/contents";
     private final static String DOCUMENT_CREATE = "document/create";
+    private final static String DOCUMENT_UPDATE = "document/update";
     private final static String DOCUMENT_DELETE = "document/delete";
     
     
@@ -134,8 +135,14 @@ public class AwConstants {
       return getServerLocation() + DOCUMENT_CREATE;
     }
     
+    public static String getDocumentUpdateUrl() {
+      return getServerLocation() + DOCUMENT_UPDATE;
+    }
+    
     public static String getDocumentDeleteUrl() {
       return getServerLocation() + DOCUMENT_DELETE;
     }
+
+
     
 }

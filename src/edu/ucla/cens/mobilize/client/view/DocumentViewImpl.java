@@ -3,14 +3,16 @@ package edu.ucla.cens.mobilize.client.view;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.ui.DocumentDetail;
-import edu.ucla.cens.mobilize.client.ui.DocumentEdit;
+import edu.ucla.cens.mobilize.client.ui.DocumentEditView;
 import edu.ucla.cens.mobilize.client.ui.DocumentList;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
@@ -25,9 +27,10 @@ public class DocumentViewImpl extends Composite implements DocumentView {
   }
 
   @UiField MessageWidget msgWidget;
+  @UiField Button documentUploadButton;
   @UiField DocumentList documentList;
   @UiField DocumentDetail documentDetail;
-  @UiField DocumentEdit documentEdit;
+  @UiField DocumentEditView documentEdit;
   
   public DocumentViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -90,6 +93,15 @@ public class DocumentViewImpl extends Composite implements DocumentView {
   public void hideMsg() {
     this.msgWidget.hide();
   }
-  
+
+  @Override
+  public DocumentEditView getEditView() {
+    return this.documentEdit;
+  }
+
+  @Override
+  public HasClickHandlers getUploadButton() {
+    return this.documentUploadButton;
+  }
 
 }

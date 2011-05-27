@@ -4,13 +4,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.ui.DocumentEditPresenter;
 import edu.ucla.cens.mobilize.client.view.DocumentView;
 
 public class DocumentPresenter implements Presenter {
@@ -20,6 +25,8 @@ public class DocumentPresenter implements Presenter {
   EventBus eventBus;
   
   DocumentView view;
+  
+  DocumentEditPresenter documentEditPresenter;
 
   // Logging utility
   private static Logger _logger = Logger.getLogger(DocumentPresenter.class.getName());
@@ -28,11 +35,18 @@ public class DocumentPresenter implements Presenter {
     this.userInfo = userInfo;
     this.dataService = dataService;
     this.eventBus = eventBus;
+    
+    this.documentEditPresenter = new DocumentEditPresenter(userInfo, dataService, eventBus);
   }
   
-  private void bind() {
-    assert this.view != null : "view must be set before calling bind()";
-    
+  private void addEventHandlersToView() {
+    assert this.view != null : "view must be set before calling addEventHandlersToView()";
+    view.getUploadButton().addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.newItem(HistoryTokens.documentCreate());
+      }
+    });
   }
   
   @Override
@@ -94,31 +108,19 @@ public class DocumentPresenter implements Presenter {
   }
 
   private void showDocumentCreateForm() {
-    // TODO: set title for create
-    view.setDocumentEdit(null);
+    this.documentEditPresenter.initFormForCreate();
     view.showEditSubview();
   }
 
   private void fetchDocumentAndShowEditForm(String documentId) {
-    this.dataService.fetchDocumentDetail(documentId, new AsyncCallback<DocumentInfo>() {
-
-      @Override
-      public void onFailure(Throwable caught) {
-        _logger.severe(caught.getMessage());
-        view.showError("Document could not be opened for editing.");
-      }
-
-      @Override
-      public void onSuccess(DocumentInfo result) {
-        view.setDocumentEdit(result);
-        view.showEditSubview();
-      }
-    });
-    
+    this.documentEditPresenter.fetchDocumentAndInitFormForEdit(documentId);
+    this.view.showEditSubview();    
   }
 
   public void setView(DocumentView view) {
     this.view = view;
+    this.documentEditPresenter.setView(view.getEditView());
+    addEventHandlersToView();
   }
 
 

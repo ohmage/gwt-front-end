@@ -69,7 +69,8 @@ public class CampaignEditFormPresenter {
       new AsyncCallback<CampaignDetailedInfo>() {
         @Override
         public void onFailure(Throwable caught) {
-        // TODO Auto-generated method stub
+          _logger.severe(caught.getMessage());
+          // TODO: show error to user
         }
         
         @Override

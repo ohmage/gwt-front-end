@@ -398,6 +398,28 @@ public class AndWellnessDataService implements DataService {
   
 
   @Override
+  public void fetchCampaignIdToNameMap(CampaignReadParams params,
+      final AsyncCallback<Map<String, String>> callback) {
+    fetchCampaignListShort(params, new AsyncCallback<List<CampaignShortInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        _logger.severe(caught.getMessage());
+        callback.onFailure(caught);
+      }
+
+      @Override
+      public void onSuccess(List<CampaignShortInfo> result) {
+        Map<String, String> campaignIdToNameMap = new HashMap<String, String>();
+        for (CampaignShortInfo info : result) {
+          campaignIdToNameMap.put(info.getCampaignId(), info.getCampaignName());
+        }
+        // invoke original callback
+        callback.onSuccess(campaignIdToNameMap);
+      }
+    });    
+  }
+
+  @Override
   public void fetchCampaignListShort(CampaignReadParams params,
                                 final AsyncCallback<List<CampaignShortInfo>> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
@@ -831,7 +853,40 @@ public class AndWellnessDataService implements DataService {
   }
   
   @Override
-  public void deleteDocument(String documentId, AsyncCallback<String> callback) {
+  public void deleteDocument(String documentId, final AsyncCallback<String> callback) {
+    // set up request params
+    Map<String, String> params = new HashMap<String, String>();
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.put("auth_token", this.authToken);
+    params.put("document_id", documentId);
+    String postParams = MapUtils.translateToParameters(params);
+    _logger.fine("Attempting to delete campaign with parameters: " + postParams);
+    // make the request
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getCampaignDeleteUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            callback.onSuccess(responseText);
+          } catch (Exception exception) {
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }        
   }
   
 }

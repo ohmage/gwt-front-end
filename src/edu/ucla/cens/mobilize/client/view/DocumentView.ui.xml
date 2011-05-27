@@ -105,7 +105,7 @@
         <!-- only one of these will be visible at a time depending on selected subview -->
         <w:DocumentList ui:field="documentList"></w:DocumentList>
         <w:DocumentDetail ui:field="documentDetail"></w:DocumentDetail>
-        <w:DocumentEdit ui:field="documentEdit"></w:DocumentEdit>
+        <w:DocumentEditView ui:field="documentEdit"></w:DocumentEditView>
       </g:HTMLPanel>
     </g:center>
   
