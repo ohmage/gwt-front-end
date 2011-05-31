@@ -141,8 +141,8 @@
 	          <g:HTMLPanel addStyleNames='{style.listWidgetContainer}'>
 		          <w:ListWidget ui:field='campaignsListWidget' addStyleNames='{style.listWidget}' />
 		          <g:Button ui:field='campaignsAddButton' addStyleNames='{style.addButton}'>Add Campaigns</g:Button>
-		          <g:Hidden ui:field='campaignsToAddHiddenField' name='document_campaign_role_list' />
-		          <!-- FIXME: should be add and remove, not just campaign_role_list -->
+		          <!-- names of hidden fields are set dynamically b/c they're different for create vs edit -->
+		          <g:Hidden ui:field='campaignsToAddHiddenField' />
 		          <g:Hidden ui:field='campaignsToRemoveHiddenField' /> <!-- FIXME: add name -->
 	          </g:HTMLPanel>
 	        </g:HTMLPanel>
@@ -153,6 +153,7 @@
 	          <g:HTMLPanel addStyleNames='{style.listWidgetContainer}'>
 		          <w:ListWidget ui:field='classesListWidget' addStyleNames='{style.listWidget}' />
 		          <g:Button ui:field='classesAddButton' addStyleNames='{style.addButton}' >Add Classes</g:Button>
+		          <!-- names of hidden fields are set dynamically b/c they're different for create vs edit -->
 		          <g:Hidden ui:field='classesToAddHiddenField' />
 		          <g:Hidden ui:field='classesToRemoveHiddenField' />
 	          </g:HTMLPanel>

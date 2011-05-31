@@ -81,7 +81,7 @@ public class DocumentEditPresenter {
       @Override
       public void onClick(ClickEvent event) {
         view.clearFormFields();
-        History.back();
+        History.newItem(HistoryTokens.documentList());
       }
     });
 
@@ -97,8 +97,7 @@ public class DocumentEditPresenter {
       }
     });
     
-    // FIXME: commented for debugging - uncomment so form will redirect when done
-    //this.view.addSubmitCompleteHandler(formSubmitCompleteHandler);
+    this.view.addSubmitCompleteHandler(formSubmitCompleteHandler);
   }
 
   private SubmitCompleteHandler formSubmitCompleteHandler = new SubmitCompleteHandler() {
@@ -126,6 +125,7 @@ public class DocumentEditPresenter {
     view.setHeader("Uploading new document.");
     view.setUploadPanelVisible(true);
     view.setDeletePanelVisible(false);
+    view.setHiddenFieldsForCreate();
     view.initializeForm(dataService.authToken(), AwConstants.getDocumentCreateUrl());
   }
   
@@ -145,6 +145,7 @@ public class DocumentEditPresenter {
         view.setHeader("Editing " + result.getDocumentName());
         view.setUploadPanelVisible(false);
         view.setDeletePanelVisible(true);
+        view.setHiddenFieldsForEdit();
         view.initializeForm(dataService.authToken(), AwConstants.getDocumentUpdateUrl());
       }
     });  

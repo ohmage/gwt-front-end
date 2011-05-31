@@ -72,7 +72,6 @@ public class DocumentEditView extends Composite {
   private List<String> originalClassUrns = new ArrayList<String>();
   private boolean formIsInitialized = false;
   
-  
   public DocumentEditView() {
     initWidget(uiBinder.createAndBindUi(this));
     
@@ -126,14 +125,35 @@ public class DocumentEditView extends Composite {
   public boolean formIsInitialized() {
     return this.formIsInitialized;
   }
-
-  public void prepareFormForSubmit() {
-    Collection<String> campaignsToAdd = getCampaignsToAdd();
-    campaignsToAddHiddenField.setValue(serializeCollectionAsReaders(campaignsToAdd));
-    //campaignsToAddHiddenField.setValue(serializeList(getCampaignsToAdd()));
+  
+  public void prepareFormForSubmit() {    
+    // copy values that have changed (or all values in case of create) into hidden fields  
+    campaignsToAddHiddenField.setValue(serializeCollectionAsReaders(getCampaignsToAdd()));
     campaignsToRemoveHiddenField.setValue(serializeList(getCampaignsToRemove()));
-    classesToAddHiddenField.setValue(serializeList(getClassesToAdd()));
+    classesToAddHiddenField.setValue(serializeCollectionAsReaders(getClassesToAdd()));
     classesToRemoveHiddenField.setValue(serializeList(getClassesToRemove()));
+    // FIXME: the add methods above serialize all as readers right now - should extend gui
+    //   to let user add with any role
+    
+    // disable empty fields to avoid api errors
+    if (campaignsToAddHiddenField.getValue().isEmpty()) campaignsToAddHiddenField.getElement().removeAttribute("name");
+    if (campaignsToRemoveHiddenField.getValue().isEmpty()) campaignsToRemoveHiddenField.getElement().removeAttribute("name");
+    if (classesToAddHiddenField.getValue().isEmpty()) classesToAddHiddenField.getElement().removeAttribute("name");
+    if (classesToRemoveHiddenField.getValue().isEmpty()) classesToRemoveHiddenField.getElement().removeAttribute("name");
+  }
+  
+  public void setHiddenFieldsForCreate() {
+    campaignsToAddHiddenField.setName("document_campaign_role_list");
+    campaignsToRemoveHiddenField.getElement().removeAttribute("name");
+    classesToAddHiddenField.setName("document_class_role_list");
+    classesToRemoveHiddenField.getElement().removeAttribute("name");
+  }
+  
+  public void setHiddenFieldsForEdit() {
+    campaignsToAddHiddenField.setName("campaign_role_list_add");
+    campaignsToRemoveHiddenField.setName("campaign_role_list_remove");
+    classesToAddHiddenField.setName("class_role_list_add");
+    classesToRemoveHiddenField.setName("class_role_list_remove");
   }
   
   private String serializeCollectionAsReaders(Collection<String> items) {
