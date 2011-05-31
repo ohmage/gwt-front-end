@@ -115,6 +115,7 @@
 			  <g:HTMLPanel addStyleNames='{style.container}'>
 				  <w:MessageWidget ui:field='messageWidget' />
 				  <g:Hidden ui:field='authTokenHiddenField' name='auth_token' />
+				  <g:Hidden ui:field='clientHiddenField' name='client' />
 				  <g:Hidden ui:field='documentIdHiddenField' name='document_id' />
 				  <g:HTMLPanel ui:field='fileUploadPanel' addStyleNames='{style.detailRow}'>
 	          <g:InlineLabel addStyleNames='{style.detailLabel}'>Choose File:</g:InlineLabel>

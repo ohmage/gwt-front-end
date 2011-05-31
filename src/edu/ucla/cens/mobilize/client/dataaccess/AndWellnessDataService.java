@@ -793,6 +793,7 @@ public class AndWellnessDataService implements DataService {
       final AsyncCallback<List<DocumentInfo>> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     params.authToken = this.authToken;
+    params.client = this.client;
     String postParams = params.toString();
     _logger.fine("Fetching document list with params: " + postParams);
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getDocumentReadUrl());
@@ -858,11 +859,12 @@ public class AndWellnessDataService implements DataService {
     Map<String, String> params = new HashMap<String, String>();
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     params.put("auth_token", this.authToken);
+    params.put("client", this.client);
     params.put("document_id", documentId);
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Attempting to delete campaign with parameters: " + postParams);
     // make the request
-    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getCampaignDeleteUrl());
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getDocumentDeleteUrl());
     try {
       requestBuilder.sendRequest(postParams, new RequestCallback() {
         @Override

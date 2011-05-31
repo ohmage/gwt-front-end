@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -27,6 +29,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
@@ -48,6 +51,7 @@ public class DocumentEditView extends Composite {
   @UiField FormPanel formPanel;  
   @UiField MessageWidget messageWidget;
   @UiField Hidden authTokenHiddenField;
+  @UiField Hidden clientHiddenField;
   @UiField Hidden documentIdHiddenField;
   @UiField HTMLPanel fileUploadPanel;
   @UiField FileUpload fileUploadInput;
@@ -78,9 +82,19 @@ public class DocumentEditView extends Composite {
     privacyListBox.addItem(Privacy.PRIVATE.toUserFriendlyString(), Privacy.PRIVATE.toServerString());
     privacyListBox.addItem(Privacy.SHARED.toUserFriendlyString(), Privacy.SHARED.toServerString());
     
-    campaignsListWidget.addItem("test1", "test1");
-    campaignsListWidget.addItem("test1", "test2");
-    campaignsListWidget.addItem("test3", "test3");
+    fileUploadInput.addChangeHandler(new ChangeHandler() {
+
+      @Override
+      public void onChange(ChangeEvent event) {
+        // Prefill document name form field with file name when user selects file
+        String path = fileUploadInput.getFilename();
+        String sep = path.contains("/") ? "/" : "\\";
+        String file = (path.length() > path.lastIndexOf(sep)) ? path.substring(path.lastIndexOf(sep)) : path;
+        documentNameTextBox.setValue(file);
+      }
+    });
+    
+    
   }
   
   // serialize list into format expected by server in form submission
@@ -116,6 +130,7 @@ public class DocumentEditView extends Composite {
   
   public void initializeForm(String authToken, String serverLocation) {
     this.authTokenHiddenField.setValue(authToken);
+    this.clientHiddenField.setValue(AwConstants.apiClientString);
     this.formPanel.setAction(serverLocation);
     this.formPanel.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
     this.formPanel.setMethod(FormPanel.METHOD_POST);
@@ -144,9 +159,10 @@ public class DocumentEditView extends Composite {
   
   public void setHiddenFieldsForCreate() {
     campaignsToAddHiddenField.setName("document_campaign_role_list");
-    campaignsToRemoveHiddenField.getElement().removeAttribute("name");
+    campaignsToRemoveHiddenField.getElement().removeAttribute("name"); // disabled
     classesToAddHiddenField.setName("document_class_role_list");
-    classesToRemoveHiddenField.getElement().removeAttribute("name");
+    classesToRemoveHiddenField.getElement().removeAttribute("name"); // disabled
+    fileUploadInput.setName("document"); // only makes sense on create
   }
   
   public void setHiddenFieldsForEdit() {
@@ -154,8 +170,11 @@ public class DocumentEditView extends Composite {
     campaignsToRemoveHiddenField.setName("campaign_role_list_remove");
     classesToAddHiddenField.setName("class_role_list_add");
     classesToRemoveHiddenField.setName("class_role_list_remove");
+    fileUploadInput.getElement().removeAttribute("name"); // disabled
   }
   
+  // TODO: Just makes everyone a reader for now. Gui should be extended to 
+  // allow user to choose role when they add class/campaign
   private String serializeCollectionAsReaders(Collection<String> items) {
     if (items == null || items.isEmpty()) return "";
     StringBuilder sb = new StringBuilder();

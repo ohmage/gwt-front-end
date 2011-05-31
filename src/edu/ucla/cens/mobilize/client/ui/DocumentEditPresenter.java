@@ -25,7 +25,6 @@ public class DocumentEditPresenter {
   private EventBus eventBus;
   
   private Logger _logger = Logger.getLogger(DocumentEditPresenter.class.getName());
-  private boolean isCreate = true;
   
   public DocumentEditPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
     this.userInfo = userInfo;
@@ -120,7 +119,6 @@ public class DocumentEditPresenter {
   }
   
   public void initFormForCreate() {
-    this.isCreate  = true;
     view.clearFormFields();
     view.setHeader("Uploading new document.");
     view.setUploadPanelVisible(true);
@@ -130,7 +128,6 @@ public class DocumentEditPresenter {
   }
   
   public void fetchDocumentAndInitFormForEdit(String documentId) {
-    this.isCreate = false;
     this.dataService.fetchDocumentDetail(documentId, new AsyncCallback<DocumentInfo>() {
 
       @Override
