@@ -3,6 +3,8 @@ package edu.ucla.cens.mobilize.client.ui;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -97,6 +99,17 @@ public class DocumentEditPresenter {
     });
     
     this.view.addSubmitCompleteHandler(formSubmitCompleteHandler);
+    
+    this.view.getFileUploadInput().addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        // Prefill document name form field with file name when user selects file
+        String path = view.getFileName();
+        String sep = path.contains("/") ? "/" : "\\";
+        String file = (path.length() > path.lastIndexOf(sep)) ? path.substring(path.lastIndexOf(sep) + 1) : path;
+        view.setDocumentName(file);        
+      }
+    });
   }
 
   private SubmitCompleteHandler formSubmitCompleteHandler = new SubmitCompleteHandler() {

@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -81,20 +80,6 @@ public class DocumentEditView extends Composite {
     
     privacyListBox.addItem(Privacy.PRIVATE.toUserFriendlyString(), Privacy.PRIVATE.toServerString());
     privacyListBox.addItem(Privacy.SHARED.toUserFriendlyString(), Privacy.SHARED.toServerString());
-    
-    fileUploadInput.addChangeHandler(new ChangeHandler() {
-
-      @Override
-      public void onChange(ChangeEvent event) {
-        // Prefill document name form field with file name when user selects file
-        String path = fileUploadInput.getFilename();
-        String sep = path.contains("/") ? "/" : "\\";
-        String file = (path.length() > path.lastIndexOf(sep)) ? path.substring(path.lastIndexOf(sep)) : path;
-        documentNameTextBox.setValue(file);
-      }
-    });
-    
-    
   }
   
   // serialize list into format expected by server in form submission
@@ -126,6 +111,10 @@ public class DocumentEditView extends Composite {
   
   public String getDocumentName() {
     return documentNameTextBox.getText();
+  }
+  
+  public String getFileName() {
+    return fileUploadInput.getFilename();
   }
   
   public void initializeForm(String authToken, String serverLocation) {
@@ -238,6 +227,10 @@ public class DocumentEditView extends Composite {
     }
   }
   
+  public void setDocumentName(String documentName) {
+    documentNameTextBox.setText(documentName);
+  }
+  
   public void showCampaignChoices(final Map<String, String> campaignUrnToCampaignNameMap) {
     if (campaignUrnToCampaignNameMap == null) return;
     final MultiSelectDialog campaignChooserDialog = new MultiSelectDialog();
@@ -341,7 +334,11 @@ public class DocumentEditView extends Composite {
   }
 
   public void addSubmitCompleteHandler(SubmitCompleteHandler onSubmitComplete) {
-    this.formPanel.addSubmitCompleteHandler(onSubmitComplete);    
+    formPanel.addSubmitCompleteHandler(onSubmitComplete);    
+  }
+  
+  public HasChangeHandlers getFileUploadInput() {
+    return fileUploadInput;
   }
   
   /******* END OF METHODS THAT RETURN GUI ELEMENTS FOR EVENT HANDLING *****/

@@ -51,6 +51,11 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     // hide any leftover notifications
     this.view.hideMsg();
     
+    // display any new notifications
+    if (userInfo.hasInfoMessage()) this.view.showMsg(userInfo.getInfoMessage());
+    if (userInfo.hasErrorMessage()) this.view.showError(userInfo.getErrorMessage());
+    userInfo.clearMessages();
+    
     // url param overrides user permission 
     // (for testing. permissions are still enforced on server side) 
     if (params.containsKey("canedit")) {

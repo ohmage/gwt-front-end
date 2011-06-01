@@ -54,6 +54,11 @@ public class DocumentPresenter implements Presenter {
     // hide any leftover notifications
     this.view.hideMsg();
     
+    // display any new notifications
+    if (userInfo.hasInfoMessage()) this.view.showMsg(userInfo.getInfoMessage());
+    if (userInfo.hasErrorMessage()) this.view.showError(userInfo.getErrorMessage());
+    userInfo.clearMessages();
+    
     // get subview from url params
     if (params.isEmpty()) {
       this.fetchAndShowAllDocuments();
@@ -66,8 +71,9 @@ public class DocumentPresenter implements Presenter {
       // anything after first id is ignored
       this.fetchDocumentAndShowEditForm(params.get("id").get(0));
     } else {
-      // unrecognized view - do nothing
-      // TODO: log?
+      // unrecognized view - default to list view
+      _logger.finer("Unrecognized params");
+      History.newItem(HistoryTokens.documentList());
     }    
   }
 

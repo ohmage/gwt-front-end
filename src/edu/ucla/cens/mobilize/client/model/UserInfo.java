@@ -43,7 +43,6 @@ public class UserInfo {
   
   /******** MESSAGING ********/
   
-  
   public boolean hasInfoMessage() { return this.hasUnreadInfoMsg; }
   public boolean hasErrorMessage() { return this.hasUnreadErrorMsg; }
   
