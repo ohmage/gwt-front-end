@@ -67,7 +67,7 @@
       background-image: url('images/bullet_red.png');
     }
     /* action links are all small text with icons */
-    .analyzeLink, .detailsLink, .editLink {
+    .analyzeLink, .detailsLink, .editLink, .exportLink {
     	background-repeat: no-repeat;
       background-position: 2px 50%;
       font-size: 0.8em;
@@ -81,6 +81,9 @@
     }
     .editLink {
       background-image: url('images/page_white_edit_small.png');
+    }
+    .exportLink {
+    	background-image: url('images/page_white_go_small.png');
     }
 	</ui:style>
 	<g:HTMLPanel>

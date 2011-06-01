@@ -26,13 +26,17 @@
    .detailText, .actionLinks {
    	  padding-left: 20px;
     }
+    .exportCsvLink {
+    	background-image: url('images/page_white_go.png');
+    }
     .editButton {
     	background-image: url('images/page_white_edit.png');
+    }
+    .exportCsvLink, .editButton {
     	background-repeat: no-repeat;
-    	background-position: 2px 50%;
-    	float:right;
-    	margin-right: 20px;
-    	padding: 2px 2px 2px 23px;
+      background-position: 2px 50%;
+      margin-right: 20px;
+      padding: 2px 2px 2px 23px;
     }
     td.label {
     	font-weight: bold;
@@ -55,9 +59,11 @@
     	border: solid thin #DDD6A4;
     }
     .sectionHeader {
-    	margin-bottom: 10px;
-    	padding: 20px 0px 6px;
+      background-color: #EAEFF3;
+    	border-bottom: thin solid #DDD;
+    	padding: 15px 0px;
     	text-align: center;
+    	width: 100%;
     }
     .sectionHeaderTitle {
     	font-size: 1.2em;
@@ -86,31 +92,83 @@
     	font-size: 0.9em;
     	padding: 0px 3px;
     }
+    
+    .actionViewXml, .actionDownloadXml, .actionExportCsv, .actionEdit {
+    	color: #238;
+    	cursor: pointer;
+    	padding: 3px 20px;
+    	text-decoration: underline;
+    	background-repeat: no-repeat;
+      background-position: 2px 50%;
+    }
+    .actionEdit {
+    	background-image: url('images/page_white_edit_small.png');
+    }
+    .actionViewXml {
+      background-image: url('images/page_white_magnify_small.png');
+    }
+    .actionDownloadXml {
+    	background-image: url('images/cog_go_small.png');
+    }
+    .actionExportCsv {
+    	background-image: url('images/page_white_go_small.png');
+    }
+    .actionBar {
+    	background-color: #FFF;
+    	border-bottom: solid thin #DDD;
+    	font-size: 0.8em;
+    	margin-bottom: 20px;
+    	padding: 4px 20px;
+    	width: 100%;
+    }
+    .actionLabel {
+    	font-weight: bold;
+    	padding-right: 8px;
+    }
+    
   </ui:style>
   
   <g:HTMLPanel ui:field='container' addStyleNames='{style.container}'>
      <g:VerticalPanel addStyleNames='{style.detailPanel}'>
-     
-       <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
-              <g:HTMLPanel addStyleNames='{style.backLink}'>
-                <g:InlineHyperlink ui:field="backLink2" targetHistoryToken='campaigns'>
-                <!--fixme: go back to last page, may not be list-->
-                  &laquo;&nbsp;Back
-                </g:InlineHyperlink>
-              </g:HTMLPanel>
-          <span class='{style.sectionHeaderTitle}'>Campaign&nbsp;Details</span>
-          <g:InlineHyperlink addStyleNames='{style.editButton}' 
-                       ui:field='editCampaignLink' 
-                       targetHistoryToken='campaigns?v=edit'>
+
+      <g:HorizontalPanel addStyleNames='{style.sectionHeader}'>
+        <g:HTMLPanel addStyleNames='{style.backLink}'>
+            <g:InlineHyperlink ui:field='backlink2' targetHistoryToken='campaigns'>
+            <!--fixme: go back to last page, may not be list-->
+              &laquo;&nbsp;Back
+            </g:InlineHyperlink>
+        </g:HTMLPanel>
+        <g:HTMLPanel addStyleNames='{style.sectionHeaderTitle}'>
+          Campaign&nbsp;Details
+        </g:HTMLPanel>
+      </g:HorizontalPanel>
+
+      <g:HTMLPanel addStyleNames='{style.actionBar}'>
+        <g:InlineLabel addStyleNames='{style.actionLabel}'>Actions:</g:InlineLabel>
+        <g:InlineHyperlink addStyleNames='{style.actionEdit}' 
+		                       ui:field='actionLinkEditCampaign' 
+		                       targetHistoryToken='campaigns?v=edit'>
             Edit&nbsp;Campaign
-          </g:InlineHyperlink>
-       </g:HTMLPanel>
-     
+        </g:InlineHyperlink>
+	     <g:Anchor addStyleNames='{style.actionViewXml}'
+	               ui:field='actionLinkViewXml'>
+	       View&nbsp;Xml&nbsp;Config
+	     </g:Anchor>
+	     <g:Anchor addStyleNames='{style.actionDownloadXml}'
+	               ui:field='actionLinkDownloadXml'>
+	       Download&nbsp;Xml&nbsp;Config
+	     </g:Anchor>
+	     <g:Anchor addStyleNames='{style.actionExportCsv}'
+	               ui:field='actionLinkExportResponses'>
+	       Export&nbsp;Responses&nbsp;(.csv) 
+	     </g:Anchor>  
+      </g:HTMLPanel>      
+
       <g:HTMLPanel>
 	      <table class='{style.detailTable}'>
 	        <tr>
 	          <td class='{style.label}'>
-	            <label>Name:</label>
+	            <label>Campaign Name:</label>
 	          </td>
 	          <td>
 				     <g:InlineLabel ui:field='campaignName'/>
@@ -153,10 +211,10 @@
 	            <label>Xml Config:</label>
 	          </td>
 	          <td>
-		          <g:Anchor ui:field='viewXmlLink' addStyleNames='small-action-link'>
+		          <g:Anchor ui:field='viewXmlInlineLink' addStyleNames='small-action-link'>
 		            View
 		          </g:Anchor>
-		          <g:Anchor ui:field='downloadXmlLink' addStyleNames='small-action-link'>
+		          <g:Anchor ui:field='downloadXmlInlineLink' addStyleNames='small-action-link'>
                 Download
               </g:Anchor>
               <div id="hiddenFormContainer" class="hidden" />

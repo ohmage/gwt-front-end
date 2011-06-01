@@ -3,10 +3,14 @@ package edu.ucla.cens.mobilize.client.ui;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
@@ -41,6 +45,7 @@ public class CampaignList extends Composite {
     String analyzeLink();
     String detailsLink();
     String editLink();
+    String exportLink();
   }
   
   private static CampaignListWidgetUiBinder uiBinder = GWT
@@ -163,7 +168,7 @@ public class CampaignList extends Composite {
   
   private Widget getActionsWidget(CampaignShortInfo campaign) {
     Panel panel = new FlowPanel();
-    String campaignId = campaign.getCampaignId();
+    final String campaignId = campaign.getCampaignId();
     if (campaign.userCanViewDetails()) {
       InlineHyperlink detailsLink = 
         new InlineHyperlink("view", HistoryTokens.campaignDetail(campaignId));
@@ -182,10 +187,23 @@ public class CampaignList extends Composite {
       editLink.setStyleName(style.editLink());
       panel.add(editLink);
     }
-    // TODO: get xml
-    // TODO: export csv
+    if (campaign.userCanAnalyze()) {
+      Anchor exportLink = new Anchor("export");
+      exportLink.setStyleName(style.exportLink());
+      panel.add(exportLink);
+      exportLink.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          exportCsv(campaignId);
+        }
+      });
+    }
     
     return panel.asWidget();
+  }
+  
+  private void exportCsv(String campaignId) {
+    Window.alert("would have exported csv for: " + campaignId);
   }
   
   private String getPrivacyStyle(Privacy privacy) {

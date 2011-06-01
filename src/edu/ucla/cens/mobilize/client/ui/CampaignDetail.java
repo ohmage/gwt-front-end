@@ -46,9 +46,9 @@ public class CampaignDetail extends Composite {
   @UiField VerticalPanel authors;
   @UiField SpanElement runningStateSpan;
   @UiField SpanElement privacySpan;
-  @UiField Hyperlink editCampaignLink;
-  @UiField Anchor viewXmlLink;
-  @UiField Anchor downloadXmlLink;
+  @UiField Hyperlink actionLinkEditCampaign;
+  @UiField Anchor viewXmlInlineLink;
+  @UiField Anchor downloadXmlInlineLink;
   @UiField HTMLPanel container;
   
   public CampaignDetail() {
@@ -100,10 +100,10 @@ public class CampaignDetail extends Composite {
       
       // only authors see the edit link
       if (canEdit) {
-        this.editCampaignLink.setVisible(true);
-        this.editCampaignLink.setTargetHistoryToken(HistoryTokens.campaignEdit(campaign.getCampaignId()));
+        this.actionLinkEditCampaign.setVisible(true);
+        this.actionLinkEditCampaign.setTargetHistoryToken(HistoryTokens.campaignEdit(campaign.getCampaignId()));
       } else {
-        this.editCampaignLink.setVisible(false);
+        this.actionLinkEditCampaign.setVisible(false);
       }
 
       // hidden form with target set to _blank does a post request to fetch
@@ -120,7 +120,7 @@ public class CampaignDetail extends Composite {
       // TODO: username, auth_token, etc also need to go in form fields
       
       // FIXME: display in a popup panel instead of new window
-      this.viewXmlLink.addClickHandler(new ClickHandler() {
+      this.viewXmlInlineLink.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
           fmt.setValue("xml");
@@ -128,7 +128,7 @@ public class CampaignDetail extends Composite {
         }
       });
       
-      this.downloadXmlLink.addClickHandler(new ClickHandler() {
+      this.downloadXmlInlineLink.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
           // when fmt is set to download, server should add content-disposition
