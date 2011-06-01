@@ -31,6 +31,8 @@ input, textarea {
 
 a:link, .small-action-link, .link {
 	color: #238;
+	cursor: pointer;
+	text-decoration: underline;
 }
 
 a:visited {
