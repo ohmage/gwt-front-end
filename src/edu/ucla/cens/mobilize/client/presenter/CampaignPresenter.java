@@ -88,6 +88,10 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     this.view.setPresenter(this);
     // FIXME: better way to connect subview to presenter?
     this.campaignEditPresenter.setView(view.getCampaignEditForm());
+    
+    // TODO: give campaign list a presenter instead
+    this.view.getCampaignList().setDataService(this.dataService);
+    this.view.getCampaignDetail().setDataService(this.dataService);
   }
   
   /************ METHODS TO LOAD DATA AND DISPLAY SUBVIEWS **************/
@@ -178,5 +182,4 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   public void onCampaignCreate() {
     History.newItem("campaigns?v=create");
   }
-
 }

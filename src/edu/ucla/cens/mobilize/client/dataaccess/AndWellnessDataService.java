@@ -694,6 +694,22 @@ public class AndWellnessDataService implements DataService {
     }    
   }
   
+  @Override 
+  public Map<String, String> getSurveyResponseExportParams(String campaignId) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", this.authToken);
+    params.put("client", this.client);
+    params.put("campaign_urn", campaignId);
+    params.put("user_list", AwConstants.specialAllValuesToken);
+    params.put("prompt_id_list", AwConstants.specialAllValuesToken);
+    params.put("output_format", "csv");
+    params.put("column_list", "urn:ohmage:user:id,urn:ohmage:prompt:response");
+    params.put("sort_order", "timestamp,user,survey");
+    params.put("suppress_metadata", "true");
+    return params;
+  }
+  
   @Override
   public void fetchClassList(List<String> classIds, final AsyncCallback<List<ClassInfo>> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
@@ -734,6 +750,7 @@ public class AndWellnessDataService implements DataService {
   // FIXME: get cached data instead of refetching every time
   @Override
   public void fetchClassDetail(final String classId, final AsyncCallback<ClassInfo> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     List<String> classIdList = new ArrayList<String>();
     classIdList.add(classId);
     fetchClassList(classIdList, new AsyncCallback<List<ClassInfo>>() {

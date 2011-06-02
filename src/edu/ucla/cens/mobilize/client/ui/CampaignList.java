@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.ui;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -9,6 +10,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
@@ -30,7 +32,9 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
+import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
+import edu.ucla.cens.mobilize.client.view.CampaignView.Presenter;
 
 public class CampaignList extends Composite {
 
@@ -56,6 +60,7 @@ public class CampaignList extends Composite {
   private static CampaignListWidgetUiBinder uiBinder = GWT
       .create(CampaignListWidgetUiBinder.class);
 
+  @UiTemplate("CampaignList.ui.xml")
   interface CampaignListWidgetUiBinder extends
       UiBinder<Widget, CampaignList> {
   }
@@ -72,9 +77,15 @@ public class CampaignList extends Composite {
   // table columns 
   private enum Column { NAME, RUNNING_STATE, PRIVACY, ACTIONS };
   
+  private DataService dataService;
+  
   public CampaignList() {
     initWidget(uiBinder.createAndBindUi(this));
     initComponents();
+  }
+
+  public void setDataService(DataService dataService) {
+    this.dataService = dataService;
   }
   
   private void initComponents() {
@@ -209,50 +220,20 @@ public class CampaignList extends Composite {
   }
   
   private void exportCsv(String campaignId) {
-    final FormPanel exportForm = new FormPanel("_blank"); // target="_blank" to open new window
+    assert dataService != null : "DataService is null. Did you forget to call CampaignList.setDataService?";
+    FormPanel exportForm = new FormPanel("_blank"); // target="_blank" to open new window
     exportForm.setAction(AwConstants.getSurveyResponseReadUrl()); // FIXME
     exportForm.setMethod(FormPanel.METHOD_POST);
+    FlowPanel innerContainer = new FlowPanel();
     
-    final Hidden authToken = new Hidden();
-    authToken.setName("auth_token");
-    authToken.setValue(Cookies.getCookie(AwConstants.cookieAuthToken));
-    final Hidden client = new Hidden();
-    client.setName("client");
-    client.setValue(AwConstants.apiClientString);
-    final Hidden campaignUrn = new Hidden();
-    campaignUrn.setName("campaign_urn");
-    campaignUrn.setValue(campaignId);
-    final Hidden userList = new Hidden();
-    userList.setName("user_list");
-    userList.setValue(AwConstants.specialAllValuesToken);
-    final Hidden promptIdList = new Hidden();
-    promptIdList.setName("prompt_id_list");
-    promptIdList.setValue(AwConstants.specialAllValuesToken);
-    final Hidden outputFormat = new Hidden();
-    outputFormat.setName("output_format");
-    outputFormat.setValue("csv");
-    final Hidden columnList = new Hidden();
-    columnList.setName("column_list");
-    columnList.setValue("urn:ohmage:user:id,urn:ohmage:prompt:response");
-    Hidden sortOrder = new Hidden();
-    sortOrder.setName("sort_order");
-    sortOrder.setValue("timestamp,user,survey");
-    Hidden suppressMetadata = new Hidden();
-    suppressMetadata.setName("suppress_metadata");
-    suppressMetadata.setValue("true");
-    
-    FlowPanel panel = new FlowPanel();
-    panel.add(authToken);
-    panel.add(client);
-    panel.add(campaignUrn);
-    panel.add(userList);
-    panel.add(promptIdList);
-    panel.add(outputFormat);
-    panel.add(columnList);
-    panel.add(sortOrder);
-    panel.add(suppressMetadata);
-    exportForm.add(panel);
-    
+    Map<String, String> params = dataService.getSurveyResponseExportParams(campaignId);
+    for (String paramName : params.keySet()) {
+      Hidden field = new Hidden();
+      field.setName(paramName);
+      field.setValue(params.get(paramName));
+      innerContainer.add(field);
+    }
+    exportForm.add(innerContainer);
     mainPanel.add(exportForm);
     exportForm.submit();
     exportForm.removeFromParent();

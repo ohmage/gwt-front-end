@@ -1,5 +1,7 @@
 package edu.ucla.cens.mobilize.client.ui;
 
+import java.util.Map;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -9,6 +11,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -18,9 +21,11 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
+import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 
 public class CampaignDetail extends Composite {
@@ -37,7 +42,7 @@ public class CampaignDetail extends Composite {
     String privacyShared();
     String privacyPrivate();
   }
-  
+
   @UiField CampaignDetailStyle style;
   @UiField InlineLabel campaignName;
   @UiField InlineLabel campaignUrn;
@@ -47,14 +52,51 @@ public class CampaignDetail extends Composite {
   @UiField SpanElement runningStateSpan;
   @UiField SpanElement privacySpan;
   @UiField Hyperlink actionLinkEditCampaign;
+  @UiField Anchor actionLinkExportResponses;
   @UiField Anchor viewXmlInlineLink;
   @UiField Anchor downloadXmlInlineLink;
   @UiField HTMLPanel container;
+
+  DataService dataService; // FIXME: use presenter instead
   
   public CampaignDetail() {
     initWidget(uiBinder.createAndBindUi(this));
+    bind();
   }
- 
+
+  public void setDataService(DataService dataService) {
+    this.dataService = dataService;
+  }
+  
+  private void bind() {
+    this.actionLinkExportResponses.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        exportCsv(campaignUrn.getText());
+      }
+    });
+  }
+  
+  private void exportCsv(String campaignId) {
+    assert dataService != null : "DataService is null. Did you forget to call CampaignDetail.setDataService?";
+    FormPanel exportForm = new FormPanel("_blank"); // target="_blank" to open new window
+    exportForm.setAction(AwConstants.getSurveyResponseReadUrl()); // FIXME
+    exportForm.setMethod(FormPanel.METHOD_POST);
+    FlowPanel innerContainer = new FlowPanel();
+    
+    Map<String, String> params = dataService.getSurveyResponseExportParams(campaignId);
+    for (String paramName : params.keySet()) {
+      Hidden field = new Hidden();
+      field.setName(paramName);
+      field.setValue(params.get(paramName));
+      innerContainer.add(field);
+    }
+    exportForm.add(innerContainer);
+    this.container.add(exportForm);
+    exportForm.submit();
+    exportForm.removeFromParent();
+  }
+  
   public void setCampaign(CampaignDetailedInfo campaign, boolean canEdit) {
     if (campaign != null) {
       // copy info from data obj into fields

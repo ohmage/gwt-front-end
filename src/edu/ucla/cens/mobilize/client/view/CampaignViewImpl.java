@@ -231,4 +231,13 @@ public class CampaignViewImpl extends Composite implements CampaignView {
     return this.campaignEdit;
   }
 
+  @Override
+  public CampaignList getCampaignList() {
+    return this.campaignList;
+  }
+  
+  @Override
+  public CampaignDetail getCampaignDetail() {
+    return this.campaignDetail;
+  }
 }

@@ -102,6 +102,8 @@ public interface DataService {
                              int surveyKey,
                              final AsyncCallback<String> callback);
   
+  Map<String, String> getSurveyResponseExportParams(String campaignId);
+  
   void fetchClassList(List<String> classIds,
                       final AsyncCallback<List<ClassInfo>> callback);
   
