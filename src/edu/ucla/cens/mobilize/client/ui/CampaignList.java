@@ -9,11 +9,15 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.ListBox;
@@ -21,6 +25,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
@@ -56,6 +61,7 @@ public class CampaignList extends Composite {
   }
   
   // declare uibinder fields
+  @UiField HTMLPanel mainPanel;
   @UiField ListBox stateListBox;
   @UiField ListBox userRoleListBox;
   @UiField DateBox fromDateBox;
@@ -203,7 +209,53 @@ public class CampaignList extends Composite {
   }
   
   private void exportCsv(String campaignId) {
-    Window.alert("would have exported csv for: " + campaignId);
+    final FormPanel exportForm = new FormPanel("_blank"); // target="_blank" to open new window
+    exportForm.setAction(AwConstants.getSurveyResponseReadUrl()); // FIXME
+    exportForm.setMethod(FormPanel.METHOD_POST);
+    
+    final Hidden authToken = new Hidden();
+    authToken.setName("auth_token");
+    authToken.setValue(Cookies.getCookie(AwConstants.cookieAuthToken));
+    final Hidden client = new Hidden();
+    client.setName("client");
+    client.setValue(AwConstants.apiClientString);
+    final Hidden campaignUrn = new Hidden();
+    campaignUrn.setName("campaign_urn");
+    campaignUrn.setValue(campaignId);
+    final Hidden userList = new Hidden();
+    userList.setName("user_list");
+    userList.setValue(AwConstants.specialAllValuesToken);
+    final Hidden promptIdList = new Hidden();
+    promptIdList.setName("prompt_id_list");
+    promptIdList.setValue(AwConstants.specialAllValuesToken);
+    final Hidden outputFormat = new Hidden();
+    outputFormat.setName("output_format");
+    outputFormat.setValue("csv");
+    final Hidden columnList = new Hidden();
+    columnList.setName("column_list");
+    columnList.setValue("urn:ohmage:user:id,urn:ohmage:prompt:response");
+    Hidden sortOrder = new Hidden();
+    sortOrder.setName("sort_order");
+    sortOrder.setValue("timestamp,user,survey");
+    Hidden suppressMetadata = new Hidden();
+    suppressMetadata.setName("suppress_metadata");
+    suppressMetadata.setValue("true");
+    
+    FlowPanel panel = new FlowPanel();
+    panel.add(authToken);
+    panel.add(client);
+    panel.add(campaignUrn);
+    panel.add(userList);
+    panel.add(promptIdList);
+    panel.add(outputFormat);
+    panel.add(columnList);
+    panel.add(sortOrder);
+    panel.add(suppressMetadata);
+    exportForm.add(panel);
+    
+    mainPanel.add(exportForm);
+    exportForm.submit();
+    exportForm.removeFromParent();
   }
   
   private String getPrivacyStyle(Privacy privacy) {

@@ -86,7 +86,7 @@
     	background-image: url('images/page_white_go_small.png');
     }
 	</ui:style>
-	<g:HTMLPanel>
+	<g:HTMLPanel ui:field='mainPanel'>
 	 <div class="{style.filterContainer}">
 	   <label>State:</label>
 	   <g:ListBox ui:field="stateListBox" visibleItemCount="1" />
@@ -101,5 +101,6 @@
 	 <div class="{style.listContainer}">
     <g:Grid ui:field='campaignGrid'></g:Grid>
 	 </div>
+	 
 	</g:HTMLPanel>
 </ui:UiBinder> 
