@@ -16,10 +16,14 @@
 		border: none;
 	}
 	.campaignName {
+		overflow: hidden;
 		padding-right: 20px;
+		width: 200px;
 	}
 	.surveyName {
+		overflow: hidden;
 		padding-right: 20px;
+		width: 200px;
   }
   .responseWidgetContainer { /* the whole thing, including checkbox */
     border-top: solid thin #CCC;
