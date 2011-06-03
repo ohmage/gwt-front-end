@@ -1,5 +1,10 @@
 package edu.ucla.cens.mobilize.client.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.ucla.cens.mobilize.client.utils.MapUtils;
+
 /**
  * Helper class for keeping track of history tokens.
  * 
@@ -52,6 +57,22 @@ public class HistoryTokens {
 
   public static String documentCreate() {
     return "documents?v=create";
+  }
+  
+  public static String responseList() {
+    return "responses";
+  }
+  
+  public static String responseList(String participant,
+                                    String campaign,
+                                    String survey,
+                                    Privacy privacy) {
+    Map<String, String> params = new HashMap<String, String>();
+    if (participant != null) params.put("uid", participant);
+    if (campaign != null) params.put("cid", campaign);
+    if (survey != null) params.put("sid", survey);
+    if (privacy != null) params.put("privacy", privacy.toServerString());
+    return params.isEmpty() ? "responses" : "responses?" + MapUtils.translateToParameters(params);
   }
   
 }

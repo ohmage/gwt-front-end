@@ -21,6 +21,7 @@ public class DocumentReadParams extends RequestParams {
     assert this.client != null : "client is required";
     Map<String, String> params = new HashMap<String, String>();
     params.put("auth_token", this.authToken);
+    params.put("client", this.client);
     params.put("personal_documents", this.includePersonalDocuments ? "true" : "false");
     if (campaignUrnList != null && !campaignUrnList.isEmpty()) {
       params.put("campaign_urn_list", CollectionUtils.join(this.campaignUrnList, ","));

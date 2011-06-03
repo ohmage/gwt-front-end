@@ -15,11 +15,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
@@ -57,10 +59,11 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       dataService.fetchClassList(userClassIds, new AsyncCallback<List<ClassInfo>>() {
         @Override
         public void onFailure(Throwable caught) {
-          participants.clear();
-          participants.add(userInfo.getUserName());
           _logger.fine("There was a problem loading participants for filter. " + 
                        "Defaulting to show only logged in user.");
+          participants.clear();
+          participants.add(userInfo.getUserName());
+          view.setParticipantList(participants);
         }
 
         @Override
@@ -118,9 +121,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   public void onFilterChange() {
     String userName = this.view.getSelectedParticipant();
     String campaignId = this.view.getSelectedCampaign();
-    String surveyId = this.view.getSelectedSurvey();
+    String surveyName = this.view.getSelectedSurvey();
     Privacy privacy = this.view.getSelectedPrivacyState();
-    fetchAndShowResponses(userName, campaignId, surveyId, privacy);
+    History.newItem(HistoryTokens.responseList(userName, campaignId, surveyName, privacy));
   }
   
   // view must be set before calling this

@@ -34,7 +34,7 @@ public class AwConstants {
     // API Endpoints
     // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/AndWellness_Read_API_2.2
     private final static String AUTHORIZATION   = "user/auth_token";
-    private final static String USER_READ       = "user/read";
+    private final static String USER_READ       = "user_info/read";
     private final static String USER_CHANGE_PASSWORD = "user/change_password";
     private final static String CAMPAIGN_READ   = "campaign/read";
     private final static String CAMPAIGN_CREATE = "campaign/create";

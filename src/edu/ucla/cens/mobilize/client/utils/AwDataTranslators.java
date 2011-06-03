@@ -30,9 +30,7 @@ import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
-import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
-import edu.ucla.cens.mobilize.client.model.SurveyInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
@@ -160,7 +158,7 @@ public class AwDataTranslators {
     }
     
     // Expects json like:
-    // {"result":"success","data":{"user.adv.supa":{"classes":{"urn:class:ca:lausd:BoyleHeights_HS:CS102:Spring:2011":"BH_HS_CS102_Spring_2011","urn:class:ca:lausd:Addams_HS:CS101:Fall:2011":"Addams_HS_CS101_Fall_2011"},"permissions":{"cancreate":true},"campaign_roles":["participant","author","analyst","supervisor"],"class_roles":["privileged"]}}}
+    // {"result":"success","data":{"user.bh.pa":{"classes":{"urn:class:ca:lausd:BoyleHeights_HS:CS102:Spring:2011":"BH_HS_CS102_Spring_2011"},"permissions":{"can_create_campaigns":true},"campaign_roles":["participant","author","analyst"],"campaigns":{"urn:campaign:ca:lausd:BoyleHeights_HS:CS102:Spring:2011:Snack":"Snack"},"class_roles":["restricted"]}}}
     public static List<UserInfo> translateUserReadQueryJSONToUserInfoList(String userReadQueryResponseJSON) {
       List<UserInfo> users = new ArrayList<UserInfo>();
       

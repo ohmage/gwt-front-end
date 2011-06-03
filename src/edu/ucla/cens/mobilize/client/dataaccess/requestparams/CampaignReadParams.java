@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.dataaccess.requestparams;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,13 +15,13 @@ public class CampaignReadParams {
   public String authToken;
   public String client;
   public OutputFormat outputFormat;
-  public List<String> campaignUrns_opt;
+  public List<String> campaignUrns_opt = new ArrayList<String>();
   public Date startDate_opt; 
   public Date endDate_opt; 
   public Privacy privacyState_opt;
   public RunningState runningState_opt; 
   public RoleCampaign userRole_opt;
-  public List<String> classUrns_opt;
+  public List<String> classUrns_opt = new ArrayList<String>();
 
   public enum OutputFormat { SHORT, LONG }
   
@@ -34,7 +35,7 @@ public class CampaignReadParams {
     params.put("client", client);
     params.put("output_format", outputFormat.toString().toLowerCase());
     // optional params
-    if (campaignUrns_opt != null) {
+    if (campaignUrns_opt != null && !campaignUrns_opt.isEmpty()) {
       params.put("campaign_urn_list", CollectionUtils.join(campaignUrns_opt, ","));
     }
     if (startDate_opt != null) {
@@ -52,7 +53,7 @@ public class CampaignReadParams {
     if (userRole_opt != null) {
       params.put("user_role", userRole_opt.toString().toLowerCase());
     }
-    if (classUrns_opt != null) {
+    if (classUrns_opt != null && !classUrns_opt.isEmpty()) {
       params.put("class_urn_list", CollectionUtils.join(classUrns_opt, ","));
     }
     return MapUtils.translateToParameters(params);

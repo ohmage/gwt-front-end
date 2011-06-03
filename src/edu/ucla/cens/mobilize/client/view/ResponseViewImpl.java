@@ -186,6 +186,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void setCampaignChoices(Map<String, String> campaignIdToNameMap) {
     campaignFilter.clear();
+    campaignFilter.addItem("All", "");
     for (String campaignId : campaignIdToNameMap.keySet()) {
       // name is visible string, id is value
       campaignFilter.addItem(campaignIdToNameMap.get(campaignId), campaignId);
@@ -195,6 +196,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void setSurveyList(List<String> surveyNames) {
     surveyFilter.clear();
+    surveyFilter.addItem("All", "");
     for (String name : surveyNames) {
       surveyFilter.addItem(name);
     }
@@ -205,9 +207,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     for (int i = 0; i < participantFilter.getItemCount(); i++) {
       if (participantFilter.getItemText(i) == participantName) {
         participantFilter.setItemSelected(i, true);
-        break;
+        return;
       }
     }
+    // if not found, select first item ("All")
+    participantFilter.setItemSelected(0, true); 
   }
 
   @Override
@@ -215,9 +219,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     for (int i = 0; i < campaignFilter.getItemCount(); i++) {
       if (campaignFilter.getItemText(i) == campaignName) {
         campaignFilter.setItemSelected(i, true);
-        break;
+        return;
       }
     }
+    // if not found, select first item ("All")
+    campaignFilter.setItemSelected(0, true);
   }
 
   @Override
@@ -225,9 +231,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     for (int i = 0; i < surveyFilter.getItemCount(); i++) {
       if (surveyFilter.getItemText(i) == surveyName) {
         surveyFilter.setItemSelected(i, true);
-        break;
+        return;
       }
     }
+    // if not found, select first item ("All")
+    surveyFilter.setItemSelected(0, true);
   }
   
   @Override
@@ -299,8 +307,16 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   @Override
   public String getSelectedParticipant() {
-    int index = this.participantFilter.getSelectedIndex();
-    return (index > -1) ? this.participantFilter.getValue(index) : "";
+    String selectedUser = null;
+    if (this.singleParticipantLabel.isVisible()) {
+      // when only one user is visible, that is the selected user
+      selectedUser = this.singleParticipantLabel.getText();
+    } else { 
+      // otherwise, get selection from dropdown
+      int index = this.participantFilter.getSelectedIndex();
+      selectedUser = (index > -1) ? this.participantFilter.getValue(index) : "";
+    }
+    return selectedUser;
   }
 
   @Override

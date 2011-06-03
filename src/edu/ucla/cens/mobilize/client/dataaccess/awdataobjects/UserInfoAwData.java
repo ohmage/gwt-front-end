@@ -25,7 +25,7 @@ public class UserInfoAwData extends JavaScriptObject {
 
   
   public final native boolean getCanCreateFlag() /*-{ 
-    return (this.permissions != undefined) ? this.permissions.cancreate : false; 
+    return (this.permissions != undefined) ? this.permissions.can_create_campaigns : false; 
   }-*/;
   
   public final Map<String, String> getClasses() {

@@ -337,6 +337,7 @@ public class AndWellnessDataService implements DataService {
     Map<String, String> params = new HashMap<String, String>();
     assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
     params.put("auth_token", this.authToken);
+    params.put("client", this.client);
     params.put("user_list", username); // FIXME: allow more than one?
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Attempting to fetch user info with parameters: " + postParams);
@@ -715,6 +716,7 @@ public class AndWellnessDataService implements DataService {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     Map<String, String> params = new HashMap<String, String>();
     params.put("auth_token", this.authToken);
+    params.put("client", this.client);
     params.put("class_urn_list", CollectionUtils.join(classIds, ","));
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Fetching class list with params: " + postParams);
