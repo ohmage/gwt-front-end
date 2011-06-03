@@ -130,8 +130,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
 
           @Override
           public void onSuccess(CampaignDetailedInfo result) {
-            boolean userCanEditCampaign = result.canEdit(userInfo.getUserName());
-            view.setCampaignDetail(result, userCanEditCampaign);
+            view.setCampaignDetail(result);
             // TODO: get plots dynamically (different for different roles)
             view.addPlot("images/histogram_small.png");
             view.addPlot("images/map_small.gif");

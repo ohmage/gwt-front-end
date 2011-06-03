@@ -23,6 +23,7 @@ public class UserInfoAwData extends JavaScriptObject {
   // author, participant, supervisor, analyst
   private final native JsArrayString getCampaignRolesAsJsArray() /*-{ return this.campaign_roles }-*/;
 
+  
   public final native boolean getCanCreateFlag() /*-{ 
     return (this.permissions != undefined) ? this.permissions.cancreate : false; 
   }-*/;
@@ -46,6 +47,26 @@ public class UserInfoAwData extends JavaScriptObject {
   public final native String getClassByKey(String classKey) /*-{
     return this.classes[classKey];
   }-*/;
+
+  public final Map<String, String> getCampaigns() {
+    Map<String, String> campaignNameToIdMap = new HashMap<String, String>();
+    JsArrayString campaignKeys = getCampaignKeys();
+    for (int i = 0; i < campaignKeys.length(); i++) {
+      String campaignKey = campaignKeys.get(i);
+      campaignNameToIdMap.put(campaignKey, getCampaignByKey(campaignKey));
+    }
+    return campaignNameToIdMap;
+  }
+  
+  public final native JsArrayString getCampaignKeys() /*-{
+    var keys = [];
+    for (var key in this.campaigns) keys.push(key);
+    return keys;
+  }-*/;
+  
+  public final native String getCampaignByKey(String campaignKey) /*-{
+    return this.campaigns[campaignKey];
+  }-*/;
   
   public final List<String> getCampaignRoles() {
     JsArrayString toTranslate = getCampaignRolesAsJsArray();
@@ -57,6 +78,18 @@ public class UserInfoAwData extends JavaScriptObject {
         toReturn.add(role);
     }
     
+    return toReturn;
+  }
+  
+  public final List<String> getClassRoles() {
+    JsArrayString toTranslate = getClassRolesAsJsArray();
+    List<String> toReturn = new ArrayList<String>();
+    
+    // Translate the array one by one
+    for (int i = 0; i < toTranslate.length(); ++i) {
+      String role = toTranslate.get(i);
+      toReturn.add(role);
+    }
     return toReturn;
   }
   

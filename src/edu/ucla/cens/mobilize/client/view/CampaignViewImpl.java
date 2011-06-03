@@ -116,8 +116,8 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   }
 
   @Override
-  public void setCampaignDetail(CampaignDetailedInfo campaign, boolean canEdit) {
-    campaignDetail.setCampaign(campaign, canEdit);
+  public void setCampaignDetail(CampaignDetailedInfo campaign) {
+    campaignDetail.setCampaign(campaign);
   }
   
   private void hideAllWidgets() {

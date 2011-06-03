@@ -1,8 +1,10 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -27,7 +29,7 @@ public interface ResponseView extends IsWidget {
   
   // load values in filters
   void setParticipantList(List<String> participantNames);
-  void setCampaignList(List<String> campaignNames);
+  void setCampaignChoices(Map<String, String> campaignIdToNameMap);
   void setSurveyList(List<String> surveyNames);
   
   // set selected filters
@@ -55,7 +57,7 @@ public interface ResponseView extends IsWidget {
   List<HasClickHandlers> getShareButtons();
   List<HasClickHandlers> getMakePrivateButtons();
   List<HasClickHandlers> getDeleteButtons();
-  List<HasValueChangeHandlers<String>> getFilters();
   List<String> getSelectedSurveyResponseKeys();
+  HasChangeHandlers getCampaignFilter();
   
 }

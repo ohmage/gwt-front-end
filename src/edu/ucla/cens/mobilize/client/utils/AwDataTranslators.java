@@ -16,6 +16,7 @@ import com.google.gwt.xml.client.XMLParser;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;
+import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.common.RoleDocument;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
@@ -185,14 +186,27 @@ public class AwDataTranslators {
           if (userJSONObject == null) throw new Exception("user data field not a valid JSON object");
           UserInfoAwData userDataJSObject = (UserInfoAwData)userJSONObject.getJavaScriptObject();
           boolean canCreateFlag = userDataJSObject.getCanCreateFlag();
+          Map<String, String> campaignIdToNameMap = userDataJSObject.getCampaigns();
           Map<String, String> classIdToNameMap = userDataJSObject.getClasses();
-          List<String> rolesAsStrings = userDataJSObject.getCampaignRoles();
-          List<RoleCampaign> roles = new ArrayList<RoleCampaign>();
-          for (String roleString : rolesAsStrings) {
-            roles.add(RoleCampaign.valueOf(roleString.toUpperCase()));
+          // get roles and translate to enum values          
+          List<String> campaignRolesAsStrings = userDataJSObject.getCampaignRoles();
+          List<RoleCampaign> campaignRoles = new ArrayList<RoleCampaign>();
+          for (String roleString : campaignRolesAsStrings) {
+            campaignRoles.add(RoleCampaign.valueOf(roleString.toUpperCase()));
           }
-          UserInfo userInfo = new UserInfo(userName, canCreateFlag, classIdToNameMap, roles);
+          // privileged flag will be set if user has PRIVILEGED role in any class
+          List<String> classRolesAsStrings = userDataJSObject.getClassRoles();
+          boolean isPrivileged = classRolesAsStrings.contains(RoleClass.PRIVILEGED.toServerString());
+          
+          UserInfo userInfo = new UserInfo();
+          userInfo.setUserName(userName);
+          userInfo.setPrivilegeFlag(isPrivileged);
+          userInfo.setCanCreateFlag(canCreateFlag);
+          userInfo.setCampaigns(campaignIdToNameMap);
+          userInfo.setClasses(classIdToNameMap);
+          userInfo.setCampaignRoles(campaignRoles);
           users.add(userInfo);
+          
         } catch (Exception e) { // FIXME: which exceptions?
           _logger.warning("Could not parse json for user: " + userName + ". Skipping record.");
           _logger.fine(e.getMessage());

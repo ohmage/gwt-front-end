@@ -23,7 +23,6 @@ public class CampaignDetailedInfo {
   
   private String xmlConfig;
   private XmlConfigTranslator configTranslator;
-  //private List<SurveyInfo> surveys;
   
   public CampaignDetailedInfo() {
     classes = new ArrayList<String>();
@@ -37,19 +36,21 @@ public class CampaignDetailedInfo {
     privacy = Privacy.PRIVATE;
     xmlConfig = "";  
     configTranslator = new XmlConfigTranslator();
-    //surveys = new ArrayList<SurveyInfo>();
   };
 
   /************ ACCESS CONTROL **************/
-  public boolean canEdit(String username) {
-    return authors.contains(username) || supervisors.contains(username);
+  public boolean userCanEdit() {
+    return this.userRoles.contains(RoleCampaign.AUTHOR) ||
+           this.userRoles.contains(RoleCampaign.SUPERVISOR);
   }
   
-  public boolean canDelete(String username) {
+  public boolean userCanDelete(String username) {
     return authors.contains(username) || supervisors.contains(username); // && no responses FIXME
   }
   
-  public boolean canUpload(UserInfo userInfo) {
+  /*
+  // FIXME: does it make sense to have upload permission attached to campaign?
+  public boolean userCanUpload(UserInfo userInfo) {
     boolean retval = false;
     for (String classUserIsMemberOf : userInfo.getClassIds()) {
       if (classes.contains(classUserIsMemberOf)) {
@@ -58,6 +59,16 @@ public class CampaignDetailedInfo {
       }
     }
     return retval;
+  }*/
+  
+  public boolean userCanAnalyze() {
+    // user can analyze if:
+    // 1. he is listed as an analyst and the campaign is public
+    // 2. he is a supervisor of the campaign
+    // 3. he is an author of the campaign
+    return (this.userRoles.contains(RoleCampaign.ANALYST) && this.privacy.equals(Privacy.SHARED)) ||
+           this.userRoles.contains(RoleCampaign.SUPERVISOR) || 
+           this.userRoles.contains(RoleCampaign.AUTHOR);
   }
   
   /************ CONVENIENCE METHODS **************/
@@ -198,8 +209,6 @@ public class CampaignDetailedInfo {
     } else {
       // TODO: how should error be handled?
       this.xmlConfig = "there was a problem loading the xml config";
-      // DELETEME
-      //Window.alert(this.xmlConfig);
     }
   }
 

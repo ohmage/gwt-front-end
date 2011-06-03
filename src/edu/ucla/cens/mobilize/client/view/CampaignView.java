@@ -49,7 +49,7 @@ public interface CampaignView extends IsWidget {
 
   // set data for display
   void setCampaignList(List<CampaignShortInfo> campaigns);
-  void setCampaignDetail(CampaignDetailedInfo campaign, boolean canEdit);
+  void setCampaignDetail(CampaignDetailedInfo campaign);
   void setCampaignEdit(CampaignDetailedInfo campaign);
   void setPlotSideBarTitle(String title);
   

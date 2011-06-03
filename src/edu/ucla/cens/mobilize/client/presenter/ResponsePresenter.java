@@ -2,10 +2,15 @@ package edu.ucla.cens.mobilize.client.presenter;
 
 import java.util.ArrayList;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -19,7 +24,9 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
+import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
@@ -38,22 +45,66 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
   private static Logger _logger = Logger.getLogger(ResponsePresenter.class.getName());
   
-  // TODO: contents of campaign filter should be updated when
-  // participant name changes. contents of survey filter should
-  // be changed when campaign is selected
-
   public ResponsePresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
-    //this.campaignIds = userInfo.getParticipantCampaigns();
-    this.participants.addAll(userInfo.getVisibleUsers());
     this.eventBus = eventBus;
     this.dataService = dataService;
     this.userInfo = userInfo;
   }
   
+  private void fetchAndFillParticipantChoices() {
+    if (userInfo.isPrivileged()) { // privileged users see all members of classes
+      List<String> userClassIds = new ArrayList<String>(userInfo.getClassIds());
+      dataService.fetchClassList(userClassIds, new AsyncCallback<List<ClassInfo>>() {
+        @Override
+        public void onFailure(Throwable caught) {
+          participants.clear();
+          participants.add(userInfo.getUserName());
+          _logger.fine("There was a problem loading participants for filter. " + 
+                       "Defaulting to show only logged in user.");
+        }
+
+        @Override
+        public void onSuccess(List<ClassInfo> result) {
+          List<String> participants = new ArrayList<String>();
+          for (ClassInfo classInfo : result) {
+            participants.addAll(classInfo.getMemberLogins());
+          }
+          view.setParticipantList(participants);
+        }
+      });
+    } else {
+      participants.clear();
+      participants.add(userInfo.getUserName());
+      view.setParticipantList(participants);
+    }
+  }
+  
+  private void fetchAndFillSurveyChoicesForSelectedCampaign(final String surveyToSelectWhenDone) {
+    String campaignId = view.getSelectedCampaign();
+    dataService.fetchCampaignDetail(campaignId, new AsyncCallback<CampaignDetailedInfo>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        _logger.severe("Failed to load campaign filter. Error was: " + caught.getMessage());
+      }
+
+      @Override
+      public void onSuccess(CampaignDetailedInfo result) {
+        view.setSurveyList(result.getSurveyIds()); // FIXME: ok to have ids here instead of names?
+        if (surveyToSelectWhenDone != null) view.selectSurvey(surveyToSelectWhenDone);
+      }
+    });
+  }
+  
   @Override
   public void go(Map<String, List<String>> params) {
-    // TODO: set filters, fetch and display data based on params
-    fetchAndShowResponses(); 
+    assert view != null : "ResponsePresenter.go() called before view was set";
+    fetchAndFillParticipantChoices();
+    if (params.containsKey("uid")) view.selectParticipant(params.get("uid").get(0)); 
+    view.setCampaignChoices(userInfo.getCampaigns()); 
+    if (params.containsKey("cid")) view.selectCampaign(params.get("cid").get(0));
+    String surveyToSelect = params.containsKey("sid") ? params.get("sid").get(0) : null; 
+    this.fetchAndFillSurveyChoicesForSelectedCampaign(surveyToSelect);
+    fetchAndShowFilteredResponses(); 
   }
 
   @Override
@@ -87,6 +138,13 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     for (HasClickHandlers deleteButton : this.view.getDeleteButtons()) {
       deleteButton.addClickHandler(deleteClickHandler);
     }
+    
+    this.view.getCampaignFilter().addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        fetchAndFillSurveyChoicesForSelectedCampaign(null); 
+      }
+    });
   }
   
   private ClickHandler shareClickHandler = new ClickHandler() {
@@ -225,6 +283,14 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     }
   }
   
+  private void fetchAndShowFilteredResponses() {
+    String participantName = view.getSelectedParticipant();
+    String campaignId = view.getSelectedCampaign();
+    String surveyName = view.getSelectedSurvey();
+    Privacy privacy = view.getSelectedPrivacyState();
+    fetchAndShowResponses(participantName, campaignId, surveyName, privacy);
+  }
+  
   // call with defaults (logged in user and other filters set to show all)
   private void fetchAndShowResponses() { 
     fetchAndShowResponses(this.userInfo.getUserName(), null, null, null);
@@ -266,8 +332,10 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     });
   }
   
-  // fetch responses for just one campaign, add them to existing list and refresh display
-  // TODO: sort after adding
+  // Fetch responses for just one campaign, add them to existing list and refresh display.
+  // NOTE: This method exists because api only lets you query for responses for one 
+  //   campaign at a time. When showing responses for all campaigns, the app makes
+  //   multiple calls to this method.
   private void fetchAndShowResponsesForCampaign(String userName,
                                                 String campaignId, 
                                                 final String campaignName,
@@ -280,7 +348,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         new AsyncCallback<List<SurveyResponse>>() {
           @Override
           public void onFailure(Throwable caught) {
-            // TODO: display error message
+            view.showErrorMessage("There was a problem loading responses for campaign: " + campaignName);
+            _logger.severe(caught.getMessage());
           }
           
           @Override
@@ -291,36 +360,20 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             }
             // add to responses already fetched from other campaigns
             responses.addAll(result);
-            // TODO: sort
-            updateDisplay();
+            // sort by date, newest first
+            Collections.sort(responses, responseDateComparator); 
+            view.renderAll(responses);
           }
     });
 
   }
 
-  // Sets content of filter drop downs. Renders header text and response
-  // list differently depending on currently selected privacy state. 
-  private void updateDisplay() {
-    view.setParticipantList(participants);
-    view.selectParticipant("Joe Brown"); // FIXME: set based on url params or current user
-    view.setCampaignList(campaignIds);
-    view.setSurveyList(surveys);
-    Privacy privacy = view.getSelectedPrivacyState();
-    switch (privacy) {
-      case SHARED:
-        view.renderShared(this.responses);
-        break;
-      case PRIVATE: 
-        view.renderPrivate(this.responses);
-        break;
-      case INVISIBLE:
-        view.renderInvisible(this.responses);
-        break;
-      default:
-        view.renderAll(this.responses);
-        break;
+  // for sorting
+  private Comparator<SurveyResponse> responseDateComparator = new Comparator<SurveyResponse>() {
+    @Override
+    public int compare(SurveyResponse arg0, SurveyResponse arg1) {
+      return arg1.getResponseDate().compareTo(arg0.getResponseDate()); // recent dates first
     }
-  }
-
+  };
   
 }

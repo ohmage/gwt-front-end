@@ -4,10 +4,12 @@ package edu.ucla.cens.mobilize.client.view;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.resources.client.CssResource;
@@ -167,17 +169,10 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   @Override
   public void setParticipantList(List<String> participantNames) {
-    participantFilter.clear();
-    for (String name : participantNames) {
-      participantFilter.addItem(name); // FIXME: two param method to add value?
-    }
-    
-    participantFilter.clear();
     if (participantNames.size() == 1) {
       singleParticipantLabel.setVisible(true);
       singleParticipantLabel.setText(participantNames.get(0));
       participantFilter.setVisible(false);
-      
     } else {
       singleParticipantLabel.setVisible(false);
       participantFilter.setVisible(true);
@@ -189,10 +184,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   } 
 
   @Override
-  public void setCampaignList(List<String> campaignNames) {
+  public void setCampaignChoices(Map<String, String> campaignIdToNameMap) {
     campaignFilter.clear();
-    for (String name : campaignNames) {
-      campaignFilter.addItem(name);
+    for (String campaignId : campaignIdToNameMap.keySet()) {
+      // name is visible string, id is value
+      campaignFilter.addItem(campaignIdToNameMap.get(campaignId), campaignId);
     }
   }
 
@@ -349,9 +345,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
 
   @Override
-  public List<HasValueChangeHandlers<String>> getFilters() {
-    // TODO Auto-generated method stub
-    return null;
+  public HasChangeHandlers getCampaignFilter() {
+    return this.campaignFilter;
   }
 
   @Override

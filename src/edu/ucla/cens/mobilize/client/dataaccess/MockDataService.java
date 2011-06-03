@@ -266,6 +266,11 @@ public class MockDataService implements DataService {
     classIdToNameMap.put("urn:class:ca:lausd:BoyleHeights_HS:CS102:Spring:2011", "BoyleHeights_HS_CS102_Spring_2011");
     classIdToNameMap.put("urn:class:ca:lausd:Carson_HS:CS103:Spring:2011", "Carson_HS_CS103_Spring_2011");
     
+    Map<String, String> campaignIdToNameMap = new HashMap<String, String>();
+    campaignIdToNameMap.put("urn:campaign:ca:lausd:BoyleHeights_HS:CS102:Spring:2011:Sleep", "Sleep");
+    campaignIdToNameMap.put("urn:campaign:ca:lausd:BoyleHeights_HS:CS102:Spring:2011:Snack", "Snack");
+    campaignIdToNameMap.put("urn:campaign:ca:lausd:Addams_HS:CS101:Fall:2011:Advertisement", "Advertisement");
+    
     List<CampaignDetailedInfo> infos = new ArrayList<CampaignDetailedInfo>(this.campaigns.values());
     List<RoleCampaign> roles = new ArrayList<RoleCampaign>();
     for (CampaignDetailedInfo campaign : this.campaigns.values()) {
@@ -273,7 +278,14 @@ public class MockDataService implements DataService {
         roles.add(role);
       }
     }
-    UserInfo user = new UserInfo(username, canCreate, classIdToNameMap, roles);
+    
+    UserInfo user = new UserInfo();
+    user.setUserName(username);
+    user.setCanCreateFlag(canCreate);
+    user.setPrivilegeFlag(true);
+    user.setClasses(classIdToNameMap);
+    user.setCampaigns(campaignIdToNameMap);
+    user.setCampaignRoles(roles);
     
     callback.onSuccess(user);
   }

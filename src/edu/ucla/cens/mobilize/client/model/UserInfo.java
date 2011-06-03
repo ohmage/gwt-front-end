@@ -1,45 +1,24 @@
 package edu.ucla.cens.mobilize.client.model;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
-import edu.ucla.cens.mobilize.client.common.UserRoles;
-import edu.ucla.cens.mobilize.client.common.UserStats;
 
 public class UserInfo {
   private String userName; // login id
-  private boolean canCreate = false; // if true, user can create a new campaign
-  private UserRoles roles = new UserRoles(); // flags showing what roles are held by user
-  private List<String> visibleUsers = new ArrayList<String>(); // whose info this user can see
+  boolean isPrivileged = false; // true if user is privileged member of any class
+  boolean canCreateCampaigns = false; // true if user is allowed to author campaigns
   private Map<String, String> classIdToNameMap;
+  private Set<RoleCampaign> campaignRoles = new HashSet<RoleCampaign>();
+  private Map<String, String> campaignIdToNameMap;
   
   private String msgInfo;
   private boolean hasUnreadInfoMsg = false;
   private String msgError;
   private boolean hasUnreadErrorMsg = false;
-  
-  private UserStats stats = new UserStats();
-  
-  public UserInfo(String username, 
-                  boolean canCreate, 
-                  Map<String, String> classIdToNameMap,
-                  List<RoleCampaign> roles) {
-    this.userName = username;
-    this.canCreate = canCreate;
-
-    this.visibleUsers.add(this.userName); // most users can only see themselves
-    
-    // FIXME: user info service should also return list of users visible to this one
-    
-    this.classIdToNameMap = classIdToNameMap;
-
-    for (RoleCampaign role : roles) {
-      this.roles.addRole(role);
-    }    
-  }
   
   /******** MESSAGING ********/
   
@@ -64,59 +43,91 @@ public class UserInfo {
     this.hasUnreadInfoMsg = this.hasUnreadErrorMsg = false;
   }
   
-  /******** GETTERS ********/
+  /******** GETTERS AND SETTERS ********/
  
   public String getUserName() {
     return this.userName != null ? this.userName : "invalid username";
   }
   
-  public UserStats getStats() {
-    return this.stats;
+  public void setUserName(String userName) {
+    this.userName = userName;
   }
   
   public Map<String, String> getClasses() {
     return this.classIdToNameMap;
   }
   
+  public void setClasses(Map<String, String> classIdToNameMap) {
+    this.classIdToNameMap = classIdToNameMap;
+  }
+
+  // convenience method
   public Set<String> getClassIds() {
     return this.classIdToNameMap.keySet();
   }
   
-  // gets list of users whose data this user is allowed to see
-  public List<String> getVisibleUsers() {
-    return this.visibleUsers;
+  public Map<String, String> getCampaigns() {
+    return this.campaignIdToNameMap;
+  }
+  
+  public void setCampaigns(Map<String, String> campaignIdToNameMap) {
+    this.campaignIdToNameMap = campaignIdToNameMap;
+  }
+  
+  // convenience method
+  public Set<String> getCampaignIds() {
+    return this.campaignIdToNameMap.keySet();
+  }
+
+  public void setPrivilegeFlag(boolean isPrivileged) {
+    this.isPrivileged = isPrivileged;
+  }
+  
+  public void setCanCreateFlag(boolean canCreateCampaigns) {
+    this.canCreateCampaigns = canCreateCampaigns;
+  }
+  
+  public void setCampaignRoles(List<RoleCampaign> campaignRoles) {
+    this.campaignRoles.clear();
+    this.campaignRoles.addAll(campaignRoles);
   }
   
   /******* USER ROLES ******/
   
   public boolean isAdmin(String campaignId) {
-    return this.roles.admin;
+    return this.campaignRoles.contains(RoleCampaign.ADMIN);
   }
   
   public boolean isSupervisor(String campaignId) {
-    return this.roles.supervisor;
+    return this.campaignRoles.contains(RoleCampaign.SUPERVISOR);
   }
   
   public boolean isAuthor(String campaignId) {
-    return this.roles.author;
+    return this.campaignRoles.contains(RoleCampaign.AUTHOR);
   }
   
   public boolean isParticipant(String campaignId) {
-    return this.roles.participant;
+    return this.campaignRoles.contains(RoleCampaign.PARTICIPANT);
   }
   
   public boolean isAnalyst(String campaignId) {
-    return this.roles.analyst;
+    return this.campaignRoles.contains(RoleCampaign.ANALYST);
+  }
+  
+  public boolean isPrivileged() {
+    return this.isPrivileged;
   }
 
   /********** PERMISSIONS ***********/
   
   public boolean canCreate() {
-    return this.canCreate;
+    return this.canCreateCampaigns;
   }
 
   public boolean canUpload() {
-    return this.roles.admin || this.roles.supervisor || this.roles.analyst;
+    return this.campaignRoles.contains(RoleCampaign.ADMIN) ||
+           this.campaignRoles.contains(RoleCampaign.SUPERVISOR) || 
+           this.campaignRoles.contains(RoleCampaign.ANALYST);
   }
   
 }

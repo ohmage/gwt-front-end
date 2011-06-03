@@ -97,7 +97,9 @@ public class CampaignDetail extends Composite {
     exportForm.removeFromParent();
   }
   
-  public void setCampaign(CampaignDetailedInfo campaign, boolean canEdit) {
+  public void setCampaign(CampaignDetailedInfo campaign) {
+    boolean canEdit = campaign.userCanEdit();
+    boolean canAnalyze = campaign.userCanAnalyze();
     if (campaign != null) {
       // copy info from data obj into fields
       this.campaignName.setText(campaign.getCampaignName());
@@ -147,6 +149,8 @@ public class CampaignDetail extends Composite {
       } else {
         this.actionLinkEditCampaign.setVisible(false);
       }
+      
+      this.actionLinkExportResponses.setVisible(canAnalyze);
 
       // hidden form with target set to _blank does a post request to fetch
       // the file and displays the result in a new window. 

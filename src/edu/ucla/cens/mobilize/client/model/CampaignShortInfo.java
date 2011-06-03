@@ -66,14 +66,16 @@ public class CampaignShortInfo {
   }
   
   public boolean userCanDelete() {
-    return userCanEdit();
+    // User can delete campaign if he has edit permission and the campaign has
+    // no responses. Front end only checks edit permission. Server will reject the
+    // request if campaign has responses.
+    return userCanEdit(); 
   }
   
   public boolean userCanAnalyze() {
-    return this.userRoles.analyst || 
-           this.userRoles.participant || 
-           this.userRoles.supervisor || 
-           this.userRoles.admin;
+    return this.userRoles.analyst && this.privacy.equals(Privacy.SHARED) ||
+           this.userRoles.supervisor || this.userRoles.admin ||
+           this.userRoles.author;
   }
 
 }
