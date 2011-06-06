@@ -30,26 +30,18 @@ public class PromptResponseAwData extends JavaScriptObject {
   public final native String getTimezone() /*-{ return this.timezone; }-*/;
   
   public final native String getUser() /*-{ return this.user; }-*/;
-  
-  // only makes sense for choice prompt_types (single_choice, multi_choice, etc)
+
+  // When user responds to a survey by picking an item from a list, only the 
+  // item key is recorded. This method translates the key back into a 
+  // user-friendly label for display.
+  // Only makes sense for choice prompt_types (e.g., single_choice, multi_choice)
   public final native String getChoiceLabelFromGlossary(String key) /*-{
-    // glossary looks like:"prompt_choice_glossary":[{"1":{"label":"Clothes"}},{"0":{"label":"Food"}},{"7":{"label":"Health"}}]
-    // FIXME: ^^^ is that really what they mean it to look like??? Array of objects with only one key each?
+    // glossary looks like:"prompt_choice_glossary":{"3":{"label":"Restaurant"},"2":{"label":"Work"},"1":{"label":"School"},"0":{"label":"Home"},"7":{"label":"Other"},"6":{"label":"Party"},"5":{"label":"Vehicle"},"4":{"label":"Friends' houses"}}
     var retval = "---";
-    if (this.prompt_choice_glossary != undefined) {
-      for (var i = 0; i < this.prompt_choice_glossary.length; i++) {
-        if (this.prompt_choice_glossary[i][key] != undefined) {
-          retval = this.prompt_choice_glossary[i][key].label;
-          break;
-        }
-      }
+    if (this.prompt_choice_glossary && this.prompt_choice_glossary[key]) {
+      retval = this.prompt_choice_glossary[key].label;
     }
     return retval;
-    
-    // FIXME: uncomment if we change it to hash of hashes instead
-    //return (this.prompt_choice_glossary != undefined && this.prompt_choice_glossary[key] != undefined) ?
-    //  this.prompt_choice_glossary[key].label :
-    //  "---"; 
   }-*/;
   
 }
