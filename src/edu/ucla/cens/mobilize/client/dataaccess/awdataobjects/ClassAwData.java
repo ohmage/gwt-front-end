@@ -38,24 +38,6 @@ public class ClassAwData extends JavaScriptObject {
     return userNameToUserRoleMap;
   }
   
-  /*
-  public final native JsArrayString getPrivilegedUsers() /*-{
-    var users = [];
-    for (var username in this.users) {
-      if (this.users[username] == "privileged") users.push(username);
-    }
-    return users;
-  }-*/;
-  
-  /*
-  public final native JsArrayString getRestrictedUsers() /*-{
-    var users = [];
-    for (var username in this.users) {
-      if (this.users[username] == "restricted") users.push(username);
-    }
-    return users;
-  }-*/;
-  
   // Create a ClassAwData from a JSON string
   public static native ClassAwData fromJsonString(String jsonString) /*-{
       return eval('(' + jsonString + ')'); 
