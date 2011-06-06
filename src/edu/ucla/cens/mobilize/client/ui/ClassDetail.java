@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
+import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 
 public class ClassDetail extends Composite {
@@ -24,7 +25,6 @@ public class ClassDetail extends Composite {
   @UiField InlineLabel className;
   @UiField InlineLabel classUrn;
   @UiField InlineLabel description;
-  @UiField VerticalPanel privilegedMembersVerticalPanel;
   @UiField VerticalPanel membersVerticalPanel;
   @UiField InlineHyperlink editLink;
   
@@ -37,13 +37,13 @@ public class ClassDetail extends Composite {
     this.className.setText(classDetail.getClassName());
     this.classUrn.setText(classDetail.getClassId());
     this.description.setText(classDetail.getDescription());
-    this.privilegedMembersVerticalPanel.clear();
-    for (String privilegedUserLogin : classDetail.getPrivilegedMemberLogins()) {
-      this.privilegedMembersVerticalPanel.add(new InlineLabel(privilegedUserLogin));
-    }
     this.membersVerticalPanel.clear();
     for (String memberLogin : classDetail.getMemberLogins()) {
-      this.membersVerticalPanel.add(new InlineLabel(memberLogin));
+      InlineLabel memberLoginLabel = new InlineLabel(memberLogin);
+      if (classDetail.getMemberRole(memberLogin).equals(RoleClass.PRIVILEGED)) {
+        memberLoginLabel.setText(memberLogin + " (privileged)");
+      } 
+      this.membersVerticalPanel.add(memberLoginLabel);
     }
     
   }

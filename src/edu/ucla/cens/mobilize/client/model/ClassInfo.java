@@ -6,17 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.ucla.cens.mobilize.client.common.RoleClass;
+
 public class ClassInfo {
   private String classId;
   private String className; // e.g., CS101
   private String description;
-  private List<String> privilegedMemberLogins;
-  private List<String> memberLogins;
+  private Map<String, RoleClass> memberNameToRoleMap = new HashMap<String, RoleClass>();
   
   public ClassInfo() {
     classId = className = description = "";
-    privilegedMemberLogins = new ArrayList<String>();
-    memberLogins = new ArrayList<String>();
   }
   
   public String getClassId() { return this.classId; }
@@ -24,26 +23,23 @@ public class ClassInfo {
   public String getDescription() { return this.description; }
 
   public List<String> getMemberLogins() {
-    return this.memberLogins;
+    return new ArrayList<String>(this.memberNameToRoleMap.keySet());
   }
   
-  public List<String> getPrivilegedMemberLogins() {
-    return this.privilegedMemberLogins;
+  public RoleClass getMemberRole(String memberLogin) {
+    return this.memberNameToRoleMap.get(memberLogin);
+  }
+
+  public void clearMembers() {
+    this.memberNameToRoleMap.clear();
+  }
+  
+  public void addMember(String userName, RoleClass role) {
+    this.memberNameToRoleMap.put(userName, role);
   }
   
   public void setClassId(String classId) { this.classId = classId; }
   
   public void setClassName(String className) { this.className = className; }
-  
-  public void clearPrivilegedMembers() { this.privilegedMemberLogins.clear(); }
-  
-  public void clearMembers() { this.memberLogins.clear(); }
-  
-  public void addPrivilegedMember(String userLogin) {
-    this.privilegedMemberLogins.add(userLogin);
-  }
-  
-  public void addMember(String userLogin) {
-    this.memberLogins.add(userLogin);
-  }
+
 }

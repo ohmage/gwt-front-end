@@ -142,11 +142,6 @@ public class ClassViewImpl extends Composite implements ClassView {
   }
 
   @Override
-  public List<String> getPrivilegedMembers() {
-    return this.classEdit.getPrivilegedMembers();
-  }
-
-  @Override
   public String getClassId() {
     return this.classEdit.getClassId();
   }
@@ -167,18 +162,8 @@ public class ClassViewImpl extends Composite implements ClassView {
   }
 
   @Override
-  public void showEditFormAddPrivilegedMembersDialog(List<String> userLoginsToChooseFrom) {
-    this.classEdit.showPrivilegedMemberChoices(userLoginsToChooseFrom);
-  }
-
-  @Override
   public HasClickHandlers getEditFormAddMembersButton() {
     return this.classEdit.getAddMembersButton();
-  }
-
-  @Override
-  public HasClickHandlers getEditFormAddPrivilegedMembersButton() {
-    return this.classEdit.getAddPrivilegedMembersButton();
   }
 
 }

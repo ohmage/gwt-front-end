@@ -12,6 +12,7 @@ import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.common.RoleDocument;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
@@ -66,32 +67,32 @@ public class MockDataService implements DataService {
     ClassInfo class1 = new ClassInfo();
     class1.setClassId("urn:class:ca:lausd:ADDAMS_HS:CS101:Fall:2011");
     class1.setClassName("ADDAMS_HS_CS101_Fall_2011");
-    class1.addMember("slarson");
-    class1.addMember("mhardy");
-    class1.addMember("awhine");
-    class1.addMember("rmoran");
-    class1.addMember("ajones");
-    class1.addMember("smcmike");
-    class1.addPrivilegedMember("tuser");
+    class1.addMember("slarson", RoleClass.RESTRICTED);
+    class1.addMember("mhardy", RoleClass.RESTRICTED);
+    class1.addMember("awhine", RoleClass.RESTRICTED);
+    class1.addMember("rmoran", RoleClass.RESTRICTED);
+    class1.addMember("ajones", RoleClass.RESTRICTED);
+    class1.addMember("smcmike", RoleClass.RESTRICTED);
+    class1.addMember("tuser", RoleClass.PRIVILEGED);
     classInfos.add(class1);
     
     ClassInfo class2 = new ClassInfo();
     class2.setClassId("urn:class:ca:lausd:Boyle_Heights_HS:CS102:Spring:2011");
     class2.setClassName("BH_HS_CS102_Spring_2011");
-    class2.addMember("testuser.aa");
-    class2.addMember("testuser.ab");
-    class2.addMember("testuser.ac");
-    class2.addMember("testuser.bb");
-    class2.addPrivilegedMember("testuser.aa");
-    class2.addPrivilegedMember("testuser.ab");
+    class2.addMember("testuser.aa", RoleClass.RESTRICTED);
+    class2.addMember("testuser.ab", RoleClass.RESTRICTED);
+    class2.addMember("testuser.ac", RoleClass.RESTRICTED);
+    class2.addMember("testuser.bb", RoleClass.RESTRICTED);
+    class2.addMember("testuser.aa", RoleClass.PRIVILEGED);
+    class2.addMember("testuser.ab", RoleClass.PRIVILEGED);
     classInfos.add(class2);
     
     ClassInfo class3 = new ClassInfo();
     class3.setClassId("urn:class:ca:lausd:Carson_HS:CS103:Spring:2011");
     class3.setClassName("Carson_HS_CS103_Spring_2011");
-    class3.addMember("testuser.ac");
-    class3.addMember("testuser.bb");
-    class3.addPrivilegedMember("testuser.aa");
+    class3.addMember("testuser.ac", RoleClass.RESTRICTED);
+    class3.addMember("testuser.bb", RoleClass.RESTRICTED);
+    class3.addMember("testuser.aa", RoleClass.PRIVILEGED);
     classInfos.add(class3);
   }
   

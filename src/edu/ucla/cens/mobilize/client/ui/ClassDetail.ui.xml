@@ -32,7 +32,7 @@
      text-align: right;
      width: 170px;
    }
-   .privilegedMemberList, .memberList {
+   .memberList {
      margin-bottom: 10px;
    }
 	.sectionHeader {
@@ -89,14 +89,6 @@
 	            <g:InlineLabel ui:field='description' />
 	          </td>
 	        </tr>
-			    <tr>
-			      <td class='{style.label}'>
-			        Privileged Members:
-			      </td>
-			      <td>
-			        <g:VerticalPanel ui:field='privilegedMembersVerticalPanel' />
-			      </td>
-			    </tr>
 			    <tr>
 			      <td class='{style.label}'>
 			        Members:

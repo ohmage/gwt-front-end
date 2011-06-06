@@ -137,7 +137,6 @@ public class CampaignEditFormPresenter {
             Set<String> userLogins = new HashSet<String>(); // enforces uniqueness
             for (ClassInfo classInfo : result) {
               userLogins.addAll(classInfo.getMemberLogins());
-              userLogins.addAll(classInfo.getPrivilegedMemberLogins());
             }
             view.showAuthorChoices(new ArrayList<String>(userLogins));
           }

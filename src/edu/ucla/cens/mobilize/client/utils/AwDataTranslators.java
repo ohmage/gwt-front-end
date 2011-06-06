@@ -353,13 +353,15 @@ public class AwDataTranslators {
           ClassInfo classInfo = new ClassInfo();
           classInfo.setClassId(classId);
           classInfo.setClassName(awData.getName());
-          JsArrayString privilegedUsers = awData.getPrivilegedUsers();
-          for (int i = 0; i < privilegedUsers.length(); i++) {
-            classInfo.addPrivilegedMember(privilegedUsers.get(i)); 
-          }
-          JsArrayString restrictedUsers = awData.getRestrictedUsers();
-          for (int i = 0; i < restrictedUsers.length(); i++) {
-            classInfo.addMember(restrictedUsers.get(i));
+          JsArrayString users = awData.getUserNames();
+          for (int i = 0; i < users.length(); i++) {
+            String userName = users.get(i);
+            String roleString = awData.getUserRole(userName);
+            // Restricted users only get a blank string instead of a member role in the json.
+            // For simplicity, we set the role to restricted in that case.
+            RoleClass role = roleString.isEmpty() ? RoleClass.RESTRICTED : 
+                                                    RoleClass.valueOf(awData.getUserRole(userName).toUpperCase());
+            classInfo.addMember(userName, role);
           }
           classInfos.add(classInfo);
         } catch (Exception e) { // FIXME: which exception?

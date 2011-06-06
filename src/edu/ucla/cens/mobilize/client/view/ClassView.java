@@ -23,7 +23,6 @@ public interface ClassView extends IsWidget {
   void setDetail(ClassInfo classDetail);
   void setEdit(ClassInfo classDetail);
   void showEditFormAddMembersDialog(List<String> userLoginsToChooseFrom);
-  void showEditFormAddPrivilegedMembersDialog(List<String> userLoginsToChooseFrom);
   
   // show messages to user
   void showError(String msg);
@@ -33,11 +32,9 @@ public interface ClassView extends IsWidget {
   HasClickHandlers getEditFormSubmitButton();
   HasClickHandlers getEditFormCancelButton();
   HasClickHandlers getEditFormAddMembersButton();
-  HasClickHandlers getEditFormAddPrivilegedMembersButton();
   void clearEditForm();
   String getClassId();
   String getDescription();
   List<String> getMembers();
-  List<String> getPrivilegedMembers();
   
 }

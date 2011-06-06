@@ -66,6 +66,8 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       @Override
       public void onClick(ClickEvent event) {
         // FIXME: hard coded users because we don't have this api yet
+        // Update(2011/06/05): There are privacy concerns about allowing someone
+        //   to fetch a list of all users in the system. Waiting for a decision about it.
         List<String> hardCodedUsers = Arrays.asList(new String[] {
             "user.adv.supa", "user.adv.upa", "user.adv.spa", "user.adv.sup", 
             "user.adv.sa", "user.adv.ua", "user.adv.su", "user.adv.sp", 
@@ -77,20 +79,6 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       }
     });
     
-    this.view.getEditFormAddPrivilegedMembersButton().addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        // FIXME: hard coded users because we don't have this api yet
-        List<String> hardCodedUsers = Arrays.asList(new String[] {
-            "user.adv.supa", "user.adv.upa", "user.adv.spa", "user.adv.sup", 
-            "user.adv.sa", "user.adv.ua", "user.adv.su", "user.adv.sp", 
-            "user.adv.sa", "user.adv.up", "user.adv.a", "user.adv.p", 
-            "user.adv.u", "user.adv.s"
-        });
-        _logger.warning("FIXME: hard-coded users in class tab");
-        view.showEditFormAddPrivilegedMembersDialog(hardCodedUsers);
-      }
-    });
   }
   
   @Override
@@ -194,7 +182,6 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
   private ClassUpdateParams getUpdateParamValuesFromForm() {
     // get user input
     List<String> selectedMembers = this.view.getMembers();
-    List<String> selectedPrivilegedMembers = this.view.getPrivilegedMembers();
     String description = this.view.getDescription();
     // compare input to previous values to see what changed
     ClassUpdateParams params = new ClassUpdateParams();
@@ -208,11 +195,6 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
     // if users were in the old member list but aren't in the form, remove them
     params.usersToRemove_opt.addAll(CollectionUtils.setDiff(oldMembers, selectedMembers));
     
-    List<String> oldPrivilegedMembers = oldClassInfo.getPrivilegedMemberLogins();
-    // if users are selected in the form but weren't in the old members, add them
-    params.usersToAddAsPrivileged_opt.addAll(CollectionUtils.setDiff(selectedPrivilegedMembers, oldPrivilegedMembers));
-    // note: just one list for removing both privileged and restricted users
-    params.usersToRemove_opt.addAll(CollectionUtils.setDiff(oldPrivilegedMembers, selectedPrivilegedMembers));
     return params;
   }
 
