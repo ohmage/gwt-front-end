@@ -348,7 +348,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   @Override
   public void onHistoryChanged(String historyToken) {
     String view = extractView(historyToken); 
-    Map<String, List<String>> params = extractParams(historyToken);
+    Map<String, String> params = extractParams(historyToken);
 
     if (view.equals("dashboard")) {
       dashboardPresenter.go(params);
@@ -391,8 +391,8 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     return historyToken.split("\\?")[0]; // everything before the ?
   }
   
-  private Map<String, List<String>> extractParams(String historyToken) {
-    Map<String, List<String>> params = new HashMap<String, List<String>>();
+  private Map<String, String> extractParams(String historyToken) {
+    Map<String, String> params = new HashMap<String, String>();
     if (historyToken.contains("?")) {
       String[] paramPairs = historyToken.split("\\?")[1].split("&");
       String paramName = null, paramValue = null;
@@ -401,17 +401,14 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
         if (paramNameAndValue.contains("=")) {
           String[] nameAndValueArray = paramNameAndValue.split("=");
           paramName = nameAndValueArray[0];
-          paramValue = nameAndValueArray[1];
+          paramValue = (nameAndValueArray.length > 1) ? nameAndValueArray[1] : ""; // value is empty string if no chars after "="
         } else {
           // if just "myparam" instead of "myparam=value" treat 
           // param as a flag set to true
           paramName = paramNameAndValue;
           paramValue = "true";
         }
-        if (!params.containsKey(paramName)) {
-          params.put(paramName, new ArrayList<String>());
-        }
-        params.get(paramName).add(paramValue);
+        params.put(paramName, paramValue);
       }
     }
     return params;

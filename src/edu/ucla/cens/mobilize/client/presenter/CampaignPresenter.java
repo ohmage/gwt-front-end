@@ -47,7 +47,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   }
   
   @Override
-  public void go(Map<String, List<String>>params) {
+  public void go(Map<String, String>params) {
     // hide any leftover notifications
     this.view.hideMsg();
     
@@ -59,23 +59,23 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     // url param overrides user permission 
     // (for testing. permissions are still enforced on server side) 
     if (params.containsKey("canedit")) {
-      this.canCreate = params.get("canedit").get(0).equals("1");
+      this.canCreate = params.get("canedit").equals("1");
       this.view.setCanCreate(this.canCreate);
     }
     
     // get subview from url params
     if (params.isEmpty()) {
       this.fetchAndShowAllCampaigns();
-    } else if (params.get("v").get(0).equals("detail") && params.containsKey("id")) {
+    } else if (params.get("v").equals("detail") && params.containsKey("id")) {
       // anything after first id is ignored
-      this.fetchAndShowCampaignDetail(params.get("id").get(0));
-    } else if (params.get("v").get(0).equals("author_center")) {
+      this.fetchAndShowCampaignDetail(params.get("id"));
+    } else if (params.get("v").equals("author_center")) {
       this.showAuthorCenter();
-    } else if (params.get("v").get(0).equals("create")) {
+    } else if (params.get("v").equals("create")) {
       this.showCampaignCreateForm();
-    } else if (params.get("v").get(0).equals("edit") && params.containsKey("id")) {
+    } else if (params.get("v").equals("edit") && params.containsKey("id")) {
       // anything after first id is ignored
-      this.fetchCampaignAndShowEditForm(params.get("id").get(0));
+      this.fetchCampaignAndShowEditForm(params.get("id"));
     } else {
       // unrecognized view - do nothing
       // TODO: log?

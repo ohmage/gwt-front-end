@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -16,10 +15,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
@@ -53,7 +50,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.userInfo = userInfo;
   }
   
-  private void fetchAndFillParticipantChoices() {
+  private void fetchAndFillParticipantChoices(final String participantToSelect) {
     if (userInfo.isPrivileged()) { // privileged users see all members of classes
       List<String> userClassIds = new ArrayList<String>(userInfo.getClassIds());
       dataService.fetchClassList(userClassIds, new AsyncCallback<List<ClassInfo>>() {
@@ -73,6 +70,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             participants.addAll(classInfo.getMemberLogins());
           }
           view.setParticipantList(participants);
+          if (participantToSelect != null) {
+            view.selectParticipant(participantToSelect);
+          }
         }
       });
     } else {
@@ -82,8 +82,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     }
   }
   
-  private void fetchAndFillSurveyChoicesForSelectedCampaign(final String surveyToSelectWhenDone) {
-    String campaignId = view.getSelectedCampaign();
+  private void fetchAndFillSurveyChoicesForSelectedCampaign(String campaignId,
+                                                            final String surveyToSelectWhenDone) {
     dataService.fetchCampaignDetail(campaignId, new AsyncCallback<CampaignDetailedInfo>() {
       @Override
       public void onFailure(Throwable caught) {
@@ -99,15 +99,36 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   }
   
   @Override
-  public void go(Map<String, List<String>> params) {
+  public void go(Map<String, String> params) {
     assert view != null : "ResponsePresenter.go() called before view was set";
-    fetchAndFillParticipantChoices();
-    if (params.containsKey("uid")) view.selectParticipant(params.get("uid").get(0)); 
+    
+    // check history token (url) params for value that should be selected in filters
+    String selectedParticipant = params.containsKey("uid") ? params.get("uid") : null;
+    String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
+    String selectedSurvey = params.containsKey("sid") ? params.get("sid") : null;
+    String selectedPrivacyString = params.containsKey("privacy") ? params.get("privacy") : null;
+    
+    // set up participant filter
+    fetchAndFillParticipantChoices(selectedParticipant);
+    
+    // set up campaign filter
     view.setCampaignChoices(userInfo.getCampaigns()); 
-    if (params.containsKey("cid")) view.selectCampaign(params.get("cid").get(0));
-    String surveyToSelect = params.containsKey("sid") ? params.get("sid").get(0) : null; 
-    this.fetchAndFillSurveyChoicesForSelectedCampaign(surveyToSelect);
-    fetchAndShowFilteredResponses(); 
+    if (selectedCampaign != null) view.selectCampaign(selectedCampaign);
+    
+    // set up survey filter (contents depend on selected campaign filter)
+    fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, selectedSurvey);
+    
+    // set up privacy filter
+    Privacy selectedPrivacy = null;
+    try {
+      selectedPrivacy = Privacy.valueOf(selectedPrivacyString);
+    } catch (Exception e) {
+      _logger.fine("Invalid privacy value: " + selectedPrivacyString);
+    }
+    view.selectPrivacyState(selectedPrivacy);
+    
+    // fetch responses filtered by selected values
+    fetchAndShowResponses(selectedParticipant, selectedCampaign, selectedSurvey, selectedPrivacy);
   }
 
   @Override
@@ -116,16 +137,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.view.setPresenter(this);
     setViewEventHandlers();
   }
-  
-  @Override
-  public void onFilterChange() {
-    String userName = this.view.getSelectedParticipant();
-    String campaignId = this.view.getSelectedCampaign();
-    String surveyName = this.view.getSelectedSurvey();
-    Privacy privacy = this.view.getSelectedPrivacyState();
-    History.newItem(HistoryTokens.responseList(userName, campaignId, surveyName, privacy));
-  }
-  
+    
   // view must be set before calling this
   private void setViewEventHandlers() {
     assert view != null : "view must be set before calling setViewEventHandlers";
@@ -145,7 +157,21 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.view.getCampaignFilter().addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent event) {
-        fetchAndFillSurveyChoicesForSelectedCampaign(null); 
+        fireHistoryTokenToMatchFilterValues();
+      }
+    });
+    
+    this.view.getParticipantFilter().addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        fireHistoryTokenToMatchFilterValues();
+      }
+    });
+    
+    this.view.getSurveyFilter().addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        fireHistoryTokenToMatchFilterValues();
       }
     });
   }
@@ -286,12 +312,18 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     }
   }
   
-  private void fetchAndShowFilteredResponses() {
+  private void fireHistoryTokenToMatchFilterValues() {
     String participantName = view.getSelectedParticipant();
+    if (participantName == null || participantName.isEmpty()) {
+      participantName = userInfo.getUserName(); // default to logged in user
+    }
     String campaignId = view.getSelectedCampaign();
     String surveyName = view.getSelectedSurvey();
     Privacy privacy = view.getSelectedPrivacyState();
-    fetchAndShowResponses(participantName, campaignId, surveyName, privacy);
+    History.newItem(HistoryTokens.responseList(participantName, 
+                                               campaignId, 
+                                               surveyName, 
+                                               privacy));
   }
   
   // call with defaults (logged in user and other filters set to show all)

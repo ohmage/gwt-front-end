@@ -15,8 +15,6 @@ import edu.ucla.cens.mobilize.client.model.*;
 public interface ResponseView extends IsWidget {
   
   interface Presenter {
-    
-    void onFilterChange();
     void setView(ResponseView view);
   }
 
@@ -36,6 +34,7 @@ public interface ResponseView extends IsWidget {
   void selectParticipant(String participant);
   void selectCampaign(String campaign);
   void selectSurvey(String survey);
+  void selectPrivacyState(Privacy privacy);
 
   // get selected filters
   String getSelectedParticipant();
@@ -59,5 +58,7 @@ public interface ResponseView extends IsWidget {
   List<HasClickHandlers> getDeleteButtons();
   List<String> getSelectedSurveyResponseKeys();
   HasChangeHandlers getCampaignFilter();
+  HasChangeHandlers getSurveyFilter();
+  HasChangeHandlers getParticipantFilter();
   
 }

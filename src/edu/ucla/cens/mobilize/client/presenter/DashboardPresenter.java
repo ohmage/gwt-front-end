@@ -22,7 +22,7 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
   }
 
   @Override
-  public void go(Map<String, List<String>> params) {
+  public void go(Map<String, String> params) {
 
     if (user != null) {
       this.canEdit = user.canCreate();
@@ -32,10 +32,10 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
     // url params override user settings (for testing)
     // note: back end also checks permissions on all actions
     if (params.containsKey("canedit")) {
-      this.canEdit = params.get("canedit").get(0).equals("1");      
+      this.canEdit = params.get("canedit").equals("1");      
     } 
     if (params.containsKey("canupload")) {
-      this.canUpload = params.get("canupload").get(0).equals("1");
+      this.canUpload = params.get("canupload").equals("1");
     }
         
     updateDisplay();

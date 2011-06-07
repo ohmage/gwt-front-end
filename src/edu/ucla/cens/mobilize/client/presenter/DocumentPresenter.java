@@ -50,7 +50,7 @@ public class DocumentPresenter implements Presenter {
   }
   
   @Override
-  public void go(Map<String, List<String>> params) {
+  public void go(Map<String, String> params) {
     // hide any leftover notifications
     this.view.hideMsg();
     
@@ -62,14 +62,14 @@ public class DocumentPresenter implements Presenter {
     // get subview from url params
     if (params.isEmpty()) {
       this.fetchAndShowAllDocuments();
-    } else if (params.get("v").get(0).equals("detail") && params.containsKey("id")) {
+    } else if (params.get("v").equals("detail") && params.containsKey("id")) {
       // anything after first id is ignored
-      this.fetchAndShowDocumentDetail(params.get("id").get(0));
-    } else if (params.get("v").get(0).equals("create")) {
+      this.fetchAndShowDocumentDetail(params.get("id"));
+    } else if (params.get("v").equals("create")) {
       this.showDocumentCreateForm();
-    } else if (params.get("v").get(0).equals("edit") && params.containsKey("id")) {
+    } else if (params.get("v").equals("edit") && params.containsKey("id")) {
       // anything after first id is ignored
-      this.fetchDocumentAndShowEditForm(params.get("id").get(0));
+      this.fetchDocumentAndShowEditForm(params.get("id"));
     } else {
       // unrecognized view - default to list view
       _logger.finer("Unrecognized params");

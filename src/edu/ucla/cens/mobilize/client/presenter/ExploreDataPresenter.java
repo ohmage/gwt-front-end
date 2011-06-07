@@ -1,6 +1,5 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
-import java.util.List;
 import java.util.Map;
 
 import edu.ucla.cens.mobilize.client.view.ExploreDataView;
@@ -11,7 +10,7 @@ public class ExploreDataPresenter implements ExploreDataView.Presenter, Presente
 
 
   @Override
-  public void go(Map<String, List<String>> params) {
+  public void go(Map<String, String> params) {
   }
     
   @Override

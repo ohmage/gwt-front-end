@@ -82,19 +82,19 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
   }
   
   @Override
-  public void go(Map<String, List<String>> params) {
+  public void go(Map<String, String> params) {
     // hide any leftover notifications
     this.view.hideMsg();
     
     // get subview from url params
     if (params.isEmpty()) {
       this.fetchAndShowClasses();
-    } else if (params.get("v").get(0).equals("detail") && params.containsKey("id")) {
+    } else if (params.get("v").equals("detail") && params.containsKey("id")) {
       // anything after first id is ignored
-      this.fetchAndShowClassDetail(params.get("id").get(0));
-    } else if (params.get("v").get(0).equals("edit") && params.containsKey("id")) {
+      this.fetchAndShowClassDetail(params.get("id"));
+    } else if (params.get("v").equals("edit") && params.containsKey("id")) {
       // anything after first id is ignored
-      this.fetchAndShowClassEdit(params.get("id").get(0));
+      this.fetchAndShowClassEdit(params.get("id"));
     } else {
       _logger.warning("Unrecognized subview: " + params.get("v"));
     }

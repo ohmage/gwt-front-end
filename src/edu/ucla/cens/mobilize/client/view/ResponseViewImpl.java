@@ -11,7 +11,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -91,11 +90,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
   
   private void setEventHandlers() {
+    /*
     privateMenuItem.setCommand(new Command() {
       @Override
       public void execute() {
         selectedPrivacy = Privacy.PRIVATE;
-        presenter.onFilterChange();
       }
     });
     
@@ -103,7 +102,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       @Override
       public void execute() {
         selectedPrivacy = Privacy.SHARED;
-        presenter.onFilterChange();
       }
     });
     
@@ -111,9 +109,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       @Override
       public void execute() {
         selectedPrivacy = Privacy.UNDEFINED;
-        presenter.onFilterChange();
       }
-    });
+    });*/
     
     selectAllLinkTop.addClickHandler(new ClickHandler() {
       @Override
@@ -205,37 +202,42 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void selectParticipant(String participantName) {
     for (int i = 0; i < participantFilter.getItemCount(); i++) {
-      if (participantFilter.getItemText(i) == participantName) {
-        participantFilter.setItemSelected(i, true);
+      if (participantFilter.getItemText(i).equals(participantName)) {
+        participantFilter.setSelectedIndex(i);
         return;
       }
     }
     // if not found, select first item ("All")
-    participantFilter.setItemSelected(0, true); 
+    participantFilter.setSelectedIndex(0);
   }
 
   @Override
   public void selectCampaign(String campaignName) {
     for (int i = 0; i < campaignFilter.getItemCount(); i++) {
-      if (campaignFilter.getItemText(i) == campaignName) {
-        campaignFilter.setItemSelected(i, true);
+      if (campaignFilter.getItemText(i).equals(campaignName)) {
+        campaignFilter.setSelectedIndex(i);
         return;
       }
     }
     // if not found, select first item ("All")
-    campaignFilter.setItemSelected(0, true);
+    campaignFilter.setSelectedIndex(0);
   }
 
   @Override
   public void selectSurvey(String surveyName) {
     for (int i = 0; i < surveyFilter.getItemCount(); i++) {
-      if (surveyFilter.getItemText(i) == surveyName) {
-        surveyFilter.setItemSelected(i, true);
+      if (surveyFilter.getItemText(i).equals(surveyName)) {
+        surveyFilter.setSelectedIndex(i);
         return;
       }
     }
     // if not found, select first item ("All")
-    surveyFilter.setItemSelected(0, true);
+    surveyFilter.setSelectedIndex(0);
+  }
+  
+  @Override 
+  public void selectPrivacyState(Privacy privacy) {
+    // TODO: 
   }
   
   @Override
@@ -366,6 +368,16 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
 
   @Override
+  public HasChangeHandlers getSurveyFilter() {
+    return this.surveyFilter;
+  }
+
+  @Override
+  public HasChangeHandlers getParticipantFilter() {
+    return this.participantFilter;
+  }
+
+  @Override
   public List<String> getSelectedSurveyResponseKeys() {
     List<String> keys = new ArrayList<String>();
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
@@ -459,5 +471,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     dialog.center();
     
   }
+
   
 }

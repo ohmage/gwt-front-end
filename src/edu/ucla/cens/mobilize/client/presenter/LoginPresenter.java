@@ -1,6 +1,5 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -32,7 +31,7 @@ public class LoginPresenter implements Presenter,
     } 
 
     @Override
-    public void go(Map<String, List<String>> params) {
+    public void go(Map<String, String> params) {
       // TODO Auto-generated method stub
     }
 

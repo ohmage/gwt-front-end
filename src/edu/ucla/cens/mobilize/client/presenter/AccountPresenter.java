@@ -78,11 +78,11 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
   }
   
   @Override
-  public void go(Map<String, List<String>> params) {
+  public void go(Map<String, String> params) {
     // shows details about logged in user if no username is given in params
     String userName = null;
-    if (params.containsKey("username") && !params.get("username").isEmpty()) {
-      userName = params.get("username").get(0);
+    if (params.containsKey("username")) {
+      userName = params.get("username");
     } else {
       userName = userInfo.getUserName();
     }
