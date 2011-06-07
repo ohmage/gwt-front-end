@@ -101,9 +101,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   @Override
   public void go(Map<String, String> params) {
     assert view != null : "ResponsePresenter.go() called before view was set";
-    
+
     // check history token (url) params for value that should be selected in filters
-    String selectedParticipant = params.containsKey("uid") ? params.get("uid") : null;
+    String selectedParticipant = params.containsKey("uid") ? params.get("uid") : userInfo.getUserName();
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
     String selectedSurvey = params.containsKey("sid") ? params.get("sid") : null;
     String selectedPrivacyString = params.containsKey("privacy") ? params.get("privacy") : null;
@@ -340,7 +340,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.responses.clear();
     
     CampaignReadParams campaignReadParams = new CampaignReadParams();
-    campaignReadParams.userRole_opt = RoleCampaign.PARTICIPANT;
     
     // filter by campaign, if applicable
     if (campaignId != null && !campaignId.isEmpty()) {

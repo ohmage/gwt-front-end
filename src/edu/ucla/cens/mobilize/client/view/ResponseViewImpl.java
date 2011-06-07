@@ -212,9 +212,9 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
 
   @Override
-  public void selectCampaign(String campaignName) {
+  public void selectCampaign(String campaignId) {
     for (int i = 0; i < campaignFilter.getItemCount(); i++) {
-      if (campaignFilter.getItemText(i).equals(campaignName)) {
+      if (campaignFilter.getValue(i).equals(campaignId)) {
         campaignFilter.setSelectedIndex(i);
         return;
       }
