@@ -3,18 +3,13 @@ package edu.ucla.cens.mobilize.client.ui;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.google.gwt.dev.json.JsonObject;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
@@ -148,12 +143,23 @@ public class DocumentEditPresenter {
     }
   };
   
-  private boolean validateForm() {
-    // TODO
-    // must have name
-    // must have at least one of campaign or class
-    // must have file
-    return true;
+  // Checks for required fields. Displays error if one is missing. 
+  // GOTCHA: Calling method should not fire a history token if this returns
+  //   false or user may never see the error message.
+  private boolean validateForm() {    
+    boolean isValid = true;
+    if (this.view.getFileName().isEmpty()) {
+      isValid = false;
+      this.view.showError("Please select a file to upload");
+    } else if (this.view.getDocumentName().isEmpty()) {
+      isValid = false;
+      this.view.showError("Please enter a name for the document.");
+    } else if (this.view.getSelectedCampaigns().isEmpty() && 
+               this.view.getSelectedClasses().isEmpty()) {
+      isValid = false;
+      this.view.showError("Document must be linked to at least one class or campaign.");
+    }
+    return isValid;
   }
   
   public void initFormForCreate() {

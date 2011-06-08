@@ -95,6 +95,9 @@ public class ListWidget extends Composite implements HasValueChangeHandlers<Stri
     this.flexTable.removeAllRows();
   }
   
+  /**
+   * @return List of displayed items or an empty List if none. (Should never return null.)
+   */
   public List<String> getItems() {
     List<String> items = new ArrayList<String>();
     for (int i = 0; i < this.flexTable.getRowCount(); i++) {

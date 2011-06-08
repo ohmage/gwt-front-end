@@ -113,6 +113,14 @@ public class DocumentEditView extends Composite {
     return documentNameTextBox.getText();
   }
   
+  public List<String> getSelectedCampaigns() {
+    return campaignsListWidget.getItems();
+  }
+  
+  public List<String> getSelectedClasses() {
+    return classesListWidget.getItems();
+  }
+  
   public String getFileName() {
     return fileUploadInput.getFilename();
   }
