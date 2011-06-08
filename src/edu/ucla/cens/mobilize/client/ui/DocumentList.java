@@ -107,7 +107,7 @@ public class DocumentList extends Composite {
     // size
     this.documentGrid.setText(row, 
                               Column.SIZE, 
-                              Float.toString(documentInfo.getSize()) + "Mb");
+                              Float.toString(documentInfo.getSize()) + "MB");
     
     // created on
     this.documentGrid.setText(row,
