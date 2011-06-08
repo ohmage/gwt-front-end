@@ -101,6 +101,6 @@
 	 <div class="{style.listContainer}">
     <g:Grid ui:field='campaignGrid'></g:Grid>
 	 </div>
-	 
+	 <div id="formContainer" class="hidden" />
 	</g:HTMLPanel>
 </ui:UiBinder> 

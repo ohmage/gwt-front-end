@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.ui;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -34,6 +35,8 @@ import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
+import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
+import edu.ucla.cens.mobilize.client.utils.MapUtils;
 import edu.ucla.cens.mobilize.client.view.CampaignView.Presenter;
 
 public class CampaignList extends Composite {
@@ -56,6 +59,8 @@ public class CampaignList extends Composite {
     String editLink();
     String exportLink();
   }
+
+  private static Logger _logger = Logger.getLogger(CampaignList.class.getName());
   
   private static CampaignListWidgetUiBinder uiBinder = GWT
       .create(CampaignListWidgetUiBinder.class);
@@ -222,11 +227,13 @@ public class CampaignList extends Composite {
   private void exportCsv(String campaignId) {
     assert dataService != null : "DataService is null. Did you forget to call CampaignList.setDataService?";
     FormPanel exportForm = new FormPanel("_blank"); // target="_blank" to open new window
-    exportForm.setAction(AwConstants.getSurveyResponseReadUrl()); // FIXME
+    exportForm.setAction(AwConstants.getSurveyResponseReadUrl());
     exportForm.setMethod(FormPanel.METHOD_POST);
     FlowPanel innerContainer = new FlowPanel();
     
     Map<String, String> params = dataService.getSurveyResponseExportParams(campaignId);
+    _logger.fine("Generating FormPanel with hidden fields set to survey response export params: " + 
+                  MapUtils.translateToParameters(params));
     for (String paramName : params.keySet()) {
       Hidden field = new Hidden();
       field.setName(paramName);
@@ -234,7 +241,7 @@ public class CampaignList extends Composite {
       innerContainer.add(field);
     }
     exportForm.add(innerContainer);
-    mainPanel.add(exportForm);
+    mainPanel.add(exportForm, "formContainer");
     exportForm.submit();
     exportForm.removeFromParent();
   }
