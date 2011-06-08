@@ -3,12 +3,18 @@ package edu.ucla.cens.mobilize.client.ui;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.google.gwt.dev.json.JsonObject;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
@@ -117,17 +123,36 @@ public class DocumentEditPresenter {
     public void onSubmitComplete(SubmitCompleteEvent event) {
       view.clearFormFields();
       String result = event.getResults();
+      String status = null;
       // NOTE: gwt formPanel results can be null if sending to a different domain
-      // TODO: handle failure
-      
-      // redirect to campaign list so user can see results
-      userInfo.setInfoMessage("Document saved.");
-      History.newItem(HistoryTokens.documentList());
+      if (result != null) {
+        try {
+          status = JSONParser.parseStrict(result).isObject().get("result").isString().stringValue();
+        } catch (Exception e) {
+          _logger.severe("Failed to parse json. Response was: " + result + ". Error was: " + e.getMessage());
+        }
+      } else {
+        _logger.fine("null result from formPanel post, assuming this is dev mode and submission was success");
+        status = "success";
+      } 
+      if (status != null && status.equals("success")) { 
+        _logger.fine("success"); // FIXME: DELETEME
+        // redirect to campaign list so user can see results
+        userInfo.setInfoMessage("Document saved.");
+        History.newItem(HistoryTokens.documentList());
+      } else {
+        view.showError("There was a problem creating the document.");
+        _logger.severe("Document create failed. Response was: " + result);
+      }
+
     }
   };
   
   private boolean validateForm() {
     // TODO
+    // must have name
+    // must have at least one of campaign or class
+    // must have file
     return true;
   }
   
