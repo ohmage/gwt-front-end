@@ -97,6 +97,20 @@ public class CampaignDetail extends Composite {
         exportCsv(campaignUrn.getText());
       }
     });
+    
+    this.viewXmlInlineLink.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        showXmlInNewWindow(campaignXml);
+      }
+    });
+    
+    this.downloadXmlInlineLink.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        downloadXml(campaignUrn.getText());
+      }
+    });
   }
   
   private void showXmlInNewWindow(String xml) {
@@ -124,7 +138,6 @@ public class CampaignDetail extends Composite {
     popup.center();
   }
   
-  // FIXME: why doesn't this work? May need to have server set content-dispoition header...
   private void downloadXml(String campaignId) {
     FormPanel downloadForm = new FormPanel("_blank"); // _blank opens new window
     downloadForm.setAction(AwConstants.getCampaignReadUrl());
@@ -218,38 +231,6 @@ public class CampaignDetail extends Composite {
       }
       
       this.actionLinkExportResponses.setVisible(canAnalyze);
-
-      // hidden form with target set to _blank does a post request to fetch
-      // the file and displays the result in a new window. 
-      final FormPanel viewForm = new FormPanel("_blank"); // target="_blank" to open new window
-      viewForm.setAction("http://localhost:8000/MobilizeWeb/getfile"); // FIXME
-      viewForm.setMethod(FormPanel.METHOD_POST);
-      final Hidden fmt = new Hidden();
-      fmt.setName("fmt"); // if fmt=download, set content-disposition header
-      viewForm.add(fmt);
-      //formContainer.setVisible(false);
-      container.add(viewForm, "hiddenFormContainer");
-      // TODO: also pass desired filename as param
-      // TODO: username, auth_token, etc also need to go in form fields
-      
-      // FIXME: display in a popup panel instead of new window
-      this.viewXmlInlineLink.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          fmt.setValue("xml");
-          viewForm.submit();
-        }
-      });
-      
-      this.downloadXmlInlineLink.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          // when fmt is set to download, server should add content-disposition
-          // header, which prompts user to save file
-          fmt.setValue("download");
-          viewForm.submit();
-        }
-      });
 
     }
   }
