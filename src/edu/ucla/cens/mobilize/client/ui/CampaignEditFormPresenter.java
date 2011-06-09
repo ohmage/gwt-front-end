@@ -76,6 +76,7 @@ public class CampaignEditFormPresenter {
         @Override
         public void onSuccess(CampaignDetailedInfo result) {
           view.setHeader("Editing " + result.getCampaignName());
+          view.setCampaignName(result.getCampaignName());
           view.setCampaignUrn(result.getCampaignId());
           view.setDescription(result.getDescription());
           view.setPrivacy(result.getPrivacy());

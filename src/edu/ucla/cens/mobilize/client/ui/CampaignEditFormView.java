@@ -258,9 +258,9 @@ public class CampaignEditFormView extends Composite {
   }
 
   public void setPrivacy(Privacy privacy) {
-    String privacyText = privacy.toString();
+    String privacyServerString = privacy.toServerString();
     for (int i = 0; i < this.privacyListBox.getItemCount(); i++) {
-      if (this.privacyListBox.getItemText(i).equals(privacyText)) {
+      if (this.privacyListBox.getValue(i).equals(privacyServerString)) {
         this.privacyListBox.setSelectedIndex(i);
         break;
       }
