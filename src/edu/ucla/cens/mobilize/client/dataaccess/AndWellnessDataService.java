@@ -909,5 +909,14 @@ public class AndWellnessDataService implements DataService {
       throw new ServerException("Cannot contact server.");
     }        
   }
-  
+
+  @Override
+  public Map<String, String> getCampaignXmlDownloadParams(String campaignId) {
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", this.authToken);
+    params.put("client", this.client);
+    params.put("output_format", "xml");
+    params.put("campaign_urn_list", campaignId);
+    return params;
+  }
 }

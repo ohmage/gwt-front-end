@@ -121,5 +121,8 @@ public interface DataService {
   // NOTE: create document must be done through a form (?)
   
   void deleteDocument(String documentId, final AsyncCallback<String> callback);
+
+  // download is done with a formpanel, dataservice just provides params
+  Map<String, String> getCampaignXmlDownloadParams(String campaignId);
   
 }

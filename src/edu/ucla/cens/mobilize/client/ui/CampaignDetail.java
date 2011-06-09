@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.ui;
 
+
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
@@ -10,7 +11,9 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -18,6 +21,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -27,6 +31,7 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.utils.XmlUtils;
 
 public class CampaignDetail extends Composite {
 
@@ -51,6 +56,8 @@ public class CampaignDetail extends Composite {
   @UiField VerticalPanel authors;
   @UiField SpanElement runningStateSpan;
   @UiField SpanElement privacySpan;
+  @UiField Anchor actionLinkViewXml; 
+  @UiField Anchor actionLinkDownloadXml;
   @UiField Hyperlink actionLinkEditCampaign;
   @UiField Anchor actionLinkExportResponses;
   @UiField Anchor viewXmlInlineLink;
@@ -58,6 +65,7 @@ public class CampaignDetail extends Composite {
   @UiField HTMLPanel container;
 
   DataService dataService; // FIXME: use presenter instead
+  String campaignXml;
   
   public CampaignDetail() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -69,12 +77,70 @@ public class CampaignDetail extends Composite {
   }
   
   private void bind() {
+    this.actionLinkViewXml.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        showXmlInNewWindow(campaignXml);
+      }
+    });
+    
+    this.actionLinkDownloadXml.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        downloadXml(campaignUrn.getText());
+      }
+    });
+    
     this.actionLinkExportResponses.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         exportCsv(campaignUrn.getText());
       }
     });
+  }
+  
+  private void showXmlInNewWindow(String xml) {
+    final DialogBox popup = new DialogBox();
+    popup.setText("Xml Config for Campaign: " + this.campaignName.getText());
+    popup.setGlassEnabled(true);
+    VerticalPanel vertical = new VerticalPanel();
+    HTMLPanel topButtons = new HTMLPanel("<div id='topButtonContainer' style='text-align:right;'></div>");
+    Button closeButton = new Button("Close");
+    closeButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        popup.hide();
+      }
+    });
+    topButtons.add(closeButton, "topButtonContainer");
+    vertical.add(topButtons);
+    TextArea textArea = new TextArea();
+    textArea.setSize("500px", "500px");
+    String prettyXml = XmlUtils.prettyPrint(xml);
+    textArea.setText(prettyXml); // text area renders xml nicely
+    textArea.setReadOnly(true);
+    vertical.add(textArea);
+    popup.add(vertical);
+    popup.center();
+  }
+  
+  // FIXME: why doesn't this work? May need to have server set content-dispoition header...
+  private void downloadXml(String campaignId) {
+    FormPanel downloadForm = new FormPanel("_blank"); // _blank opens new window
+    downloadForm.setAction(AwConstants.getCampaignReadUrl());
+    downloadForm.setMethod(FormPanel.METHOD_POST);
+    FlowPanel innerContainer = new FlowPanel();
+    Map<String, String> params = dataService.getCampaignXmlDownloadParams(campaignId);
+    for (String paramName : params.keySet()) {
+      Hidden field = new Hidden();
+      field.setName(paramName);
+      field.setValue(params.get(paramName));
+      innerContainer.add(field);
+    }
+    downloadForm.add(innerContainer);
+    this.container.add(downloadForm, "formPanelContainer"); // second arg needed in compiled version
+    downloadForm.submit();
+    downloadForm.removeFromParent();
   }
   
   private void exportCsv(String campaignId) {
@@ -92,7 +158,7 @@ public class CampaignDetail extends Composite {
       innerContainer.add(field);
     }
     exportForm.add(innerContainer);
-    this.container.add(exportForm);
+    this.container.add(exportForm, "formPanelContainer"); // second arg needed in compiled version
     exportForm.submit();
     exportForm.removeFromParent();
   }
@@ -104,6 +170,7 @@ public class CampaignDetail extends Composite {
       // copy info from data obj into fields
       this.campaignName.setText(campaign.getCampaignName());
       this.campaignUrn.setText(campaign.getCampaignId());
+      this.campaignXml = campaign.getXmlConfig();
       this.desc.setText(campaign.getDescription());
       
       // build class list

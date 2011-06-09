@@ -9,10 +9,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.JsArrayString;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Node;
-import com.google.gwt.xml.client.NodeList;
-import com.google.gwt.xml.client.XMLParser;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;

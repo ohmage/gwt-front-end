@@ -463,4 +463,10 @@ public class MockDataService implements DataService {
     return null;
   }
 
+  @Override
+  public Map<String, String> getCampaignXmlDownloadParams(String campaignId) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

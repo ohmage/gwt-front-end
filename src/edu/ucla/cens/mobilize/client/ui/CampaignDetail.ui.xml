@@ -129,6 +129,8 @@
   </ui:style>
   
   <g:HTMLPanel ui:field='container' addStyleNames='{style.container}'>
+     <div id="formPanelContainer" /> <!-- needed for hidden form panels -->
+  
      <g:VerticalPanel addStyleNames='{style.detailPanel}'>
 
       <g:HorizontalPanel addStyleNames='{style.sectionHeader}'>
@@ -161,7 +163,8 @@
 	     <g:Anchor addStyleNames='{style.actionExportCsv}'
 	               ui:field='actionLinkExportResponses'>
 	       Export&nbsp;Responses&nbsp;(.csv) 
-	     </g:Anchor>  
+	     </g:Anchor>
+       	     
       </g:HTMLPanel>      
 
       <g:HTMLPanel>
