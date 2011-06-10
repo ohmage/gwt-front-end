@@ -10,6 +10,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -63,6 +64,8 @@ public class CampaignDetail extends Composite {
   @UiField Anchor viewXmlInlineLink;
   @UiField Anchor downloadXmlInlineLink;
   @UiField HTMLPanel container;
+  @UiField Anchor backLinkTop;
+  @UiField Anchor backLinkBottom;
 
   DataService dataService; // FIXME: use presenter instead
   String campaignXml;
@@ -109,6 +112,20 @@ public class CampaignDetail extends Composite {
       @Override
       public void onClick(ClickEvent event) {
         downloadXml(campaignUrn.getText());
+      }
+    });
+    
+    this.backLinkTop.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.back();
+      }
+    });
+    
+    this.backLinkBottom.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.back();
       }
     });
   }

@@ -135,10 +135,7 @@
 
       <g:HorizontalPanel addStyleNames='{style.sectionHeader}'>
         <g:HTMLPanel addStyleNames='{style.backLink}'>
-            <g:InlineHyperlink ui:field='backlink2' targetHistoryToken='campaigns'>
-            <!--fixme: go back to last page, may not be list-->
-              &laquo;&nbsp;Back
-            </g:InlineHyperlink>
+            <g:Anchor ui:field='backLinkTop' addStyleNames='link'>&laquo;&nbsp;Back</g:Anchor>
         </g:HTMLPanel>
         <g:HTMLPanel addStyleNames='{style.sectionHeaderTitle}'>
           Campaign&nbsp;Details
@@ -245,10 +242,9 @@
 	        <tr>
 	          <td>
 							<g:HTMLPanel addStyleNames='{style.actionLinks}'>
-							  <g:InlineHyperlink ui:field="backLink" targetHistoryToken='campaigns'>
-							  <!--fixme: go back to last page, may not be list-->
+							  <g:Anchor ui:field='backLinkBottom' addStyleNames='link'>
 							    &laquo;&nbsp;Go&nbsp;to&nbsp;campaign&nbsp;list
-							  </g:InlineHyperlink>
+							  </g:Anchor>
 							</g:HTMLPanel>
 	          </td>
 	          <td />
