@@ -115,7 +115,7 @@ public class MockDataService implements DataService {
       List<RoleCampaign> roles = new ArrayList<RoleCampaign>();
       roles.add(RoleCampaign.PARTICIPANT);
       roles.add(RoleCampaign.ANALYST);
-      info.setUserRoles(roles);
+      for (RoleCampaign role : roles) info.addUserRole(role);
       info.setDescription("Monitor sleeping patterns");
       info.setPrivacy(Privacy.SHARED);
       info.setRunningState(RunningState.RUNNING);
@@ -136,7 +136,7 @@ public class MockDataService implements DataService {
       roles = new ArrayList<RoleCampaign>();
       roles.add(RoleCampaign.PARTICIPANT);
       roles.add(RoleCampaign.AUTHOR);
-      info.setUserRoles(roles);
+      for (RoleCampaign role : roles) info.addUserRole(role);
       info.setDescription("What people eat");
       info.setPrivacy(Privacy.SHARED);
       info.setRunningState(RunningState.STOPPED);
@@ -158,7 +158,7 @@ public class MockDataService implements DataService {
       roles.add(RoleCampaign.ADMIN);
       roles.add(RoleCampaign.PARTICIPANT);
       roles.add(RoleCampaign.ANALYST);
-      info.setUserRoles(roles);
+      for (RoleCampaign role : roles) info.addUserRole(role);
       info.setDescription("Raise awareness of advertisements in the community");
       info.setPrivacy(Privacy.PRIVATE);
       info.setRunningState(RunningState.STOPPED);

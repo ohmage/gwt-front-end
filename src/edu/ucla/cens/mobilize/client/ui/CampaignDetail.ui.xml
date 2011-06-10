@@ -144,11 +144,6 @@
 
       <g:HTMLPanel addStyleNames='{style.actionBar}'>
         <g:InlineLabel addStyleNames='{style.actionLabel}'>Actions:</g:InlineLabel>
-        <g:InlineHyperlink addStyleNames='{style.actionEdit}' 
-		                       ui:field='actionLinkEditCampaign' 
-		                       targetHistoryToken='campaigns?v=edit'>
-            Edit&nbsp;Campaign
-        </g:InlineHyperlink>
 	     <g:Anchor addStyleNames='{style.actionViewXml}'
 	               ui:field='actionLinkViewXml'>
 	       View&nbsp;Xml&nbsp;Config
@@ -157,6 +152,11 @@
 	               ui:field='actionLinkDownloadXml'>
 	       Download&nbsp;Xml&nbsp;Config
 	     </g:Anchor>
+	     <g:InlineHyperlink addStyleNames='{style.actionEdit}' 
+                           ui:field='actionLinkEditCampaign' 
+                           targetHistoryToken='campaigns?v=edit'>
+            Edit&nbsp;Campaign
+        </g:InlineHyperlink>
 	     <g:Anchor addStyleNames='{style.actionExportCsv}'
 	               ui:field='actionLinkExportResponses'>
 	       Export&nbsp;Responses&nbsp;(.csv) 

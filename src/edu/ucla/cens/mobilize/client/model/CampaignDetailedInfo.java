@@ -48,19 +48,6 @@ public class CampaignDetailedInfo {
     return authors.contains(username) || supervisors.contains(username); // && no responses FIXME
   }
   
-  /*
-  // FIXME: does it make sense to have upload permission attached to campaign?
-  public boolean userCanUpload(UserInfo userInfo) {
-    boolean retval = false;
-    for (String classUserIsMemberOf : userInfo.getClassIds()) {
-      if (classes.contains(classUserIsMemberOf)) {
-        retval = true;
-        break;
-      }
-    }
-    return retval;
-  }*/
-  
   public boolean userCanAnalyze() {
     // user can analyze if:
     // 1. he is listed as an analyst and the campaign is public
@@ -212,9 +199,8 @@ public class CampaignDetailedInfo {
     }
   }
 
-  // FIXME: add/remove user role
-  public void setUserRoles (List<RoleCampaign> userRoles) {
-    this.userRoles = userRoles;
+  public void addUserRole(RoleCampaign roleOfCurrentUser) {
+    this.userRoles.add(roleOfCurrentUser);
   }
   
   public void setRunningState (RunningState runningState) {

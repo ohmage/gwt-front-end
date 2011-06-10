@@ -307,6 +307,10 @@ public class AwDataTranslators {
           campaign.setCampaignId(campaignId);
           campaign.setCampaignName(campaignAwData.getCampaignName());
           // user roles
+          JsArrayString rolesOfCurrentUser = campaignAwData.getUserRoles();
+          for (int i = 0; i < rolesOfCurrentUser.length(); i++) {
+            campaign.addUserRole(RoleCampaign.fromServerString(rolesOfCurrentUser.get(i)));
+          }
           JsArrayString supervisors = campaignAwData.getSupervisors();
           for (int i = 0; i < supervisors.length(); i++) {
             campaign.addSupervisor(supervisors.get(i));

@@ -13,7 +13,8 @@ public enum RoleCampaign {
   ANALYST,
   SUPERVISOR,
   ADMIN, 
-  RESEARCHER; // legacy
+  RESEARCHER, 
+  UNRECOGNIZED; // legacy
   
   public String toUserFriendlyString() {
     return this.toString().substring(0, 1).concat(this.toString().substring(1).toLowerCase());
@@ -21,5 +22,15 @@ public enum RoleCampaign {
 
   public String toServerString() {
     return this.toString().toLowerCase();
+  }
+  
+  public static RoleCampaign fromServerString(String roleStringInServerFormat) {
+    RoleCampaign retval = null;
+    try {
+      retval = RoleCampaign.valueOf(roleStringInServerFormat.toUpperCase());
+    } catch (Exception e) { 
+      retval = UNRECOGNIZED;
+    }
+    return retval;
   }
 }
