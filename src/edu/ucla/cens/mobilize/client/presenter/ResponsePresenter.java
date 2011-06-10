@@ -326,11 +326,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                privacy));
   }
   
-  // call with defaults (logged in user and other filters set to show all)
-  private void fetchAndShowResponses() { 
-    fetchAndShowResponses(this.userInfo.getUserName(), null, null, null);
-  }
-  
   // fetches list of campaigns, then fetches responses for each
   // args are values to filter by. any arg set to null or "" is ignored
   private void fetchAndShowResponses(final String userName,

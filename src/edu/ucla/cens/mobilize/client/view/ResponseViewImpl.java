@@ -295,6 +295,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
             responseWidget.addPromptResponseTimestamp(promptResponse.getText(), timestamp);
             break;
           case PHOTO:
+            // NOTE: the image url (the "prepared" photo prompt response) is generated in utils.AwDataTranslator
             responseWidget.addPromptResponsePhoto(promptResponse.getText(), promptResponse.getResponsePrepared());
             break;
           default:
