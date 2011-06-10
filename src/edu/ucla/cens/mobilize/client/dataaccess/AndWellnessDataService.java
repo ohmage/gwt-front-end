@@ -86,7 +86,8 @@ public class AndWellnessDataService implements DataService {
       E0300("0300", "missing JSON data"),
       E0301("0301", "unknown request type"),
       E0302("0302", "unknown phone version"),
-      E0304("0304", "invalid campaign id");
+      E0304("0304", "invalid campaign id"),
+      E0701("0701", "invalid user in query");
       
       private final String errorCode;
       private final String errorDescription;
@@ -154,7 +155,9 @@ public class AndWellnessDataService implements DataService {
           case E0301:
           case E0302:
           case E0304:
-              returnError = new ApiException(errorCode.getErrorDesc());
+          case E0701:
+              returnError = new ApiException(errorCode.getErrorCode(),
+                                             errorCode.getErrorDesc());
               break;
           default:
               returnError = new ServerException("Unknown server error.");
@@ -592,7 +595,6 @@ public class AndWellnessDataService implements DataService {
           try {
             String responseText = getResponseTextOrThrowException(requestBuilder, response);
             // no exception thrown? then it was a success
-            // TODO: get List of awdatas from the text
             List<SurveyResponse> result =
               AwDataTranslators.translateSurveyResponseReadQueryJSONToSurveyResponseList(responseText, campaignId);
               callback.onSuccess(result);

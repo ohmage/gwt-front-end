@@ -8,8 +8,11 @@ package edu.ucla.cens.mobilize.client.dataaccess.exceptions;
  */
 @SuppressWarnings("serial")
 public class ApiException extends RuntimeException {
-    public ApiException(String message) {
+    private String _errorCode = "";
+    
+    public ApiException(String errorCode, String message) {
         super(message);
+        _errorCode = errorCode;
     }
     
     public ApiException(String message, Throwable cause) {
@@ -18,5 +21,9 @@ public class ApiException extends RuntimeException {
     
     public ApiException(Throwable cause) {
         super(cause);
+    }
+    
+    public String getErrorCode() {
+      return _errorCode;
     }
 }

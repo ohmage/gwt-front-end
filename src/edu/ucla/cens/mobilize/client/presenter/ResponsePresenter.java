@@ -22,6 +22,7 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
+import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ApiException;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
@@ -348,8 +349,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       }
 
       @Override
-      public void onSuccess(List<CampaignShortInfo> result) {
-        
+      public void onSuccess(List<CampaignShortInfo> result) { 
         for (CampaignShortInfo campaignInfo : result) {
           fetchAndShowResponsesForCampaign(userName,
                                            campaignInfo.getCampaignId(), 
@@ -365,20 +365,34 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   // NOTE: This method exists because api only lets you query for responses for one 
   //   campaign at a time. When showing responses for all campaigns, the app makes
   //   multiple calls to this method.
-  private void fetchAndShowResponsesForCampaign(String userName,
+  private void fetchAndShowResponsesForCampaign(String participantName,
                                                 String campaignId, 
                                                 final String campaignName,
                                                 String surveyName,
                                                 Privacy privacy) {
-    this.dataService.fetchSurveyResponses(userName,
+    // GOTCHA: when logged in user != selected participant, this only shows
+    //   responses from campaigns that both participant and logged in user belong to
+    this.dataService.fetchSurveyResponses(participantName,
         campaignId,
         surveyName,
         privacy,
         new AsyncCallback<List<SurveyResponse>>() {
           @Override
           public void onFailure(Throwable caught) {
-            view.showErrorMessage("There was a problem loading responses for campaign: " + campaignName);
-            _logger.severe(caught.getMessage());
+            // WARNING: hack! We don't have a list of campaign ids for users other than the
+            //   logged in user, so when participant != logged in user, we query all
+            //   campaigns the logged in user belongs to and throw away any responses that
+            //   return "0701-invalid user" error. 
+            // NOTE: ideally there would be an api call to fetch list of campaign ids for
+            //   any user instead.
+            if (caught.getClass().equals(ApiException.class) && 
+                ((ApiException)caught).getErrorCode().equals("0701")) {
+              _logger.fine("Intentionally ignoring invalid user error on API call. (See warning in ResponsePresenter.)");
+            } else {
+              view.showErrorMessage("There was a problem loading responses for campaign: " + campaignName);
+              _logger.severe(caught.getMessage());
+            }
+
           }
           
           @Override
