@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.view;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
+import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.ui.CampaignDetail;
@@ -239,5 +242,16 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   @Override
   public CampaignDetail getCampaignDetail() {
     return this.campaignDetail;
+  }
+
+  @Override
+  public void setCampaignListFilters(RunningState state, 
+                                     RoleCampaign role,
+                                     Date fromDate, 
+                                     Date toDate) {
+    this.campaignList.setSelectedRunningState(state);
+    this.campaignList.setSelectedRole(role);
+    this.campaignList.setSelectedStartDate(fromDate);
+    this.campaignList.setSelectedEndDate(toDate);
   }
 }

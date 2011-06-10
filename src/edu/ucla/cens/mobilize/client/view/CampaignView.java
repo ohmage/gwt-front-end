@@ -1,9 +1,13 @@
 package edu.ucla.cens.mobilize.client.view;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.ui.IsWidget;
+
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
+import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.ui.CampaignDetail;
@@ -49,6 +53,7 @@ public interface CampaignView extends IsWidget {
 
   // set data for display
   void setCampaignList(List<CampaignShortInfo> campaigns);
+  void setCampaignListFilters(RunningState state, RoleCampaign role, Date fromDate, Date toDate);
   void setCampaignDetail(CampaignDetailedInfo campaign);
   void setCampaignEdit(CampaignDetailedInfo campaign);
   void setPlotSideBarTitle(String title);

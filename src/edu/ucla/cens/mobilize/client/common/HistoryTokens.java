@@ -1,8 +1,10 @@
 package edu.ucla.cens.mobilize.client.common;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 /**
@@ -17,6 +19,26 @@ import edu.ucla.cens.mobilize.client.utils.MapUtils;
 public class HistoryTokens {
   public static String campaignList() {
     return "campaigns";
+  }
+  
+  /**
+   * Set missing values to null
+   * @param runningState
+   * @param userRole
+   * @param fromDate
+   * @param toDate
+   * @return String History token for filtered campaign list
+   */
+  public static String campaignList(RunningState runningState,
+                                    RoleCampaign userRole,
+                                    Date fromDate,
+                                    Date toDate) {
+    Map<String, String> params = new HashMap<String, String>();
+    if (runningState != null) params.put("state", runningState.toServerString());
+    if (userRole != null) params.put("role", userRole.toServerString());
+    if (fromDate != null) params.put("from", DateUtils.translateToServerUploadFormat(fromDate));
+    if (toDate != null) params.put("to", DateUtils.translateToServerUploadFormat(toDate));
+    return params.isEmpty() ? "campaigns" : "campaigns?v=list&" + MapUtils.translateToParameters(params);
   }
   
   public static String campaignDetail(String campaignId) {

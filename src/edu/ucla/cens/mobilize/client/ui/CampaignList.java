@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.ui;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -12,7 +13,9 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -57,6 +60,8 @@ public class CampaignList extends Composite {
   }
 
   private static Logger _logger = Logger.getLogger(CampaignList.class.getName());
+
+  private DataService dataService; // needed for csv export
   
   private static CampaignListWidgetUiBinder uiBinder = GWT
       .create(CampaignListWidgetUiBinder.class);
@@ -74,34 +79,35 @@ public class CampaignList extends Composite {
   @UiField DateBox toDateBox;
   @UiField Grid campaignGrid;
   @UiField CampaignListStyle style;
+  @UiField Button goButton;
   
   // table columns 
   private enum Column { NAME, RUNNING_STATE, PRIVACY, ACTIONS };
-  
-  private DataService dataService;
   
   public CampaignList() {
     initWidget(uiBinder.createAndBindUi(this));
     initComponents();
   }
 
-  public void setDataService(DataService dataService) {
-    this.dataService = dataService;
-  }
-  
   private void initComponents() {
-    // whether campaign is running
-    stateListBox.addItem("Any");
-    stateListBox.addItem("Running");
-    stateListBox.addItem("Stopped");
-
+    // whether campaign is running. 
+    stateListBox.addItem("Any", "");
+    stateListBox.addItem(RunningState.RUNNING.toUserFriendlyString(),  
+                         RunningState.RUNNING.toServerString());      
+    stateListBox.addItem(RunningState.STOPPED.toUserFriendlyString(), 
+                         RunningState.STOPPED.toServerString());      
+    
     // current user's role in the campaign
     // FIXME: only show roles from user's roles list
-    userRoleListBox.addItem("Any");
-    userRoleListBox.addItem(RoleCampaign.ANALYST.toString());
-    userRoleListBox.addItem(RoleCampaign.PARTICIPANT.toString());
-    userRoleListBox.addItem(RoleCampaign.AUTHOR.toString());
-    userRoleListBox.addItem(RoleCampaign.SUPERVISOR.toString());
+    userRoleListBox.addItem("Any", "");
+    userRoleListBox.addItem(RoleCampaign.PARTICIPANT.toUserFriendlyString(),
+                            RoleCampaign.PARTICIPANT.toServerString());
+    userRoleListBox.addItem(RoleCampaign.ANALYST.toUserFriendlyString(),
+                            RoleCampaign.ANALYST.toServerString());
+    userRoleListBox.addItem(RoleCampaign.AUTHOR.toUserFriendlyString(),
+                            RoleCampaign.AUTHOR.toServerString());
+    userRoleListBox.addItem(RoleCampaign.SUPERVISOR.toUserFriendlyString(),
+                            RoleCampaign.SUPERVISOR.toServerString());
     userRoleListBox.setSelectedIndex(0);
     
     // start and end dates
@@ -134,6 +140,88 @@ public class CampaignList extends Composite {
     campaignGrid.getCellFormatter().setStyleName(0, 
                                                  Column.PRIVACY.ordinal(), 
                                                  style.campaignGridPrivacyHeader());
+    
+    bind(); // wire up event handlers
+  }
+
+  private void bind() {
+    this.goButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        fireHistoryTokenToMatchFilterValues();
+      }
+    });
+  }
+  
+  private void fireHistoryTokenToMatchFilterValues() {
+    History.newItem(HistoryTokens.campaignList(getSelectedRunningState(), 
+                                               getSelectedRole(),
+                                               getSelectedStartDate(), 
+                                               getSelectedEndDate()));
+  }
+  
+  public void setDataService(DataService dataService) {
+    this.dataService = dataService;
+  }
+  
+  // returns selected enum or null if no match
+  public RunningState getSelectedRunningState() {
+    RunningState retval = null;
+    String selectedString = stateListBox.getValue(stateListBox.getSelectedIndex());
+    for (RunningState state : RunningState.values()) {
+      if (state.toServerString().equals(selectedString)) {
+        retval = state;
+        break;
+      }
+    }
+    return retval;
+  }
+  
+  // returns selected enum or null if no match
+  public RoleCampaign getSelectedRole() {
+    RoleCampaign retval = null;
+    String selectedString = userRoleListBox.getValue(userRoleListBox.getSelectedIndex());
+    for (RoleCampaign role : RoleCampaign.values()) {
+      if (role.toServerString().equals(selectedString)) {
+        retval = role;
+        break;
+      }
+    }
+    return retval;
+  }
+  
+  public Date getSelectedStartDate() {
+    return fromDateBox.getValue();
+  }
+  
+  public Date getSelectedEndDate() {
+    return toDateBox.getValue();
+  }
+  
+  public void setSelectedRunningState(RunningState stateToSelect) {
+    for (int i = 0; i < stateListBox.getItemCount(); i++) {
+      if (stateListBox.getValue(i).equals(stateToSelect)) {
+        stateListBox.setSelectedIndex(i);
+        break;
+      }
+    }
+  }
+  
+  public void setSelectedRole(RoleCampaign roleToSelect) {
+    for (int i = 0; i < userRoleListBox.getItemCount(); i++) {
+      if (userRoleListBox.getValue(i).equals(roleToSelect)) {
+        userRoleListBox.setSelectedIndex(i);
+        break;
+      }
+    }
+  }
+  
+  public void setSelectedStartDate(Date fromDate) {
+    fromDateBox.setValue(fromDate);
+  }
+  
+  public void setSelectedEndDate(Date toDate) {
+    toDateBox.setValue(toDate);
   }
   
   /**
@@ -220,6 +308,8 @@ public class CampaignList extends Composite {
     return panel.asWidget();
   }
   
+  // FIXME: good way to handle this from CampaignPresenter so CampaignList widget
+  // doesn't need access to DataService?
   private void exportCsv(String campaignId) {
     assert dataService != null : "DataService is null. Did you forget to call CampaignList.setDataService?";
     FormPanel exportForm = new FormPanel("_blank"); // target="_blank" to open new window
@@ -261,6 +351,6 @@ public class CampaignList extends Composite {
       default: break;
     }
     return styleName;
-  }
-
+  }  
+  
 }

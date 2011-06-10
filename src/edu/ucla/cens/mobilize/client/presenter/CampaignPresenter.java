@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -7,12 +8,15 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
+import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.ui.CampaignEditFormPresenter;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.view.CampaignView;
 
 public class CampaignPresenter implements CampaignView.Presenter, Presenter {
@@ -20,7 +24,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   // view used in rendering
   CampaignView view;
 
-  // edit form has a lot of data logic, so gets its own presenter
+  // presenters for subviews
   CampaignEditFormPresenter campaignEditPresenter;
   
   // internal data structures  
@@ -64,18 +68,18 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     }
     
     // get subview from url params
-    if (params.isEmpty()) {
-      this.fetchAndShowAllCampaigns();
+    if (params.isEmpty() || params.get("v").equals("list")) {
+      fetchAndShowCampaignsFilteredByHistoryTokenParams(params);
     } else if (params.get("v").equals("detail") && params.containsKey("id")) {
       // anything after first id is ignored
-      this.fetchAndShowCampaignDetail(params.get("id"));
+      fetchAndShowCampaignDetail(params.get("id"));
     } else if (params.get("v").equals("author_center")) {
-      this.showAuthorCenter();
+      showAuthorCenter();
     } else if (params.get("v").equals("create")) {
-      this.showCampaignCreateForm();
+      showCampaignCreateForm();
     } else if (params.get("v").equals("edit") && params.containsKey("id")) {
       // anything after first id is ignored
-      this.fetchCampaignAndShowEditForm(params.get("id"));
+      fetchCampaignAndShowEditForm(params.get("id"));
     } else {
       // unrecognized view - do nothing
       // TODO: log?
@@ -86,10 +90,7 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
   public void setView(CampaignView view) {
     this.view = view;
     this.view.setPresenter(this);
-    // FIXME: better way to connect subview to presenter?
     this.campaignEditPresenter.setView(view.getCampaignEditForm());
-    
-    // TODO: give campaign list a presenter instead
     this.view.getCampaignList().setDataService(this.dataService);
     this.view.getCampaignDetail().setDataService(this.dataService);
   }
@@ -114,6 +115,59 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
         view.showList();
       }
     });
+  }
+
+  // converts history token params to typesafe filter params before fetching
+  private void fetchAndShowCampaignsFilteredByHistoryTokenParams(Map<String, String> params) {
+    // FIXME: instead of try/catch, add helper to enums that will return null for bad vals
+    RunningState runningState = null;
+    RoleCampaign role = null;
+    Date fromDate = null;
+    Date toDate = null;
+    try {
+      // keys must match those in HistoryTokens.campaignList()
+      if (params.containsKey("state")) runningState = RunningState.valueOf(params.get("state").toUpperCase());
+      if (params.containsKey("role")) role = RoleCampaign.valueOf(params.get("role").toUpperCase());
+      if (params.containsKey("from")) fromDate = DateUtils.translateFromServerFormat(params.get("from"));
+      if (params.containsKey("to")) fromDate = DateUtils.translateFromServerFormat(params.get("to"));
+    } catch (Exception e) {
+      _logger.warning(e.getMessage());
+    }
+    
+    // now fetch and show
+    fetchAndShowCampaigns(runningState, role, fromDate, toDate);
+  }
+  
+  
+  public void fetchAndShowCampaigns(final RunningState state,
+                                    final RoleCampaign role,
+                                    final Date fromDate,
+                                    final Date toDate) {
+    CampaignReadParams params = new CampaignReadParams();
+    params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
+    if (state != null) params.runningState_opt = state;
+    if (role != null) params.userRole_opt = role;
+    if (fromDate != null) params.startDate_opt = fromDate;
+    if (toDate != null) params.endDate_opt = toDate;
+    this.view.clearPlots();
+    this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignShortInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        _logger.severe(caught.getMessage());
+        view.showList();
+        view.showError("There was a problem loading the campaigns.");
+      }
+
+      @Override
+      public void onSuccess(List<CampaignShortInfo> result) {
+        // display result
+        view.setCampaignList(result);
+        // set dropdown filters to match values used in query
+        view.setCampaignListFilters(state, role, fromDate, toDate);
+        // make list subview visible
+        view.showList();
+      }
+    });    
   }
 
   private void fetchAndShowCampaignDetail(String campaignId) {
