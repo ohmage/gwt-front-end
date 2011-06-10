@@ -18,4 +18,6 @@ public interface LoginView extends IsWidget {
     
     // Sets the presenter so the view can call the presenter in response to events
     void setPresenter(Presenter presenter);
+    void disableLoginForm();
+    void enableLoginForm();
 }

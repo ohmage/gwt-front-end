@@ -12,9 +12,13 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+
+import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 
 
 public class LoginViewImpl extends Composite implements LoginView {
@@ -102,6 +106,22 @@ public class LoginViewImpl extends Composite implements LoginView {
     @Override
     public String getPassword() {
       return passwordTextBox.getText();
+    }
+
+    @Override
+    public void disableLoginForm() {
+      loginButton.setEnabled(false);
+      userNameTextBox.setEnabled(false);
+      passwordTextBox.setEnabled(false);
+      WaitIndicator.show();
+    }
+
+    @Override
+    public void enableLoginForm() {
+      loginButton.setEnabled(true);
+      userNameTextBox.setEnabled(true);
+      passwordTextBox.setEnabled(true);
+      WaitIndicator.hide();
     }
 
 }

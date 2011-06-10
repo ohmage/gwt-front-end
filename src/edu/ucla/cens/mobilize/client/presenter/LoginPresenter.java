@@ -51,12 +51,17 @@ public class LoginPresenter implements Presenter,
         return;
       } 
       
+      // don't let user submit again or you could end up in a bad state 
+      // with different auth token on the app than on the server
+      view.disableLoginForm();
+      
       dataService.fetchAuthorizationToken(userName, password, new AsyncCallback<AuthorizationTokenQueryAwData>() {
         
           /**
            * Notifies the View that the login failed
            */
           public void onFailure(Throwable caught) {
+             view.enableLoginForm();
              _logger.warning("User login failed with reason: " + caught.getMessage());
              if (caught.getClass().equals(ServerUnavailableException.class)) {
                DialogBox errorDialog = new DialogBox();
