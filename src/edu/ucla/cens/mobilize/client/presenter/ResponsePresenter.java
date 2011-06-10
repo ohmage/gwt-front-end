@@ -158,6 +158,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.view.getCampaignFilter().addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent event) {
+        view.selectSurvey(""); // clear selection - new campaign will have different surveys 
         fireHistoryTokenToMatchFilterValues();
       }
     });
