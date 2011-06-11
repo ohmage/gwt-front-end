@@ -26,7 +26,9 @@ public class DocumentList extends Composite {
     String documentGrid();
     String documentGridHeader();
     String documentGridNameColumn();
+    String documentGridSizeColumn();
     String documentName();
+    String documentSize();
     String privacyPrivate();
     String privacyShared();
     String detailsLink();
@@ -80,6 +82,9 @@ public class DocumentList extends Composite {
     documentGrid.getCellFormatter().setStyleName(0, 
                                                  Column.DOCUMENT_NAME, 
                                                  style.documentGridNameColumn());
+    documentGrid.getCellFormatter().setStyleName(0, 
+                                                 Column.SIZE, 
+                                                 style.documentGridSizeColumn());
   }
 
   public void setDocuments(List<DocumentInfo> documents) {
@@ -110,7 +115,8 @@ public class DocumentList extends Composite {
     // size
     this.documentGrid.setText(row, 
                               Column.SIZE, 
-                              Float.toString(documentInfo.getSize()) + "MB");
+                              Float.toString(documentInfo.getSize()) + " MB");
+    this.documentGrid.getCellFormatter().setStyleName(row, Column.SIZE, style.documentSize());
     
     // privacy 
     this.documentGrid.setText(row, Column.PRIVACY, documentInfo.getPrivacy().toString());
