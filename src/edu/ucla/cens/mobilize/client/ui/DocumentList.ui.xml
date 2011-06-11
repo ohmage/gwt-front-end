@@ -25,17 +25,6 @@
     .oddRow { /* stripe odd rows for easier viewing */
       background-color: #EEE;
     }
-    .documentNamePrivate {
-      background-image: url('images/lock_small.png');
-    }
-    .documentNameShared {
-      background-image: url('images/page_white_small.png');
-    }
-    .documentNamePrivate, .documentNameShared {
-      background-repeat: no-repeat;
-      background-position: 2px 50%;
-      padding: 3px 18px 3px 20px;
-    }
     /* action links are all small text with icons */
     .downloadLink, .detailsLink, .editLink {
       background-repeat: no-repeat;
@@ -52,6 +41,25 @@
     .editLink {
       background-image: url('images/page_white_edit_small.png');
     }
+    .privacyShared, .privacyPrivate {
+      background-repeat: no-repeat;
+      background-position: 2px 50%;
+      font-size: 0.8em;
+      padding: 3px 18px;
+    }
+    .privacyPrivate {
+      background-image: url('images/lock_small.png');
+    }
+    .privacyShared {
+      background-image: url('images/group_small.png');
+    }
+    .documentName {
+    	background-repeat: no-repeat;
+      background-position: 2px 50%;
+    	background-image: url('images/bullet_blue.png');
+    	padding-left: 20px;
+    }
+    
   </ui:style>
   <g:HTMLPanel>
    <div class="{style.listContainer}">

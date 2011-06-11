@@ -26,6 +26,7 @@ public class DocumentEditPresenter {
   private UserInfo userInfo;
   private DataService dataService;
   private EventBus eventBus;
+  private boolean isCreate = true;
   
   private Logger _logger = Logger.getLogger(DocumentEditPresenter.class.getName());
   
@@ -148,7 +149,7 @@ public class DocumentEditPresenter {
   //   false or user may never see the error message.
   private boolean validateForm() {    
     boolean isValid = true;
-    if (this.view.getFileName().isEmpty()) {
+    if (this.isCreate && this.view.getFileName().isEmpty()) { 
       isValid = false;
       this.view.showError("Please select a file to upload");
     } else if (this.view.getDocumentName().isEmpty()) {
@@ -163,6 +164,7 @@ public class DocumentEditPresenter {
   }
   
   public void initFormForCreate() {
+    this.isCreate = true;
     view.clearFormFields();
     view.setHeader("Uploading new document.");
     view.setUploadPanelVisible(true);
@@ -182,6 +184,7 @@ public class DocumentEditPresenter {
 
       @Override
       public void onSuccess(DocumentInfo result) {
+        isCreate = false;
         view.setDocument(result);
         view.setHeader("Editing " + result.getDocumentName());
         view.setUploadPanelVisible(false);

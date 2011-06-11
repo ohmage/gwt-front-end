@@ -12,6 +12,7 @@ public class WaitIndicator {
     loadingImage = new Image();
     loadingImage.setUrl("images/loading.gif");
     panel.setGlassEnabled(true);
+    panel.setModal(true);
     panel.add(loadingImage);
     panel.center();
   }

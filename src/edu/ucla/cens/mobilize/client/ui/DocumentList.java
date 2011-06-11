@@ -26,8 +26,9 @@ public class DocumentList extends Composite {
     String documentGrid();
     String documentGridHeader();
     String documentGridNameColumn();
-    String documentNamePrivate();
-    String documentNameShared();
+    String documentName();
+    String privacyPrivate();
+    String privacyShared();
     String detailsLink();
     String editLink();
     String downloadLink();
@@ -49,10 +50,11 @@ public class DocumentList extends Composite {
   private class Column { 
     private static final int DOCUMENT_NAME = 0;
     private static final int SIZE          = 1;
-    private static final int CREATION_TIME = 2;
-    private static final int CREATOR       = 3;
-    private static final int ACTIONS       = 4;
-    private static final int count         = 5; // num columns above
+    private static final int PRIVACY       = 2;
+    private static final int CREATION_TIME = 3;
+    private static final int CREATOR       = 4;
+    private static final int ACTIONS       = 5;
+    private static final int count         = 6; // num columns above
   }
   
   public DocumentList() {
@@ -66,6 +68,7 @@ public class DocumentList extends Composite {
     documentGrid.getRowFormatter().setStyleName(0, style.documentGridHeader());
     documentGrid.setText(0, Column.DOCUMENT_NAME, "Document Name");
     documentGrid.setText(0, Column.SIZE, "Size");
+    documentGrid.setText(0, Column.PRIVACY, "Privacy");
     documentGrid.setText(0, Column.CREATION_TIME, "Created on");
     documentGrid.setText(0, Column.CREATOR, "Created by");
     documentGrid.setText(0, Column.ACTIONS, "Actions");
@@ -99,15 +102,21 @@ public class DocumentList extends Composite {
     Hyperlink documentNameDownloadLink = 
       new Hyperlink(documentInfo.getDocumentName(), 
                     HistoryTokens.documentDetail(documentInfo.getDocumentId()));
-    this.documentGrid.setWidget(row, Column.DOCUMENT_NAME, documentNameDownloadLink); 
+    this.documentGrid.setWidget(row, Column.DOCUMENT_NAME, documentNameDownloadLink);
     this.documentGrid.getCellFormatter().setStyleName(row, 
                                                       Column.DOCUMENT_NAME, 
-                                                      getDocumentNameStyle(documentInfo.getPrivacy()));
+                                                      style.documentName());
 
     // size
     this.documentGrid.setText(row, 
                               Column.SIZE, 
                               Float.toString(documentInfo.getSize()) + "MB");
+    
+    // privacy 
+    this.documentGrid.setText(row, Column.PRIVACY, documentInfo.getPrivacy().toString());
+    this.documentGrid.getCellFormatter().setStyleName(row, 
+                                                      Column.PRIVACY, 
+                                                      getPrivacyStyle(documentInfo.getPrivacy()));    
     
     // created on
     this.documentGrid.setText(row,
@@ -148,13 +157,13 @@ public class DocumentList extends Composite {
     return panel.asWidget();
   }
   
-  private String getDocumentNameStyle(Privacy privacy) {
+  private String getPrivacyStyle(Privacy privacy) {
     // lock if private, page or file type icon otherwise
     String retval = null;
     if (privacy.equals(Privacy.PRIVATE)) {
-      retval = style.documentNamePrivate();
+      retval = style.privacyPrivate();
     } else if (privacy.equals(Privacy.SHARED)) {
-      retval = style.documentNameShared();
+      retval = style.privacyShared();
     } else {
       retval = "";
     }
