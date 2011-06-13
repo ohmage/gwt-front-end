@@ -1,7 +1,8 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
-	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
+	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui"
+	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
   <ui:style type="edu.ucla.cens.mobilize.client.view.ResponseViewImpl.ResponseViewStyles">    
     .buttonPanel {
     	padding: 4px 12px;
@@ -10,43 +11,21 @@
     	padding: 10px 15px; 
     	padding: 0px;
     }
+    .dateBox {
+    	width: 100px;
+    }
     .leftSideBar {
     	background-color: #EEE;
     	border-right: solid 1px #CCC;
-    	cursor: pointer;
-    }
-    .leftSideBarMenu {
+    	padding: 10px 10px 10px 15px;
     	width: 100%;
     }
-    .leftSideBarMenu table {
-    	border:none;
-    	border-collapse: collapse;
-    	margin-top: 20px;
-    }
-    .leftSideBarMenu td {
-      border-bottom: solid thin #DDD;
-      cursor: pointer;
-      padding: 4px 0px 4px 20px;
-      width: 200px; /* same as west panel */
-    }
-    .leftSideBarMenu td:hover {
-    	background-color: #FFF;
-    }
-    .filterContainer {
-    	background-color: #DDD;
-    	border-bottom: solid 1px #BBB;
-      padding: 2px 2px 2px 20px;
-      text-align: right;
-      width: 100%;
+    .filter {
+    	width: 100%;
     }
     .filterContainer .label {
     	font-weight: bold;
-    	padding: 0px 5px 0px 10px;
-    }
-    .filterContainer select {
-    }
-    .filterContainer td {
-    	vertical-align: middle;
+    	padding: 2px 0px 0px;
     }
     .header td {
     	background-color: #EEE;
@@ -112,36 +91,45 @@
       padding: 0px 2px 5px 2px;
       text-decoration: underline;
     }
+    .topBar {
+    	background-color: #DDD;
+    }
   </ui:style>
   
   <g:DockLayoutPanel unit='PX' ui:field='mainLayout'>
   
     <!-- top filter bar -->
     <g:north size='27'>
-      <g:HTMLPanel addStyleNames='{style.filterContainer}'>      
-		    <g:HorizontalPanel verticalAlignment='middle'>
-		      <g:InlineLabel addStyleNames='{style.label}'>Participant Name:</g:InlineLabel>
-		      <g:InlineLabel ui:field='singleParticipantLabel' />
-		      <g:ListBox ui:field='participantFilter' visibleItemCount='1' />
-		      <g:InlineLabel addStyleNames='{style.label}'>Campaign:</g:InlineLabel>
-		      <g:ListBox ui:field='campaignFilter' visibleItemCount='1' />
-		      <g:InlineLabel addStyleNames='{style.label}'>Survey:</g:InlineLabel>
-		      <g:ListBox ui:field='surveyFilter' visibleItemCount='1' />
-		    </g:HorizontalPanel>
+      <g:HTMLPanel addStyleNames='{style.topBar}'>      
 	    </g:HTMLPanel>
     </g:north>
     
     <!-- left sidebar lets you pick private/shared/invisible -->
     <g:west size='170'>
-      <g:HTMLPanel addStyleNames='{style.leftSideBar}'>
-        <g:MenuBar ui:field='leftSideBarMenu'
-                   vertical='true'
-                   addStyleNames='{style.leftSideBarMenu}'>
-          <g:MenuItem ui:field='privateMenuItem'>Private Responses</g:MenuItem>
-          <g:MenuItem ui:field='sharedMenuItem'>Shared Responses</g:MenuItem>
-          <g:MenuItem ui:field='allMenuItem'>All Responses</g:MenuItem>
-        </g:MenuBar>
-      </g:HTMLPanel>
+      <g:VerticalPanel addStyleNames='{style.filterContainer} {style.leftSideBar}'>
+        <g:Label addStyleNames='{style.label}'>Participant:</g:Label>
+        <g:Label ui:field='singleParticipantLabel' />
+        <g:ListBox ui:field='participantFilter' 
+                   visibleItemCount='1'
+                   addStyleNames='{style.filter}' />
+        <g:Label addStyleNames='{style.label}'>Campaign:</g:Label>
+        <g:ListBox ui:field='campaignFilter'
+                   visibleItemCount='1'
+                   addStyleNames='{style.filter}' />
+        <g:Label addStyleNames='{style.label}'>Survey:</g:Label>
+        <g:ListBox ui:field='surveyFilter'
+                   visibleItemCount='1' 
+                   addStyleNames='{style.filter}' />
+        <g:Label addStyleNames='{style.label}'>Privacy:</g:Label>
+        <g:ListBox ui:field='privacyFilter'
+                   visibleItemCount='1' 
+                   addStyleNames='{style.filter}' />
+        <g:Label addStyleNames='{style.label}'>From date:</g:Label>
+        <dp:DateBox ui:field='fromDateBox' addStyleNames='{style.dateBox}' />
+        <g:Label addStyleNames='{style.label}'>To date:</g:Label>
+        <dp:DateBox ui:field='toDateBox' addStyleNames='{style.dateBox}' />
+        <g:Button ui:field='applyFiltersButton'>Apply Filters</g:Button>
+      </g:VerticalPanel>
     </g:west>
     
     <g:center>

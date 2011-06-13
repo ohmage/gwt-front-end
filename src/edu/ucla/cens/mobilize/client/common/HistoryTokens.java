@@ -88,12 +88,16 @@ public class HistoryTokens {
   public static String responseList(String participant,
                                     String campaign,
                                     String survey,
-                                    Privacy privacy) {
+                                    Privacy privacy,
+                                    Date startDate,
+                                    Date endDate) {
     Map<String, String> params = new HashMap<String, String>();
     if (participant != null) params.put("uid", participant);
     if (campaign != null) params.put("cid", campaign);
     if (survey != null) params.put("sid", survey);
     if (privacy != null) params.put("privacy", privacy.toServerString());
+    if (startDate != null) params.put("from", DateUtils.translateToHistoryTokenFormat(startDate));
+    if (endDate != null) params.put("from", DateUtils.translateToHistoryTokenFormat(endDate));
     return params.isEmpty() ? "responses" : "responses?" + MapUtils.translateToParameters(params);
   }
   

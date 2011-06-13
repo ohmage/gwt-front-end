@@ -11,23 +11,21 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.DateBox;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
@@ -51,10 +49,14 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   @UiField ResponseViewStyles style;
   
-  @UiField InlineLabel singleParticipantLabel;
+  @UiField Label singleParticipantLabel;
   @UiField ListBox participantFilter;
   @UiField ListBox campaignFilter;
   @UiField ListBox surveyFilter;
+  @UiField ListBox privacyFilter;
+  @UiField DateBox fromDateBox;
+  @UiField DateBox toDateBox;
+  @UiField Button applyFiltersButton;
   @UiField MessageWidget messageWidget;
   @UiField Label sectionHeaderTitle;
   @UiField Label sectionHeaderDetail;
@@ -70,47 +72,20 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField Anchor selectAllLinkBottom;
   @UiField Anchor selectNoneLinkBottom;
   
-  @UiField MenuBar leftSideBarMenu;
-  @UiField MenuItem privateMenuItem;
-  @UiField MenuItem sharedMenuItem;
-  @UiField MenuItem allMenuItem;
-  
   ResponseView.Presenter presenter;
   Privacy selectedPrivacy = Privacy.UNDEFINED;
-  
+
   public ResponseViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
     setEventHandlers();
-  }
-  
-  private void clearLeftSideBarStyles() {
-    this.allMenuItem.setStyleName("");
-    this.sharedMenuItem.setStyleName("");
-    this.privateMenuItem.setStyleName("");
+    
+    // set up date pickers
+    DateBox.Format fmt = new DateBox.DefaultFormat(DateUtils.getDateBoxDisplayFormat());
+    fromDateBox.setFormat(fmt);
+    toDateBox.setFormat(fmt);
   }
   
   private void setEventHandlers() {
-    /*
-    privateMenuItem.setCommand(new Command() {
-      @Override
-      public void execute() {
-        selectedPrivacy = Privacy.PRIVATE;
-      }
-    });
-    
-    sharedMenuItem.setCommand(new Command() {
-      @Override
-      public void execute() {
-        selectedPrivacy = Privacy.SHARED;
-      }
-    });
-    
-    allMenuItem.setCommand(new Command() {
-      @Override
-      public void execute() {
-        selectedPrivacy = Privacy.UNDEFINED;
-      }
-    });*/
     
     selectAllLinkTop.addClickHandler(new ClickHandler() {
       @Override
@@ -181,7 +156,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   } 
 
   @Override
-  public void setCampaignChoices(Map<String, String> campaignIdToNameMap) {
+  public void setCampaignList(Map<String, String> campaignIdToNameMap) {
     campaignFilter.clear();
     campaignFilter.addItem("All", "");
     for (String campaignId : campaignIdToNameMap.keySet()) {
@@ -196,6 +171,15 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     surveyFilter.addItem("All", "");
     for (String name : surveyNames) {
       surveyFilter.addItem(name);
+    }
+  }
+  
+  @Override
+  public void setPrivacyStates(List<Privacy> privacyStates) {
+    privacyFilter.clear();
+    privacyFilter.addItem("All", "");
+    for (Privacy privacy : privacyStates) {
+      privacyFilter.addItem(privacy.toUserFriendlyString(), privacy.toServerString());
     }
   }
 
@@ -237,42 +221,31 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @Override 
   public void selectPrivacyState(Privacy privacy) {
-    // TODO: 
+    String serverString = privacy.toServerString();
+    for (int i = 0; i < privacyFilter.getItemCount(); i++) {
+      if (privacyFilter.getValue(i).equals(serverString)) {
+        privacyFilter.setSelectedIndex(i);
+        return;
+      }
+    }
+    // if not found, select first item ("All")
+    privacyFilter.setSelectedIndex(0);
   }
   
   @Override
-  public void renderPrivate(List<SurveyResponse> responses) {
-    selectedPrivacy = Privacy.PRIVATE;
-    clearLeftSideBarStyles();
-    privateMenuItem.setStyleName(style.sideBarItemSelected());
-    this.sectionHeaderTitle.setText("Private Responses");
-    this.sectionHeaderDetail.setText("Visible only to you.");
-    renderResponses(responses);
-    // FIXME: supervisor should see different text ("Visible only to responder"?)
+  public void selectStartDate(Date fromDate) {
+    fromDateBox.setValue(fromDate);
   }
 
   @Override
-  public void renderShared(List<SurveyResponse> responses) {
-    selectedPrivacy = Privacy.SHARED;
-    clearLeftSideBarStyles();
-    sharedMenuItem.setStyleName(style.sideBarItemSelected());
-    this.sectionHeaderTitle.setText("Shared responses");
-    this.sectionHeaderDetail.setText("Visible to all campaign participants.");
-    renderResponses(responses);
-  }
-
-  @Override
-  public void renderInvisible(List<SurveyResponse> responses) {
-    this.sectionHeaderTitle.setText("Invisible Responses");
-    this.sectionHeaderDetail.setText("Visible only to supervisor, not to responder or any other participants.");
-    renderResponses(responses);
+  public void selectEndDate(Date toDate) {
+    toDateBox.setValue(toDate);
   }
   
   @Override
   public void renderAll(List<SurveyResponse> responses) {
     selectedPrivacy = Privacy.UNDEFINED;
-    clearLeftSideBarStyles();
-    allMenuItem.setStyleName(style.sideBarItemSelected());
+    //allMenuItem.setStyleName(style.sideBarItemSelected());
     this.sectionHeaderTitle.setText("All Responses");
     this.sectionHeaderDetail.setText("Private responses are visible only to you. " +
                                      "Shared responses are visible to all participants. ");
@@ -336,7 +309,18 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   @Override
   public Privacy getSelectedPrivacyState() {
-    return this.selectedPrivacy;
+    int index = this.privacyFilter.getSelectedIndex();
+    return (index > -1) ? Privacy.fromServerString(this.privacyFilter.getValue(index)) : null;
+  }
+
+  @Override
+  public Date getSelectedStartDate() {
+    return this.fromDateBox.getValue();
+  }
+
+  @Override
+  public Date getSelectedEndDate() {
+    return this.toDateBox.getValue();
   }
 
   @Override
@@ -362,6 +346,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     retval.add(this.deleteButtonBottom);
     return retval;
   }
+  
+  @Override
+  public HasClickHandlers getApplyFiltersButton() {
+    return this.applyFiltersButton;
+  }
 
   @Override
   public HasChangeHandlers getCampaignFilter() {
@@ -376,6 +365,22 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public HasChangeHandlers getParticipantFilter() {
     return this.participantFilter;
+  }
+  
+
+  @Override
+  public HasChangeHandlers getPrivacyFilter() {
+    return this.privacyFilter;
+  }
+
+  @Override
+  public HasValueChangeHandlers<Date> getStartDateFilter() {
+    return this.fromDateBox;
+  }
+
+  @Override
+  public HasValueChangeHandlers<Date> getEndDateFilter() {
+    return this.toDateBox;
   }
 
   @Override
@@ -473,5 +478,15 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     
   }
 
+  @Override
+  public void enableSurveyFilter() {
+    this.surveyFilter.setEnabled(true);
+  }
+
+  @Override
+  public void disableSurveyFilter() {
+    this.surveyFilter.setSelectedIndex(-1);
+    this.surveyFilter.setEnabled(false);
+  }
   
 }

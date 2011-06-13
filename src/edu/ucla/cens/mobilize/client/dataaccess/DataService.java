@@ -1,4 +1,5 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -93,6 +94,8 @@ public interface DataService {
                             String campaignId,
                             String surveyName,
                             Privacy privacy,
+                            Date startDate,
+                            Date endDate,
                             final AsyncCallback<List<SurveyResponse>> callback);
   void updateSurveyResponse(String campaignId,
                             int surveyKey,

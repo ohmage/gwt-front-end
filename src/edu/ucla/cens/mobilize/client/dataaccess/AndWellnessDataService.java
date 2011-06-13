@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -573,6 +574,8 @@ public class AndWellnessDataService implements DataService {
                                    final String campaignId,
                                    String surveyName, // ignored if null or ""
                                    Privacy privacy,
+                                   Date startDate,
+                                   Date endDate,
                                    final AsyncCallback<List<SurveyResponse>> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     SurveyResponseReadParams params = new SurveyResponseReadParams();
@@ -582,8 +585,10 @@ public class AndWellnessDataService implements DataService {
     params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
     params.userList.add(userName);
     // if surveyName is omitted, readparams object sends special token for all surveys
-    if (surveyName != null && !surveyName.isEmpty())  params.surveyIdList_opt.add(surveyName); 
-    if (privacy != null) params.privacyState_opt = privacy;
+    if (surveyName != null && !surveyName.isEmpty())  params.surveyIdList_opt.add(surveyName);
+    params.privacyState_opt = privacy;
+    params.startDate_opt = startDate;
+    params.endDate_opt = endDate;
     
     String postParams = params.toString();
     _logger.fine("Fetching survey responses with params: " + postParams);

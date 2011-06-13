@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.dataaccess.requestparams;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Map;
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 public class SurveyResponseReadParams extends RequestParams {
@@ -28,7 +30,9 @@ public class SurveyResponseReadParams extends RequestParams {
   
   public Privacy privacyState_opt = Privacy.UNDEFINED;
   
-  // TODO: start_date, end_date
+  // start and end date are optional, but if one is present, both must be present
+  public Date startDate_opt;
+  public Date endDate_opt;
   
   public enum OutputFormat { JSON_ROWS, JSON_COLS, CSV;
     public String toParamString() {
@@ -45,8 +49,10 @@ public class SurveyResponseReadParams extends RequestParams {
     assert this.campaignUrn != null : "campaignUrn is required";
     assert this.client != null : "client is required";
     assert this.outputFormat != null : "output format is required";
-    assert this.userList != null && !this.userList.isEmpty() : "at least one user must be given in user list";  
-    // FIXME: is that true? or can users be set to ohmage:all?
+    assert this.userList != null && !this.userList.isEmpty() : "at least one user must be given in user list";
+    assert (this.startDate_opt == null && this.endDate_opt == null) || // both dates null is ok 
+           (this.startDate_opt != null && this.endDate_opt != null) :  // both dates set is ok
+           "startDate and endDate must both be set or both be null";
     
     Map<String, String> params = new HashMap<String, String>();
     params.put("auth_token", this.authToken);
@@ -64,6 +70,15 @@ public class SurveyResponseReadParams extends RequestParams {
     if (!this.privacyState_opt.equals(Privacy.UNDEFINED)) { // leave off if undefined
       params.put("privacy_state", this.privacyState_opt.toString().toLowerCase());
     }
+    
+    if (this.startDate_opt != null) {
+      params.put("start_date", DateUtils.translateToServerUploadFormat(this.startDate_opt));
+    }
+    
+    if (this.endDate_opt != null) {
+      params.put("end_date", DateUtils.translateToServerUploadFormat(this.endDate_opt));
+    }
+    
     return MapUtils.translateToParameters(params);
   }
 

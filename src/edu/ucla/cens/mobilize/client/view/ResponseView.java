@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.view;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,38 +28,46 @@ public interface ResponseView extends IsWidget {
   
   // load values in filters
   void setParticipantList(List<String> participantNames);
-  void setCampaignChoices(Map<String, String> campaignIdToNameMap);
+  void setCampaignList(Map<String, String> campaignIdToNameMap);
   void setSurveyList(List<String> surveyNames);
+  void setPrivacyStates(List<Privacy> privacyStates);
   
   // set selected filters
   void selectParticipant(String participant);
   void selectCampaign(String campaign);
   void selectSurvey(String survey);
   void selectPrivacyState(Privacy privacy);
+  void selectStartDate(Date fromDate);
+  void selectEndDate(Date toDate);
 
   // get selected filters
   String getSelectedParticipant();
   String getSelectedCampaign();
   String getSelectedSurvey();
   Privacy getSelectedPrivacyState();
+  Date getSelectedStartDate();
+  Date getSelectedEndDate();
   
   // display
-  void renderPrivate(List<SurveyResponse> responses);
-  void renderShared(List<SurveyResponse> responses);
-  void renderInvisible(List<SurveyResponse> responses);
   void renderAll(List<SurveyResponse> responses);
   void clearResponseList();
   void markShared(int responseKey);
   void markPrivate(int responseKey);
   void removeResponse(int responseKey);
+  void enableSurveyFilter();
+  void disableSurveyFilter();
   
   // gui elements needed by presenter for event handling
   List<HasClickHandlers> getShareButtons();
   List<HasClickHandlers> getMakePrivateButtons();
   List<HasClickHandlers> getDeleteButtons();
   List<String> getSelectedSurveyResponseKeys();
+  HasClickHandlers getApplyFiltersButton();
   HasChangeHandlers getCampaignFilter();
   HasChangeHandlers getSurveyFilter();
   HasChangeHandlers getParticipantFilter();
+  HasChangeHandlers getPrivacyFilter();
+  HasValueChangeHandlers<Date> getStartDateFilter();
+  HasValueChangeHandlers<Date> getEndDateFilter();
   
 }

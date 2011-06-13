@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -13,14 +14,17 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
-import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ApiException;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
@@ -93,6 +97,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
       @Override
       public void onSuccess(CampaignDetailedInfo result) {
+        view.enableSurveyFilter();
         view.setSurveyList(result.getSurveyIds()); // FIXME: ok to have ids here instead of names?
         if (surveyToSelectWhenDone != null) view.selectSurvey(surveyToSelectWhenDone);
       }
@@ -108,28 +113,49 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
     String selectedSurvey = params.containsKey("sid") ? params.get("sid") : null;
     String selectedPrivacyString = params.containsKey("privacy") ? params.get("privacy") : null;
+    String startDateString = params.containsKey("from") ? params.get("from") : null;
+    String endDateString = params.containsKey("to") ? params.get("to") : null;
     
     // set up participant filter
     fetchAndFillParticipantChoices(selectedParticipant);
     
     // set up campaign filter
-    view.setCampaignChoices(userInfo.getCampaigns()); 
+    view.setCampaignList(userInfo.getCampaigns()); 
     if (selectedCampaign != null) view.selectCampaign(selectedCampaign);
     
     // set up survey filter (contents depend on selected campaign filter)
-    fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, selectedSurvey);
+    view.disableSurveyFilter(); // disabled if campaign not selected 
+    if (selectedCampaign != null) {
+      // re-enables survey filter on success
+      fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, selectedSurvey);
+    }
     
     // set up privacy filter
-    Privacy selectedPrivacy = null;
-    try {
-      selectedPrivacy = Privacy.valueOf(selectedPrivacyString);
-    } catch (Exception e) {
-      _logger.fine("Invalid privacy value: " + selectedPrivacyString);
-    }
+    List<Privacy> privacyChoices = new ArrayList<Privacy>();
+    privacyChoices.add(Privacy.PRIVATE);
+    privacyChoices.add(Privacy.SHARED);
+    // TODO: check to see if INVISIBLE is allowed in this installation and add it too
+    view.setPrivacyStates(privacyChoices);
+    Privacy selectedPrivacy = Privacy.fromServerString(selectedPrivacyString);
     view.selectPrivacyState(selectedPrivacy);
     
+    // set up date filters
+    Date startDate = null;
+    Date endDate = null;
+    if (startDateString != null && endDateString != null) {
+      startDate = DateUtils.translateFromHistoryTokenFormat(startDateString);
+      endDate = DateUtils.translateFromHistoryTokenFormat(endDateString);
+    } 
+    view.selectStartDate(startDate);
+    view.selectEndDate(endDate);
+
     // fetch responses filtered by selected values
-    fetchAndShowResponses(selectedParticipant, selectedCampaign, selectedSurvey, selectedPrivacy);
+    fetchAndShowResponses(selectedParticipant, 
+                          selectedCampaign, 
+                          selectedSurvey, 
+                          selectedPrivacy,
+                          startDate,
+                          endDate);
   }
 
   @Override
@@ -155,27 +181,55 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       deleteButton.addClickHandler(deleteClickHandler);
     }
     
+    this.view.getApplyFiltersButton().addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        if (validateDateFilters()) {
+          fireHistoryTokenToMatchFilterValues();
+        }
+      }
+    });
+    
+    // when user selects a campaign, survey choice list is filled with names
+    // of surveys from that campaign
     this.view.getCampaignFilter().addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent event) {
-        view.selectSurvey(""); // clear selection - new campaign will have different surveys 
-        fireHistoryTokenToMatchFilterValues();
+        String selectedCampaign = view.getSelectedCampaign();
+        fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, null);
       }
     });
     
-    this.view.getParticipantFilter().addChangeHandler(new ChangeHandler() {
+    this.view.getStartDateFilter().addValueChangeHandler(new ValueChangeHandler<Date>() {
       @Override
-      public void onChange(ChangeEvent event) {
-        fireHistoryTokenToMatchFilterValues();
+      public void onValueChange(ValueChangeEvent<Date> event) {
+        // if end date is empty or earlier than selected date, change it to selected date
+        Date newStartDate = view.getSelectedStartDate();
+        Date endDate = view.getSelectedEndDate();
+        if (endDate != null && endDate.before(event.getValue())) { 
+          view.selectEndDate(newStartDate);
+        }
       }
     });
-    
-    this.view.getSurveyFilter().addChangeHandler(new ChangeHandler() {
-      @Override
-      public void onChange(ChangeEvent event) {
-        fireHistoryTokenToMatchFilterValues();
-      }
-    });
+  }
+  
+  // returns true if dates are ok, displays error dialog if not valid
+  private boolean validateDateFilters() {
+    // check that dates make sense
+    Date startDate = view.getSelectedStartDate();
+    Date endDate = view.getSelectedEndDate();
+    boolean isValid = true;
+    if (startDate != null && endDate == null) {
+      isValid = false;
+      ErrorDialog.show("Please select an end date.");
+    } else if (endDate != null && startDate == null) {
+      isValid = false;
+      ErrorDialog.show("Please select a start date");
+    } else if (startDate != null && endDate != null && endDate.before(startDate)) {
+      isValid = false;
+      ErrorDialog.show("End date must be later than start date.");
+    }
+    return isValid;
   }
   
   private ClickHandler shareClickHandler = new ClickHandler() {
@@ -265,7 +319,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       }
       dataService.updateSurveyResponse(campaignUrn, 
            surveyKey, 
-           Privacy.SHARED, 
+           Privacy.PRIVATE, 
            new AsyncCallback<String>() {
 
             @Override
@@ -322,10 +376,14 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     String campaignId = view.getSelectedCampaign();
     String surveyName = view.getSelectedSurvey();
     Privacy privacy = view.getSelectedPrivacyState();
+    Date startDate = view.getSelectedStartDate();
+    Date endDate = view.getSelectedEndDate();
     History.newItem(HistoryTokens.responseList(participantName, 
                                                campaignId, 
                                                surveyName, 
-                                               privacy));
+                                               privacy,
+                                               startDate,
+                                               endDate));
   }
   
   // fetches list of campaigns, then fetches responses for each
@@ -333,7 +391,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   private void fetchAndShowResponses(final String userName,
                                      final String campaignId, 
                                      final String surveyName,
-                                     final Privacy privacy) {
+                                     final Privacy privacy,
+                                     final Date startDate,
+                                     final Date endDate) {
     this.responses.clear();
     
     CampaignReadParams campaignReadParams = new CampaignReadParams();
@@ -356,7 +416,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                            campaignInfo.getCampaignId(), 
                                            campaignInfo.getCampaignName(),
                                            surveyName,
-                                           privacy);
+                                           privacy,
+                                           startDate,
+                                           endDate);
         }
       }
     });
@@ -370,13 +432,17 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                 String campaignId, 
                                                 final String campaignName,
                                                 String surveyName,
-                                                Privacy privacy) {
+                                                Privacy privacy,
+                                                Date startDate,
+                                                Date endDate) {
     // GOTCHA: when logged in user != selected participant, this only shows
     //   responses from campaigns that both participant and logged in user belong to
     this.dataService.fetchSurveyResponses(participantName,
         campaignId,
         surveyName,
         privacy,
+        startDate,
+        endDate,
         new AsyncCallback<List<SurveyResponse>>() {
           @Override
           public void onFailure(Throwable caught) {

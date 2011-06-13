@@ -402,9 +402,13 @@ public class MockDataService implements DataService {
   }
 
   @Override
-  public void fetchSurveyResponses(String userName, String campaignId,
-      String surveyName, Privacy privacy,
-      AsyncCallback<List<SurveyResponse>> callback) {
+  public void fetchSurveyResponses(String userName, 
+                                   String campaignId,
+                                   String surveyName, 
+                                   Privacy privacy,
+                                   Date startDate,
+                                   Date endDate,
+                                   AsyncCallback<List<SurveyResponse>> callback) {
     // TODO Auto-generated method stub
     
   }
