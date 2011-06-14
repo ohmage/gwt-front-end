@@ -97,7 +97,7 @@ public class HistoryTokens {
     if (survey != null) params.put("sid", survey);
     if (privacy != null) params.put("privacy", privacy.toServerString());
     if (startDate != null) params.put("from", DateUtils.translateToHistoryTokenFormat(startDate));
-    if (endDate != null) params.put("from", DateUtils.translateToHistoryTokenFormat(endDate));
+    if (endDate != null) params.put("to", DateUtils.translateToHistoryTokenFormat(endDate));
     return params.isEmpty() ? "responses" : "responses?" + MapUtils.translateToParameters(params);
   }
   
