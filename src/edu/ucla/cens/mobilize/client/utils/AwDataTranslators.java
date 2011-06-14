@@ -48,6 +48,27 @@ import com.google.gwt.json.client.JSONValue;
 public class AwDataTranslators {
     // Logging utility
     private static Logger _logger = Logger.getLogger(AwDataTranslators.class.getName());
+   
+    /**
+     * @param errorResponseJSON
+     * @return Map of error codes to error descriptions
+     */
+    public static Map<String, String> translateErrorResponse(String errorResponseJSON) {
+      Map<String, String> errorCodeToDescriptionMap = new HashMap<String, String>();
+      try {
+        JSONArray errorArray = JSONParser.parseStrict(errorResponseJSON).isObject().get("errors").isArray();
+        for (int i = 0; i < errorArray.size(); i++) {
+          JSONObject errorObj = errorArray.get(i).isObject();
+          String errorCode = errorObj.get("code").isString().stringValue();
+          String errorMessage = errorObj.get("text").isString().stringValue();
+          errorCodeToDescriptionMap.put(errorCode, errorMessage);
+        }
+      } catch (Exception e) {
+        _logger.severe("There was a problem parsing the error response: " + e.getMessage() + 
+                       ".  Response JSON was: " + errorResponseJSON);
+      }
+      return errorCodeToDescriptionMap;
+    }
     
     // returns null if there were no responses
     public static List<SurveyResponse> translateSurveyResponseReadQueryJSONToSurveyResponseList(

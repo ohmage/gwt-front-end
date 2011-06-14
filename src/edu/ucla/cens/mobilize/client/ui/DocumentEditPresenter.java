@@ -20,6 +20,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
 
 public class DocumentEditPresenter {
   private DocumentEditView view;
@@ -119,11 +120,15 @@ public class DocumentEditPresenter {
     public void onSubmitComplete(SubmitCompleteEvent event) {
       view.clearFormFields();
       String result = event.getResults();
+      //result = "{\"result\":\"failure\",\"errors\":[{\"text\":\"Some document error message.\",\"code\":\"1234\"}]}"; // sample error response
       String status = null;
+      Map<String, String> errorCodeToDescriptionMap = null;
       // NOTE: gwt formPanel results can be null if sending to a different domain
+      // so you must deploy a compiled version to test this error handling
       if (result != null) {
         try {
           status = JSONParser.parseStrict(result).isObject().get("result").isString().stringValue();
+          errorCodeToDescriptionMap = AwDataTranslators.translateErrorResponse(result);
         } catch (Exception e) {
           _logger.severe("Failed to parse json. Response was: " + result + ". Error was: " + e.getMessage());
         }
@@ -132,12 +137,11 @@ public class DocumentEditPresenter {
         status = "success";
       } 
       if (status != null && status.equals("success")) { 
-        _logger.fine("success"); // FIXME: DELETEME
-        // redirect to campaign list so user can see results
-        userInfo.setInfoMessage("Document saved.");
+        // redirect to document list so user can see results
         History.newItem(HistoryTokens.documentList());
       } else {
-        view.showError("There was a problem creating the document.");
+        ErrorDialog.showErrorsByCode("There was a problem creating the document.",
+                                     errorCodeToDescriptionMap);
         _logger.severe("Document create failed. Response was: " + result);
       }
 

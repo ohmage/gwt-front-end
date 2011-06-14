@@ -53,7 +53,7 @@ import edu.ucla.cens.mobilize.client.utils.MapUtils;
  */
 public class AndWellnessDataService implements DataService {
 
-  // NOTE: campaignCreate and campaiggUpdate are not included in the DataService
+  // NOTE: campaignCreate and campaignUpdate are not included in the DataService
   // because they require file upload and so much be done with a formPanel
 
   String userName;

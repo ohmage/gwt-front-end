@@ -243,6 +243,29 @@ a:hover, a:active {
 .gwt-DialogBox .dialogBottomRight { background-color: #AAA; }
 .gwt-DialogBox .dialogBottomRightInner {}
 
+/********* app-wide error message styles *********************/
+
+.errorBox {
+	background-image: url(images/exclamation.png);
+	background-repeat: no-repeat;
+	background-position: 15px 50%;
+	margin: auto;
+	padding: 10px 10px 10px 30px;
+}
+
+.errorDialogButtonDiv {
+  background-color: #AAA;
+  border-top: solid 1px #666;
+  text-align: right;
+}
+
+ul.errorList {
+	list-style-type: none; /* no bullets */
+	padding: 0px 10px;
+}
+
+/********* end app-wide error message styles *********************/
+
 /********* styles for campaign browse tree *********************/
 /* FIXME: move these into uibinder template file */
 

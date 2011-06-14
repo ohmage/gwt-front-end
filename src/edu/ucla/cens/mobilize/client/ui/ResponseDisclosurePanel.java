@@ -53,7 +53,7 @@ public class ResponseDisclosurePanel extends Composite
 	@UiField VerticalPanel promptResponseVerticalPanel;
 	@UiField DisclosurePanel disclosurePanel;
 	
-	DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat(); 
+	private DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM);
 	
 	private static ResponseDisclosurePanelUiBinder uiBinder = GWT
 			.create(ResponseDisclosurePanelUiBinder.class);

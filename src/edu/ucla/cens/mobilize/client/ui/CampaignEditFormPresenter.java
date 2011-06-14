@@ -13,6 +13,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -30,6 +33,7 @@ import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
+import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
 
 public class CampaignEditFormPresenter {
   private UserInfo userInfo;
@@ -194,13 +198,34 @@ public class CampaignEditFormPresenter {
     @Override
     public void onSubmitComplete(SubmitCompleteEvent event) {
       view.clearFormFields();
+      //String result = "{\"result\":\"failure\",\"errors\":[{\"text\":\"Campaign already exists.\",\"code\":\"0804\"}]}"; // sample error response
       String result = event.getResults();
+      String status = null;
+      Map<String, String> errorCodeToDescriptionMap = null;
       // NOTE: gwt formPanel results can be null if sending to a different domain
-      // TODO: handle failure
-      
-      // redirect to campaign list so user can see results
-      userInfo.setInfoMessage("Campaign saved.");
-      History.newItem(HistoryTokens.campaignList());
+      // so you must deploy a compiled version to test this error handling
+      if (result != null) {
+        try {
+          status = JSONParser.parseStrict(result).isObject().get("result").isString().stringValue();
+          if (!"success".equals(status)) {
+            errorCodeToDescriptionMap = AwDataTranslators.translateErrorResponse(result);
+          }
+        } catch (Exception e) {
+          _logger.severe("Failed to parse json. Response was: " + result + ". Error was: " + e.getMessage());
+        }
+      } else {
+        _logger.fine("null result from formPanel post, assuming this is dev mode and submission was success");
+        status = "success";
+      } 
+      if (status != null && status.equals("success")) {
+        userInfo.setInfoMessage("Campaign saved.");
+        // redirect to campaign list so user can see results
+        History.newItem(HistoryTokens.campaignList());
+      } else {
+        ErrorDialog.showErrorsByCode("There was a problem creating the campaign.", 
+                                      errorCodeToDescriptionMap);
+        _logger.severe("Campaign create failed. Response was: " + result);
+      }
     }
   };
   
