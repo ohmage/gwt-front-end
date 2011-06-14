@@ -17,6 +17,7 @@ public class DateUtils {
     public final static String timeStampFormat = "yyyy-MM-dd HH:mm:ss"; // as of May 2011
     // Format of the timestamp string to upload to server POST api
     public final static String uploadTimeStampFormat = "yyyy-MM-dd";
+    public final static String apiRequestFormat = "yyyy-MM-dd";
     public final static String displayFormat = "MMM dd, yyyy";
     public final static String historyTokenFormat = "yyyy-MM-dd";
     
@@ -39,6 +40,11 @@ public class DateUtils {
     public static Date translateFromHistoryTokenFormat(String toTranslate) {
       DateTimeFormat dateFormat = DateTimeFormat.getFormat(historyTokenFormat);
       return dateFormat.parse(toTranslate);
+    }
+    
+    public static String translateToApiRequestFormat(Date toTranslate) {
+      DateTimeFormat dateFormat = DateTimeFormat.getFormat(apiRequestFormat);
+      return dateFormat.format(toTranslate);
     }
     
     public static String translateToHistoryTokenFormat(Date toTranslate) {

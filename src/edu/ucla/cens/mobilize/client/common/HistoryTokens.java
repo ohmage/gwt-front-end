@@ -36,8 +36,8 @@ public class HistoryTokens {
     Map<String, String> params = new HashMap<String, String>();
     if (runningState != null) params.put("state", runningState.toServerString());
     if (userRole != null) params.put("role", userRole.toServerString());
-    if (fromDate != null) params.put("from", DateUtils.translateToServerUploadFormat(fromDate));
-    if (toDate != null) params.put("to", DateUtils.translateToServerUploadFormat(toDate));
+    if (fromDate != null) params.put("from", DateUtils.translateToHistoryTokenFormat(fromDate));
+    if (toDate != null) params.put("to", DateUtils.translateToHistoryTokenFormat(toDate));
     return params.isEmpty() ? "campaigns" : "campaigns?v=list&" + MapUtils.translateToParameters(params);
   }
   

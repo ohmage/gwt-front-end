@@ -128,8 +128,8 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
       // keys must match those in HistoryTokens.campaignList()
       if (params.containsKey("state")) runningState = RunningState.valueOf(params.get("state").toUpperCase());
       if (params.containsKey("role")) role = RoleCampaign.valueOf(params.get("role").toUpperCase());
-      if (params.containsKey("from")) fromDate = DateUtils.translateFromServerFormat(params.get("from"));
-      if (params.containsKey("to")) fromDate = DateUtils.translateFromServerFormat(params.get("to"));
+      if (params.containsKey("from")) fromDate = DateUtils.translateFromHistoryTokenFormat(params.get("from"));
+      if (params.containsKey("to")) toDate = DateUtils.translateFromHistoryTokenFormat(params.get("to"));
     } catch (Exception e) {
       _logger.warning(e.getMessage());
     }

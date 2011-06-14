@@ -9,6 +9,7 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 public class CampaignReadParams {
@@ -39,10 +40,10 @@ public class CampaignReadParams {
       params.put("campaign_urn_list", CollectionUtils.join(campaignUrns_opt, ","));
     }
     if (startDate_opt != null) {
-      params.put("start_date", startDate_opt.toString());
+      params.put("start_date", DateUtils.translateToApiRequestFormat(startDate_opt));
     }
     if (endDate_opt != null) {
-      params.put("end_date", endDate_opt.toString());
+      params.put("end_date", DateUtils.translateToApiRequestFormat(endDate_opt));
     }
     if (privacyState_opt != null) {
       params.put("privacy_state", privacyState_opt.toString().toLowerCase());

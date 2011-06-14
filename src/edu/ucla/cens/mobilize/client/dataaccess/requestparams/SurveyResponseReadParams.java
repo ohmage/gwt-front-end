@@ -72,11 +72,11 @@ public class SurveyResponseReadParams extends RequestParams {
     }
     
     if (this.startDate_opt != null) {
-      params.put("start_date", DateUtils.translateToServerUploadFormat(this.startDate_opt));
+      params.put("start_date", DateUtils.translateToApiRequestFormat(this.startDate_opt));
     }
     
     if (this.endDate_opt != null) {
-      params.put("end_date", DateUtils.translateToServerUploadFormat(this.endDate_opt));
+      params.put("end_date", DateUtils.translateToApiRequestFormat(this.endDate_opt));
     }
     
     return MapUtils.translateToParameters(params);

@@ -36,6 +36,7 @@ import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 public class CampaignList extends Composite {
@@ -111,8 +112,7 @@ public class CampaignList extends Composite {
     userRoleListBox.setSelectedIndex(0);
     
     // start and end dates
-    @SuppressWarnings("deprecation")
-    DateBox.Format fmt = new DateBox.DefaultFormat(DateTimeFormat.getShortDateFormat());
+    DateBox.Format fmt = new DateBox.DefaultFormat(DateUtils.getDateBoxDisplayFormat());
     fromDateBox.setFormat(fmt);
     toDateBox.setFormat(fmt);
     
