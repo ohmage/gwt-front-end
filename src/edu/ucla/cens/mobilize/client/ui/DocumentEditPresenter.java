@@ -118,7 +118,6 @@ public class DocumentEditPresenter {
   private SubmitCompleteHandler formSubmitCompleteHandler = new SubmitCompleteHandler() {
     @Override
     public void onSubmitComplete(SubmitCompleteEvent event) {
-      view.clearFormFields();
       String result = event.getResults();
       //result = "{\"result\":\"failure\",\"errors\":[{\"text\":\"Some document error message.\",\"code\":\"1234\"}]}"; // sample error response
       String status = null;
@@ -138,6 +137,7 @@ public class DocumentEditPresenter {
       } 
       if (status != null && status.equals("success")) { 
         // redirect to document list so user can see results
+        view.clearFormFields();
         History.newItem(HistoryTokens.documentList());
       } else {
         ErrorDialog.showErrorsByCode("There was a problem creating the document.",

@@ -197,7 +197,6 @@ public class CampaignEditFormPresenter {
   private SubmitCompleteHandler formSubmitCompleteHandler = new SubmitCompleteHandler() {
     @Override
     public void onSubmitComplete(SubmitCompleteEvent event) {
-      view.clearFormFields();
       //String result = "{\"result\":\"failure\",\"errors\":[{\"text\":\"Campaign already exists.\",\"code\":\"0804\"}]}"; // sample error response
       String result = event.getResults();
       String status = null;
@@ -218,8 +217,8 @@ public class CampaignEditFormPresenter {
         status = "success";
       } 
       if (status != null && status.equals("success")) {
-        userInfo.setInfoMessage("Campaign saved.");
         // redirect to campaign list so user can see results
+        view.clearFormFields();
         History.newItem(HistoryTokens.campaignList());
       } else {
         ErrorDialog.showErrorsByCode("There was a problem creating the campaign.", 
