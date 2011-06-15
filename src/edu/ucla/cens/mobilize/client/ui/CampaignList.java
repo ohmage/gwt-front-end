@@ -83,7 +83,9 @@ public class CampaignList extends Composite {
   @UiField Button goButton;
   
   // table columns 
-  private enum Column { NAME, RUNNING_STATE, PRIVACY, ACTIONS };
+  private enum Column { NAME, CREATED_ON, RUNNING_STATE, PRIVACY, ACTIONS };
+  
+  private DateTimeFormat dateTimeFormat = DateUtils.getTableDisplayFormat();
   
   public CampaignList() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -123,6 +125,7 @@ public class CampaignList extends Composite {
     // set up table heading
     campaignGrid.getRowFormatter().setStyleName(0, style.campaignGridHeader());
     campaignGrid.setText(0, Column.NAME.ordinal(), "Campaign Name");
+    campaignGrid.setText(0, Column.CREATED_ON.ordinal(), "Created On");
     campaignGrid.setText(0, Column.RUNNING_STATE.ordinal(), "Running State");
     campaignGrid.setText(0, Column.PRIVACY.ordinal(), "Privacy");
     campaignGrid.setText(0, Column.ACTIONS.ordinal(), "Actions");
@@ -199,6 +202,7 @@ public class CampaignList extends Composite {
   }
   
   public void setSelectedRunningState(RunningState stateToSelect) {
+    if (stateToSelect == null) { stateListBox.setSelectedIndex(0); return; }
     for (int i = 0; i < stateListBox.getItemCount(); i++) {
       if (stateListBox.getValue(i).equals(stateToSelect)) {
         stateListBox.setSelectedIndex(i);
@@ -208,8 +212,10 @@ public class CampaignList extends Composite {
   }
   
   public void setSelectedRole(RoleCampaign roleToSelect) {
+    if (roleToSelect == null) { userRoleListBox.setSelectedIndex(0); return;}
+    String roleStringToSelect = roleToSelect.toServerString();
     for (int i = 0; i < userRoleListBox.getItemCount(); i++) {
-      if (userRoleListBox.getValue(i).equals(roleToSelect)) {
+      if (userRoleListBox.getValue(i).equals(roleStringToSelect)) {
         userRoleListBox.setSelectedIndex(i);
         break;
       }
@@ -250,6 +256,10 @@ public class CampaignList extends Composite {
     this.campaignGrid.getCellFormatter().setStyleName(row, 
                                                       Column.NAME.ordinal(), 
                                                       style.campaignGridNameColumn());
+    
+    // creation date
+    String dateString = this.dateTimeFormat.format(campaignInfo.getCreationTime());
+    this.campaignGrid.setText(row, Column.CREATED_ON.ordinal(), dateString);
     
     // running state 
     RunningState state = campaignInfo.getRunningState();

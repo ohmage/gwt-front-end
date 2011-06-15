@@ -37,22 +37,46 @@ public class DateUtils {
         return dateFormat.format(toTranslate);
     }
     
+    /**
+     * @param toTranslate Date that should be translated to server api format
+     * @return Date in format expected by Ohmage api 
+     */
+    public static String translateToApiRequestFormat(Date toTranslate) {
+      DateTimeFormat dateFormat = DateTimeFormat.getFormat(apiRequestFormat);
+      return dateFormat.format(toTranslate);
+    }
+
+    /**
+     * Converts history token style date param into Date object
+     * @param toTranslate String parsed from history token
+     * @return Date
+     */
     public static Date translateFromHistoryTokenFormat(String toTranslate) {
       DateTimeFormat dateFormat = DateTimeFormat.getFormat(historyTokenFormat);
       return dateFormat.parse(toTranslate);
     }
     
-    public static String translateToApiRequestFormat(Date toTranslate) {
-      DateTimeFormat dateFormat = DateTimeFormat.getFormat(apiRequestFormat);
-      return dateFormat.format(toTranslate);
-    }
-    
+    /**
+     * Converts date to history token param so date can be encoded in url
+     * @param toTranslate Date that should be translated to url params
+     * @return Url param string that can be used as a history token
+     */
     public static String translateToHistoryTokenFormat(Date toTranslate) {
       DateTimeFormat dateFormat = DateTimeFormat.getFormat(historyTokenFormat);
       return dateFormat.format(toTranslate);
     }
     
+    /**
+     * @return Use anywhere in the app that a date is displayed in a date box
+     */
     public static DateTimeFormat getDateBoxDisplayFormat() {
+      return DateTimeFormat.getFormat(displayFormat);
+    }
+    
+    /**
+     * @return Default date format to use when displaying a date in a data table
+     */
+    public static DateTimeFormat getTableDisplayFormat() {
       return DateTimeFormat.getFormat(displayFormat);
     }
     

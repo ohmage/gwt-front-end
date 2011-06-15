@@ -52,6 +52,7 @@ public class CampaignDetail extends Composite {
   @UiField CampaignDetailStyle style;
   @UiField InlineLabel campaignName;
   @UiField InlineLabel campaignUrn;
+  @UiField InlineLabel creationDate;
   @UiField InlineLabel desc;
   @UiField VerticalPanel classes;
   @UiField VerticalPanel authors;
@@ -200,6 +201,7 @@ public class CampaignDetail extends Composite {
       // copy info from data obj into fields
       this.campaignName.setText(campaign.getCampaignName());
       this.campaignUrn.setText(campaign.getCampaignId());
+      this.creationDate.setText(campaign.getCreationTime().toString());
       this.campaignXml = campaign.getXmlConfig();
       this.desc.setText(campaign.getDescription());
       

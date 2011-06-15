@@ -1,8 +1,10 @@
 package edu.ucla.cens.mobilize.client.model;
 
 import java.util.Date;
+import java.util.List;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 
@@ -12,7 +14,7 @@ public class CampaignShortInfo {
   private String campaignName;
   private RunningState runningState;
   private Privacy privacy;
-  private UserRoles userRoles;
+  private UserRoles userRoles; // TODO: use list of roles instead of special object
   private Date creationTime;
   
   public CampaignShortInfo(String campaignId,
@@ -54,7 +56,7 @@ public class CampaignShortInfo {
   public UserRoles getUserRoles() {
     return this.userRoles;
   }
-
+  
   //******** PERMISSIONS ********
   
   public boolean userCanViewDetails() {

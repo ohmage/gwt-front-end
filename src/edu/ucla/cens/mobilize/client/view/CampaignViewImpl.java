@@ -11,6 +11,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -24,6 +26,7 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
@@ -72,9 +75,8 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   @UiField MenuItem authorMenuItem; 
   
   @UiField MenuItem quickFilterAll;
-  @UiField MenuItem quickFilterActiveLastWeek;
-  @UiField MenuItem quickFilterActiveLastTwoWeeks;
-  @UiField MenuItem quickFilterActiveLastMonth;
+  @UiField MenuItem quickFilterCreatedLastWeek;
+  @UiField MenuItem quickFilterCreatedLastMonth;
   @UiField MenuItem quickFilterAuthored;
   
   @UiField HTMLPanel msgBox;
@@ -104,6 +106,39 @@ public class CampaignViewImpl extends Composite implements CampaignView {
         if (presenter != null) {
           presenter.onCampaignCreate();
         }
+      }
+    });
+    
+    quickFilterAll.setCommand(new Command() {
+      @Override
+      public void execute() {
+        History.newItem(HistoryTokens.campaignList());
+      }
+    });
+    
+    quickFilterAuthored.setCommand(new Command() {
+      @Override
+      public void execute() {
+        History.newItem(HistoryTokens.campaignList(null, RoleCampaign.AUTHOR, null, null));
+      }
+    });
+    
+    final Date today = new Date(); // now
+    long millisecsPerDay = 24 * 60 * 60 * 1000;
+    final Date lastWeek = new Date(today.getTime() - (7 * millisecsPerDay)); // now minus 7 days
+    final Date lastMonth = new Date(today.getTime() - (30 * millisecsPerDay)); // now minus 30 days
+    
+    quickFilterCreatedLastWeek.setCommand(new Command() {
+      @Override
+      public void execute() {
+        History.newItem(HistoryTokens.campaignList(null, null, lastWeek, today));
+      }
+    });
+    
+    quickFilterCreatedLastMonth.setCommand(new Command() {
+      @Override
+      public void execute() {
+        History.newItem(HistoryTokens.campaignList(null, null, lastMonth, today));
       }
     });
   }

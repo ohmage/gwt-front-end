@@ -182,6 +182,14 @@
              <g:InlineLabel ui:field='campaignUrn'/>
             </td>
           </tr>
+          <tr>
+            <td class='{style.label}'>
+              <label>Creation Time:</label>
+            </td>
+            <td>
+             <g:InlineLabel ui:field='creationDate'/>
+            </td>
+          </tr>
 	        <tr>
 	          <td class='{style.label}'>
 	            <label>Description:</label>
