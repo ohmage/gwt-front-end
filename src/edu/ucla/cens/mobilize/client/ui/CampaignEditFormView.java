@@ -53,6 +53,7 @@ public class CampaignEditFormView extends Composite {
   @UiField Button addClassesButton;
   @UiField FlexTable classesFlexTable;
   @UiField Hidden classHiddenField; // holds serialized class list
+  @UiField HTMLPanel authorsPanel;
   @UiField Button addAuthorsButton;
   @UiField FlexTable authorsFlexTable;
   @UiField Hidden authorsToAddHiddenField; // list of authors with roles
@@ -76,7 +77,6 @@ public class CampaignEditFormView extends Composite {
   private final int AUTHOR_DELETE_COL = 1;
 
   private boolean formIsInitialized = false;
-  
   private List<String> originalAuthors;
   
   public CampaignEditFormView() {
@@ -98,10 +98,25 @@ public class CampaignEditFormView extends Composite {
   }
   
   public void prepareFormForSubmit() {
-    this.authorsToAddHiddenField.setValue(getAuthorsToAddSerialized());
-    this.authorsToRemoveHiddenField.setValue(getAuthorsToRemoveSerialized());
-    this.classHiddenField.setValue(getClassUrnsSerialized());
-    this.campaignUrnHiddenField.setValue(this.campaignUrn.getText());
+    if (authorsPanel.isVisible()) { // this is an edit
+      authorsToAddHiddenField.setName("user_role_list_add");
+      authorsToRemoveHiddenField.setName("user_role_list_remove");
+      authorsToAddHiddenField.setValue(getAuthorsToAddSerialized());
+      authorsToRemoveHiddenField.setValue(getAuthorsToRemoveSerialized());
+    }
+    // NOTE(06/15/2011): create api does not support adding authors
+
+    classHiddenField.setValue(getClassUrnsSerialized());
+    campaignUrnHiddenField.setValue(this.campaignUrn.getText());
+    
+    // Disable author hidden fields when empty to prevent api errors. (Fields would
+    // be empty if this is a create or if there were no changes to author list.)
+    if (authorsToAddHiddenField.getValue().isEmpty()) authorsToAddHiddenField.getElement().removeAttribute("name");
+    if (authorsToRemoveHiddenField.getValue().isEmpty()) authorsToRemoveHiddenField.getElement().removeAttribute("name");  
+  }
+
+  public void setAuthorsPanelVisible(boolean isVisible) {
+    this.authorsPanel.setVisible(isVisible);
   }
 
   private void addClass(String classUrn, String className) {
@@ -208,7 +223,7 @@ public class CampaignEditFormView extends Composite {
     Collection<String> authorsToAdd = getAuthorsToAdd();
     Collection<String> authorsToAddWithRoles = new ArrayList<String>();
     for (String authorLogin : authorsToAdd) {
-      authorsToAddWithRoles.add(authorLogin + ":" + RoleCampaign.AUTHOR.toServerString());
+      authorsToAddWithRoles.add(authorLogin + ";" + RoleCampaign.AUTHOR.toServerString());
     }
     return CollectionUtils.join(authorsToAddWithRoles, ",");
   }
@@ -222,7 +237,7 @@ public class CampaignEditFormView extends Composite {
     Collection<String> authorsToRemove = getAuthorsToRemove();
     Collection<String> authorsToRemoveWithRoles = new ArrayList<String>();
     for (String authorLogin : authorsToRemove) {
-      authorsToRemoveWithRoles.add(authorLogin + ":" + RoleCampaign.AUTHOR.toServerString());
+      authorsToRemoveWithRoles.add(authorLogin + ";" + RoleCampaign.AUTHOR.toServerString());
     }
     return CollectionUtils.join(authorsToRemoveWithRoles, ",");
   }

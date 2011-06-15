@@ -162,12 +162,14 @@
                 <label>Authors:</label>
               </td>
               <td>
-                <g:FlexTable ui:field='authorsFlexTable' 
-                             addStyleNames='{style.authorList}' />
-                   
-                <g:Hidden ui:field='authorsToAddHiddenField' name='user_role_list_add' />
-                <g:Hidden ui:field='authorsToRemoveHiddenField' name='user_role_list_remove' />
-                <g:Button ui:field='addAuthorsButton'>Add Authors</g:Button>
+                <g:HTMLPanel ui:field='authorsPanel'>
+	                <g:FlexTable ui:field='authorsFlexTable' 
+	                             addStyleNames='{style.authorList}' />
+	                   
+	                <g:Hidden ui:field='authorsToAddHiddenField' name='user_role_list_add' />
+	                <g:Hidden ui:field='authorsToRemoveHiddenField' name='user_role_list_remove' />
+	                <g:Button ui:field='addAuthorsButton'>Add Authors</g:Button>
+                </g:HTMLPanel>
               </td>
             </tr>
             <tr>

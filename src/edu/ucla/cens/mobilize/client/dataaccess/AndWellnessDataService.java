@@ -531,6 +531,7 @@ public class AndWellnessDataService implements DataService {
     Map<String, String> params = new HashMap<String, String>();
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     params.put("auth_token", this.authToken);
+    params.put("client", this.client);
     params.put("campaign_urn", campaignId);
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Attempting to delete campaign with parameters: " + postParams);

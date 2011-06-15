@@ -63,6 +63,7 @@ public class CampaignEditFormPresenter {
     view.setHeader("Creating New Campaign");
     view.initializeForm(dataService.authToken(), AwConstants.getCampaignCreateUrl());
     view.setDeletePanelVisible(false);
+    view.setAuthorsPanelVisible(false);
   }
   
   public void fetchCampaignAndInitFormForEdit(String campaignUrn) {
@@ -97,6 +98,7 @@ public class CampaignEditFormPresenter {
           }
           view.setSelectedClasses(classes);
           view.setDeletePanelVisible(true); 
+          view.setAuthorsPanelVisible(true);
           view.initializeForm(dataService.authToken(), AwConstants.getCampaignUpdateUrl());
         }
     });
