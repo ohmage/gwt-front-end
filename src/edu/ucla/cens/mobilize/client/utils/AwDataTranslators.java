@@ -399,7 +399,7 @@ public class AwDataTranslators {
     // {"result":"success","data":{"7bf3ab79-d30d-4cec-91b0-75d5d337be5d":{"class_role":{},"user_role":"owner","last_modified":"2011-05-26 13:01:03","description":"","name":"testdoc1.txt","privacy_state":"private","campaign_roles":{"urn:campaign:ca:lausd:Addams_HS:CS101:Fall:2011:Advertisement":"reader"},"size":27},"35e795c7-c6dc-4f22-8293-aa3369729b35":{"class_role":{},"user_role":"owner","last_modified":"2011-05-26 13:02:08","description":"","name":"testdoc3.txt","privacy_state":"private","campaign_roles":{"urn:campaign:ca:lausd:Addams_HS:CS101:Fall:2011:Advertisement":"reader"},"size":27},"0c61e063-cc11-46fa-aa13-20f9fbc560e6":{"class_role":{},"user_role":"owner","last_modified":"2011-05-26 13:01:46","description":"","name":"testdoc2.txt","privacy_state":"private","campaign_roles":{"urn:campaign:ca:lausd:Addams_HS:CS101:Fall:2011:Advertisement":"reader"},"size":27}}}
     public static List<DocumentInfo> translateDocumentReadQueryJSONToDocumentInfoList(String documentReadQueryJSON) throws Exception {
       List<DocumentInfo> documentInfos = new ArrayList<DocumentInfo>(); // retval
-      JSONValue value = JSONParser.parse(documentReadQueryJSON);
+      JSONValue value = JSONParser.parseStrict(documentReadQueryJSON);
       JSONObject obj = value.isObject();
       if (obj == null || !obj.containsKey("data")) throw new Exception("Invalid json format.");
       JSONObject dataHash = obj.get("data").isObject();
@@ -411,17 +411,19 @@ public class AwDataTranslators {
           docInfo.setDescription(awData.getDescription());
           docInfo.setDocumentId(documentId);
           docInfo.setDocumentName(awData.getDocumentName());
-          docInfo.setPrivacy(Privacy.valueOf(awData.getPrivacyState().trim().toUpperCase()));
+          docInfo.setPrivacy(Privacy.fromServerString(awData.getPrivacyState()));
           docInfo.setSize(awData.getSize());
-          docInfo.setUserRole(RoleDocument.valueOf(awData.getUserRole().trim().toUpperCase()));
+          docInfo.setUserRole(RoleDocument.fromServerString(awData.getUserRole()));
           for (String classUrn : awData.getClassUrns()) {
-            docInfo.addClass(classUrn, RoleDocument.valueOf(awData.getClassRole(classUrn).trim().toUpperCase()));
+            docInfo.addClass(classUrn,
+                             RoleDocument.fromServerString(awData.getClassRole(classUrn)));
           }
           for (String campaignUrn : awData.getCampaignUrns()) {
-            docInfo.addCampaign(campaignUrn, RoleDocument.valueOf(awData.getCampaignRole(campaignUrn).trim().toUpperCase()));
+            docInfo.addCampaign(campaignUrn, 
+                                RoleDocument.fromServerString(awData.getCampaignRole(campaignUrn)));
           }
           documentInfos.add(docInfo);
-          // FIXME: do we know document creator?
+          // FIXME(6/16/2011): add document creator after it's enabled in server api
         } catch (Exception e) {
           _logger.warning("Could not parse json for document id: " + documentId + ". Skipping record.");
           _logger.fine(e.getMessage());
