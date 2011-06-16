@@ -291,12 +291,14 @@ public class CampaignList extends Composite {
       detailsLink.setStyleName(style.detailsLink());
       panel.add(detailsLink);
     }
+    /*
+    // FIXME: hidden until explore data tab is done
     if (campaign.userCanAnalyze()) {
       InlineHyperlink analyzeLink = 
         new InlineHyperlink("analyze", HistoryTokens.campaignAnalyze(campaignId));
       analyzeLink.setStyleName(style.analyzeLink());
       panel.add(analyzeLink);
-    }
+    }*/
     if (campaign.userCanEdit()) {
       InlineHyperlink editLink = 
         new InlineHyperlink("edit", HistoryTokens.campaignEdit(campaignId));

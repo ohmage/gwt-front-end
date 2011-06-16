@@ -72,8 +72,6 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   @UiField Label plotSideBarTitle;
   @UiField VerticalPanel plotPanel;
 
-  @UiField MenuItem authorMenuItem; 
-  
   @UiField MenuItem quickFilterAll;
   @UiField MenuItem quickFilterCreatedLastWeek;
   @UiField MenuItem quickFilterCreatedLastMonth;
