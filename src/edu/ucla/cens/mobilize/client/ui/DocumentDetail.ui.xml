@@ -102,12 +102,6 @@
           </g:InlineHyperlink>
        </g:HTMLPanel>
      
-      <g:HorizontalPanel addStyleNames='{style.creationPropertiesPanel}'>
-        <g:InlineLabel ui:field='creatorLabel'/>
-        <g:InlineLabel ui:field ='creationDateLabel'/>
-        <g:InlineLabel ui:field='sizeLabel'/>
-      </g:HorizontalPanel>
-     
       <g:HTMLPanel>
         <table class='{style.detailTable}'>
           <tr>
@@ -116,6 +110,31 @@
             </td>
             <td>
              <g:InlineLabel ui:field='documentNameLabel'/>
+            </td>
+          </tr>
+          <tr>
+            <td class='{style.label}'>
+              <label>Size:</label>
+            </td>
+            <td>
+             <g:InlineLabel ui:field='sizeLabel'/>
+            </td>
+          </tr>
+          <!--
+          <tr>
+            <td class='{style.label}'>
+              <label>Created By:</label>
+            </td>
+            <td>
+             <g:InlineLabel ui:field='creatorLabel'/>
+            </td>
+          </tr>-->
+          <tr>
+            <td class='{style.label}'>
+              <label>Created On:</label>
+            </td>
+            <td>
+             <g:InlineLabel ui:field='creationDateLabel'/>
             </td>
           </tr>
           <tr>

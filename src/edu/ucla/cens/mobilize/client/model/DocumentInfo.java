@@ -18,14 +18,14 @@ public class DocumentInfo {
   Date creationTimestamp;
   Date lastModifiedTimestamp;
   List<String> authors = new ArrayList<String>();
-  //List<String> campaigns = new ArrayList<String>();
-  //List<String> classes = new ArrayList<String>();
   Map<String, RoleDocument> campaignUrnToRoleMap = new HashMap<String, RoleDocument>();
   Map<String, RoleDocument> classUrnToRoleMap = new HashMap<String, RoleDocument>();
   String description;
   Privacy privacy;
   RoleDocument userRole;
   float size;
+  private static final int BYTES_PER_KB = 1024;
+  private static final int BYTES_PER_MB = 1024 * 1024;
   
   public boolean userCanEdit () {
     return this.userRole.equals(RoleDocument.OWNER) ||
@@ -104,8 +104,16 @@ public class DocumentInfo {
     this.privacy = privacy;
   }
   
-  public float getSize() {
+  public float getSizeInBytes() {
     return size;
+  }
+  
+  public float getSizeInKB() {
+    return size / BYTES_PER_KB;
+  }
+  
+  public float getSizeInMB() {
+    return size / BYTES_PER_MB;
   }
   
   public void setSize(float size) {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -54,9 +55,9 @@ public class DocumentList extends Composite {
     private static final int SIZE          = 1;
     private static final int PRIVACY       = 2;
     private static final int CREATION_TIME = 3;
-    private static final int CREATOR       = 4;
-    private static final int ACTIONS       = 5;
-    private static final int count         = 6; // num columns above
+    //private static final int CREATOR       = 4; // not available in api yet
+    private static final int ACTIONS       = 4;
+    private static final int count         = 5; // num columns above
   }
   
   public DocumentList() {
@@ -72,7 +73,7 @@ public class DocumentList extends Composite {
     documentGrid.setText(0, Column.SIZE, "Size");
     documentGrid.setText(0, Column.PRIVACY, "Privacy");
     documentGrid.setText(0, Column.CREATION_TIME, "Created on");
-    documentGrid.setText(0, Column.CREATOR, "Created by");
+    //documentGrid.setText(0, Column.CREATOR, "Created by");
     documentGrid.setText(0, Column.ACTIONS, "Actions");
     
     // css styles
@@ -115,7 +116,7 @@ public class DocumentList extends Composite {
     // size
     this.documentGrid.setText(row, 
                               Column.SIZE, 
-                              Float.toString(documentInfo.getSize()) + " MB");
+                              NumberFormat.getFormat("######.00").format(documentInfo.getSizeInKB()) + " KB");
     this.documentGrid.getCellFormatter().setStyleName(row, Column.SIZE, style.documentSize());
     
     // privacy 
@@ -129,10 +130,12 @@ public class DocumentList extends Composite {
                               Column.CREATION_TIME,
                               dateFormat.format(documentInfo.getCreationTimestamp()));    
     
+    /*
     // created by
     this.documentGrid.setText(row,
                               Column.CREATOR,
                               documentInfo.getCreator());
+    */
     
     // actions column
     this.documentGrid.setWidget(row, 

@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -41,7 +42,7 @@ public class DocumentDetail extends Composite {
   @UiField HTMLPanel container;
   @UiField InlineHyperlink editDocumentLink;
   @UiField Anchor backLinkTop;
-  @UiField InlineLabel creatorLabel;
+  //@UiField InlineLabel creatorLabel; // not available from api yet
   @UiField InlineLabel creationDateLabel;
   @UiField InlineLabel sizeLabel;
   @UiField InlineLabel documentNameLabel;
@@ -72,9 +73,10 @@ public class DocumentDetail extends Composite {
   public void setDocumentDetail(DocumentInfo documentInfo, boolean canEdit) {
     if (documentInfo != null) {
       // creation details
-      this.creatorLabel.setText(documentInfo.getCreator());
+      //this.creatorLabel.setText(documentInfo.getCreator());
       this.creationDateLabel.setText(this.dateFormat.format(documentInfo.getCreationTimestamp()));
-      this.sizeLabel.setText(Float.toString(documentInfo.getSize()));
+      String sizeString = NumberFormat.getFormat("######.00").format(documentInfo.getSizeInKB());
+      this.sizeLabel.setText(sizeString + " KB");
       
       // copy info from data obj into fields
       this.documentNameLabel.setText(documentInfo.getDocumentName());
