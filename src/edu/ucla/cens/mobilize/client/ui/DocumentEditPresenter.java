@@ -75,7 +75,6 @@ public class DocumentEditPresenter {
       public void onClick(ClickEvent event) {
         assert view.formIsInitialized() : "You must call view.initializeForm(authToken, serverLocation) before submitting";;
         if (validateForm()) {
-          view.prepareFormForSubmit(); // copies some values into hidden fields
           view.submitForm();
         } // else do nothing (validateForm will have marked errors)
       }

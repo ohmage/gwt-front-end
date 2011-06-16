@@ -138,7 +138,7 @@ public class DocumentEditView extends Composite {
     return this.formIsInitialized;
   }
   
-  public void prepareFormForSubmit() {    
+  private void prepareFormForSubmit() {    
     // copy values that have changed (or all values in case of create) into hidden fields  
     campaignsToAddHiddenField.setValue(serializeCollectionAsReaders(getCampaignsToAdd()));
     campaignsToRemoveHiddenField.setValue(serializeList(getCampaignsToRemove()));
@@ -164,9 +164,9 @@ public class DocumentEditView extends Composite {
   
   public void setHiddenFieldsForEdit() {
     campaignsToAddHiddenField.setName("campaign_role_list_add");
-    campaignsToRemoveHiddenField.setName("campaign_role_list_remove");
+    campaignsToRemoveHiddenField.setName("campaign_list_remove");
     classesToAddHiddenField.setName("class_role_list_add");
-    classesToRemoveHiddenField.setName("class_role_list_remove");
+    classesToRemoveHiddenField.setName("class_list_remove");
     fileUploadInput.getElement().removeAttribute("name"); // disabled
   }
   
@@ -209,9 +209,10 @@ public class DocumentEditView extends Composite {
   public void setDocument(DocumentInfo documentInfo) {
     clearFormFields();
     if (documentInfo == null) return;
-    
+    originalCampaignUrns.clear();
     originalCampaignUrns.addAll(documentInfo.getCampaigns());
-    originalCampaignUrns.addAll(documentInfo.getClasses());
+    originalClassUrns.clear();
+    originalClassUrns.addAll(documentInfo.getClasses());
     
     headerLabel.setText("Editing " + documentInfo.getDocumentName());
     documentNameTextBox.setText(documentInfo.getDocumentName());
