@@ -3,6 +3,8 @@ package edu.ucla.cens.mobilize.client.ui;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
@@ -13,15 +15,17 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.InlineHyperlink;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.event.DocumentDownloadHandler;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 
 public class DocumentList extends Composite {
-
+  
   // expose css styles from the uibinder template
   public interface DocumentListStyle extends CssResource {
     String documentGrid();
@@ -48,6 +52,9 @@ public class DocumentList extends Composite {
   @UiField DocumentListStyle style;
 
   private DateTimeFormat dateFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM);
+  
+  // set this delegate to define how download links are handled
+  private DocumentDownloadHandler documentDownloadHandler;
   
   // convenience class for column indices
   private class Column { 
@@ -96,6 +103,10 @@ public class DocumentList extends Composite {
     }
   }
   
+  public void setDocumentDownloadHandler(DocumentDownloadHandler handler) {
+    this.documentDownloadHandler = handler;
+  }
+  
   private void addDocument(int row, DocumentInfo documentInfo) {
     // stripe odd rows
     if (row % 2 != 0) {
@@ -104,11 +115,11 @@ public class DocumentList extends Composite {
     
     // TODO: get file extension from document name and show appropriate icon?
     
-    // document name is a download link
-    Hyperlink documentNameDownloadLink = 
+    // document name links to detail page
+    Hyperlink documentNameLink = 
       new Hyperlink(documentInfo.getDocumentName(), 
                     HistoryTokens.documentDetail(documentInfo.getDocumentId()));
-    this.documentGrid.setWidget(row, Column.DOCUMENT_NAME, documentNameDownloadLink);
+    this.documentGrid.setWidget(row, Column.DOCUMENT_NAME, documentNameLink);
     this.documentGrid.getCellFormatter().setStyleName(row, 
                                                       Column.DOCUMENT_NAME, 
                                                       style.documentName());
@@ -146,7 +157,7 @@ public class DocumentList extends Composite {
     
   }
   
-  private Widget getActionsWidget(String documentId, boolean canEdit) {
+  private Widget getActionsWidget(final String documentId, boolean canEdit) {
     Panel panel = new FlowPanel();
     // link to view document details
     InlineHyperlink detailsLink = 
@@ -161,7 +172,18 @@ public class DocumentList extends Composite {
       panel.add(editLink);
     }
     
-    // FIXME: action link to download document?
+    InlineLabel downloadLink = new InlineLabel("download");
+    downloadLink.setStyleName(style.downloadLink());
+    downloadLink.addStyleName("link");
+    downloadLink.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        if (documentDownloadHandler != null) {
+          documentDownloadHandler.onDownloadClick(documentId);
+        }
+      }
+    });
+    panel.add(downloadLink);
     
     return panel.asWidget();
   }

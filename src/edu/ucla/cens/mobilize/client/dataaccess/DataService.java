@@ -49,6 +49,14 @@ public interface DataService {
   String authToken(); 
   
   /**
+   * Accessor for the client string. Useful so presenters can access the client
+   * string for use in forms. (Note that using the same client string in all
+   * api calls makes it easier to filter server side logs.)
+   * @return String representing the gwt web client
+   */
+  String client();
+  
+  /**
    * Fetches an authorization token plus a list of campaign names from the server.
    * Throws a runtime error if the username/password combination fails authentication.
    * 
@@ -127,5 +135,8 @@ public interface DataService {
 
   // download is done with a formpanel, dataservice just provides params
   Map<String, String> getCampaignXmlDownloadParams(String campaignId);
+
+  // download is done with a formpanel, dataservice just provides params
+  Map<String, String> getDocumentDownloadParams(String documentId);
   
 }

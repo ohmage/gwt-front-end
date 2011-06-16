@@ -36,7 +36,7 @@
       padding: 2px 5px 2px 18px;
     } 
     .downloadLink {
-    	background-image: url('images/page_white_put.png');
+    	background-image: url('images/page_white_download_small.png');
     }
     .detailsLink {
       background-image: url('images/page_white_magnify_small.png'); 

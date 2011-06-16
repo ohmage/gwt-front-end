@@ -239,6 +239,11 @@ public class AndWellnessDataService implements DataService {
     return this.authToken;
   }
   
+  @Override
+  public String client() {
+    return this.client;
+  }
+  
   /**
    * Sends the passed in username and password to the AW server.  Checks the server response
    * to determine whether the login succeeded or failed, and notifies the callback of such.
@@ -925,6 +930,15 @@ public class AndWellnessDataService implements DataService {
     params.put("client", this.client);
     params.put("output_format", "xml");
     params.put("campaign_urn_list", campaignId);
+    return params;
+  }
+
+  @Override
+  public Map<String, String> getDocumentDownloadParams(String documentId) {
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", this.authToken);
+    params.put("client", this.client);
+    params.put("document_id", documentId);
     return params;
   }
 }

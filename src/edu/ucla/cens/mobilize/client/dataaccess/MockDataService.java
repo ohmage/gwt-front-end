@@ -240,6 +240,11 @@ public class MockDataService implements DataService {
   }
   
   @Override
+  public String client() {
+    return "gwt-mock";
+  }
+  
+  @Override
   public void init(String username, String auth_token) {
     // TODO Auto-generated method stub
   }
@@ -469,6 +474,12 @@ public class MockDataService implements DataService {
 
   @Override
   public Map<String, String> getCampaignXmlDownloadParams(String campaignId) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Map<String, String> getDocumentDownloadParams(String documentId) {
     // TODO Auto-generated method stub
     return null;
   }

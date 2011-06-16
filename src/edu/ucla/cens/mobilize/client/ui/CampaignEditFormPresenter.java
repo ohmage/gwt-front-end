@@ -12,27 +12,17 @@ import java.util.logging.Logger;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
-
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
-import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
 
 public class CampaignEditFormPresenter {
@@ -246,10 +236,6 @@ public class CampaignEditFormPresenter {
       view.showValidationErrors(errorMsg, errors);
     }
     return isValid;
-  }
-  
-  private void clearValidationErrors() {
-    view.clearValidationErrors();
   }
 
 }

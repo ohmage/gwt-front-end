@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -9,6 +10,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -17,6 +22,7 @@ import edu.ucla.cens.mobilize.client.ui.DocumentEditView;
 import edu.ucla.cens.mobilize.client.ui.DocumentList;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
+import edu.ucla.cens.mobilize.client.event.DocumentDownloadHandler;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 
 public class DocumentViewImpl extends Composite implements DocumentView {
@@ -36,7 +42,7 @@ public class DocumentViewImpl extends Composite implements DocumentView {
   @UiField DocumentList documentList;
   @UiField DocumentDetail documentDetail;
   @UiField DocumentEditView documentEdit;
-  
+
   public DocumentViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
     // set up hyperlinks in top nav bar
@@ -111,6 +117,35 @@ public class DocumentViewImpl extends Composite implements DocumentView {
   @Override
   public HasClickHandlers getUploadButton() {
     return this.documentUploadButton;
+  }
+
+  @Override
+  public void doDocumentDownloadPost(String url, 
+                                   Map<String, String> params,
+                                   SubmitCompleteHandler submitCompleteHandler) {
+    // NOTE: new form is created for each b/c multiple downloads 
+    // can take place concurrently
+    FormPanel form = new FormPanel(); // posts to hidden iframe
+    form.setAction(url);
+    form.setMethod(FormPanel.METHOD_POST);
+    FlowPanel innerContainer = new FlowPanel();
+    for (String paramName : params.keySet()) {
+      Hidden field = new Hidden();
+      field.setName(paramName);
+      field.setValue(params.get(paramName));
+      innerContainer.add(field);
+    }
+    form.add(innerContainer);
+    form.addSubmitCompleteHandler(submitCompleteHandler);
+    form.submit();
+    // does gwt clean this up when done?
+  }
+
+  @Override
+  public void setDocumentDownloadHandler(DocumentDownloadHandler handler) {
+    // both list and detail have download links - make sure they work as expected
+    this.documentList.setDocumentDownloadHandler(handler);
+    // this.documentDetail.setDocumentDownloadHandler(handler);
   }
 
 }

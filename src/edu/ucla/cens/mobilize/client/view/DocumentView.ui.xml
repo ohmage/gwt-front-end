@@ -102,6 +102,5 @@
         <w:DocumentEditView ui:field="documentEdit"></w:DocumentEditView>
       </g:HTMLPanel>
     </g:center>
-  
   </g:DockLayoutPanel>
 </ui:UiBinder> 
