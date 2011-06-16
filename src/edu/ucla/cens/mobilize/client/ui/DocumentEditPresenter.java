@@ -176,26 +176,15 @@ public class DocumentEditPresenter {
     view.initializeForm(dataService.authToken(), AwConstants.getDocumentCreateUrl());
   }
   
-  public void fetchDocumentAndInitFormForEdit(String documentId) {
-    this.dataService.fetchDocumentDetail(documentId, new AsyncCallback<DocumentInfo>() {
-
-      @Override
-      public void onFailure(Throwable caught) {
-        _logger.severe(caught.getMessage());
-        view.showError("Document could not be opened for editing.");
-      }
-
-      @Override
-      public void onSuccess(DocumentInfo result) {
-        isCreate = false;
-        view.setDocument(result);
-        view.setHeader("Editing " + result.getDocumentName());
-        view.setUploadPanelVisible(false);
-        view.setDeletePanelVisible(true);
-        view.setHiddenFieldsForEdit();
-        view.initializeForm(dataService.authToken(), AwConstants.getDocumentUpdateUrl());
-      }
-    });  
+  
+  public void initFormForEdit(DocumentInfo document) {
+    isCreate = false;
+    view.setDocument(document);
+    view.setHeader("Editing " + document.getDocumentName());
+    view.setUploadPanelVisible(false);
+    view.setDeletePanelVisible(true);
+    view.setHiddenFieldsForEdit();
+    view.initializeForm(dataService.authToken(), AwConstants.getDocumentUpdateUrl());
   }
 
   public void deleteDocument(final String documentId, final String documentName) {

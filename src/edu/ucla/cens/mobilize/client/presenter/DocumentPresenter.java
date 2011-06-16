@@ -1,6 +1,5 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -39,6 +38,8 @@ public class DocumentPresenter implements Presenter {
 
   // Logging utility
   private static Logger _logger = Logger.getLogger(DocumentPresenter.class.getName());
+
+  private List<DocumentInfo> documents = null;
   
   public DocumentPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
     this.userInfo = userInfo;
@@ -79,7 +80,7 @@ public class DocumentPresenter implements Presenter {
         fetchAndShowAllDocuments();
       } else if (view.equals("detail") && params.containsKey("id")) {
         // anything after first id is ignored
-        fetchAndShowDocumentDetail(params.get("id"));
+        showDocumentDetail(params.get("id"));
       } else if (view.equals("create")) {
         showDocumentCreateForm();
       } else if (view.equals("edit") && params.containsKey("id")) {
@@ -106,6 +107,7 @@ public class DocumentPresenter implements Presenter {
 
       @Override
       public void onSuccess(List<DocumentInfo> result) {
+        documents = result; // save details
         view.setDocumentList(result);
         view.showListSubview();
       }
@@ -126,28 +128,42 @@ public class DocumentPresenter implements Presenter {
 
       @Override
       public void onSuccess(List<DocumentInfo> result) {
+        documents = result; // save details
         view.setDocumentList(result);
         view.showListSubview();
       }
     });
   }
 
-  private void fetchAndShowDocumentDetail(final String documentId) {
-    this.dataService.fetchDocumentDetail(documentId, new AsyncCallback<DocumentInfo>() {
-      @Override
-      public void onFailure(Throwable caught) {
-        _logger.severe(caught.getMessage());
-        view.showError("Could not load details for " + documentId);
-        view.showListSubview();
+  // FIXME: assumes document list has already been loaded. this would
+  // break if user entered history token directly
+  private DocumentInfo getDocumentInfo(String documentId) {
+    if (documents == null || documentId == null) return null;
+    DocumentInfo retval = null;
+    for (int i = 0; i < documents.size(); i++) {
+      if (documentId.equals(documents.get(i).getDocumentId())) {
+        retval = documents.get(i);
+        break;
       }
-
-      @Override
-      public void onSuccess(DocumentInfo result) {
-        view.setDocumentDetail(result, result.userCanEdit());
+    }
+    return retval;
+  }
+  
+  private void showDocumentDetail(final String documentId) {
+    if (documents == null || documentId == null) {
+      fetchAndShowAllDocuments();
+    } else {
+      DocumentInfo docInfo = getDocumentInfo(documentId);
+      if (docInfo != null) {
+        // FIXME: do we still need a separate param for canEdit?
+        view.setDocumentDetail(docInfo, docInfo.userCanEdit());
         view.showDetailSubview();
+      } else {
+        // FIXME: better error handling.
+        fetchAndShowAllDocuments();
+        ErrorDialog.show("There was a problem loading the document. Please try again in a few moments.");
       }
-    });
-    
+    }
   }
 
   private void showDocumentCreateForm() {
@@ -156,8 +172,15 @@ public class DocumentPresenter implements Presenter {
   }
 
   private void fetchDocumentAndShowEditForm(String documentId) {
-    this.documentEditPresenter.fetchDocumentAndInitFormForEdit(documentId);
-    this.view.showEditSubview();    
+    DocumentInfo docInfo = getDocumentInfo(documentId);
+    if (docInfo != null) {
+      this.documentEditPresenter.initFormForEdit(docInfo);
+      this.view.showEditSubview();
+    } else {
+      fetchAndShowAllDocuments();
+      ErrorDialog.show("There was a problem opening the document for edit.",
+                       "Please wait a few moments and try again.");
+    }
   }
 
   public void setView(DocumentView view) {

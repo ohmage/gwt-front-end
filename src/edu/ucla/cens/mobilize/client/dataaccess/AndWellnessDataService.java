@@ -857,33 +857,6 @@ public class AndWellnessDataService implements DataService {
       throw new ServerException("Cannot contact server.");
     }
   }
-
-  @Override
-  public void fetchDocumentDetail(final String documentId, final AsyncCallback<DocumentInfo> callback) {
-    // TODO: get from cached data instead
-    fetchDocumentList(new DocumentReadParams(), new AsyncCallback<List<DocumentInfo>>() {
-
-      @Override
-      public void onFailure(Throwable caught) {
-        callback.onFailure(caught);
-      }
-
-      @Override
-      public void onSuccess(List<DocumentInfo> result) {
-        boolean wasFound = false;
-        for (DocumentInfo docInfo : result) {
-          if (docInfo.getDocumentId().equals(documentId)) {
-            wasFound = true;
-            callback.onSuccess(docInfo);
-            break;
-          }
-        }
-        if (!wasFound) {
-          callback.onFailure(new RuntimeException("Could not find document with id: " + documentId));
-        }
-      }
-    });
-  }
   
   @Override
   public void deleteDocument(String documentId, final AsyncCallback<String> callback) {

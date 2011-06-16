@@ -118,25 +118,21 @@ public interface DataService {
   void fetchClassList(List<String> classIds,
                       final AsyncCallback<List<ClassInfo>> callback);
   
-  
   void fetchClassDetail(String classId, final AsyncCallback<ClassInfo> callback);
   
   void updateClass(ClassUpdateParams params, final AsyncCallback<String> callback);
   
   void fetchDocumentList(DocumentReadParams params, 
       final AsyncCallback<List<DocumentInfo>> callback);
-
-  void fetchDocumentDetail(String documentId, final AsyncCallback<DocumentInfo> callback);
-  //void fetchDocumentContents(String documentId, final AsyncCallback<WhatGoesHere?>);
   
-  // NOTE: create document must be done through a form (?)
+  // NOTE: createDocument and downloadDocument are done with FormPanels
+  
+  // download is done with a formpanel, dataservice just provides params
+  Map<String, String> getDocumentDownloadParams(String documentId);
   
   void deleteDocument(String documentId, final AsyncCallback<String> callback);
 
   // download is done with a formpanel, dataservice just provides params
   Map<String, String> getCampaignXmlDownloadParams(String campaignId);
-
-  // download is done with a formpanel, dataservice just provides params
-  Map<String, String> getDocumentDownloadParams(String documentId);
   
 }

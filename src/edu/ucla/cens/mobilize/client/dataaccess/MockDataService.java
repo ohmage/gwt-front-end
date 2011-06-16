@@ -425,16 +425,6 @@ public class MockDataService implements DataService {
   }
 
   @Override
-  public void fetchDocumentDetail(String documentId, AsyncCallback<DocumentInfo> callback) {
-    for (DocumentInfo docInfo : documents) {
-      if (docInfo.getDocumentId().equals(documentId)) {
-        callback.onSuccess(docInfo);
-      }
-    }
-    callback.onFailure(new Exception("document not found"));
-  }
-
-  @Override
   public void updateSurveyResponse(String campaignId, int surveyKey,
       Privacy newPrivacyState, AsyncCallback<String> callback) {
     callback.onSuccess("");    
