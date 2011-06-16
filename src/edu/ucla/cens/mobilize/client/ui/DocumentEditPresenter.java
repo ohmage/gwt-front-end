@@ -84,7 +84,7 @@ public class DocumentEditPresenter {
       @Override
       public void onClick(ClickEvent event) {
         view.clearFormFields();
-        History.newItem(HistoryTokens.documentList());
+        History.newItem(HistoryTokens.documentListAll());
       }
     });
 
@@ -137,7 +137,7 @@ public class DocumentEditPresenter {
       if (status != null && status.equals("success")) { 
         // redirect to document list so user can see results
         view.clearFormFields();
-        History.newItem(HistoryTokens.documentList());
+        History.newItem(HistoryTokens.documentListAll());
       } else {
         ErrorDialog.showErrorsByCode("There was a problem creating the document.",
                                      errorCodeToDescriptionMap);
@@ -210,7 +210,7 @@ public class DocumentEditPresenter {
       public void onSuccess(String result) {
         // redirect to document list and show success message
         userInfo.setInfoMessage("Document " + documentName + " has been deleted.");
-        History.newItem(HistoryTokens.documentList());
+        History.newItem(HistoryTokens.documentListAll());
       }
       
     });

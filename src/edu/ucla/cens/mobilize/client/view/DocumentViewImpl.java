@@ -9,12 +9,14 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.ui.DocumentDetail;
 import edu.ucla.cens.mobilize.client.ui.DocumentEditView;
 import edu.ucla.cens.mobilize.client.ui.DocumentList;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 
 public class DocumentViewImpl extends Composite implements DocumentView {
@@ -26,6 +28,9 @@ public class DocumentViewImpl extends Composite implements DocumentView {
   interface DocumentViewUiBinder extends UiBinder<Widget, DocumentViewImpl> {
   }
 
+  @UiField InlineHyperlink myDocumentsLink;
+  @UiField InlineHyperlink browseDocumentsLink;
+  @UiField InlineHyperlink uploadLink;
   @UiField MessageWidget msgWidget;
   @UiField Button documentUploadButton;
   @UiField DocumentList documentList;
@@ -34,6 +39,10 @@ public class DocumentViewImpl extends Composite implements DocumentView {
   
   public DocumentViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
+    // set up hyperlinks in top nav bar
+    myDocumentsLink.setTargetHistoryToken(HistoryTokens.documentListMy());
+    browseDocumentsLink.setTargetHistoryToken(HistoryTokens.documentListAll());
+    uploadLink.setTargetHistoryToken(HistoryTokens.documentCreate());
   }
 
   @Override

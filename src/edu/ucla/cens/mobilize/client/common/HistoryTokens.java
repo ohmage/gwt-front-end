@@ -65,8 +65,12 @@ public class HistoryTokens {
     return "classes?v=edit&id=" + classId;
   }
 
-  public static String documentList() {
-    return "documents";
+  public static String documentListAll() {
+    return "documents?v=all";
+  }
+  
+  public static String documentListMy() {
+    return "documents?v=my";
   }
   
   public static String documentDetail(String documentId) {

@@ -8,7 +8,7 @@
       border-bottom: solid thin #AAA;
       font-size: 0.9em;
       margin: 0px;
-      padding: 3px 5px 10px 15px;
+      padding: 5px 5px 10px 15px;
     }
     .leftSideBarMenu {
       font-size: 0.9em;
@@ -72,20 +72,14 @@
     <!-- Top menu bar. Items change depending on role. (e.g., Author Center)-->
     <g:north size='25'>
       <g:HTMLPanel>
-	      <g:MenuBar ui:field='topMenuBar' addStyleNames='{style.topNav}'>
-	        <g:MenuItem ui:field='myDocumentsMenuItem'>
-	          <a href='#'>My Documents</a>
-	        </g:MenuItem>
-	        <g:MenuItem ui:field='browseMenuItem'>
-	          <span class='{style.separator}'>|</span>
-	          <a href='#'>Browse Documents</a>
-	        </g:MenuItem>
-	        <g:MenuItem ui:field='uploadMenuItem'>
-	          <span class='{style.separator}'>|</span>
-	          <a href='#'>Upload</a>
-	        </g:MenuItem>
-	      </g:MenuBar>
-	      <w:MessageWidget ui:field='msgWidget' />
+	      <g:HTMLPanel addStyleNames='{style.topNav}'>
+		      <g:InlineHyperlink ui:field='myDocumentsLink'>My Documents</g:InlineHyperlink>
+		      <span class='{style.separator}'>|</span>
+		      <g:InlineHyperlink ui:field='browseDocumentsLink'>Browse Documents</g:InlineHyperlink>
+	        <span class='{style.separator}'>|</span>
+	        <g:InlineHyperlink ui:field='uploadLink'>Upload</g:InlineHyperlink>
+        </g:HTMLPanel>
+        <w:MessageWidget ui:field='msgWidget' />
       </g:HTMLPanel>
     </g:north>
     

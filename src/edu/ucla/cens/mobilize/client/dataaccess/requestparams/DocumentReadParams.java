@@ -1,8 +1,8 @@
 package edu.ucla.cens.mobilize.client.dataaccess.requestparams;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
@@ -12,8 +12,8 @@ public class DocumentReadParams extends RequestParams {
   public String authToken;
   public String client;
   public boolean includePersonalDocuments = true;
-  public List<String> campaignUrnList = new ArrayList<String>();
-  public List<String> classUrnList = new ArrayList<String>();
+  public Collection<String> campaignUrnList = new ArrayList<String>();
+  public Collection<String> classUrnList = new ArrayList<String>();
   
   @Override
   public String toString() {

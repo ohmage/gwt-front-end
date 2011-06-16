@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -61,23 +62,29 @@ public class DocumentPresenter implements Presenter {
     
     // get subview from url params
     if (params.isEmpty()) {
-      this.fetchAndShowAllDocuments();
-    } else if (params.get("v").equals("detail") && params.containsKey("id")) {
-      // anything after first id is ignored
-      this.fetchAndShowDocumentDetail(params.get("id"));
-    } else if (params.get("v").equals("create")) {
-      this.showDocumentCreateForm();
-    } else if (params.get("v").equals("edit") && params.containsKey("id")) {
-      // anything after first id is ignored
-      this.fetchDocumentAndShowEditForm(params.get("id"));
+      fetchAndShowAllDocuments();
+    } else if (params.containsKey("v")) {
+      String view = params.get("v");
+      if (view.equals("all")) {
+        fetchAndShowAllDocuments();
+      } else if (view.equals("detail") && params.containsKey("id")) {
+        // anything after first id is ignored
+        fetchAndShowDocumentDetail(params.get("id"));
+      } else if (view.equals("create")) {
+        showDocumentCreateForm();
+      } else if (view.equals("edit") && params.containsKey("id")) {
+        // anything after first id is ignored
+        fetchDocumentAndShowEditForm(params.get("id"));
+      } else if (view.equals("my")) {
+        fetchAndShowMyDocuments();
+      }
     } else {
       // unrecognized view - default to list view
-      _logger.finer("Unrecognized params");
-      History.newItem(HistoryTokens.documentList());
+      History.newItem(HistoryTokens.documentListAll());
     }    
   }
 
-  private void fetchAndShowAllDocuments() {
+  private void fetchAndShowMyDocuments() {
     DocumentReadParams params = new DocumentReadParams(); // just use defaults
     this.dataService.fetchDocumentList(params, new AsyncCallback<List<DocumentInfo>>() {
       @Override
@@ -93,6 +100,26 @@ public class DocumentPresenter implements Presenter {
         view.showListSubview();
       }
     });    
+  }
+  
+  private void fetchAndShowAllDocuments() {
+    DocumentReadParams params = new DocumentReadParams(); 
+    params.campaignUrnList = userInfo.getCampaignIds();
+    params.classUrnList = userInfo.getClassIds();
+    this.dataService.fetchDocumentList(params, new AsyncCallback<List<DocumentInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        _logger.severe(caught.getMessage());
+        view.showError("There was a problem loading the document list.");
+        view.showListSubview();
+      }
+
+      @Override
+      public void onSuccess(List<DocumentInfo> result) {
+        view.setDocumentList(result);
+        view.showListSubview();
+      }
+    });
   }
 
   private void fetchAndShowDocumentDetail(final String documentId) {
