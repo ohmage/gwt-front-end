@@ -41,7 +41,6 @@ public class DocumentDetail extends Composite {
   @UiField HTMLPanel container;
   @UiField InlineHyperlink editDocumentLink;
   @UiField Anchor backLinkTop;
-  @UiField InlineHyperlink backLinkBottom;
   @UiField InlineLabel creatorLabel;
   @UiField InlineLabel creationDateLabel;
   @UiField InlineLabel sizeLabel;
@@ -62,13 +61,6 @@ public class DocumentDetail extends Composite {
   private void initComponents() {
     
     this.backLinkTop.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        History.back();
-      }
-    });
-    
-    this.backLinkBottom.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         History.back();
