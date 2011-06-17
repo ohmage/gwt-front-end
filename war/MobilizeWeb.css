@@ -266,6 +266,17 @@ ul.errorList {
 
 /********* end app-wide error message styles *********************/
 
+/********* hack for disclosure panels *********************/
+/*
+.gwt-DisclosurePanel .header td {
+  text-decoration: none;  
+}*/
+
+a.header, a.header td, a.header table, a.header tr {
+	text-decoration: none; /* Remove underline from header in disclosure panel */
+}
+/********* end hack for disclosure panels *****************/
+
 /********* styles for campaign browse tree *********************/
 /* FIXME: move these into uibinder template file */
 

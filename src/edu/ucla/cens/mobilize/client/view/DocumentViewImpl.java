@@ -53,6 +53,7 @@ public class DocumentViewImpl extends Composite implements DocumentView {
     myDocumentsLink.setTargetHistoryToken(HistoryTokens.documentListMy());
     browseDocumentsLink.setTargetHistoryToken(HistoryTokens.documentListAll());
     uploadLink.setTargetHistoryToken(HistoryTokens.documentCreate());
+    showListSubview();
   }
 
   @Override

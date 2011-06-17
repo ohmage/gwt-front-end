@@ -3,7 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui"
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
-  <ui:style type="edu.ucla.cens.mobilize.client.view.ResponseViewImpl.ResponseViewStyles">    
+  <ui:style type="edu.ucla.cens.mobilize.client.view.ResponseViewImpl.ResponseViewStyles"> 
     .buttonPanel {
     	padding: 4px 12px;
     }
@@ -21,7 +21,7 @@
     	width: 100%;
     }
     .filter {
-    	width: 100%;
+    	width: 142px;
     }
     .filterContainer .label {
     	font-weight: bold;
@@ -106,7 +106,7 @@
     
     <!-- left sidebar lets you pick private/shared/invisible -->
     <g:west size='170'>
-      <g:VerticalPanel addStyleNames='{style.filterContainer} {style.leftSideBar}'>
+      <g:HTMLPanel addStyleNames='{style.filterContainer} {style.leftSideBar}'>
         <g:Label addStyleNames='{style.label}'>Participant:</g:Label>
         <g:Label ui:field='singleParticipantLabel' />
         <g:ListBox ui:field='participantFilter' 
@@ -129,7 +129,7 @@
         <g:Label addStyleNames='{style.label}'>To date:</g:Label>
         <dp:DateBox ui:field='toDateBox' addStyleNames='{style.dateBox}' />
         <g:Button ui:field='applyFiltersButton'>Apply Filters</g:Button>
-      </g:VerticalPanel>
+      </g:HTMLPanel>
     </g:west>
     
     <g:center>
