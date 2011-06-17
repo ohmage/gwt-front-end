@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -49,8 +50,10 @@ public class MultiSelectDialog extends Composite {
   
   // use this version if display text and value (id) are the same
   public void setItems(List<String> items) {
+    List<String> sortedItems = new ArrayList<String>(items);
+    Collections.sort(sortedItems);
     listBox.clear();
-    for (String item : items) {
+    for (String item : sortedItems) {
       listBox.addItem(item, item); // value and display text are the same
     }
     giveListBoxMinimumWidth();
@@ -59,9 +62,16 @@ public class MultiSelectDialog extends Composite {
   // use this version if you want to display a user friendly string
   // but get back an id as the selected item value
   public void setItems(Map<String, String> itemIdToDisplayNameMap) {
-    listBox.clear();
+    List<String> valuesAndKeys = new ArrayList<String>();
     for (String key : itemIdToDisplayNameMap.keySet()) {
-      listBox.addItem(itemIdToDisplayNameMap.get(key), key); // key becomes value
+      String value = itemIdToDisplayNameMap.get(key);
+      valuesAndKeys.add(value + "###" + key);
+    }
+    Collections.sort(valuesAndKeys); // sort by value first, then key
+    for (String valueKeyPair : valuesAndKeys) {
+      String[] arr = valueKeyPair.split("###"); // 0=value, 1=key
+      // value becomes display string, key becomes listItem "value"
+      listBox.addItem(arr[0], arr[1]); 
     }
     giveListBoxMinimumWidth();
   }

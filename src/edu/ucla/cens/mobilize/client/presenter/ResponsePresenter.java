@@ -78,6 +78,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           for (ClassInfo classInfo : result) {
             participants.addAll(classInfo.getMemberLogins());
           }
+          Collections.sort(participants);
           view.setParticipantList(participants);
           if (participantToSelect != null) {
             view.selectParticipant(participantToSelect);
