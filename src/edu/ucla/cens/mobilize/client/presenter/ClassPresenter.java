@@ -25,7 +25,7 @@ import edu.ucla.cens.mobilize.client.view.ClassView;
 
 public class ClassPresenter implements ClassView.Presenter, Presenter {
   private ClassView view;
-  private UserInfo user;
+  private UserInfo userInfo;
   private DataService dataService;
   private EventBus eventBus;
   
@@ -35,7 +35,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
   private static Logger _logger = Logger.getLogger(ClassPresenter.class.getName());
 
   public ClassPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
-    this.user = userInfo;
+    this.userInfo = userInfo;
     this.dataService = dataService;
     this.eventBus = eventBus;
   }
@@ -114,7 +114,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
 
       @Override
       public void onSuccess(ClassInfo result) {
-        view.setDetail(result);
+        view.setDetail(result, result.userCanEdit(userInfo.getUserName()));
         view.showDetailSubview();
       }
     });
@@ -145,7 +145,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
   // FIXME: should supervisors be able to see all classes in a school instead?
   private void fetchAndShowClasses() { 
     List<String> classIdList = new ArrayList<String>();
-    classIdList.addAll(this.user.getClassIds());
+    classIdList.addAll(this.userInfo.getClassIds());
     dataService.fetchClassList(classIdList, new AsyncCallback<List<ClassInfo>>() {
 
       @Override

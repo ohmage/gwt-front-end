@@ -42,4 +42,7 @@ public class ClassInfo {
   
   public void setClassName(String className) { this.className = className; }
 
+  public boolean userCanEdit(String userName) {
+    return RoleClass.PRIVILEGED.equals(getMemberRole(userName));
+  }
 }

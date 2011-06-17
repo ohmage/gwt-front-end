@@ -20,7 +20,7 @@ public interface ClassView extends IsWidget {
   void showDetailSubview();
   void showEditSubview();
   void setList(List<ClassInfo> classes);
-  void setDetail(ClassInfo classDetail);
+  void setDetail(ClassInfo classDetail, boolean userCanEdit);
   void setEdit(ClassInfo classDetail);
   void showEditFormAddMembersDialog(List<String> userLoginsToChooseFrom);
   

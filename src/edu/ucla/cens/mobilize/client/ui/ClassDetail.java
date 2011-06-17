@@ -32,8 +32,10 @@ public class ClassDetail extends Composite {
     initWidget(uiBinder.createAndBindUi(this));
   }
   
-  public void setClassDetail(ClassInfo classDetail) {
-    this.editLink.setTargetHistoryToken(HistoryTokens.classEdit(classDetail.getClassId()));
+  public void setClassDetail(ClassInfo classDetail, boolean canEdit) {
+    this.editLink.setVisible(false); // feature is not enabled yet
+    //this.editLink.setVisible(canEdit);
+    //this.editLink.setTargetHistoryToken(HistoryTokens.classEdit(classDetail.getClassId()));
     this.className.setText(classDetail.getClassName());
     this.classUrn.setText(classDetail.getClassId());
     this.description.setText(classDetail.getDescription());

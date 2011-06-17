@@ -88,8 +88,8 @@ public class ClassViewImpl extends Composite implements ClassView {
   }
 
   @Override
-  public void setDetail(ClassInfo classDetail) {
-    this.classDetail.setClassDetail(classDetail);
+  public void setDetail(ClassInfo classDetail, boolean userCanEdit) {
+    this.classDetail.setClassDetail(classDetail, userCanEdit);
   }
 
   @Override
