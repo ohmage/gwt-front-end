@@ -210,7 +210,7 @@
 	          Share
 	        </g:Button> 
 	        <g:Button ui:field='makePrivateButtonBottom' addStyleNames='{style.makePrivateButton}'>
-	          Unshare
+	          Make Private
 	        </g:Button>
 	        <!-- fixme: show confirm dialog for delete -->
 	        <g:Button ui:field='deleteButtonBottom' addStyleNames='{style.deleteButton}'>
