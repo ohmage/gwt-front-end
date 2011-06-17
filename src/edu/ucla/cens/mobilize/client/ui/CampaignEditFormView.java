@@ -426,8 +426,8 @@ public class CampaignEditFormView extends Composite {
     this.campaignName.setText("");
     this.campaignUrn.setText("");
     // clear class and author lists 
-    this.classesFlexTable.clear();
-    this.authorsFlexTable.clear();
+    this.classesFlexTable.removeAllRows();
+    this.authorsFlexTable.removeAllRows();
     // class and author tables are invisible when empty so their add
     // buttons render on the same line as the label
     this.classesFlexTable.setVisible(false);
