@@ -131,10 +131,10 @@
           </tr>-->
           <tr>
             <td class='{style.label}'>
-              <label>Created On:</label>
+              <label>Last Modified:</label>
             </td>
             <td>
-             <g:InlineLabel ui:field='creationDateLabel'/>
+             <g:InlineLabel ui:field='lastModifiedDateLabel'/>
             </td>
           </tr>
           <tr>

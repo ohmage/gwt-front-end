@@ -407,7 +407,8 @@ public class AwDataTranslators {
         try {
           DocumentAwData awData = (DocumentAwData)dataHash.get(documentId).isObject().getJavaScriptObject();
           DocumentInfo docInfo = new DocumentInfo();
-          docInfo.setCreationTimestamp(DateUtils.translateFromServerFormat(awData.getLastModified()));
+          docInfo.setLastModifiedTimestamp(DateUtils.translateFromServerFormat(awData.getLastModified()));
+          //docInfo.setCreationTimestamp(TODO);
           docInfo.setDescription(awData.getDescription());
           docInfo.setDocumentId(documentId);
           docInfo.setDocumentName(awData.getDocumentName());

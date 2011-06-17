@@ -43,7 +43,7 @@ public class DocumentDetail extends Composite {
   @UiField InlineHyperlink editDocumentLink;
   @UiField Anchor backLinkTop;
   //@UiField InlineLabel creatorLabel; // not available from api yet
-  @UiField InlineLabel creationDateLabel;
+  @UiField InlineLabel lastModifiedDateLabel;
   @UiField InlineLabel sizeLabel;
   @UiField InlineLabel documentNameLabel;
   @UiField InlineLabel descriptionLabel;
@@ -51,7 +51,7 @@ public class DocumentDetail extends Composite {
   @UiField VerticalPanel campaignsVerticalPanel;
   @UiField VerticalPanel classesVerticalPanel;
 
-  private DateTimeFormat dateFormat = DateTimeFormat.getMediumDateFormat();
+  private DateTimeFormat dateFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM);
   
   public DocumentDetail() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -74,7 +74,7 @@ public class DocumentDetail extends Composite {
     if (documentInfo != null) {
       // creation details
       //this.creatorLabel.setText(documentInfo.getCreator());
-      this.creationDateLabel.setText(this.dateFormat.format(documentInfo.getCreationTimestamp()));
+      this.lastModifiedDateLabel.setText(this.dateFormat.format(documentInfo.getLastModifiedTimestamp()));
       String sizeString = NumberFormat.getFormat("######.00").format(documentInfo.getSizeInKB());
       this.sizeLabel.setText(sizeString + " KB");
       

@@ -61,7 +61,7 @@ public class DocumentList extends Composite {
     private static final int DOCUMENT_NAME = 0;
     private static final int SIZE          = 1;
     private static final int PRIVACY       = 2;
-    private static final int CREATION_TIME = 3;
+    private static final int MODIFIED_TIME = 3;
     //private static final int CREATOR       = 4; // not available in api yet
     private static final int ACTIONS       = 4;
     private static final int count         = 5; // num columns above
@@ -79,7 +79,7 @@ public class DocumentList extends Composite {
     documentGrid.setText(0, Column.DOCUMENT_NAME, "Document Name");
     documentGrid.setText(0, Column.SIZE, "Size");
     documentGrid.setText(0, Column.PRIVACY, "Privacy");
-    documentGrid.setText(0, Column.CREATION_TIME, "Created on");
+    documentGrid.setText(0, Column.MODIFIED_TIME, "Last modified");
     //documentGrid.setText(0, Column.CREATOR, "Created by");
     documentGrid.setText(0, Column.ACTIONS, "Actions");
     
@@ -138,8 +138,8 @@ public class DocumentList extends Composite {
     
     // created on
     this.documentGrid.setText(row,
-                              Column.CREATION_TIME,
-                              dateFormat.format(documentInfo.getCreationTimestamp()));    
+                              Column.MODIFIED_TIME,
+                              dateFormat.format(documentInfo.getLastModifiedTimestamp()));    
     
     /*
     // created by
