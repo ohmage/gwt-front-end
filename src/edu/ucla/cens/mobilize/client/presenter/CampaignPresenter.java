@@ -14,10 +14,12 @@ import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.exceptions.AuthenticationException;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.ui.CampaignEditFormPresenter;
+import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.view.CampaignView;
 
@@ -99,6 +101,7 @@ public class CampaignPresenter implements Presenter {
         _logger.severe(caught.getMessage());
         view.showList();
         view.showError("There was a problem loading the campaigns:", caught);
+        AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override
@@ -148,6 +151,7 @@ public class CampaignPresenter implements Presenter {
         _logger.severe(caught.getMessage());
         view.showList();
         view.showError("There was a problem loading the campaigns.", caught);
+        AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override
@@ -172,14 +176,15 @@ public class CampaignPresenter implements Presenter {
           public void onFailure(Throwable caught) {
             _logger.fine(caught.getMessage());
             view.showError("There was a problem loading the campaign.", caught);
+            AwErrorUtils.logoutIfAuthException(caught);
           }
 
           @Override
           public void onSuccess(CampaignDetailedInfo result) {
             view.setCampaignDetail(result);
             // TODO: get plots dynamically (different for different roles)
-            view.addPlot("images/histogram_small.png");
-            view.addPlot("images/map_small.gif");
+            //view.addPlot("images/histogram_small.png");
+            //view.addPlot("images/map_small.gif");
             view.showDetail();
           }
     });

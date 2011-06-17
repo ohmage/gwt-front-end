@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
-import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerUnavailableException;
+import edu.ucla.cens.mobilize.client.exceptions.ServerUnavailableException;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.view.LoginView;
 

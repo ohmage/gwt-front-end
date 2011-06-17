@@ -1,4 +1,4 @@
-package edu.ucla.cens.mobilize.client.dataaccess.exceptions;
+package edu.ucla.cens.mobilize.client.exceptions;
 
 /**
  * A specific ServerException to indicate a a failure of credentials.  The

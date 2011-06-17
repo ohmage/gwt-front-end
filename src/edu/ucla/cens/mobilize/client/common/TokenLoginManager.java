@@ -8,11 +8,11 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Cookies;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
-import edu.ucla.cens.mobilize.client.dataaccess.exceptions.NotLoggedInException;
 import edu.ucla.cens.mobilize.client.event.RequestLogoutEvent;
 import edu.ucla.cens.mobilize.client.event.RequestLogoutEventHandler;
 import edu.ucla.cens.mobilize.client.event.UserLoginEvent;
 import edu.ucla.cens.mobilize.client.event.UserLogoutEvent;
+import edu.ucla.cens.mobilize.client.exceptions.NotLoggedInException;
 
 /**
  * TokenLoginManager acts as an abstraction of the login information stored

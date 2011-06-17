@@ -5,7 +5,7 @@ import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.Response;
 import edu.ucla.cens.mobilize.client.dataaccess.AndWellnessDataService;
-import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerException;
+import edu.ucla.cens.mobilize.client.exceptions.ServerException;
 
 public class TestDataAccess extends GWTTestCase {
 

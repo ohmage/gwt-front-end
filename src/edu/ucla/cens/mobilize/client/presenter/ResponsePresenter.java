@@ -21,13 +21,14 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
+import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
-import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ApiException;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.exceptions.ApiException;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -68,6 +69,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           participants.clear();
           participants.add(userInfo.getUserName());
           view.setParticipantList(participants);
+          AwErrorUtils.logoutIfAuthException(caught);
         }
 
         @Override
@@ -96,6 +98,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       public void onFailure(Throwable caught) {
         _logger.severe("Failed to load campaign filter. Error was: " + caught.getMessage());
         view.addErrorMessage("Failed to load campaign filter.", caught.getMessage());
+        AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override
@@ -300,6 +303,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             public void onFailure(Throwable caught) {
               _logger.severe(caught.getMessage());
               view.addErrorMessage("Response share failed.", caught.getMessage());
+              AwErrorUtils.logoutIfAuthException(caught);
             }
 
             @Override
@@ -336,6 +340,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
               _logger.severe(caught.getMessage());
               view.addErrorMessage("There was a problem updating the response(s).",
                                     caught.getMessage());
+              AwErrorUtils.logoutIfAuthException(caught);
             }
 
             @Override
@@ -370,6 +375,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
               _logger.severe(caught.getMessage());
               view.addErrorMessage("There was a problem deleting the response(s)", 
                                     caught.getMessage());
+              AwErrorUtils.logoutIfAuthException(caught);
             }
 
             @Override
@@ -419,6 +425,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       @Override
       public void onFailure(Throwable caught) {
         view.addErrorMessage("There was a problem loading campaigns.", caught.getMessage());
+        AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override
@@ -471,6 +478,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
               view.addErrorMessage("There was a problem loading responses for campaign: " + campaignName, 
                                    caught.getMessage());
               _logger.severe(caught.getMessage());
+              AwErrorUtils.logoutIfAuthException(caught);
             }
 
           }

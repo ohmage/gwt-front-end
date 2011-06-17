@@ -1,5 +1,4 @@
 package edu.ucla.cens.mobilize.client.presenter;
-import java.util.List;
 import java.util.Map;
 
 import edu.ucla.cens.mobilize.client.model.UserInfo;

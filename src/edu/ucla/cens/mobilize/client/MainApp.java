@@ -21,9 +21,9 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
-import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
+//import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
 import edu.ucla.cens.mobilize.client.dataaccess.AndWellnessDataService;
-import edu.ucla.cens.mobilize.client.dataaccess.exceptions.AuthenticationException;
+import edu.ucla.cens.mobilize.client.exceptions.AuthenticationException;
 import edu.ucla.cens.mobilize.client.presenter.AccountPresenter;
 import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ClassPresenter;
@@ -64,7 +64,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   EventBus eventBus = new SimpleEventBus();
   
   // classes for accessing data store
-  DataService mockDataService = new MockDataService(); // FIXME: use real service
+  //DataService mockDataService = new MockDataService(); // for testing new data methods
   DataService awDataService = new AndWellnessDataService();
   
   // login management
@@ -182,7 +182,6 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
           initAppForUser(user);
         } else {
           _logger.severe("Failed to fetch user info for user " + userName);
-          // TODO: show error message to user
         }
       }
     });
@@ -339,7 +338,8 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
       History.newItem(tabHistoryTokens.get(tabIndex));
       
     } catch (Exception e) {
-      // FIXME: error handling
+      _logger.severe("Exception onTabSelected for tab index: " + tabIndex +
+                     "Exception was: " + e.getMessage());
     }
   }
   /********* End of Top Level Navigation *********/

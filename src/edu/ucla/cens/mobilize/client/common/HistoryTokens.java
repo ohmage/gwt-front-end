@@ -17,6 +17,10 @@ import edu.ucla.cens.mobilize.client.utils.MapUtils;
  *
  */
 public class HistoryTokens {
+  public static String logout() {
+    return "logout";
+  }
+  
   public static String campaignList() {
     return "campaigns";
   }

@@ -19,6 +19,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.view.ClassView;
 
@@ -108,6 +109,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
         _logger.fine(caught.getMessage());
         view.showListSubview();
         view.showError("There was a problem retrieving the class data.");
+        AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override
@@ -126,6 +128,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       public void onFailure(Throwable caught) {
         _logger.fine(caught.getMessage());
         view.showError("There was a problem retrieving the class data.");
+        AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override
@@ -151,6 +154,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
         view.setList(null);
         view.showListSubview();
         view.showError("There was a problem loading the class list.");
+        AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override
@@ -169,6 +173,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       public void onFailure(Throwable caught) {
         _logger.fine(caught.getMessage());
         view.showError("Update failed.");
+        AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override

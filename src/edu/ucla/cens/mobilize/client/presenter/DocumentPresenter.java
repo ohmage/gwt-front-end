@@ -23,6 +23,7 @@ import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.ui.DocumentEditPresenter;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
+import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 import edu.ucla.cens.mobilize.client.view.DocumentView;
 
@@ -104,6 +105,7 @@ public class DocumentPresenter implements Presenter {
         view.showError("There was a problem loading the document list.",
                        caught.getMessage());
         view.showListSubview();
+        AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override
@@ -126,6 +128,7 @@ public class DocumentPresenter implements Presenter {
         view.showError("There was a problem loading the document list.",
                        caught.getMessage());
         view.showListSubview();
+        AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override

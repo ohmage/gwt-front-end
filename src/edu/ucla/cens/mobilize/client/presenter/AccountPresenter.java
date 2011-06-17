@@ -9,6 +9,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.view.AccountView;
 
 public class AccountPresenter implements AccountView.Presenter, Presenter {
@@ -47,8 +48,8 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
 
           @Override
           public void onFailure(Throwable caught) {
-            
             view.showError("There was a problem completing the password change request.");
+            AwErrorUtils.logoutIfAuthException(caught);
           }
 
           @Override

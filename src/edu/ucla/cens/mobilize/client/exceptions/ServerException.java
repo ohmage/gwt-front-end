@@ -1,4 +1,4 @@
-package edu.ucla.cens.mobilize.client.dataaccess.exceptions;
+package edu.ucla.cens.mobilize.client.exceptions;
 
 /**
  * Simple wrapper for RuntimeExceptions that are thrown from the rpcservice.

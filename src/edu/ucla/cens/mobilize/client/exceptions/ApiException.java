@@ -1,4 +1,4 @@
-package edu.ucla.cens.mobilize.client.dataaccess.exceptions;
+package edu.ucla.cens.mobilize.client.exceptions;
 
 /**
  * Indicates a problem with the parameters passed to the server API.
