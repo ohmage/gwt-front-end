@@ -93,7 +93,8 @@
     </g:west>
     
     <g:center>
-      <g:HTMLPanel addStyleNames='{style.scrollable}'>
+      <g:HTMLPanel ui:field="centerContainer" addStyleNames='{style.scrollable}'>
+        <div id="formPanelContainer" /> <!-- needed for hidden form panels -->
         <!-- msg box is visible only when there is a message to display -->
         <w:MessageWidget ui:field='msg' />
         <!-- only one of these will be visible at a time depending on selected subview -->

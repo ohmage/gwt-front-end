@@ -12,11 +12,13 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.ui.DocumentDetail;
 import edu.ucla.cens.mobilize.client.ui.DocumentEditView;
 import edu.ucla.cens.mobilize.client.ui.DocumentList;
@@ -34,6 +36,7 @@ public class DocumentViewImpl extends Composite implements DocumentView {
   interface DocumentViewUiBinder extends UiBinder<Widget, DocumentViewImpl> {
   }
 
+  @UiField HTMLPanel centerContainer;
   @UiField InlineHyperlink myDocumentsLink;
   @UiField InlineHyperlink browseDocumentsLink;
   @UiField InlineHyperlink uploadLink;
@@ -125,7 +128,7 @@ public class DocumentViewImpl extends Composite implements DocumentView {
                                    SubmitCompleteHandler submitCompleteHandler) {
     // NOTE: new form is created for each b/c multiple downloads 
     // can take place concurrently
-    FormPanel form = new FormPanel(); // posts to hidden iframe
+    FormPanel form = new FormPanel("_blank"); // posts to hidden iframe
     form.setAction(url);
     form.setMethod(FormPanel.METHOD_POST);
     FlowPanel innerContainer = new FlowPanel();
@@ -136,8 +139,10 @@ public class DocumentViewImpl extends Composite implements DocumentView {
       innerContainer.add(field);
     }
     form.add(innerContainer);
-    form.addSubmitCompleteHandler(submitCompleteHandler);
+    //form.addSubmitCompleteHandler(submitCompleteHandler);
+    this.centerContainer.add(form, "formPanelContainer");
     form.submit();
+    form.removeFromParent();
     // does gwt clean this up when done?
   }
 
