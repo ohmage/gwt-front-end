@@ -260,8 +260,15 @@ a:hover, a:active {
 }
 
 ul.errorList {
-	list-style-type: none; /* no bullets */
-	padding: 0px 10px;
+	list-style-type: none; /* no html bullets */
+	padding: 0px 10px 0px 5px;
+}
+
+li.errorListItem {
+	background-image: url(images/bullet_black.png);
+	background-repeat: no-repeat;
+	background-position: 0px 30%;
+	padding-left: 17px;
 }
 
 /********* end app-wide error message styles *********************/

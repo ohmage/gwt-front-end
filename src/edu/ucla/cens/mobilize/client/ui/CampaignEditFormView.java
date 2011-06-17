@@ -461,7 +461,7 @@ public class CampaignEditFormView extends Composite {
   }
   
   public void showValidationErrors(String errorMessage, List<String> errors) {
-    this.messageWidget.showErrorMessage(errorMessage, errors);
+    ErrorDialog.showErrorList(errorMessage, errors);
   }
   
   public void clearValidationErrors() {
