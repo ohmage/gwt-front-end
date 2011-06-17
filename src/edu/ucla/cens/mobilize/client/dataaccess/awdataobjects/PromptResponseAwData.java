@@ -36,6 +36,7 @@ public class PromptResponseAwData extends JavaScriptObject {
   // user-friendly label for display.
   // Only makes sense for choice prompt_types (e.g., single_choice, multi_choice)
   public final native String getChoiceLabelFromGlossary(String key) /*-{
+    if (key == "NOT_DISPLAYED" || key == "SKIPPED") return key;
     // glossary looks like:"prompt_choice_glossary":{"3":{"label":"Restaurant"},"2":{"label":"Work"},"1":{"label":"School"},"0":{"label":"Home"},"7":{"label":"Other"},"6":{"label":"Party"},"5":{"label":"Vehicle"},"4":{"label":"Friends' houses"}}
     var retval = "---";
     if (this.prompt_choice_glossary && this.prompt_choice_glossary[key]) {

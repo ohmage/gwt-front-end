@@ -1,14 +1,15 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
@@ -20,7 +21,7 @@ import edu.ucla.cens.mobilize.client.ui.CampaignEditFormPresenter;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.view.CampaignView;
 
-public class CampaignPresenter implements CampaignView.Presenter, Presenter {
+public class CampaignPresenter implements Presenter {
   
   // view used in rendering
   CampaignView view;
@@ -61,36 +62,25 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     if (userInfo.hasErrorMessage()) this.view.showError(userInfo.getErrorMessage());
     userInfo.clearMessages();
     
-    // url param overrides user permission 
-    // (for testing. permissions are still enforced on server side) 
-    if (params.containsKey("canedit")) {
-      this.canCreate = params.get("canedit").equals("1");
-      this.view.setCanCreate(this.canCreate);
-    }
-    
     // get subview from url params
     if (params.isEmpty() || params.get("v").equals("list")) {
       fetchAndShowCampaignsFilteredByHistoryTokenParams(params);
     } else if (params.get("v").equals("detail") && params.containsKey("id")) {
       // anything after first id is ignored
       fetchAndShowCampaignDetail(params.get("id"));
-    } else if (params.get("v").equals("author_center")) {
-      showAuthorCenter();
     } else if (params.get("v").equals("create")) {
       showCampaignCreateForm();
     } else if (params.get("v").equals("edit") && params.containsKey("id")) {
       // anything after first id is ignored
       fetchCampaignAndShowEditForm(params.get("id"));
     } else {
-      // unrecognized view - do nothing
-      // TODO: log?
+      // unrecognized view - show campaign list by default
+      History.newItem(HistoryTokens.campaignList());
     }
   }
   
-  @Override
   public void setView(CampaignView view) {
     this.view = view;
-    this.view.setPresenter(this);
     this.campaignEditPresenter.setView(view.getCampaignEditForm());
     this.view.getCampaignList().setDataService(this.dataService);
     this.view.getCampaignDetail().setDataService(this.dataService);
@@ -203,37 +193,5 @@ public class CampaignPresenter implements CampaignView.Presenter, Presenter {
     this.campaignEditPresenter.fetchCampaignAndInitFormForEdit(campaignId);
     this.view.showEditForm();
   }
-  
-  private void showAuthorCenter() {
-    // TODO
-  }
 
-  /************** METHODS FOR DISPLAY SUCCESS/ERROR MESSAGES TO USER ***************/
-  private void showError(String msg) {
-    this.view.showError(msg);
-  }
-  
-  private void showMessage(String msg) {
-    this.view.showMsg(msg);
-  }
-
-  /************** METHODS FOR HANDLING VIEW EVENTS ***********/
-  
-  @Override
-  public void onCampaignSelected(String campaignId) {
-    History.newItem("campaigns?v=detail&id=" + campaignId);
-  }
-  
-
-  @Override
-  public void onFilterChange() {
-    // TODO Auto-generated method stub
-    // fetch data that matches new filters
-    // update display
-  }
-
-  @Override
-  public void onCampaignCreate() {
-    History.newItem("campaigns?v=create");
-  }
 }

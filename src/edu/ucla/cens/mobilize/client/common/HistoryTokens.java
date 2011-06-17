@@ -44,6 +44,10 @@ public class HistoryTokens {
   public static String campaignDetail(String campaignId) {
     return "campaigns?v=detail&id=" + campaignId;
   }
+
+  public static String campaignCreate() {
+    return "campaigns?v=create";
+  }
   
   public static String campaignEdit(String campaignId) {
     return "campaigns?v=edit&id=" + campaignId;
@@ -104,5 +108,6 @@ public class HistoryTokens {
     if (endDate != null) params.put("to", DateUtils.translateToHistoryTokenFormat(endDate));
     return params.isEmpty() ? "responses" : "responses?" + MapUtils.translateToParameters(params);
   }
+
   
 }

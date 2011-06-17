@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -53,9 +52,6 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   interface CampaignViewUiBinder extends UiBinder<Widget, CampaignViewImpl> {
   }
 
-  // member vars
-  CampaignView.Presenter presenter;
-  
   // flags that control role-specific display
   boolean canCreate = false;
 
@@ -101,9 +97,8 @@ public class CampaignViewImpl extends Composite implements CampaignView {
     campaignCreateButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        if (presenter != null) {
-          presenter.onCampaignCreate();
-        }
+        campaignEdit.clearFormFields(); // FIXME: is this needed?
+        History.newItem(HistoryTokens.campaignCreate());
       }
     });
     
@@ -139,11 +134,6 @@ public class CampaignViewImpl extends Composite implements CampaignView {
         History.newItem(HistoryTokens.campaignList(null, null, lastMonth, today));
       }
     });
-  }
-  
-  @Override
-  public void setPresenter(Presenter p) {
-    this.presenter = p;
   }
 
   @Override

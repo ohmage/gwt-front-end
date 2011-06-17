@@ -54,6 +54,7 @@ public class DocumentPresenter implements Presenter {
     view.getUploadButton().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
+        view.getEditView().clearFormFields(); // even if already showing upload view
         History.newItem(HistoryTokens.documentCreate());
       }
     });
