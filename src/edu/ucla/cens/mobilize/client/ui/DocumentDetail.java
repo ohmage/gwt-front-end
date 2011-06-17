@@ -58,7 +58,6 @@ public class DocumentDetail extends Composite {
     initComponents();
   }
   
-  @SuppressWarnings("deprecation")
   private void initComponents() {
     
     this.backLinkTop.addClickHandler(new ClickHandler() {

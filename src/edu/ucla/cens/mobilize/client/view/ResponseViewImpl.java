@@ -158,6 +158,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void setCampaignList(Map<String, String> campaignIdToNameMap) {
     campaignFilter.clear();
+    if (campaignIdToNameMap == null) return;
     campaignFilter.addItem("All", "");
     for (String campaignId : campaignIdToNameMap.keySet()) {
       // name is visible string, id is value
@@ -168,6 +169,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void setSurveyList(List<String> surveyNames) {
     surveyFilter.clear();
+    if (surveyNames == null) return;
     surveyFilter.addItem("All", "");
     for (String name : surveyNames) {
       surveyFilter.addItem(name);
@@ -177,6 +179,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void setPrivacyStates(List<Privacy> privacyStates) {
     privacyFilter.clear();
+    if (privacyStates == null) return;
     privacyFilter.addItem("All", "");
     for (Privacy privacy : privacyStates) {
       privacyFilter.addItem(privacy.toUserFriendlyString(), privacy.toServerString());
@@ -491,6 +494,12 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void disableSurveyFilter() {
     this.surveyFilter.setSelectedIndex(-1);
+    this.surveyFilter.setEnabled(false);
+  }
+
+  @Override
+  public void clearSurveyList() {
+    this.surveyFilter.clear();
     this.surveyFilter.setEnabled(false);
   }
   

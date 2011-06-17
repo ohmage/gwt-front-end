@@ -138,7 +138,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     if (selectedCampaign != null) {
       // re-enables survey filter on success
       fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, selectedSurvey);
-    }
+    } 
     
     // set up privacy filter
     List<Privacy> privacyChoices = new ArrayList<Privacy>();
@@ -206,7 +206,12 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       @Override
       public void onChange(ChangeEvent event) {
         String selectedCampaign = view.getSelectedCampaign();
-        fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, null);
+        if (selectedCampaign != null && !selectedCampaign.isEmpty()) { // empty means "All" is selected
+          fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, null);
+        } else {
+          // clear survey list when user selects All campaigns
+          view.clearSurveyList();  
+        }
       }
     });
     
