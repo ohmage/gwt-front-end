@@ -63,6 +63,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         public void onFailure(Throwable caught) {
           _logger.fine("There was a problem loading participants for filter. " + 
                        "Defaulting to show only logged in user.");
+          view.addErrorMessage("There was a problem loading response data.",
+                               caught.getMessage());
           participants.clear();
           participants.add(userInfo.getUserName());
           view.setParticipantList(participants);
@@ -93,6 +95,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       @Override
       public void onFailure(Throwable caught) {
         _logger.severe("Failed to load campaign filter. Error was: " + caught.getMessage());
+        view.addErrorMessage("Failed to load campaign filter.", caught.getMessage());
       }
 
       @Override
@@ -107,7 +110,10 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   @Override
   public void go(Map<String, String> params) {
     assert view != null : "ResponsePresenter.go() called before view was set";
-
+ 
+    // clear any leftover error messages
+    //view.clearErrorMessages();
+    
     // check history token (url) params for value that should be selected in filters
     String selectedParticipant = params.containsKey("uid") ? params.get("uid") : userInfo.getUserName();
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
@@ -281,7 +287,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         _logger.severe("Could not find campaign urn for survey key: " + 
                         Integer.toString(surveyKey) + 
                         ". Response will not be shared.");
-        view.showErrorMessage("One or more responses may not have been shared.");
+        view.addErrorMessage("Response share failed.",
+                             "Could not find campaign urn for survey key: " + Integer.toString(surveyKey));
         continue;
       }
       dataService.updateSurveyResponse(campaignUrn, 
@@ -292,7 +299,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             @Override
             public void onFailure(Throwable caught) {
               _logger.severe(caught.getMessage());
-              view.showErrorMessage("One or more responses may not have been shared.");
+              view.addErrorMessage("Response share failed.", caught.getMessage());
             }
 
             @Override
@@ -314,7 +321,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         _logger.severe("Could not find campaign urn for survey key: " + 
                         Integer.toString(surveyKey) + 
                         ". Response will not be marked private.");
-        view.showErrorMessage("One or more responses may not have been updated.");
+        view.addErrorMessage("There was a problem updating the response(s)",
+                             "Could not find campaign urn for survey key: " + 
+                             Integer.toString(surveyKey));
         continue;
       }
       dataService.updateSurveyResponse(campaignUrn, 
@@ -325,7 +334,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             @Override
             public void onFailure(Throwable caught) {
               _logger.severe(caught.getMessage());
-              view.showErrorMessage("One or more responses may not have been updated.");
+              view.addErrorMessage("There was a problem updating the response(s).",
+                                    caught.getMessage());
             }
 
             @Override
@@ -347,7 +357,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         _logger.severe("Could not find campaign urn for survey key: " + 
                         Integer.toString(surveyKey) + 
                         ". Response will not be deleted.");
-        view.showErrorMessage("One or more responses may not have been deleted.");
+        view.addErrorMessage("There was a problem deleting the response(s).",
+                             "Could not find campaign urn for survey key: " + Integer.toString(surveyKey));
         continue;
       }
       dataService.deleteSurveyResponse(campaignUrn, 
@@ -357,7 +368,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             @Override
             public void onFailure(Throwable caught) {
               _logger.severe(caught.getMessage());
-              view.showErrorMessage("One or more responses may not have been deleted.");
+              view.addErrorMessage("There was a problem deleting the response(s)", 
+                                    caught.getMessage());
             }
 
             @Override
@@ -406,7 +418,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.dataService.fetchCampaignListShort(campaignReadParams, new AsyncCallback<List<CampaignShortInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
-        // TODO Auto-generated method stub
+        view.addErrorMessage("There was a problem loading campaigns.", caught.getMessage());
       }
 
       @Override
@@ -456,7 +468,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                 ((ApiException)caught).getErrorCode().equals("0701")) {
               _logger.fine("Intentionally ignoring invalid user error on API call. (See warning in ResponsePresenter.)");
             } else {
-              view.showErrorMessage("There was a problem loading responses for campaign: " + campaignName);
+              view.addErrorMessage("There was a problem loading responses for campaign: " + campaignName, 
+                                   caught.getMessage());
               _logger.severe(caught.getMessage());
             }
 

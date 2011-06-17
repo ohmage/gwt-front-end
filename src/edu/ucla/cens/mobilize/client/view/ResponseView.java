@@ -23,7 +23,8 @@ public interface ResponseView extends IsWidget {
   
   // messaging
   void showInfoMessage(String info);
-  void showErrorMessage(String error);
+  void addErrorMessage(String error, String detail);
+  void clearErrorMessages();
   void showConfirmDelete(ClickHandler onConfirmDelete);
   
   // load values in filters

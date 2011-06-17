@@ -444,8 +444,13 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
 
   @Override
-  public void showErrorMessage(String error) {
-    this.messageWidget.showErrorMessage(error);
+  public void addErrorMessage(String error, String detail) {
+    this.messageWidget.addError(error, detail);
+  }
+  
+  @Override 
+  public void clearErrorMessages() {
+    this.messageWidget.clearErrors();
   }
 
   @Override

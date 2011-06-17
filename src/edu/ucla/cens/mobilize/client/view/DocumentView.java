@@ -21,7 +21,7 @@ public interface DocumentView extends IsWidget {
   void setDocumentDetail(DocumentInfo document, boolean userCanEdit);
   void setDocumentEdit(DocumentInfo document);
   void showMsg(String msg);
-  void showError(String error);
+  void showError(String error, String detail);
   void hideMsg();
   DocumentEditView getEditView();
   HasClickHandlers getUploadButton();

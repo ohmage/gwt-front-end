@@ -69,7 +69,6 @@ public class DocumentPresenter implements Presenter {
     
     // display any new notifications
     if (userInfo.hasInfoMessage()) this.view.showMsg(userInfo.getInfoMessage());
-    if (userInfo.hasErrorMessage()) this.view.showError(userInfo.getErrorMessage());
     userInfo.clearMessages();
     
     // get subview from url params
@@ -102,7 +101,8 @@ public class DocumentPresenter implements Presenter {
       @Override
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());
-        view.showError("There was a problem loading the document list.");
+        view.showError("There was a problem loading the document list.",
+                       caught.getMessage());
         view.showListSubview();
       }
 
@@ -123,7 +123,8 @@ public class DocumentPresenter implements Presenter {
       @Override
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());
-        view.showError("There was a problem loading the document list.");
+        view.showError("There was a problem loading the document list.",
+                       caught.getMessage());
         view.showListSubview();
       }
 

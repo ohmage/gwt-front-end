@@ -43,7 +43,7 @@
     </g:Anchor>
     <div class='floatstop'/>
     <div class='{style.errorList}'>
-      <ul ui:field='errorList' />
+      <ul ui:field='errorListElement' />
     </div>
   </g:HTMLPanel>
 	

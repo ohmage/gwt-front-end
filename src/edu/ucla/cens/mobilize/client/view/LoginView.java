@@ -15,6 +15,7 @@ public interface LoginView extends IsWidget {
     
     // Changes the appearance of the LoginBox
     void setLoginFailed(String msg);
+    void showError(String errorMsg);
     
     // Sets the presenter so the view can call the presenter in response to events
     void setPresenter(Presenter presenter);

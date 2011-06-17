@@ -34,7 +34,7 @@ public interface CampaignView extends IsWidget {
   void showEditForm();
   
   // show messages to user
-  void showError(String msg);
+  void showError(String msg, Throwable caught);
   void showMsg(String msg);
   void hideMsg();
 

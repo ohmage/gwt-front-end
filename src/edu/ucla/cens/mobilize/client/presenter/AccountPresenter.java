@@ -1,6 +1,5 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
-import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.event.dom.client.ClickEvent;

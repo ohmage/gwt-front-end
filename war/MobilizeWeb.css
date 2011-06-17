@@ -248,7 +248,7 @@ a:hover, a:active {
 .errorBox {
 	background-image: url(images/exclamation.png);
 	background-repeat: no-repeat;
-	background-position: 15px 50%;
+	background-position: 10px 50%;
 	margin: auto;
 	padding: 10px 10px 10px 30px;
 }

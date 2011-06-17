@@ -22,6 +22,7 @@ import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.ui.DocumentDetail;
 import edu.ucla.cens.mobilize.client.ui.DocumentEditView;
 import edu.ucla.cens.mobilize.client.ui.DocumentList;
+import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.event.DocumentDownloadHandler;
@@ -103,8 +104,8 @@ public class DocumentViewImpl extends Composite implements DocumentView {
   }
 
   @Override
-  public void showError(String error) {
-    this.msgWidget.showErrorMessage(error);
+  public void showError(String error, String detail) {
+    ErrorDialog.show(error, detail);
   }
 
   @Override

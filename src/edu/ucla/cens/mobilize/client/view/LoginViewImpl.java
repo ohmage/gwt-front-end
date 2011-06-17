@@ -12,12 +12,11 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PasswordTextBox;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 
 
@@ -54,7 +53,6 @@ public class LoginViewImpl extends Composite implements LoginView {
       userNameTextBox.addKeyPressHandler(new KeyPressHandler() {
         @Override
         public void onKeyPress(KeyPressEvent event) {
-          clearMessage(); // hide error message, if any
           if (event.getCharCode() == KeyCodes.KEY_ENTER) {
             submit();
           }
@@ -65,7 +63,6 @@ public class LoginViewImpl extends Composite implements LoginView {
       passwordTextBox.addKeyPressHandler(new KeyPressHandler() {
         @Override
         public void onKeyPress(KeyPressEvent event) {
-          clearMessage(); // hide error message, if any
           if (event.getCharCode() == KeyCodes.KEY_ENTER) {
             submit();
           }
@@ -89,13 +86,7 @@ public class LoginViewImpl extends Composite implements LoginView {
 
     @Override
     public void setLoginFailed(String msg) {
-      msgDiv.setHTML(msg);
-      msgDiv.setVisible(true);
-    }
-    
-    public void clearMessage() {
-      msgDiv.setHTML("");
-      msgDiv.setVisible(false);
+      ErrorDialog.show("Login failed.", msg);
     }
 
     @Override
@@ -122,6 +113,11 @@ public class LoginViewImpl extends Composite implements LoginView {
       userNameTextBox.setEnabled(true);
       passwordTextBox.setEnabled(true);
       WaitIndicator.hide();
+    }
+
+    @Override
+    public void showError(String errorMsg) {
+      ErrorDialog.show(errorMsg);
     }
 
 }

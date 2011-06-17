@@ -59,8 +59,9 @@ public class CampaignPresenter implements Presenter {
     
     // display any new notifications
     if (userInfo.hasInfoMessage()) this.view.showMsg(userInfo.getInfoMessage());
-    if (userInfo.hasErrorMessage()) this.view.showError(userInfo.getErrorMessage());
+    if (userInfo.hasErrorMessage()) this.view.showError(userInfo.getErrorMessage(), null);
     userInfo.clearMessages();
+    // FIXME: does above error messaging work?
     
     // get subview from url params
     if (params.isEmpty() || params.get("v").equals("list")) {
@@ -97,7 +98,7 @@ public class CampaignPresenter implements Presenter {
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());
         view.showList();
-        view.showError("There was a problem loading the campaigns.");
+        view.showError("There was a problem loading the campaigns:", caught);
       }
 
       @Override
@@ -146,7 +147,7 @@ public class CampaignPresenter implements Presenter {
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());
         view.showList();
-        view.showError("There was a problem loading the campaigns.");
+        view.showError("There was a problem loading the campaigns.", caught);
       }
 
       @Override
@@ -170,7 +171,7 @@ public class CampaignPresenter implements Presenter {
           @Override
           public void onFailure(Throwable caught) {
             _logger.fine(caught.getMessage());
-            view.showError("There was a problem loading the campaign.");
+            view.showError("There was a problem loading the campaign.", caught);
           }
 
           @Override

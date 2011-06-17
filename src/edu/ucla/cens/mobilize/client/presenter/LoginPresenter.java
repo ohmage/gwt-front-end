@@ -12,6 +12,7 @@ import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.exceptions.ServerUnavailableException;
+import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.view.LoginView;
 
 public class LoginPresenter implements Presenter,
@@ -64,13 +65,9 @@ public class LoginPresenter implements Presenter,
              view.enableLoginForm();
              _logger.warning("User login failed with reason: " + caught.getMessage());
              if (caught.getClass().equals(ServerUnavailableException.class)) {
-               DialogBox errorDialog = new DialogBox();
-               errorDialog.setText("There was a problem contacting the server. Please try again.");
-               errorDialog.setAutoHideEnabled(true);
-               errorDialog.setGlassEnabled(true);
-               errorDialog.center();
+               view.showError("There was a problem contacting the server. Please try again.");
              } else {
-               view.setLoginFailed("Login failed. Please check name and password and try again.");
+               view.setLoginFailed("Please check name and password and try again.");
              }
           }
 

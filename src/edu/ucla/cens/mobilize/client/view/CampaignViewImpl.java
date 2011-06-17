@@ -33,6 +33,7 @@ import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.ui.CampaignDetail;
 import edu.ucla.cens.mobilize.client.ui.CampaignEditFormView;
 import edu.ucla.cens.mobilize.client.ui.CampaignList;
+import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 
 /**
  * Everything shown in the campaigns tab is part of the CampaignView.
@@ -223,20 +224,10 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   }
 
   @Override
-  public void showError(String msg) {
-    final DialogBox errorDialog = new DialogBox();
-    errorDialog.setGlassEnabled(true);
-    errorDialog.setText(msg);
-    Button dismissButton = new Button("OK");
-    dismissButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        errorDialog.hide(); 
-      }
-    });
-    errorDialog.add(dismissButton);
-    // TODO: add style
-    errorDialog.center();
+  public void showError(String msg, Throwable caught) {
+    // TODO: enable detail for debug mode only
+    String detail = (caught != null) ? caught.getMessage() : null;
+    ErrorDialog.show(msg, detail);
   }
 
   @Override

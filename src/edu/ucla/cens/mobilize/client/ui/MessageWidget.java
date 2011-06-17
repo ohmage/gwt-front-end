@@ -1,16 +1,15 @@
 package edu.ucla.cens.mobilize.client.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -35,7 +34,9 @@ public class MessageWidget extends Composite {
   @UiField InlineLabel msg;
   @UiField Anchor hideLink;
   @UiField MessageWidgetStyles style;
-  @UiField UListElement errorList;
+  @UiField UListElement errorListElement;
+
+  private List<String> errorList = new ArrayList<String>();
   
   public MessageWidget() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -53,32 +54,50 @@ public class MessageWidget extends Composite {
   }
   
   public void showInfoMessage(String infoMsg) {
-    errorList.setInnerHTML("");
+    clearErrors();
     msg.setText(infoMsg);
     msgBox.setVisible(true);
     msgBox.setStyleName(style.msgBox() + " " + style.info());
   }
   
   public void showErrorMessage(String errorMsg) {
+    clearErrors();
     showErrorMessage(errorMsg, null);
   }
   
   public void showErrorMessage(String errorMsg, List<String> errors) {
-    errorList.setInnerHTML("");
-    msg.setText(errorMsg);
+    clearErrors();
+    for (String errorDetail : errors) {
+      addError(errorMsg, errorDetail);
+    }
+  }
+
+  public void addError(String errorMsg, String errorDetail) {
+    boolean isNewError = true;
+    for (String knownError : errorList) {
+      if (knownError.equals(errorDetail)) isNewError = false;
+    }
+    if (isNewError) errorList.add(errorDetail);
+    msg.setText(errorMsg); // overwrites existing, if any
     msgBox.setVisible(true);
     msgBox.setStyleName(style.msgBox() + " " + style.error());
-    if (errors != null && !errors.isEmpty()) {
+    if (errorList != null && !errorList.isEmpty()) {
       StringBuilder sb = new StringBuilder();
-      for (String error : errors) {
+      for (String error : errorList) {
         sb.append("<li>").append(error).append("</li>");
       }
-      errorList.setInnerHTML(sb.toString());
+      errorListElement.setInnerHTML(sb.toString());
     }
   }
   
   public void hide() {
     msg.setText("");
+    errorList.clear();
     msgBox.setVisible(false);
+  }
+  
+  public void clearErrors() {
+    errorList.clear();
+    errorListElement.setInnerHTML("");
   }
 }
