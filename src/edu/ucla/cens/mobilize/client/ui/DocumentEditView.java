@@ -155,6 +155,7 @@ public class DocumentEditView extends Composite {
   }
   
   public void setHiddenFieldsForCreate() {
+    documentIdHiddenField.getElement().removeAttribute("name"); // disabled for create
     campaignsToAddHiddenField.setName("document_campaign_role_list");
     campaignsToRemoveHiddenField.getElement().removeAttribute("name"); // disabled
     classesToAddHiddenField.setName("document_class_role_list");
@@ -163,6 +164,7 @@ public class DocumentEditView extends Composite {
   }
   
   public void setHiddenFieldsForEdit() {
+    documentIdHiddenField.setName("document_id");
     campaignsToAddHiddenField.setName("campaign_role_list_add");
     campaignsToRemoveHiddenField.setName("campaign_list_remove");
     classesToAddHiddenField.setName("class_role_list_add");

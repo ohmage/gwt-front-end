@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.view;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -160,9 +161,17 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     campaignFilter.clear();
     if (campaignIdToNameMap == null) return;
     campaignFilter.addItem("All", "");
+    
+    // sort campaigns by name then by id
+    List<String> nameKeyPairs = new ArrayList<String>();
     for (String campaignId : campaignIdToNameMap.keySet()) {
-      // name is visible string, id is value
-      campaignFilter.addItem(campaignIdToNameMap.get(campaignId), campaignId);
+      String name = campaignIdToNameMap.get(campaignId);
+      nameKeyPairs.add(name + "###" + campaignId);
+    }
+    Collections.sort(nameKeyPairs);
+    for (String nameKeyPair : nameKeyPairs) {
+      String[] arr = nameKeyPair.split("###"); // 0 = name, 1 = id
+      campaignFilter.addItem(arr[0], arr[1]); // name is visible text, id is value
     }
   }
 
