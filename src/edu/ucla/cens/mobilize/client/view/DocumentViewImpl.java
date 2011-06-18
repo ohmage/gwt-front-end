@@ -130,7 +130,7 @@ public class DocumentViewImpl extends Composite implements DocumentView {
                                    SubmitCompleteHandler submitCompleteHandler) {
     // NOTE: new form is created for each b/c multiple downloads 
     // can take place concurrently
-    FormPanel form = new FormPanel("_blank"); // posts to hidden iframe
+    FormPanel form = new FormPanel("_blank"); 
     form.setAction(url);
     form.setMethod(FormPanel.METHOD_POST);
     FlowPanel innerContainer = new FlowPanel();
@@ -141,7 +141,7 @@ public class DocumentViewImpl extends Composite implements DocumentView {
       innerContainer.add(field);
     }
     form.add(innerContainer);
-    //form.addSubmitCompleteHandler(submitCompleteHandler);
+    form.addSubmitCompleteHandler(submitCompleteHandler);
     this.centerContainer.add(form, "formPanelContainer");
     form.submit();
     form.removeFromParent();

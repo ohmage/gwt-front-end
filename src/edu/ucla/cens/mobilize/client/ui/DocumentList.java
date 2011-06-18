@@ -1,5 +1,8 @@
 package edu.ucla.cens.mobilize.client.ui;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -96,9 +99,11 @@ public class DocumentList extends Composite {
   }
 
   public void setDocuments(List<DocumentInfo> documents) {
-    this.documentGrid.resizeRows(documents.size() + 1); // one extra row for header
+    List<DocumentInfo> sortedDocuments = new ArrayList(documents);
+    Collections.sort(sortedDocuments, new DocumentNameComparator());
+    this.documentGrid.resizeRows(sortedDocuments.size() + 1); // one extra row for header
     int row = 1; // 0th row is header
-    for (DocumentInfo documentInfo : documents) {
+    for (DocumentInfo documentInfo : sortedDocuments) {
       addDocument(row++, documentInfo);
     }
   }
@@ -199,5 +204,12 @@ public class DocumentList extends Composite {
       retval = "";
     }
     return retval;
+  }
+  
+  protected class DocumentNameComparator implements Comparator<DocumentInfo> {
+    @Override
+    public int compare(DocumentInfo arg0, DocumentInfo arg1) {
+      return arg0.getDocumentName().compareTo(arg1.getDocumentName());
+    }
   }
 }

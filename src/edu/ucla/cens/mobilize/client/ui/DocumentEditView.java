@@ -191,6 +191,9 @@ public class DocumentEditView extends Composite {
     formPanel.reset();
     campaignsListWidget.clear();
     classesListWidget.clear();
+    originalCampaignUrns.clear();
+    originalClassUrns.clear();
+    assert this.campaignsToAddHiddenField.getValue().isEmpty() : "campaigns to add contained value " + campaignsToAddHiddenField.getValue();
   }
   
   public void setDeletePanelVisible(boolean isVisible) {
