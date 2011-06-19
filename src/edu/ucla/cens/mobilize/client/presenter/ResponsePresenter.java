@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -66,18 +68,27 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                        "Defaulting to show only logged in user.");
           view.addErrorMessage("There was a problem loading response data.",
                                caught.getMessage());
+          AwErrorUtils.logoutIfAuthException(caught);
+          
+          // fall back to showing only the current user
           participants.clear();
           participants.add(userInfo.getUserName());
           view.setParticipantList(participants);
-          AwErrorUtils.logoutIfAuthException(caught);
         }
 
         @Override
         public void onSuccess(List<ClassInfo> result) {
-          List<String> participants = new ArrayList<String>();
+          // Privileged member of a class can see responses from any member of that class.
+          // User that is privileged member of class1 and restricted member of class2 will
+          //   be able to see responses by members of class1 but not members of class2.
+          Set<String> uniqueParticipants = new HashSet<String>();
           for (ClassInfo classInfo : result) {
-            participants.addAll(classInfo.getMemberLogins());
+            if (classInfo.userIsPrivileged(userInfo.getUserName())) {
+              uniqueParticipants.addAll(classInfo.getMemberLogins());
+            }
           }
+          participants.clear();
+          participants.addAll(uniqueParticipants);
           Collections.sort(participants);
           view.setParticipantList(participants);
           if (participantToSelect != null) {
@@ -85,7 +96,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           }
         }
       });
-    } else {
+    } else { // user is not privileged in any class, sees only herself 
       participants.clear();
       participants.add(userInfo.getUserName());
       view.setParticipantList(participants);
@@ -453,7 +464,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   // NOTE: This method exists because api only lets you query for responses for one 
   //   campaign at a time. When showing responses for all campaigns, the app makes
   //   multiple calls to this method.
-  private void fetchAndShowResponsesForCampaign(String participantName,
+  private void fetchAndShowResponsesForCampaign(final String participantName,
                                                 String campaignId, 
                                                 final String campaignName,
                                                 String surveyName,
@@ -498,8 +509,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             // add to responses already fetched from other campaigns
             responses.addAll(result);
             // sort by date, newest first
-            Collections.sort(responses, responseDateComparator); 
-            view.renderAll(responses);
+            Collections.sort(responses, responseDateComparator);
+            view.setSectionHeader("Showing responses for " + participantName);
+            view.renderResponses(responses);
           }
     });
 

@@ -51,13 +51,14 @@ public interface ResponseView extends IsWidget {
   Date getSelectedEndDate();
   
   // display
-  void renderAll(List<SurveyResponse> responses);
+  void renderResponses(List<SurveyResponse> responses);
   void clearResponseList();
   void markShared(int responseKey);
   void markPrivate(int responseKey);
   void removeResponse(int responseKey);
   void enableSurveyFilter();
   void disableSurveyFilter();
+  void setSectionHeader(String headerText);
   
   // gui elements needed by presenter for event handling
   List<HasClickHandlers> getShareButtons();

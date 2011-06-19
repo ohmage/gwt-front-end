@@ -18,7 +18,6 @@
     	background-color: #EEE;
     	border-right: solid 1px #CCC;
     	padding: 10px 10px 10px 15px;
-    	width: 100%;
     }
     .filter {
     	width: 142px;
@@ -93,18 +92,17 @@
     }
     .topBar {
     	background-color: #DDD;
+    	border-bottom: solid 1px #CCC;
     }
   </ui:style>
   
   <g:DockLayoutPanel unit='PX' ui:field='mainLayout'>
   
-    <!-- top filter bar -->
-    <g:north size='27'>
+    <g:north size='15'>
       <g:HTMLPanel addStyleNames='{style.topBar}'>      
 	    </g:HTMLPanel>
     </g:north>
     
-    <!-- left sidebar lets you pick private/shared/invisible -->
     <g:west size='170'>
       <g:HTMLPanel addStyleNames='{style.filterContainer} {style.leftSideBar}'>
         <g:Label addStyleNames='{style.label}'>Participant:</g:Label>
@@ -136,13 +134,11 @@
       <g:HTMLPanel addStyleNames='{style.scrollable}'>
         <w:MessageWidget ui:field='messageWidget' />
         <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
-            <!-- description changes depending on left menubar selection -->
-            <g:Label ui:field='sectionHeaderTitle' addStyleNames='{style.sectionHeaderTitle}'>
-              Private responses
+            <!-- title changes depending on filter selections -->
+            <g:Label ui:field='sectionHeaderTitle' addStyleNames='{style.sectionHeaderTitle}' />
+            <g:Label addStyleNames='{style.sectionHeaderDetail}'>
+              Shared responses can be exported and analyzed by other members of the campaign.
             </g:Label>
-            <g:Label ui:field='sectionHeaderDetail' addStyleNames='{style.sectionHeaderDetail}'>
-              Visible only to you.
-            </g:Label> 
         </g:HTMLPanel>
         
         <!-- buttons that affect selected responses -->

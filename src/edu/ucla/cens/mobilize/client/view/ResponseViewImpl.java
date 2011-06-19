@@ -60,7 +60,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField Button applyFiltersButton;
   @UiField MessageWidget messageWidget;
   @UiField Label sectionHeaderTitle;
-  @UiField Label sectionHeaderDetail;
   @UiField VerticalPanel responseList;
   @UiField Button shareButtonTop;
   @UiField Button makePrivateButtonTop;
@@ -255,16 +254,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
   
   @Override
-  public void renderAll(List<SurveyResponse> responses) {
-    selectedPrivacy = Privacy.UNDEFINED;
-    //allMenuItem.setStyleName(style.sideBarItemSelected());
-    this.sectionHeaderTitle.setText("All Responses");
-    this.sectionHeaderDetail.setText("Private responses are visible only to you. " +
-                                     "Shared responses are visible to all participants. ");
-    renderResponses(responses);
-  }
-  
-  private void renderResponses(List<SurveyResponse> responses) {
+  public void renderResponses(List<SurveyResponse> responses) {
     this.responseList.clear();
     for (SurveyResponse response : responses) {
       ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
@@ -511,5 +501,10 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     this.surveyFilter.clear();
     this.surveyFilter.setEnabled(false);
   }
-  
+
+  @Override
+  public void setSectionHeader(String headerText) {
+    this.sectionHeaderTitle.setText(headerText);
+  }
+
 }

@@ -29,6 +29,11 @@ public class ClassInfo {
   public RoleClass getMemberRole(String memberLogin) {
     return this.memberNameToRoleMap.get(memberLogin);
   }
+  
+  public boolean userIsPrivileged(String memberLogin) {
+    return this.memberNameToRoleMap.containsKey(memberLogin) &&
+           this.memberNameToRoleMap.get(memberLogin).equals(RoleClass.PRIVILEGED);
+  }
 
   public void clearMembers() {
     this.memberNameToRoleMap.clear();
