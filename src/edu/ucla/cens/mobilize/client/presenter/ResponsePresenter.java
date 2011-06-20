@@ -432,11 +432,15 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.responses.clear();
     
     CampaignReadParams campaignReadParams = new CampaignReadParams();
+  
     
-    // filter by campaign, if applicable
+    // Filter by campaign if one is selected (otherwise show responses from all campaigns)
     if (campaignId != null && !campaignId.isEmpty()) {
       campaignReadParams.campaignUrns_opt.add(campaignId);
-    }
+    } 
+    
+    // Some errors are ignored when querying all campaigns instead of a specific one.
+    final boolean suppressCampaignErrors = campaignReadParams.campaignUrns_opt.isEmpty();
     
     this.dataService.fetchCampaignListShort(campaignReadParams, new AsyncCallback<List<CampaignShortInfo>>() {
       @Override
@@ -454,7 +458,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                            surveyName,
                                            privacy,
                                            startDate,
-                                           endDate);
+                                           endDate,
+                                           suppressCampaignErrors);
         }
       }
     });
@@ -470,7 +475,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                 String surveyName,
                                                 Privacy privacy,
                                                 Date startDate,
-                                                Date endDate) {
+                                                Date endDate, 
+                                                final boolean suppressCampaignErrors) {
     // GOTCHA: when logged in user != selected participant, this only shows
     //   responses from campaigns that both participant and logged in user belong to
     this.dataService.fetchSurveyResponses(participantName,
@@ -482,22 +488,23 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         new AsyncCallback<List<SurveyResponse>>() {
           @Override
           public void onFailure(Throwable caught) {
-            // WARNING: hack! We don't have a list of campaign ids for users other than the
+            // NOTE: We don't have a list of campaign ids for users other than the
             //   logged in user, so when participant != logged in user, we query all
             //   campaigns the logged in user belongs to and throw away any responses that
             //   return "0701-invalid user" error. 
-            // NOTE: ideally there would be an api call to fetch list of campaign ids for
-            //   any user instead.
-            if (caught.getClass().equals(ApiException.class) && 
-                ((ApiException)caught).getErrorCode().equals("0701")) {
-              _logger.fine("Intentionally ignoring invalid user error on API call. (See warning in ResponsePresenter.)");
-            } else {
-              view.addErrorMessage("There was a problem loading responses for campaign: " + campaignName, 
-                                   caught.getMessage());
-              _logger.severe(caught.getMessage());
-              AwErrorUtils.logoutIfAuthException(caught);
+            if (suppressCampaignErrors && caught.getClass().equals(ApiException.class)) {
+              String errorCode = ((ApiException)caught).getErrorCode();
+              // 0701 - invalid user in query (see above)
+              // 0717 - analyst queried private campaign
+              if ("0701".equals(errorCode) || "0717".equals(errorCode)) { 
+                return; // silently ignore the error
+              }
             }
-
+            
+            view.addErrorMessage("There was a problem loading responses for campaign: " + campaignName, 
+                                 caught.getMessage());
+            _logger.severe(caught.getMessage());
+            AwErrorUtils.logoutIfAuthException(caught);
           }
           
           @Override

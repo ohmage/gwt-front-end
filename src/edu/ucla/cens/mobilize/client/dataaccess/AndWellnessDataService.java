@@ -89,7 +89,8 @@ public class AndWellnessDataService implements DataService {
       E0301("0301", "unknown request type"),
       E0302("0302", "unknown phone version"),
       E0304("0304", "invalid campaign id"),
-      E0701("0701", "invalid user in query");
+      E0701("0701", "invalid user in query"),
+      E0717("0717", "authors or analysts cannot query private campaigns");
       
       private final String errorCode;
       private final String errorDescription;
@@ -164,6 +165,7 @@ public class AndWellnessDataService implements DataService {
             case E0302:
             case E0304:
             case E0701:
+            case E0717:
                 returnError = new ApiException(errorCode.getErrorCode(),
                                                errorCode.getErrorDesc());
                 break;
