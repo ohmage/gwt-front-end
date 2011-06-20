@@ -106,7 +106,8 @@
         <w:ClassEditForm ui:field="classEdit" />
       </g:HTMLPanel>
     </g:center>
-    
+
+<!--    
     <g:east size='200'>
       <g:HTMLPanel ui:field='rightSideBar' addStyleNames='{style.plotDiv}'>
        <g:Label ui:field='plotSideBarTitle' addStyleNames='{style.plotSideBarTitle}'>
@@ -123,6 +124,7 @@
        </g:VerticalPanel>
      </g:HTMLPanel>
     </g:east>
+-->
   
   </g:DockLayoutPanel>
 	

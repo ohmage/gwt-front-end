@@ -10,10 +10,10 @@
    .container {
    }
    .detailPanel {
-     width: 100%;
+     /*width: 100%;*/
    }
    .detailTable {
-     width: 100%;
+     /*width: 100%;*/
    }
    .detailTable td {
      vertical-align: top;

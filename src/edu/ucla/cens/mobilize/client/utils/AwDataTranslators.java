@@ -237,7 +237,7 @@ public class AwDataTranslators {
           userInfo.setCampaignRoles(campaignRoles);
           users.add(userInfo);
           
-        } catch (Exception e) { // FIXME: which exceptions?
+        } catch (Exception e) { 
           _logger.warning("Could not parse json for user: " + userName + ". Skipping record.");
           _logger.fine(e.getMessage());
           _logger.finer("jsonValue: " + (jsonValue != null ? jsonValue.toString() : "null"));
@@ -247,7 +247,6 @@ public class AwDataTranslators {
     }
 
     
-    // FIXME: correct example when server response is fixed to get rid of extra array
     // {"result":"success","data":{"urn:andwellness:nih":{"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}},"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
     public static List<CampaignShortInfo> translateCampaignReadQueryJSONtoCampaignShortInfoList(
         String responseText) {
@@ -302,7 +301,7 @@ public class AwDataTranslators {
           // save
           campaigns.add(campaignInfo);    
           
-        } catch (Exception e) { // FIXME: which exceptions?
+        } catch (Exception e) { 
           _logger.warning("Could not parse json for campaign id: " + campaignId + ". Skipping record.");
           _logger.fine(e.getMessage());
           _logger.finer("jsonValue: " + (jsonValue != null ? jsonValue.toString() : "null"));
@@ -366,7 +365,7 @@ public class AwDataTranslators {
           // save
           campaigns.add(campaign);    
           
-        } catch (Exception e) { // FIXME: which exceptions?
+        } catch (Exception e) { 
           _logger.warning("Could not parse json for campaign id: " + campaignId + ". Skipping record.");
           _logger.fine(e.getMessage());
           _logger.finer("jsonValue: " + (jsonValue != null ? jsonValue.toString() : "null"));
@@ -400,7 +399,7 @@ public class AwDataTranslators {
             classInfo.addMember(userName, role);
           }
           classInfos.add(classInfo);
-        } catch (Exception e) { // FIXME: which exception?
+        } catch (Exception e) { 
           _logger.warning("Could not parse json for class id: " + classId + ". Skipping record.");
           _logger.fine(e.getMessage());
         }
