@@ -15,18 +15,16 @@ public class XmlUtils {
     String str = xmlDoc.toString();
     
     // Break xml up into lines with one element per line 
-    // (element is one of: open tag, close tag, or text value)
-    str = str.replaceAll("\n", ""); 
-    str = str.replaceAll("</", "\n</"); 
-    str = str.replaceAll(">", ">\n");
-    String[] lines = str.split("\n");
+    // (element is one of: open tag, close tag, or value enclosed in both open and close tag)
+    str = str.replaceAll("><", ">!~#~!<"); // insert unlikely token between adjacent tags 
+    String[] lines = str.split("!~#~!"); // split to get tags on separate lines
     
     // Build string by looping through lines and adding indentation.
     
     StringBuilder sb = new StringBuilder();
     int depth = 0; // greater depth = more indentation
     boolean isClosingTag = false;
-    boolean previousLineWasClosingTag = true;
+    boolean previousLineContainedClosingTag = true;
     for (int i = 0; i < lines.length; i++) {
       
       // skip blank lines
@@ -34,11 +32,11 @@ public class XmlUtils {
       
       // Adjust indentation level:
       // - decrease if this line is a closing tag
-      // - no change if prev line was closing tag (this line is open tag at same level)
-      // - increase for anything else (this line is open tag of nested node or a node value)
+      // - no change if prev line included a closing tag (means this line is an open tag at same level)
+      // - increase for anything else (means this line starts with open tag of a nested node)
       isClosingTag = lines[i].startsWith("</");
       if (isClosingTag) depth--;
-      else if (!previousLineWasClosingTag) depth++;
+      else if (!previousLineContainedClosingTag) depth++;
       
       // indent
       for (int tabCount = 0; tabCount < depth; tabCount++) {
@@ -50,7 +48,7 @@ public class XmlUtils {
       sb.append("\n");
       
       // bookkeeping
-      previousLineWasClosingTag = isClosingTag;
+      previousLineContainedClosingTag = lines[i].contains("</"); // doesn't have to be at the beginning
     }
     
     return sb.toString();
