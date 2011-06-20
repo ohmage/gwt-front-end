@@ -24,7 +24,7 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
     this.eventBus = eventBus;
   }
   
-  private void setEventHandlers() {
+  private void setViewEventHandlers() {
     this.view.getPasswordChangeButton().addClickHandler(new ClickHandler() {
 
       @Override
@@ -41,20 +41,22 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
         String newPassword = view.getNewPassword();
         String newPasswordConfirm = view.getNewPasswordConfirm();
         if (!newPassword.equals(newPasswordConfirm)) {
-          view.showPasswordMismatchError();
+          view.showError("Password change failed.", 
+                         "Passwords do not match. Please try again.");
           return;
         }
         dataService.changePassword(userName, oldPassword, newPassword, new AsyncCallback<String>() {
 
           @Override
           public void onFailure(Throwable caught) {
-            view.showError("There was a problem completing the password change request.");
-            AwErrorUtils.logoutIfAuthException(caught);
+            view.showError("There was a problem completing the password change request.",
+                           caught.getMessage());
+            // NOTE: If user types her password incorrectly here, it's an auth
+            // exception. Just this once, don't logoutIfAuthException().
           }
 
           @Override
           public void onSuccess(String result) {
-            // FIXME: check for success/error
             view.showMessage("Password changed.");
             view.hidePasswordChangeForm();            
           }
@@ -74,11 +76,13 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
   @Override
   public void setView(AccountView view) {
     this.view = view;
-    setEventHandlers();
+    setViewEventHandlers();
   }
   
   @Override
   public void go(Map<String, String> params) {
+    // hide any leftover messages
+    view.hideMessage();
     // shows details about logged in user if no username is given in params
     String userName = null;
     if (params.containsKey("username")) {

@@ -31,7 +31,6 @@ import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
-import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
 import edu.ucla.cens.mobilize.client.utils.XmlConfigTranslator;
 
 public class MockDataService implements DataService {

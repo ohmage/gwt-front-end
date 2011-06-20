@@ -10,12 +10,12 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
+import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 
 public class AccountViewImpl extends Composite implements AccountView {
@@ -120,18 +120,13 @@ public class AccountViewImpl extends Composite implements AccountView {
   }
 
   @Override
-  public void showPasswordMismatchError() {
-    this.messageWidget.showErrorMessage("Passwords do not match. Please try again.");
-  }
-
-  @Override
   public void showMessage(String message) {
     this.messageWidget.showInfoMessage(message);
   }
 
   @Override
-  public void showError(String message) {
-    this.messageWidget.showErrorMessage(message);
+  public void showError(String message, String detail) {
+    ErrorDialog.show(message, detail);
   }
 
   @Override

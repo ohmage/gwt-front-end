@@ -17,9 +17,8 @@ public interface AccountView extends IsWidget {
   void showPasswordChangeForm();
   void hidePasswordChangeForm();
   void resetPasswordChangeForm();
-  void showPasswordMismatchError();
   void showMessage(String message);
-  void showError(String message);
+  void showError(String message, String detail);
   void hideMessage();
   
   HasClickHandlers getPasswordChangeButton();

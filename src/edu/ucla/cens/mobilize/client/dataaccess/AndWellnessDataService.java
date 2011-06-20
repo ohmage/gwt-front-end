@@ -129,6 +129,8 @@ public class AndWellnessDataService implements DataService {
    * @return exception
    */
   private static Exception parseServerErrorResponse(String errorResponse) {
+      if (errorResponse == null) return new ServerException("Invalid error response.");
+
       Exception returnError = null;
       ErrorQueryAwData errorQuery = ErrorQueryAwData.fromJsonString(errorResponse);
       JsArray<ErrorAwData> errorList = errorQuery.getErrors();
@@ -139,31 +141,38 @@ public class AndWellnessDataService implements DataService {
       
       // Lets just throw the first error for now
       if (numErrors > 0) {
-          ErrorCode errorCode = ErrorCode.translateServerError(errorList.get(0).getCode());
-          
-          switch (errorCode) {
-          case E0103:
-              returnError = new ServerException(errorCode.getErrorDesc());
-              break;
-          case E0104:
-              returnError = new NotLoggedInException(errorCode.getErrorDesc());
-              break;
-          case E0200: 
-          case E0201: 
-          case E0202: 
-              returnError = new AuthenticationException(errorCode.getErrorDesc());
-              break;
-          case E0300:
-          case E0301:
-          case E0302:
-          case E0304:
-          case E0701:
-              returnError = new ApiException(errorCode.getErrorCode(),
-                                             errorCode.getErrorDesc());
-              break;
-          default:
-              returnError = new ServerException("Unknown server error.");
-              break;
+          String errorCodeString = errorList.get(0).getCode();
+          ErrorCode errorCode = ErrorCode.translateServerError(errorCodeString);
+          if (errorCode == null) { // translateServerError didn't recognize the code
+            // output the code and text given by the server
+            returnError = new ServerException(errorCodeString + ": " + errorList.get(0).getText());
+          } else {
+            switch (errorCode) {
+            case E0103:
+                returnError = new ServerException(errorCode.getErrorDesc());
+                break;
+            case E0104:
+                returnError = new NotLoggedInException(errorCode.getErrorDesc());
+                break;
+            case E0200: 
+            case E0201: 
+            case E0202: 
+                returnError = new AuthenticationException(errorCode.getErrorDesc());
+                break;
+            case E0300:
+            case E0301:
+            case E0302:
+            case E0304:
+            case E0701:
+                returnError = new ApiException(errorCode.getErrorCode(),
+                                               errorCode.getErrorDesc());
+                break;
+            default:
+                // if this happens, it probably means you added an error to the 
+                // ErrorCode enum but forgot to add it to this switch statement
+                returnError = new ServerException("Unknown server error.");
+                break;
+            }
           }
       }
       
@@ -311,6 +320,9 @@ public class AndWellnessDataService implements DataService {
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserChangePasswordUrl());
     Map<String, String> params = new HashMap<String, String>();
     params.put("auth_token", this.authToken);
+    params.put("client", this.client);
+    params.put("username", userName);
+    params.put("password", oldPassword);
     params.put("new_password", newPassword);
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Attempting to change password with parameters: " + postParams);
