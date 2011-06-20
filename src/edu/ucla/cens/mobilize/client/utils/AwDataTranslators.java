@@ -21,6 +21,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwDa
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DocumentAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.PromptResponseAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.SurveyResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
@@ -83,74 +84,86 @@ public class AwDataTranslators {
       JSONNumber numberOfPrompts = responseHash.get("metadata").isObject().get("number_of_prompts").isNumber();
       if (numberOfPrompts.doubleValue() < 1) return new ArrayList<SurveyResponse>();
       
-      // data field contains a js array of prompt response json objects
+      // data field contains a js array of survey response json objects
       if (!responseHash.containsKey("data")) throw new Exception("data field missing");
       JSONValue dataValue = responseHash.get("data");
       JSONArray array = dataValue.isArray();
       if (array == null) throw new Exception("Json in data field of response is not an array.");
-      Map<Integer, SurveyResponse> surveyResponsesByKey = new HashMap<Integer, SurveyResponse>();
+      List<SurveyResponse> surveyResponses = new ArrayList<SurveyResponse>();
       for (int i = 0; i < array.size(); i++) {
         try {
           // parse as overlay object
           JSONObject obj = array.get(i).isObject();
           if (obj == null) throw new Exception("Invalid json: " + array.get(i).toString());
-          PromptResponseAwData promptAwData = (PromptResponseAwData)obj.getJavaScriptObject();
+          SurveyResponseAwData surveyResponseAwData = (SurveyResponseAwData)obj.getJavaScriptObject();
           
-          // copy data into PromptResponse object
-          PromptResponse promptResponse = new PromptResponse();
-          promptResponse.setPromptId(promptAwData.getPromptId());
-          promptResponse.setText(promptAwData.getPromptText());
-          promptResponse.setPromptType(PromptType.fromString(promptAwData.getPromptType()));
-          promptResponse.setResponse(promptAwData.getPromptResponse());
-          promptResponse.setResponsePreparedForDisplay(getPromptResponseDisplayString(campaignId, promptResponse.getPromptType(), promptAwData));
-          Integer surveyResponseKey = promptAwData.getSurveyResponseKey();
-          if (surveyResponseKey == null) throw new Exception("No survey response key found in json: " + promptAwData.toString());
-
-          // One survey response contains many prompt responses. Every prompt response
-          // returned by the data api contains info about its parent survey response
-          // (uniquely identified by the survey response key) but the survey response
-          // info only needs to be saved the first time that key is seen.
-          if (!surveyResponsesByKey.containsKey(surveyResponseKey)) {
-            SurveyResponse surveyResponse = new SurveyResponse();
-            surveyResponse.setResponseKey(surveyResponseKey);
-            surveyResponse.setCampaignId(campaignId); 
-            // NOTE: campaignName not included in prompt data, must be filled in later
-            surveyResponse.setResponseDate(promptAwData.getTimestamp());
-            surveyResponse.setUserName(promptAwData.getUser());
-            surveyResponse.setSurveyId(promptAwData.getSurveyId());
-            surveyResponse.setSurveyName(promptAwData.getSurveyTitle());
-            // GOTCHA: assumes privacy is same for all prompts within a survey response.
-            // If we enabled per-prompt privacy instead of per-survey, this would break.
-            surveyResponse.setPrivacyState(Privacy.valueOf(promptAwData.getPrivacy().toUpperCase()));
-            surveyResponsesByKey.put(surveyResponse.getResponseKey(), surveyResponse);
+          // copy data into SurveyResponse object
+          SurveyResponse surveyResponse = new SurveyResponse();
+          // NOTE(2011/06/19): if survey response key is missing from json, make sure the 
+          //   survey_response/read query is passing a "return_id" param (see api wiki)
+          surveyResponse.setResponseKey(surveyResponseAwData.getSurveyResponseKey());
+          surveyResponse.setCampaignId(campaignId);
+          // NOTE: campaignName not included in prompt data, must be filled in later
+          surveyResponse.setPrivacyState(Privacy.fromServerString(surveyResponseAwData.getPrivacy()));
+          surveyResponse.setResponseDate(surveyResponseAwData.getTimestamp()); // FIXME: timezone needed too?
+          surveyResponse.setSurveyId(surveyResponseAwData.getSurveyId());
+          surveyResponse.setSurveyName(surveyResponseAwData.getSurveyTitle());
+          surveyResponse.setUserName(surveyResponseAwData.getUser());
+          
+          // survey response contains many prompt responses. parse those now.
+          JsArrayString promptIds = surveyResponseAwData.getPromptIdsAsJsArray();
+          String promptId = null;
+          for (int j = 0; j < promptIds.length(); j++) {
+            try {
+              promptId = promptIds.get(j);
+              PromptResponseAwData promptResponseAwData = surveyResponseAwData.getPromptResponseById(promptId);
+              PromptResponse promptResponse = new PromptResponse();
+              promptResponse.setPromptId(promptId);
+              promptResponse.setText(promptResponseAwData.getPromptText());
+              promptResponse.setPromptType(PromptType.fromString(promptResponseAwData.getPromptType()));
+              promptResponse.setResponse(promptResponseAwData.getPromptResponse());
+              promptResponse.setResponsePreparedForDisplay(
+                  getPromptResponseDisplayString(surveyResponse.getUserName(),
+                                                 campaignId, 
+                                                 promptResponse.getPromptType(), 
+                                                 promptResponseAwData));
+              // store prompt response in its parent survey response obj
+              surveyResponse.addPromptResponse(promptResponse);
+            } catch (Exception e) {
+              _logger.severe("Unparseable prompt response. Error was: " + e.getMessage());
+              _logger.finer("Prompt id was: " + promptId);
+              // rethrow exception b/c we don't want to show user a partial survey response -
+              // he might share something he didn't mean to
+              throw e; 
+            }
           }
-          
-          // store prompt response object in its parent survey response object
-          surveyResponsesByKey.get(surveyResponseKey).addPromptResponse(promptResponse);
+
+          // save translated response
+          surveyResponses.add(surveyResponse);
           
         } catch (Exception e) {
-          _logger.severe("Skipping unparseable prompt response. Error was: " + e.getMessage());
-          _logger.finer("Prompt response json was: " + array.get(i));
+          _logger.severe("Skipping unparseable survey response. Error was: " + e.getMessage());
+          _logger.finer("Survey response json was: " + array.get(i));
         }
       }
       // TODO: sort responses?      
-      List<SurveyResponse> surveyResponses = new ArrayList<SurveyResponse>();
-      surveyResponses.addAll(surveyResponsesByKey.values());
       return surveyResponses;
     }
     
     // display strings are generated at translation time to avoid having to pass around
     // a choice glossary with every response
-    public static String getPromptResponseDisplayString(String campaignId,
-                                                        PromptType promptType,
-                                                        PromptResponseAwData promptResponseAwData) {
+    private static String getPromptResponseDisplayString(String imageOwnerLogin,
+                                                         String campaignId,
+                                                         PromptType promptType,
+                                                         PromptResponseAwData promptResponseAwData) {
       String displayString = null;
       switch (promptType) {
       case PHOTO:
         // prompt response is the image uuid
         String imageUUID = promptResponseAwData.getPromptResponse();
-        String imageOwnerId = promptResponseAwData.getUser();
-        displayString = AwUrlBasedResourceUtils.getImageUrl(imageUUID, imageOwnerId, campaignId);
+        displayString = AwUrlBasedResourceUtils.getImageUrl(imageUUID, 
+                                                            imageOwnerLogin, 
+                                                            campaignId);
         break;
       case MULTI_CHOICE:
       case MULTI_CHOICE_CUSTOM:
@@ -432,7 +445,5 @@ public class AwDataTranslators {
       }
       return documentInfos;
     }
-    
-
     
 }
