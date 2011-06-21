@@ -14,7 +14,6 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
@@ -42,6 +41,7 @@ import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 /**
@@ -451,6 +451,7 @@ public class AndWellnessDataService implements DataService {
     params.authToken = this.authToken;
     params.client = this.client;
     params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
+    params.endDate_opt = DateUtils.addOneDay(params.endDate_opt); // make date range inclusive
     String postParams = params.toString();
     _logger.fine("Attempting to fetch campaign list with parameters: " + postParams);
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getCampaignReadUrl());
@@ -609,7 +610,7 @@ public class AndWellnessDataService implements DataService {
     if (surveyName != null && !surveyName.isEmpty())  params.surveyIdList_opt.add(surveyName);
     params.privacyState_opt = privacy;
     params.startDate_opt = startDate;
-    params.endDate_opt = endDate;
+    params.endDate_opt = DateUtils.addOneDay(endDate); // add one to make range inclusive
     
     String postParams = params.toString();
     _logger.fine("Fetching survey responses with params: " + postParams);

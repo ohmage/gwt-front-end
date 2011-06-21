@@ -81,6 +81,20 @@ public class DateUtils {
     }
     
     /**
+     * Useful for adding one to the end date of an api query to make the date
+     * range inclusive instead of exclusive (since mysql only returns values
+     * up to midnight of the end date)
+     * @param originalDate
+     * @return day after originalDate
+     */
+    public static Date addOneDay(Date originalDate) {
+      if (originalDate == null) return null;
+      long secs = originalDate.getTime();
+      secs = secs + (24 * 60 * 60 * 1000);
+      return new Date(secs);
+    }
+    
+    /**
      *  Checks to see if a Date is within a given Day.  Uses deprecated Date functionality,
      *  but GWT does not yet include the replacement functionality in Calendar.
      * 
