@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
@@ -24,6 +25,7 @@ import edu.ucla.cens.mobilize.client.ui.DocumentEditPresenter;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
+import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 import edu.ucla.cens.mobilize.client.view.DocumentView;
 
@@ -195,11 +197,19 @@ public class DocumentPresenter implements Presenter {
   }
 
   private void downloadDocument(String documentId) {
+    // FIXME: which way works better for error handling, etc? (url or form post)
+    /*
+    String url = AwUrlBasedResourceUtils.getDocumentUrl(documentId);
+    _logger.fine("Attempting to download document from: " + url);
+    Window.open(url, "_blank", ""); // download in a new window
+    */
     String url = AwConstants.getDocumentDownloadUrl();
     Map<String, String> params = dataService.getDocumentDownloadParams(documentId);
     _logger.fine("Attempting to download document from url: " + url +
                  " with params: " + MapUtils.translateToParameters(params));
+    
     view.doDocumentDownloadPost(url, params, documentDownloadCompleteHandler);
+    
   }
   
   // pass this handler to child views so it can be attached to download links
@@ -235,8 +245,7 @@ public class DocumentPresenter implements Presenter {
         status = "success";
       } 
       if (!"success".equals(status)) {
-        ErrorDialog.showErrorsByCode("There was a problem creating the campaign.", 
-                                      errorCodeToDescriptionMap);
+        ErrorDialog.showErrorsByCode("Document download failed.", errorCodeToDescriptionMap);
         _logger.severe("Document download failed. Response was: " + result);
       }
     }

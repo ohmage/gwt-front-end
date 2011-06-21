@@ -9,12 +9,11 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -22,8 +21,9 @@ import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
-import edu.ucla.cens.mobilize.client.common.RunningState;
+import edu.ucla.cens.mobilize.client.event.DocumentDownloadHandler;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
+import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
 
 public class DocumentDetail extends Composite {
 
@@ -40,7 +40,6 @@ public class DocumentDetail extends Composite {
 
   @UiField DocumentDetailStyle style;
   @UiField HTMLPanel container;
-  @UiField InlineHyperlink editDocumentLink;
   @UiField Anchor backLinkTop;
   //@UiField InlineLabel creatorLabel; // not available from api yet
   @UiField InlineLabel lastModifiedDateLabel;
@@ -50,8 +49,14 @@ public class DocumentDetail extends Composite {
   @UiField InlineLabel privacyLabel;
   @UiField VerticalPanel campaignsVerticalPanel;
   @UiField VerticalPanel classesVerticalPanel;
+  @UiField InlineHyperlink actionLinkEditDocument;
+  @UiField Anchor actionLinkDownloadDocument;
+  @UiField Button downloadButton;
 
   private DateTimeFormat dateFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM);
+
+  // set this delegate to define how download links are handled
+  private DocumentDownloadHandler documentDownloadHandler;
   
   public DocumentDetail() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -95,7 +100,6 @@ public class DocumentDetail extends Composite {
 
       Privacy privacy = documentInfo.getPrivacy();
       privacyLabel.setText(privacy.toUserFriendlyString());
-      // TODO: should tell sho can see it
       // privacy style is set dynamically
       String privacyLabelStyle = null;
       switch (privacy) {
@@ -112,27 +116,36 @@ public class DocumentDetail extends Composite {
       privacyLabel.setStyleName(privacyLabelStyle);
       
       if (canEdit) {
-        this.editDocumentLink.setVisible(true);
-        this.editDocumentLink.setTargetHistoryToken(HistoryTokens.documentEdit(documentInfo.getDocumentId()));
+        this.actionLinkEditDocument.setVisible(true);
+        this.actionLinkEditDocument.setTargetHistoryToken(HistoryTokens.documentEdit(documentInfo.getDocumentId()));
       } else {
-        this.editDocumentLink.setVisible(false);
+        this.actionLinkEditDocument.setVisible(false);
       }
-
-      // hidden form with target set to _blank does a post request to fetch
-      // the file and displays the result in a new window. 
-      final FormPanel downloadForm = new FormPanel("_blank"); // target="_blank" to open new window
-      downloadForm.setAction("http://localhost:8000/MobilizeWeb/getfile"); // FIXME
-      downloadForm.setMethod(FormPanel.METHOD_POST);
-      final Hidden fmt = new Hidden();
-      fmt.setName("fmt"); // if fmt=download, set content-disposition header
-      downloadForm.add(fmt);
-      container.add(downloadForm, "hiddenFormContainer");
-      // TODO: username, auth_token, etc also need to go in form fields
       
+      final String documentId = documentInfo.getDocumentId();
+      this.actionLinkDownloadDocument.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          if (documentDownloadHandler != null) {
+            documentDownloadHandler.onDownloadClick(documentId);
+          }
+        }
+      });
+      
+      this.downloadButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          if (documentDownloadHandler != null) {
+            documentDownloadHandler.onDownloadClick(documentId);
+          }
+        }
+      });
 
     }
   }
   
-  
+  public void setDocumentDownloadHandler(DocumentDownloadHandler handler) {
+    this.documentDownloadHandler = handler;
+  }
 
 }

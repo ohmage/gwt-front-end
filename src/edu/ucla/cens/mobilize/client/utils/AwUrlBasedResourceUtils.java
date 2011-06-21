@@ -24,4 +24,13 @@ public class AwUrlBasedResourceUtils {
     String paramString = MapUtils.translateToParameters(params);
     return AwConstants.getImageReadUrl() + "?" + paramString;
   }
+  
+  public static String getDocumentUrl(String documentId) {
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", Cookies.getCookie(AwConstants.cookieAuthToken));
+    params.put("client", AwConstants.apiClientString);
+    params.put("document_id", documentId);
+    String paramString = MapUtils.translateToParameters(params);
+    return AwConstants.getDocumentDownloadUrl() + "?" + paramString;
+  }
 }

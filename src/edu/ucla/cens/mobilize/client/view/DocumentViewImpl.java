@@ -130,9 +130,11 @@ public class DocumentViewImpl extends Composite implements DocumentView {
                                    SubmitCompleteHandler submitCompleteHandler) {
     // NOTE: new form is created for each b/c multiple downloads 
     // can take place concurrently
-    FormPanel form = new FormPanel("_blank"); 
+    FormPanel form = new FormPanel("_blank");
+    //FormPanel form = new FormPanel();
     form.setAction(url);
     form.setMethod(FormPanel.METHOD_POST);
+    form.setEncoding(FormPanel.ENCODING_URLENCODED);
     FlowPanel innerContainer = new FlowPanel();
     for (String paramName : params.keySet()) {
       Hidden field = new Hidden();
@@ -152,7 +154,7 @@ public class DocumentViewImpl extends Composite implements DocumentView {
   public void setDocumentDownloadHandler(DocumentDownloadHandler handler) {
     // both list and detail have download links - make sure they work as expected
     this.documentList.setDocumentDownloadHandler(handler);
-    // this.documentDetail.setDocumentDownloadHandler(handler);
+    this.documentDetail.setDocumentDownloadHandler(handler);
   }
 
 }

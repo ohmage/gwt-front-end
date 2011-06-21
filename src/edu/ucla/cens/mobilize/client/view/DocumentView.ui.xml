@@ -69,17 +69,13 @@
   </ui:style>
   <g:DockLayoutPanel unit="PX" ui:field="mainLayout">
     
-    <!-- Top menu bar. Items change depending on role. (e.g., Author Center)-->
     <g:north size='25'>
-      <g:HTMLPanel>
-	      <g:HTMLPanel addStyleNames='{style.topNav}'>
+      <g:HTMLPanel addStyleNames='{style.topNav}'>
 		      <g:InlineHyperlink ui:field='myDocumentsLink'>My Documents</g:InlineHyperlink>
 		      <span class='{style.separator}'>|</span>
-		      <g:InlineHyperlink ui:field='browseDocumentsLink'>Browse Documents</g:InlineHyperlink>
+		      <g:InlineHyperlink ui:field='browseDocumentsLink'>All Documents</g:InlineHyperlink>
 	        <span class='{style.separator}'>|</span>
 	        <g:InlineHyperlink ui:field='uploadLink'>Upload</g:InlineHyperlink>
-        </g:HTMLPanel>
-        <w:MessageWidget ui:field='msgWidget' />
       </g:HTMLPanel>
     </g:north>
     
@@ -94,9 +90,8 @@
     
     <g:center>
       <g:HTMLPanel ui:field="centerContainer" addStyleNames='{style.scrollable}'>
+        <w:MessageWidget ui:field='msgWidget' />
         <div id="formPanelContainer" /> <!-- needed for hidden form panels -->
-        <!-- msg box is visible only when there is a message to display -->
-        <w:MessageWidget ui:field='msg' />
         <!-- only one of these will be visible at a time depending on selected subview -->
         <w:DocumentList ui:field="documentList"></w:DocumentList>
         <w:DocumentDetail ui:field="documentDetail"></w:DocumentDetail>
