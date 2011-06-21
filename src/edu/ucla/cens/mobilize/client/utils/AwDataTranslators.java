@@ -424,6 +424,7 @@ public class AwDataTranslators {
           docInfo.setDescription(awData.getDescription());
           docInfo.setDocumentId(documentId);
           docInfo.setDocumentName(awData.getDocumentName());
+          docInfo.setCreator(awData.getCreator());
           docInfo.setPrivacy(Privacy.fromServerString(awData.getPrivacyState()));
           docInfo.setSize(awData.getSize());
           docInfo.setUserRole(RoleDocument.fromServerString(awData.getUserRole()));
@@ -436,7 +437,6 @@ public class AwDataTranslators {
                                 RoleDocument.fromServerString(awData.getCampaignRole(campaignUrn)));
           }
           documentInfos.add(docInfo);
-          // FIXME(6/16/2011): add document creator after it's enabled in server api
         } catch (Exception e) {
           _logger.warning("Could not parse json for document id: " + documentId + ". Skipping record.");
           _logger.fine(e.getMessage());

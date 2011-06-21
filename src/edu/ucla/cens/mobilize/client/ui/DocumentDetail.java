@@ -41,7 +41,7 @@ public class DocumentDetail extends Composite {
   @UiField DocumentDetailStyle style;
   @UiField HTMLPanel container;
   @UiField Anchor backLinkTop;
-  //@UiField InlineLabel creatorLabel; // not available from api yet
+  @UiField InlineLabel creatorLabel; 
   @UiField InlineLabel lastModifiedDateLabel;
   @UiField InlineLabel sizeLabel;
   @UiField InlineLabel documentNameLabel;
@@ -77,7 +77,7 @@ public class DocumentDetail extends Composite {
   public void setDocumentDetail(DocumentInfo documentInfo, boolean canEdit) {
     if (documentInfo != null) {
       // creation details
-      //this.creatorLabel.setText(documentInfo.getCreator());
+      this.creatorLabel.setText(documentInfo.getCreator());
       this.lastModifiedDateLabel.setText(this.dateFormat.format(documentInfo.getLastModifiedTimestamp()));
       String sizeString = NumberFormat.getFormat("######.00").format(documentInfo.getSizeInKB());
       this.sizeLabel.setText(sizeString + " KB");

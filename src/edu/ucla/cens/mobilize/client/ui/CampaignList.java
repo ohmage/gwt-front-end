@@ -124,9 +124,9 @@ public class CampaignList extends Composite {
     
     // set up table heading
     campaignGrid.getRowFormatter().setStyleName(0, style.campaignGridHeader());
-    campaignGrid.setText(0, Column.NAME.ordinal(), "Campaign Name");
-    campaignGrid.setText(0, Column.CREATED_ON.ordinal(), "Created On");
-    campaignGrid.setText(0, Column.RUNNING_STATE.ordinal(), "Running State");
+    campaignGrid.setText(0, Column.NAME.ordinal(), "Campaign name");
+    campaignGrid.setText(0, Column.CREATED_ON.ordinal(), "Created on");
+    campaignGrid.setText(0, Column.RUNNING_STATE.ordinal(), "Running state");
     campaignGrid.setText(0, Column.PRIVACY.ordinal(), "Privacy");
     campaignGrid.setText(0, Column.ACTIONS.ordinal(), "Actions");
     

@@ -63,11 +63,12 @@ public class DocumentList extends Composite {
   private class Column { 
     private static final int DOCUMENT_NAME = 0;
     private static final int SIZE          = 1;
-    private static final int PRIVACY       = 2;
-    private static final int MODIFIED_TIME = 3;
-    //private static final int CREATOR       = 4; // not available in api yet
-    private static final int ACTIONS       = 4;
-    private static final int count         = 5; // num columns above
+    private static final int CREATOR       = 2;
+    private static final int PRIVACY       = 3;
+    private static final int MODIFIED_TIME = 4;
+    private static final int ACTIONS       = 5;
+    
+    private static final int count         = 6; // number of columns above
   }
   
   public DocumentList() {
@@ -79,11 +80,11 @@ public class DocumentList extends Composite {
     // set up table heading
     documentGrid.resize(1, Column.count);
     documentGrid.getRowFormatter().setStyleName(0, style.documentGridHeader());
-    documentGrid.setText(0, Column.DOCUMENT_NAME, "Document Name");
+    documentGrid.setText(0, Column.DOCUMENT_NAME, "Document name");
     documentGrid.setText(0, Column.SIZE, "Size");
     documentGrid.setText(0, Column.PRIVACY, "Privacy");
     documentGrid.setText(0, Column.MODIFIED_TIME, "Last modified");
-    //documentGrid.setText(0, Column.CREATOR, "Created by");
+    documentGrid.setText(0, Column.CREATOR, "Created by");
     documentGrid.setText(0, Column.ACTIONS, "Actions");
     
     // css styles
@@ -146,12 +147,10 @@ public class DocumentList extends Composite {
                               Column.MODIFIED_TIME,
                               dateFormat.format(documentInfo.getLastModifiedTimestamp()));    
     
-    /*
     // created by
     this.documentGrid.setText(row,
                               Column.CREATOR,
                               documentInfo.getCreator());
-    */
     
     // actions column
     this.documentGrid.setWidget(row, 

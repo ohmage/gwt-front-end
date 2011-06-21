@@ -148,7 +148,7 @@
         <table class='{style.detailTable}'>
           <tr>
             <td class='{style.label}'>
-              <label>Document Name:</label>
+              <label>Document name:</label>
             </td>
             <td>
              <g:InlineLabel ui:field='documentNameLabel'/>
@@ -162,18 +162,17 @@
              <g:InlineLabel ui:field='sizeLabel'/>
             </td>
           </tr>
-          <!--
           <tr>
             <td class='{style.label}'>
-              <label>Created By:</label>
+              <label>Created by:</label>
             </td>
             <td>
              <g:InlineLabel ui:field='creatorLabel'/>
             </td>
-          </tr>-->
+          </tr>
           <tr>
             <td class='{style.label}'>
-              <label>Last Modified:</label>
+              <label>Last modified:</label>
             </td>
             <td>
              <g:InlineLabel ui:field='lastModifiedDateLabel'/>
@@ -189,7 +188,7 @@
           </tr>
           <tr>
             <td class='{style.label}'>
-              <label>Privacy Setting:</label>
+              <label>Privacy:</label>
             </td>
             <td>
               <g:InlineLabel ui:field='privacyLabel'  /> 

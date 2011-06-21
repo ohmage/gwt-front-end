@@ -12,6 +12,7 @@ public class DocumentAwData extends QueryAwData {
   protected DocumentAwData() {};
 
   public final native String getDocumentName() /*-{ return this.name; }-*/;
+  public final native String getCreator() /*-{ return this.creator; }-*/;
   public final native String getDescription() /*-{ return this.description; }-*/;
   public final native String getUserRole() /*-{ return this.user_role; }-*/;
   public final native String getPrivacyState() /*-{ return this.privacy_state; }-*/;
