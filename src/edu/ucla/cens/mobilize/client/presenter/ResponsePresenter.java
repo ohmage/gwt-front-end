@@ -429,6 +429,10 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                      final Privacy privacy,
                                      final Date startDate,
                                      final Date endDate) {
+    
+    // FIXME: should be able to get list of campaigns from userInfo now instead of 
+    // doing an extra query here
+    
     this.responses.clear();
     
     CampaignReadParams campaignReadParams = new CampaignReadParams();
@@ -470,12 +474,12 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   //   campaign at a time. When showing responses for all campaigns, the app makes
   //   multiple calls to this method.
   private void fetchAndShowResponsesForCampaign(final String participantName,
-                                                String campaignId, 
+                                                final String campaignId, 
                                                 final String campaignName,
-                                                String surveyName,
-                                                Privacy privacy,
-                                                Date startDate,
-                                                Date endDate, 
+                                                final String surveyName,
+                                                final Privacy privacy,
+                                                final Date startDate,
+                                                final Date endDate, 
                                                 final boolean suppressCampaignErrors) {
     // GOTCHA: when logged in user != selected participant, this only shows
     //   responses from campaigns that both participant and logged in user belong to
@@ -517,7 +521,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             responses.addAll(result);
             // sort by date, newest first
             Collections.sort(responses, responseDateComparator);
-            view.setSectionHeader("Showing responses for " + participantName);
+            String numResponses = Integer.toString(responses.size());
+            view.setSectionHeader("Showing " + numResponses + " responses for " + participantName);
             view.renderResponses(responses);
           }
     });

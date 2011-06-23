@@ -612,6 +612,8 @@ public class AndWellnessDataService implements DataService {
     params.startDate_opt = startDate;
     params.endDate_opt = DateUtils.addOneDay(endDate); // add one to make range inclusive
     
+    fetchSurveyResponses(params, callback);
+    /*
     String postParams = params.toString();
     _logger.fine("Fetching survey responses with params: " + postParams);
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getSurveyResponseReadUrl());
@@ -641,7 +643,79 @@ public class AndWellnessDataService implements DataService {
     } catch (RequestException e) {
       _logger.severe(e.getMessage());
       throw new ServerException("Cannot contact server.");
-    }    
+    } */   
+  }
+  
+
+  @Override
+  public void fetchSurveyResponseCount(String userName, 
+                                       String campaignId,
+                                       String surveyName, 
+                                       Privacy privacy, 
+                                       Date startDate, 
+                                       Date endDate,
+                                       final AsyncCallback<Integer> callback) {
+    SurveyResponseReadParams params = new SurveyResponseReadParams();
+    params.authToken = this.authToken;
+    params.client = this.client;
+    params.campaignUrn = campaignId;
+    params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
+    params.userList.add(userName);
+    // if surveyName is omitted, readparams object sends special token for all surveys
+    if (surveyName != null && !surveyName.isEmpty())  params.surveyIdList_opt.add(surveyName);
+    params.privacyState_opt = privacy;
+    params.startDate_opt = startDate;
+    params.endDate_opt = DateUtils.addOneDay(endDate); // add one to make range inclusive
+    // only fetch timestamp to reduce the amount of data (we only care about # of records)
+    params.columnList_opt.add("urn:ohmage:context:timestamp"); 
+    fetchSurveyResponses(params, new AsyncCallback<List<SurveyResponse>>() {
+
+      @Override
+      public void onFailure(Throwable caught) {
+        callback.onFailure(caught);
+      }
+
+      @Override
+      public void onSuccess(List<SurveyResponse> result) {
+        callback.onSuccess(result.size()); // just the # of records
+      }
+    });
+  }
+  
+  private void fetchSurveyResponses(SurveyResponseReadParams params,
+                                    final AsyncCallback<List<SurveyResponse>> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    String postParams = params.toString();
+    _logger.fine("Fetching survey responses with params: " + postParams);
+    final String campaignId = params.campaignUrn;
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getSurveyResponseReadUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            List<SurveyResponse> result =
+              AwDataTranslators.translateSurveyResponseReadQueryJSONToSurveyResponseList(responseText, campaignId);
+              callback.onSuccess(result);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
   }
   
   @Override
@@ -930,4 +1004,5 @@ public class AndWellnessDataService implements DataService {
     params.put("document_id", documentId);
     return params;
   }
+
 }

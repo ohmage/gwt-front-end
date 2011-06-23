@@ -473,4 +473,12 @@ public class MockDataService implements DataService {
     return null;
   }
 
+  @Override
+  public void fetchSurveyResponseCount(String userName, String campaignId,
+      String surveyName, Privacy privacy, Date startDate, Date endDate,
+      AsyncCallback<Integer> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

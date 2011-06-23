@@ -5,7 +5,7 @@ public interface DashboardView {
   interface Presenter {
     void setView(DashboardView view);
   }
-  void setPresenter(Presenter p);
+  void setPresenter(Presenter p); 
   
   // recent activity data setters
   void setNumUnreadSurveyResponses(int num);
@@ -14,4 +14,15 @@ public interface DashboardView {
     
   // quick link setters
   void setPermissions(boolean canEdit, boolean canUpload);
+  
+  // counts
+  void showParticipantRoleCount(int count);
+  void showAuthorRoleCount(int count);
+  void showPrivateResponseCount(int count);
+  
+  void hideParticipantRoleCount();
+  void hideAuthorRoleCount();
+  void hidePrivateResponseCount();
+  
 }
+

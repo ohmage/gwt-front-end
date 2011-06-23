@@ -204,7 +204,7 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     helpView = new HelpView();
     
     // presenters
-    dashboardPresenter = new DashboardPresenter(userInfo);
+    dashboardPresenter = new DashboardPresenter(userInfo, awDataService, eventBus);
     campaignPresenter = new CampaignPresenter(userInfo, awDataService, eventBus);
     responsePresenter = new ResponsePresenter(userInfo, awDataService, eventBus);
     exploreDataPresenter = new ExploreDataPresenter();

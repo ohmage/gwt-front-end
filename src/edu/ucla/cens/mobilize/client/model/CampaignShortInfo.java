@@ -80,4 +80,18 @@ public class CampaignShortInfo {
            this.userRoles.author;
   }
 
+  //******** CONVENIENCE METHODS ********
+  
+  public boolean userIsAuthor() {
+    return this.userRoles.author;
+  }
+  
+  public boolean userIsParticipant() {
+    return this.userRoles.participant;
+  }
+  
+  public boolean isRunning() {
+    return this.runningState.equals(RunningState.RUNNING);
+  }
 }
+

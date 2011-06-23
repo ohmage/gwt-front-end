@@ -1,100 +1,130 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style>
-	  .dashboard {
-	  	height: 100%;
-	  }
-    .dashboard .leftPanel {
-    	background-color: #DDD;
-    	display: block;
-    	float: left;
-    	height: 100%;
-    	padding: 15px 10px 20px 35px;
-    	width: 250px;
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  <ui:style>
+    .dashboard {
+      height: 100%;
     }
-    .dashboard .linkMenu {
-    	margin: 0px;
-    	padding: 0px;
+    .leftPanel {
+      background-color: #DDD;
+      display: block;
+      float: left;
+      height: 100%;
+      padding: 15px 10px 20px 35px;
+      width: 250px;
     }
-    .dashboard .linkMenu td {
-    	padding: 5px 5px 5px 15px;
+    .linkMenu {
+      margin: 0px;
+      padding: 0px;
     }
-    .dashboard .notify {
-    	padding: 10px;
+    .linkMenu td {
+      padding: 5px 5px 5px 15px;
     }
-    .dashboard .notify p {
-    	padding: 0px;
-    	margin: 0px;
+    .notify {
+    	margin: 15px 5px;
+      padding: 10px;
     }
-    .dashboard .notify a {
-    	font-size: 0.9em;
-    	padding-left: 5px;
-    	text-align: right;
+    .notify p {
+      padding: 0px;
+      margin: 0px;
     }
-    .dashboard .question {
-    	font-size: 1.2em;
-    	font-weight: bold;
-    	padding-left: 5px;
+    .notify a {
+      font-size: 0.9em;
+      padding-left: 5px;
+      text-align: right;
     }
-    .dashboard .rightPanel {
-    	display: block;
-    	float: left;
-    	padding: 20px 0px 0px 20px;
-    	width: auto;
+    .question {
+      font-size: 1.2em;
+      font-weight: bold;
+      padding-left: 5px;
     }
-	</ui:style>
-	<g:HTMLPanel>
-	 <div id="dashboardContainer" class="{style.dashboard}">
-	   
-	   <div ui:field="leftPanel" class="{style.leftPanel}">
-	     <p class="{style.question}">What would you like to do?</p>
-	     <g:MenuBar vertical='true' addStyleNames='{style.linkMenu}'>
-	       <g:MenuItem ui:field='quickLinkCreate'>
-	         <a href="#campaigns?v=create">Create a new campaign</a>
-	       </g:MenuItem>
-	       <g:MenuItem ui:field='quickLinkEdit'>
-	         <a href="#campaigns?v=author_center">Edit an existing campaign</a>
-	       </g:MenuItem>
-	       <g:MenuItem ui:field='quickLinkResponses'>
-	         <a href="#responses">Share or delete my survey responses</a>
-	       </g:MenuItem>
-	       <g:MenuItem ui:field='quickLinkExplore'>
-	         <a href="#explore_data">Plot campaign data</a>
-	       </g:MenuItem>
-	       <g:MenuItem ui:field='quickLinkUpload'>
-	         <a href="#documents">Upload analysis documents</a>
-	       </g:MenuItem>
-	     </g:MenuBar>
-	   </div>
-	   
-	   <div ui:field="rightPanel" class="{style.rightPanel}">
-	     <g:HTMLPanel ui:field='notificationResponses' addStyleNames="{style.notify}">
-	       <p>
-	         You have <span ui:field="numUnreadResponsesSpan">8</span> survey 
-	         responses waiting to be shared or deleted.
-	       </p>
-	       <p>&raquo;<a href="#responses">view responses</a></p>
-	     </g:HTMLPanel>
-	     <g:HTMLPanel ui:field='notificationParticipant' addStyleNames="{style.notify}">
-	       <p>
-	         You are participating in 
-	         <span ui:field="numActiveParticipantCampaignsSpan">3</span> 
-	         active campaigns.
-	       </p>
-	       <p>&raquo;<a href="#campaigns">view campaigns</a></p>
-	     </g:HTMLPanel>
-	     <g:HTMLPanel ui:field='notificationAuthor' addStyleNames="{style.notify}">
-	       <p>
-	         You are running <span ui:field="numActiveAuthorCampaignsSpan">1</span> 
-	         active campaign.
-	       </p>
-	       <p>&raquo;<a href="#author_center">go to author center</a></p>
-	     </g:HTMLPanel>
-	   </div>
-	 </div>
-	
-	 <div class="floatstop"></div>
-	
-	</g:HTMLPanel>
+    .rightPanel {
+      display: block;
+      float: left;
+      padding: 20px 0px 0px 20px;
+      width: auto;
+    }
+    .notifyResponses {
+      /*background-color: #FCE4CD;
+      border: solid 1px #F58F3E;*/
+    }
+    .notifyParticipant {
+    	/*background-color: #D7E8AB;
+      border: solid 1px #99CA3B;*/
+    }
+    .notifyAuthor {
+    	/*background-color: #CCECFC;
+    	border: solid thin #25B4E7;*/
+    }
+  </ui:style>
+  <g:HTMLPanel>
+   <div id="dashboardContainer" class="{style.dashboard}">
+     
+     <div ui:field="leftPanel" class="{style.leftPanel}">
+       <p class="{style.question}">What would you like to do?</p>
+       <g:MenuBar vertical='true' addStyleNames='{style.linkMenu}'>
+         <g:MenuItem ui:field='quickLinkCreate'>
+           <a href="#campaigns?v=create">Create a new campaign</a>
+         </g:MenuItem>
+         <g:MenuItem ui:field='quickLinkEdit'>
+           <a href="#campaigns?v=list">Edit an existing campaign</a>
+         </g:MenuItem>
+         <g:MenuItem ui:field='quickLinkResponses'>
+           <a href="#responses">Share or delete my survey responses</a>
+         </g:MenuItem>
+         <!--
+         <g:MenuItem ui:field='quickLinkExplore'>
+           <a href="#explore_data">Plot campaign data</a>
+         </g:MenuItem>
+         -->
+         <g:MenuItem ui:field='quickLinkUpload'>
+           <a href="#documents">Upload analysis documents</a>
+         </g:MenuItem>
+       </g:MenuBar>
+     </div>
+     
+     <div ui:field="rightPanel" class="{style.rightPanel}">
+       <g:HTMLPanel ui:field='notificationResponses' addStyleNames="{style.notify} {style.notifyResponses}">
+         <p>
+           You have <span ui:field="privateResponseCount">0</span> private survey 
+           responses waiting to be shared or deleted.
+         </p>
+         <p>
+           &raquo;
+           <g:InlineHyperlink ui:field="privateResponsesLink">
+             view private responses
+           </g:InlineHyperlink>
+         </p>
+       </g:HTMLPanel>
+       <g:HTMLPanel ui:field='notificationParticipant' addStyleNames="{style.notify} {style.notifyParticipant}">
+         <p>
+           You are participating in 
+           <span ui:field="campaignParticipantRoleCount">0</span> 
+           active campaigns.
+         </p>
+         <p>
+           &raquo;
+           <g:InlineHyperlink ui:field="participantCampaignsLink">
+             view campaigns 
+           </g:InlineHyperlink>
+         </p>
+       </g:HTMLPanel>
+       <g:HTMLPanel ui:field='notificationAuthor' addStyleNames="{style.notify} {style.notifyAuthor}">
+         <p>
+           You are running <span ui:field="campaignAuthorRoleCount">0</span> 
+           active campaigns.
+         </p>
+         <p>
+           &raquo;
+           <g:InlineHyperlink ui:field="authorCampaignsLink">
+             go to author center
+           </g:InlineHyperlink>
+         </p>
+       </g:HTMLPanel>
+     </div>
+   </div>
+  
+   <div class="floatstop"></div>
+  
+  </g:HTMLPanel>
 </ui:UiBinder> 
