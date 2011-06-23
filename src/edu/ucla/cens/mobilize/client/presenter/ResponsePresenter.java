@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   List<SurveyResponse> responses = new ArrayList<SurveyResponse>();
   
   UserInfo userInfo;
-
+  
   private static Logger _logger = Logger.getLogger(ResponsePresenter.class.getName());
   
   public ResponsePresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
@@ -421,52 +422,38 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                endDate));
   }
   
-  // fetches list of campaigns, then fetches responses for each
+  // fetches list of campaigns, then fetches responses for each 
   // args are values to filter by. any arg set to null or "" is ignored
+  // if campaignIdOrNull is set to null, query is done against all user's campaigns
   private void fetchAndShowResponses(final String userName,
-                                     final String campaignId, 
+                                     final String campaignIdOrNull, 
                                      final String surveyName,
                                      final Privacy privacy,
                                      final Date startDate,
                                      final Date endDate) {
     
-    // FIXME: should be able to get list of campaigns from userInfo now instead of 
-    // doing an extra query here
-    
     this.responses.clear();
+    Map<String, String> campaignsToQuery = new HashMap<String, String>();
+    boolean suppressCampaignErrors; 
+    if (campaignIdOrNull != null && userInfo.getCampaigns().containsKey(campaignIdOrNull)) {
+      campaignsToQuery.put(campaignIdOrNull, userInfo.getCampaigns().get(campaignIdOrNull));
+      suppressCampaignErrors = false;
+    } else {
+      campaignsToQuery.putAll(userInfo.getCampaigns());
+      suppressCampaignErrors = true; 
+    }
     
-    CampaignReadParams campaignReadParams = new CampaignReadParams();
-  
-    
-    // Filter by campaign if one is selected (otherwise show responses from all campaigns)
-    if (campaignId != null && !campaignId.isEmpty()) {
-      campaignReadParams.campaignUrns_opt.add(campaignId);
-    } 
-    
-    // Some errors are ignored when querying all campaigns instead of a specific one.
-    final boolean suppressCampaignErrors = campaignReadParams.campaignUrns_opt.isEmpty();
-    
-    this.dataService.fetchCampaignListShort(campaignReadParams, new AsyncCallback<List<CampaignShortInfo>>() {
-      @Override
-      public void onFailure(Throwable caught) {
-        view.addErrorMessage("There was a problem loading campaigns.", caught.getMessage());
-        AwErrorUtils.logoutIfAuthException(caught);
-      }
-
-      @Override
-      public void onSuccess(List<CampaignShortInfo> result) { 
-        for (CampaignShortInfo campaignInfo : result) {
-          fetchAndShowResponsesForCampaign(userName,
-                                           campaignInfo.getCampaignId(), 
-                                           campaignInfo.getCampaignName(),
-                                           surveyName,
-                                           privacy,
-                                           startDate,
-                                           endDate,
-                                           suppressCampaignErrors);
-        }
-      }
-    });
+    for (String campaignId : campaignsToQuery.keySet()) {
+      fetchAndShowResponsesForCampaign(userName,
+          campaignId, 
+          campaignsToQuery.get(campaignId),
+          surveyName,
+          privacy,
+          startDate,
+          endDate,
+          suppressCampaignErrors);
+      
+    }
   }
   
   // Fetch responses for just one campaign, add them to existing list and refresh display.

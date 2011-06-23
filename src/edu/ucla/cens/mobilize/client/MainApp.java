@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.History;
@@ -15,8 +17,6 @@ import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 
 import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
@@ -58,7 +58,7 @@ import edu.ucla.cens.mobilize.client.model.UserInfo;
  * to views. 
  */
 @SuppressWarnings("deprecation")
-public class MainApp implements EntryPoint, TabListener, HistoryListener {
+public class MainApp implements EntryPoint, HistoryListener {
   
   // event management
   EventBus eventBus = new SimpleEventBus();
@@ -190,7 +190,6 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   private void initComponents(UserInfo userInfo) {
     header = new Header();
     tabPanel = new TabPanel();
-    tabPanel.addTabListener(this);
     tabHistoryTokens = new ArrayList<String>();
     
     // views
@@ -247,6 +246,20 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
     tabPanel.add(classView, "Classes");
     tabHistoryTokens.add("classes");
     TabIndex.CLASSES = index++;
+
+    // Clicking on a tab fires history token. tab will be selected when the 
+    // history token is processed. NOTE: app used to use TabListener but it
+    // didn't play well with History management
+    for (int i = 0; i < tabPanel.getTabBar().getTabCount(); i++) {
+      final int tabIndex = i;
+      tabPanel.getTabBar().getTab(i).addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          History.newItem(tabHistoryTokens.get(tabIndex));
+        }
+      });
+    }
+    
     
     // tab panel, account page, and help all appear in the same
     // place but only one of them will be visible at a time
@@ -260,49 +273,37 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   private void showDashboard() {
     hideAll();
     tabPanel.setVisible(true);
-    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.DASHBOARD) {
-      tabPanel.selectTab(TabIndex.DASHBOARD);
-    }
+    tabPanel.selectTab(TabIndex.DASHBOARD);
   }
  
   private void showCampaigns() {
     hideAll();
     tabPanel.setVisible(true);
-    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.CAMPAIGNS) {
-      tabPanel.selectTab(TabIndex.CAMPAIGNS);
-    }
+    tabPanel.selectTab(TabIndex.CAMPAIGNS);
   }
   
   private void showResponses() {
     hideAll();
     tabPanel.setVisible(true);
-    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.RESPONSES) {
-      tabPanel.selectTab(TabIndex.RESPONSES);
-    }
+    tabPanel.selectTab(TabIndex.RESPONSES);
   }
   
   private void showExploreData() {
     hideAll();
     tabPanel.setVisible(true);
-    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.EXPLORE_DATA) {
-      tabPanel.selectTab(TabIndex.EXPLORE_DATA);
-    }
+    tabPanel.selectTab(TabIndex.EXPLORE_DATA);
   }
   
   private void showDocuments() {
     hideAll();
     tabPanel.setVisible(true);
-    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.DOCUMENTS) {
-      tabPanel.selectTab(TabIndex.DOCUMENTS);
-    }
+    tabPanel.selectTab(TabIndex.DOCUMENTS);
   }
   
   private void showClasses() {
     hideAll();
     tabPanel.setVisible(true);
-    if (tabPanel.getTabBar().getSelectedTab() != TabIndex.CLASSES) {
-      tabPanel.selectTab(TabIndex.CLASSES);
-    }
+    tabPanel.selectTab(TabIndex.CLASSES);
   }
 
   private void showAccount() {
@@ -323,27 +324,6 @@ public class MainApp implements EntryPoint, TabListener, HistoryListener {
   
   /******** End methods to control visible widgets ********/
 
-  /********* Top Level Navigation ****************/
-  @Override
-  public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-    return true;
-  }
-
-  @Override
-  public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-    try {
-      // saves token to enabled navigating back but does not fire event
-      //History.newItem(tabHistoryTokens.get(tabIndex), false); // false broke browse campaigns link 
-      
-      History.newItem(tabHistoryTokens.get(tabIndex));
-      
-    } catch (Exception e) {
-      _logger.severe("Exception onTabSelected for tab index: " + tabIndex +
-                     "Exception was: " + e.getMessage());
-    }
-  }
-  /********* End of Top Level Navigation *********/
-  
   /********* History Management ***********/
   @Override
   public void onHistoryChanged(String historyToken) {

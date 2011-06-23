@@ -66,9 +66,9 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     this.quickLinkEdit.setVisible(this.canEdit);
     this.quickLinkUpload.setVisible(this.canUpload);
     // todo: find out why hyperlinks are not including params
-    //this.privateResponsesLink.setTargetHistoryToken(HistoryTokens.responseList(null, null, null, Privacy.PRIVATE, null, null));
-    //this.authorCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.AUTHOR, null, null));
-    //this.participantCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.PARTICIPANT, null, null));
+    this.privateResponsesLink.setTargetHistoryToken(HistoryTokens.responseList(null, null, null, Privacy.PRIVATE, null, null));
+    this.authorCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.AUTHOR, null, null));
+    this.participantCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.PARTICIPANT, null, null));
   }
   
   @Override
