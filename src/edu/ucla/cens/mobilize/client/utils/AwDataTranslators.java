@@ -119,6 +119,7 @@ public class AwDataTranslators {
               PromptResponseAwData promptResponseAwData = surveyResponseAwData.getPromptResponseById(promptId);
               PromptResponse promptResponse = new PromptResponse();
               promptResponse.setPromptId(promptId);
+              promptResponse.setIndex(promptResponseAwData.getIndex());
               promptResponse.setText(promptResponseAwData.getPromptText());
               promptResponse.setPromptType(PromptType.fromString(promptResponseAwData.getPromptType()));
               promptResponse.setResponse(promptResponseAwData.getPromptResponse());

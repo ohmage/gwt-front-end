@@ -7,12 +7,14 @@ public class PromptResponse {
   private String promptId;
   private PromptType promptType;
   private String text; // (e.g., "How many hours did you sleep?")
+  private int index; // for sorting
   private String responseRaw;
   private String responsePrepared;
   
   public String getPromptId() { return this.promptId; }
   public PromptType getPromptType() { return this.promptType; }
   public String getText() { return this.text; }
+  public int getIndex() { return this.index; }
   public String getResponseRaw() { return this.responseRaw; }
   
   /**
@@ -29,6 +31,7 @@ public class PromptResponse {
   public void setPromptType(PromptType promptType) { this.promptType = promptType; }
   public void setText(String promptText) { this.text = promptText; }
   public void setResponse(String promptResponse) { this.responseRaw = promptResponse; }
+  public void setIndex(int index) { this.index = index; }
   
   public void setResponsePreparedForDisplay(String responsePrepared) { 
     this.responsePrepared = responsePrepared; 

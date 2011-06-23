@@ -28,4 +28,9 @@ public class PromptResponseAwData extends JavaScriptObject {
     return retval;
   }-*/;
   
+  // index of prompt in xml. allows front end to sort and display prompts in the
+  // same order in which they appeared in the xml
+  public final native int getIndex() /*-{
+    return this.prompt_index;
+  }-*/;
 }

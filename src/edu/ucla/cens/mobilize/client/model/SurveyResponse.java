@@ -73,12 +73,21 @@ public class SurveyResponse {
 	public void setPrivacyState(Privacy privacy) { this.privacyState = privacy; } 
 	
   public List<PromptResponse> getPromptResponses() {
-    List<PromptResponse> retval = new ArrayList<PromptResponse>(this.promptResponses);
-    return retval;
+    return this.promptResponses; // NOTE: changes to return vals also change originals
   }
 	
-	public void addPromptResponse(PromptResponse promptResponse) {
-	  this.promptResponses.add(promptResponse);
+  // inserts prompt in order (sorted by the prompt index field so they match the order
+  //   in the xml config)
+	public void addPromptResponse(PromptResponse newResponse) {
+	  int indexOfNewResponse = newResponse.getIndex();
+	  int position = 0;
+	  while (position < promptResponses.size()) {
+	    if (promptResponses.get(position).getIndex() > indexOfNewResponse) {
+	      break;
+	    }
+	    position++;
+	  }
+	  promptResponses.add(position, newResponse);
 	}
 	
 }
