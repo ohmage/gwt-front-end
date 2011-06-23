@@ -121,9 +121,7 @@
     
     <g:east size='200'>
       <g:HTMLPanel ui:field='rightSideBar' addStyleNames='{style.plotDiv}'>
-       <g:Label ui:field='plotSideBarTitle' addStyleNames='{style.plotSideBarTitle}'>
-        Recent Activity
-       </g:Label>
+       <g:Label ui:field='plotSideBarTitle' addStyleNames='{style.plotSideBarTitle}' />
        
        <g:VerticalPanel ui:field='plotPanel'>
          <g:HTMLPanel addStyleNames='{style.plotBox}'>

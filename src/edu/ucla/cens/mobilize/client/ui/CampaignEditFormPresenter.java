@@ -214,9 +214,10 @@ public class CampaignEditFormPresenter {
         view.clearFormFields();
         History.newItem(HistoryTokens.campaignList());
       } else {
-        ErrorDialog.showErrorsByCode("There was a problem creating the campaign.", 
-                                      errorCodeToDescriptionMap);
-        _logger.severe("Campaign create failed. Response was: " + result);
+        String msg = isCreate ? "There was a problem creating the campaign." :
+                                "There was a problem editing the campaign.";
+        ErrorDialog.showErrorsByCode(msg, errorCodeToDescriptionMap);
+        _logger.severe(msg + " Response was: " + result);
       }
     }
   };
