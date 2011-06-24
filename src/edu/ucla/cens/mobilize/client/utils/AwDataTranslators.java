@@ -147,7 +147,6 @@ public class AwDataTranslators {
           _logger.finer("Survey response json was: " + array.get(i));
         }
       }
-      // TODO: sort responses?      
       return surveyResponses;
     }
     
@@ -159,13 +158,6 @@ public class AwDataTranslators {
                                                          PromptResponseAwData promptResponseAwData) {
       String displayString = null;
       switch (promptType) {
-      case PHOTO:
-        // prompt response is the image uuid
-        String imageUUID = promptResponseAwData.getPromptResponse();
-        displayString = AwUrlBasedResourceUtils.getImageUrl(imageUUID, 
-                                                            imageOwnerLogin, 
-                                                            campaignId);
-        break;
       case MULTI_CHOICE:
       case MULTI_CHOICE_CUSTOM:
         // FIXME: assumes choices are stored as comma separated list - is that correct?

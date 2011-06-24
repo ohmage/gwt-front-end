@@ -33,6 +33,7 @@ import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel;
+import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 public class ResponseViewImpl extends Composite implements ResponseView {
@@ -270,8 +271,17 @@ public class ResponseViewImpl extends Composite implements ResponseView {
             responseWidget.addPromptResponseTimestamp(promptResponse.getText(), timestamp);
             break;
           case PHOTO:
-            // NOTE: the image url (the "prepared" photo prompt response) is generated in utils.AwDataTranslator
-            responseWidget.addPromptResponsePhoto(promptResponse.getText(), promptResponse.getResponsePrepared());
+            String thumbUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
+                response.getUserName(),
+                response.getCampaignId(),
+                AwUrlBasedResourceUtils.ImageSize.SMALL);
+            String fullSizedImageUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
+                response.getUserName(),
+                response.getCampaignId(),
+                AwUrlBasedResourceUtils.ImageSize.ORIGINAL);
+            responseWidget.addPromptResponsePhoto(promptResponse.getText(), 
+                                                  fullSizedImageUrl,
+                                                  thumbUrl);
             break;
           default:
             responseWidget.addPromptResponseText(promptResponse.getText(), promptResponse.getResponsePrepared());

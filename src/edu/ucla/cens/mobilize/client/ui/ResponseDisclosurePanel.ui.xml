@@ -5,6 +5,9 @@
 	/* header row is always visible, shows summary info */
 	.checkbox {
 	}
+	.clickable {
+		cursor: pointer;
+  }
 	.date {
 		padding-right: 5px;
 	}

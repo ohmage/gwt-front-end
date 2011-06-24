@@ -56,6 +56,7 @@ public class CampaignPresenter implements Presenter {
   
   @Override
   public void go(Map<String, String>params) {
+
     // hide any leftover notifications
     this.view.hideMsg();
     

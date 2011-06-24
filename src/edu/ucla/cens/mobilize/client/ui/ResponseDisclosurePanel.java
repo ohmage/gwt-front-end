@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasMouseOutHandlers;
 import com.google.gwt.event.dom.client.HasMouseOverHandlers;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -17,6 +19,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -41,6 +44,7 @@ public class ResponseDisclosurePanel extends Composite
     String promptResponse();
     String promptText();
     String promptValue();
+    String clickable();
   }
 
   @UiField ResponseDisclosurePanelStyle style;
@@ -166,11 +170,20 @@ public class ResponseDisclosurePanel extends Composite
 	  addPromptResponse(promptText, new HTML(promptValue));
 	}
 	
-	public void addPromptResponsePhoto(String promptText, String imageUrl) {
+	public void addPromptResponsePhoto(String promptText, final String imageUrl, String thumbnailUrl) {
 	  Image image = new Image();
-	  image.setUrl(imageUrl);
+	  image.setUrl(thumbnailUrl);
+	  // clicking on small image opens full size image in a new window
+	  image.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        Window.open(imageUrl, "_blank", "");
+      }
+	  });
+	  image.setStyleName(style.clickable());
 	  addPromptResponse(promptText, image);
 	}
+	
 
 	@Override
 	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
