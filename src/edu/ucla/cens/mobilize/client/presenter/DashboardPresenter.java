@@ -93,7 +93,9 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
           }
         }
         if (_participantRoleCount > 0) view.showParticipantRoleCount(_participantRoleCount);
+        else view.hideParticipantRoleCount();
         if (_authorRoleCount > 0) view.showAuthorRoleCount(_authorRoleCount);
+        else view.hideAuthorRoleCount();
       }
     });
   }
@@ -124,6 +126,7 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
         public void onSuccess(Integer result) {
           _privateResponseCount = _privateResponseCount + result;
           if (_privateResponseCount > 0) view.showPrivateResponseCount(_privateResponseCount);
+          else view.hidePrivateResponseCount();
         }
       });
     }

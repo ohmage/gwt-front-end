@@ -23,8 +23,9 @@
 		.menu {
 		}
 		.status {
-		  background-color: #B8CEE0;
-		  /*border: solid thin #DDD;*/
+		  /*background-color: #B8CEE0;*/
+		  background-color: #D7E8AB;
+		  border: solid 1px #A5CD3A;
 		  padding: 3px 10px 3px 30px;
 	  }
 		.userName {

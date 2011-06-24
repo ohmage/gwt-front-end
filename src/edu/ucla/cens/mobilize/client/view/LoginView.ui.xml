@@ -3,45 +3,185 @@
   xmlns:g="urn:import:com.google.gwt.user.client.ui">
   
   <ui:style>
+    body {
+    	min-width: 800px;
+    	padding: 10px 20px;
+    }
     .buttonDiv {
     	padding: 5px 5px 0px 0px;
     	text-align: right;
+    }
+    .description {
+    	background: white;
+    	border: solid thin #25AAE1;
+    	margin: 10px 50px 10px 40px;
+    	padding: 10px 20px;
+
+    }
+    .footer {
+    	color: #AAA;
+    	padding-top: 5px;
+    }
+    .footerCopyright {
+    	padding-right: 10px;
+    }
+    .footerSpan {
+    	padding: 2px;
     }
     .label {
       display: inline-block;
       padding: 5px;
       width: 50px;
     }
-    .loginFormPanel {
+    .linkList {
+    	list-style-type: none; /* use images for bullets instead */
+    	padding: 0px;
+    }
+    .linkList li {
+    	background-image: url('images/bullet_black.png');
+    	background-position: 2px 50%;
+    	background-repeat: no-repeat;
+    	padding: 2px 20px;
+    }
+    .linkListDiv {
+    	padding-left: 15px;
+    }
+    .loginForm {
+    	display: inline-block;
+    	vertical-align: middle;
+    	margin: 40px auto;
+    }
+    .loginFormInnerContainer {
     	background-color: #D7E8AB;
     	border: solid 1px #A5CD3A;
     	margin: auto;
     	padding: 10px 10px 5px 10px;
     	width: 250px;
      }
-     .mainPanel {}
+     .logoPanel {
+     	 background-image: url('images/mobilize_logo_screenshot_fixme.png');
+     	 background-repeat: no-repeat;
+     	 background-position: 40px 50%;
+     	 display: inline-block;
+       width: 100%;
+       height: 100%;
+     }
+     .mainPanel { 
+     	 height: 150px;
+       white-space: nowrap; 
+     }    
      .textBox {
      	width: 175px;
      }
+     .left, .right {
+       display: inline-block;
+       height: 140px;
+       vertical-align: middle;
+     }
+     .left {
+       min-width: 500px;
+       width: 58%;
+     }
+     .right {
+     	min-width: 200px;
+     	width: 40%;
+     }
+     .leftBottom, .rightBottom {
+       display: inline-block;
+       vertical-align: top;
+       white-space: normal;
+     }
+     .leftBottom {
+     	background-color: #CCECFC;
+     	border: solid thin #25AAE1;
+     	min-width: 500px;
+     	width: 56%;
+     }
+     .rightBottom {
+     	 min-width: 200px;
+       width: 40%;
+     }
+
   </ui:style>
 
-  <g:HTMLPanel addStyleNames="{style.mainPanel}">
+  <g:HTMLPanel addStyleNames='{style.mainPanel}'>
+
+    <g:HTMLPanel addStyleNames='{style.left}'>
+		  <g:HTMLPanel tag='span' addStyleNames='{style.logoPanel}' />
+	  </g:HTMLPanel>
+	  
+	  <g:HTMLPanel addStyleNames='{style.right}'>
+			<g:FormPanel addStyleNames='{style.loginForm}'>
+			  <g:FlowPanel addStyleNames='{style.loginFormInnerContainer}'>
+			    <g:HTMLPanel>
+					  <g:InlineLabel addStyleNames='{style.label}'>User:</g:InlineLabel>
+					  <g:TextBox ui:field='userNameTextBox' addStyleNames='{style.textBox}'/>
+				  </g:HTMLPanel>
+				  <g:HTMLPanel>
+					  <g:InlineLabel addStyleNames='{style.label}'>Password:</g:InlineLabel>
+					  <g:PasswordTextBox ui:field='passwordTextBox' addStyleNames='{style.textBox}' />
+				  </g:HTMLPanel>
+				  <g:HTMLPanel addStyleNames='{style.buttonDiv}'>
+				    <g:SubmitButton ui:field='loginButton'>Login</g:SubmitButton>
+				  </g:HTMLPanel>
+			  </g:FlowPanel>
+			</g:FormPanel>
+			
+			<g:HTMLPanel addStyleNames='{style.linkListDiv}'>
+        Find out more about...
+        <ul class='{style.linkList}'>
+          <li>
+            <a href='http://www.exploringcs.org/about/related-grants/mobilize'>
+              The Mobilize Project
+            </a>
+          </li>
+          <li>
+            <a href='http://www.exploringcs.org'>
+              Exploring Computer Science Educational Initiative
+            </a>
+          </li>
+          <li>
+            <a href='http://research.cens.ucla.edu'>
+              UCLA: Center For Embedded Networked Sensing
+            </a>
+          </li>
+          <li>
+            <a href='http://www.exploringcs.org/about/ecs-now'>
+              How you can get involved
+            </a>
+          </li>
+        </ul>
+      </g:HTMLPanel>
+      
+		</g:HTMLPanel>
+		
+		<div class='floatstop' />
 	
-	<g:FormPanel>
-	  <g:FlowPanel addStyleNames='{style.loginFormPanel}'>
-	    <g:HTMLPanel>
-			  <g:InlineLabel addStyleNames='{style.label}'>User:</g:InlineLabel>
-			  <g:TextBox ui:field='userNameTextBox' addStyleNames='{style.textBox}'/>
-		  </g:HTMLPanel>
-		  <g:HTMLPanel>
-			  <g:InlineLabel addStyleNames='{style.label}'>Password:</g:InlineLabel>
-			  <g:PasswordTextBox ui:field='passwordTextBox' addStyleNames='{style.textBox}' />
-		  </g:HTMLPanel>
-		  <g:HTMLPanel addStyleNames='{style.buttonDiv}'>
-		    <g:SubmitButton ui:field="loginButton">Login</g:SubmitButton>
-		  </g:HTMLPanel>
-	  </g:FlowPanel>
-	</g:FormPanel>
-	
+		<g:HTMLPanel addStyleNames='{style.leftBottom}'>
+	    <g:HTMLPanel addStyleNames='{style.description}'>
+        <h2>Mobilize: Mobilizing for Innovative Computer Science Teaching and Learning</h2> 
+        <p><em>Mobilize</em> builds upon teenagers' enchantment, fascination, and 
+            engagement with mobile technology. At the heart of <em>Mobilize </em>is the 
+            CENS Participatory Sensing system-an innovative method of data collection 
+            and analysis in which individuals use mobile phones to systematically collect 
+            and interpret data about issues important to them and their communities.</p> 
+            <p><em>Mobilize</em> builds upon teenagers' enchantment, fascination, and 
+            engagement with mobile technology. At the heart of <em>Mobilize </em>is the 
+            CENS Participatory Sensing system-an innovative method of data collection 
+            and analysis in which individuals use mobile phones to systematically collect 
+            and interpret data about issues important to them and their communities.</p> 
+      </g:HTMLPanel>
+    </g:HTMLPanel>
+    
+    <g:HTMLPanel addStyleNames='{style.footer}'>
+	    <span class='{style.footerCopyright}'>Copyright &#169; 2011 Mobilize</span>
+      <span class='{style.footerSpan}'><a href='#'>Help</a></span>
+      <span>|</span>
+      <span class='{style.footerSpan}'><a href='#'>Contact Us</a></span>
+      
+      
+    </g:HTMLPanel>
   </g:HTMLPanel>
+  
+
 </ui:UiBinder>
