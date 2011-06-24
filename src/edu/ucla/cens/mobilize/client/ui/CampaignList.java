@@ -203,8 +203,9 @@ public class CampaignList extends Composite {
   
   public void setSelectedRunningState(RunningState stateToSelect) {
     if (stateToSelect == null) { stateListBox.setSelectedIndex(0); return; }
+    String stateStringToSelect = stateToSelect.toServerString();
     for (int i = 0; i < stateListBox.getItemCount(); i++) {
-      if (stateListBox.getValue(i).equals(stateToSelect)) {
+      if (stateListBox.getValue(i).equals(stateStringToSelect)) {
         stateListBox.setSelectedIndex(i);
         break;
       }
