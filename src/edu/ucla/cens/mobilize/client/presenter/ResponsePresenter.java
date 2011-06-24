@@ -108,7 +108,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       @Override
       public void onFailure(Throwable caught) {
         _logger.severe("Failed to load campaign filter. Error was: " + caught.getMessage());
-        view.addErrorMessage("Failed to load campaign filter.", caught.getMessage());
+        // not really necessary to show user error here. effect is that the survey filter
+        //  won't load, so they won't be able to drill down to a specific survey
         AwErrorUtils.logoutIfAuthException(caught);
       }
 
@@ -487,15 +488,18 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         new AsyncCallback<List<SurveyResponse>>() {
           @Override
           public void onFailure(Throwable caught) {
-            // NOTE: We don't have a list of campaign ids for users other than the
-            //   logged in user, so when participant != logged in user, we query all
-            //   campaigns the logged in user belongs to and throw away any responses that
-            //   return "0701-invalid user" error. 
+            // NOTE: When fetching all responses, we don't know ahead of time which campaigns
+            //   it makes sense to query, so we query all the user's campaigns and ignore 
+            //   certain errors  :(
+            // NOTE: if you add an error to this list you should also add it to the ErrorCode
+            //   enum and make sure it's defined as an ApiException in AndWellnessDataService
+            //   (search the file for "E0701" and add the new error in the same places)
             if (suppressCampaignErrors && caught.getClass().equals(ApiException.class)) {
               String errorCode = ((ApiException)caught).getErrorCode();
-              // 0701 - invalid user in query (see above)
+              // 0701 - invalid user in query
               // 0717 - analyst queried private campaign
-              if ("0701".equals(errorCode) || "0717".equals(errorCode)) { 
+              // 0716 - participant trying to view a stopped campaign
+              if ("0701".equals(errorCode) || "0717".equals(errorCode) || "0716".equals(errorCode)) { 
                 return; // silently ignore the error
               }
             }
