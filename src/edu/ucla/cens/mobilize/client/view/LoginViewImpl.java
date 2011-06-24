@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,7 +26,6 @@ public class LoginViewImpl extends Composite implements LoginView {
       GWT.create(LoginBoxViewUiBinder.class);
     
     // Fields defined in the ui XML
-    @UiField HTML msgDiv;
     @UiField TextBox userNameTextBox;
     @UiField PasswordTextBox passwordTextBox;
     @UiField Button loginButton;

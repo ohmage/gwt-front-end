@@ -3,52 +3,45 @@
   xmlns:g="urn:import:com.google.gwt.user.client.ui">
   
   <ui:style>
-  	.mainPanel {
-  		width: 250px;
-  		margin-left: auto;
-  		margin-right: auto;	
-  	}
-  	.msgDiv {
-  		color: red; /* fixme */
+    .buttonDiv {
+    	padding: 5px 5px 0px 0px;
+    	text-align: right;
     }
-    .loginBoxLabel {
-  		font-size: 0.85em;
-  		width: 75px;
-  	}
-    .loginBoxHPanel {
-      margin: 3px 0px 3px 0px;
-      width: 100%;
-      line-height: 150%;
+    .label {
+      display: inline-block;
+      padding: 5px;
+      width: 50px;
     }
+    .loginFormPanel {
+    	background-color: #D7E8AB;
+    	border: solid 1px #A5CD3A;
+    	margin: auto;
+    	padding: 10px 10px 5px 10px;
+    	width: 250px;
+     }
+     .mainPanel {}
+     .textBox {
+     	width: 175px;
+     }
   </ui:style>
 
   <g:HTMLPanel addStyleNames="{style.mainPanel}">
-    <g:VerticalPanel ui:field="dataEntryPanel">
-      <g:HTML ui:field="msgDiv" addStyleNames="msgDiv" />
-      <g:HorizontalPanel addStyleNames="{style.loginBoxHPanel}">
-        <!-- Use cells for specific table cell alignment -->
-      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
-      		<g:Label addStyleNames="{style.loginBoxLabel}">User:</g:Label>
-      	</g:cell>
-      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
-      	  <g:TextBox ui:field='userNameTextBox'></g:TextBox>
-      	</g:cell>
-      </g:HorizontalPanel>
-      
-      <g:HorizontalPanel addStyleNames="{style.loginBoxHPanel}">
-        <!-- Use cells for specific table cell alignment -->
-      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
-      		<g:Label addStyleNames="{style.loginBoxLabel}">Password:</g:Label>
-      	</g:cell>
-      	<g:cell horizontalAlignment='ALIGN_RIGHT'>
-      	  <g:PasswordTextBox ui:field='passwordTextBox'></g:PasswordTextBox>
-      	</g:cell>
-      </g:HorizontalPanel>
-      
-	  <g:HorizontalPanel addStyleNames="{style.loginBoxHPanel}">
-	    <g:Button ui:field="loginButton">Login</g:Button>
-	  </g:HorizontalPanel>
-	  
-	</g:VerticalPanel>
+	
+	<g:FormPanel>
+	  <g:FlowPanel addStyleNames='{style.loginFormPanel}'>
+	    <g:HTMLPanel>
+			  <g:InlineLabel addStyleNames='{style.label}'>User:</g:InlineLabel>
+			  <g:TextBox ui:field='userNameTextBox' addStyleNames='{style.textBox}'/>
+		  </g:HTMLPanel>
+		  <g:HTMLPanel>
+			  <g:InlineLabel addStyleNames='{style.label}'>Password:</g:InlineLabel>
+			  <g:PasswordTextBox ui:field='passwordTextBox' addStyleNames='{style.textBox}' />
+		  </g:HTMLPanel>
+		  <g:HTMLPanel addStyleNames='{style.buttonDiv}'>
+		    <g:SubmitButton ui:field="loginButton">Login</g:SubmitButton>
+		  </g:HTMLPanel>
+	  </g:FlowPanel>
+	</g:FormPanel>
+	
   </g:HTMLPanel>
 </ui:UiBinder>
