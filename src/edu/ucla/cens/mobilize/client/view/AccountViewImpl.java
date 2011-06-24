@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.Widget;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
+import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 
 public class AccountViewImpl extends Composite implements AccountView {
 
@@ -83,6 +84,22 @@ public class AccountViewImpl extends Composite implements AccountView {
     this.newPasswordTextBox.setText("");
     this.newPasswordConfirmTextBox.setText("");
   }
+
+  @Override
+  public void enablePasswordChangeForm() {
+    this.passwordChangeSubmitButton.setEnabled(true);
+    this.oldPasswordTextBox.setEnabled(true);
+    this.newPasswordTextBox.setEnabled(true);
+    this.newPasswordConfirmTextBox.setEnabled(true);
+  }
+
+  @Override
+  public void disablePasswordChangeForm() {
+    this.passwordChangeSubmitButton.setEnabled(false);
+    this.oldPasswordTextBox.setEnabled(false);
+    this.newPasswordTextBox.setEnabled(false);
+    this.newPasswordConfirmTextBox.setEnabled(false);
+  }
   
   @Override
   public HasClickHandlers getPasswordChangeButton() {
@@ -132,6 +149,16 @@ public class AccountViewImpl extends Composite implements AccountView {
   @Override
   public void hideMessage() {
     this.messageWidget.hide();
+  }
+
+  @Override
+  public void showWaitIndicator() {
+    WaitIndicator.show();
+  }
+
+  @Override
+  public void hideWaitIndicator() {
+    WaitIndicator.hide();
   }
   
 }

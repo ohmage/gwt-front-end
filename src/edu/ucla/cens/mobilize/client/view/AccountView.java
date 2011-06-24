@@ -17,6 +17,10 @@ public interface AccountView extends IsWidget {
   void showPasswordChangeForm();
   void hidePasswordChangeForm();
   void resetPasswordChangeForm();
+  void enablePasswordChangeForm();
+  void disablePasswordChangeForm();
+  void showWaitIndicator();
+  void hideWaitIndicator();
   void showMessage(String message);
   void showError(String message, String detail);
   void hideMessage();

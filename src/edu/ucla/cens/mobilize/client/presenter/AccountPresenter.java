@@ -36,6 +36,8 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
     this.view.getPasswordChangeSubmitButton().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
+        view.disablePasswordChangeForm();
+        view.showWaitIndicator();
         String userName = view.getUserName();
         String oldPassword = view.getOldPassword();
         String newPassword = view.getNewPassword();
@@ -58,7 +60,10 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
           @Override
           public void onSuccess(String result) {
             view.showMessage("Password changed.");
-            view.hidePasswordChangeForm();            
+            view.hidePasswordChangeForm();
+            view.resetPasswordChangeForm();
+            view.enablePasswordChangeForm();
+            view.hideWaitIndicator();
           }
         });
       }
