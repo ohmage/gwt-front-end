@@ -199,6 +199,10 @@ public class ResponseDisclosurePanel extends Composite
 	  checkbox.setValue(isChecked);
 	}
 	
+	public void setOpen(boolean isOpen) {
+	  this.disclosurePanel.setOpen(isOpen);
+	}
+	
 	private void setPrivacyStylePrivate() {
 	  clearPrivacyStyles();
 	  this.responsePrivacy.addStyleName(style.privacyPrivate());

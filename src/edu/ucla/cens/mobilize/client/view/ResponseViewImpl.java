@@ -72,6 +72,10 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField Anchor selectNoneLinkTop;
   @UiField Anchor selectAllLinkBottom;
   @UiField Anchor selectNoneLinkBottom;
+  @UiField Anchor expandLinkTop;
+  @UiField Anchor collapseLinkTop;
+  @UiField Anchor expandLinkBottom;
+  @UiField Anchor collapseLinkBottom;
   
   ResponseView.Presenter presenter;
   Privacy selectedPrivacy = Privacy.UNDEFINED;
@@ -115,6 +119,34 @@ public class ResponseViewImpl extends Composite implements ResponseView {
         selectNone();
       }
     });
+    
+    expandLinkTop.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        expandAll();
+      }
+    });
+    
+    expandLinkBottom.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        expandAll();
+      }
+    });
+    
+    collapseLinkTop.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        collapseAll();
+      }
+    });
+    
+    collapseLinkBottom.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        collapseAll();
+      }
+    });
   }
 
   private void selectAll() {
@@ -133,6 +165,24 @@ public class ResponseViewImpl extends Composite implements ResponseView {
         panel.setChecked(false);
       }
     }
+  }
+  
+  private void expandAll() {
+    for (int i = 0; i < responseList.getWidgetCount(); i++) {
+      if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
+        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
+        panel.setOpen(true);
+      }
+    }
+  }
+  
+  private void collapseAll() {
+    for (int i = 0; i < responseList.getWidgetCount(); i++) {
+      if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
+        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
+        panel.setOpen(false);
+      }
+    }    
   }
   
   @Override

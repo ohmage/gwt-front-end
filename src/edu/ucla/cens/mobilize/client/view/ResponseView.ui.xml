@@ -143,7 +143,7 @@
         
         <!-- buttons that affect selected responses -->
 	      <g:HorizontalPanel addStyleNames='{style.buttonPanel}' verticalAlignment='ALIGN_MIDDLE'>
-	        <g:cell verticalAlignment='ALIGN_MIDDLE'>
+          <g:cell verticalAlignment='ALIGN_MIDDLE'> 
 		        <g:Anchor ui:field='selectAllLinkTop' addStyleNames='{style.smallActionLink}'>
 	            select all
 	          </g:Anchor>
@@ -169,6 +169,21 @@
 	        <g:Button ui:field='deleteButtonTop' addStyleNames='{style.deleteButton}'>
 	          Delete
 	        </g:Button>
+	        <g:cell verticalAlignment='ALIGN_MIDDLE'>
+            <g:Anchor ui:field='expandLinkTop' addStyleNames='{style.smallActionLink}'>
+              expand
+            </g:Anchor>
+          </g:cell>
+          <g:cell verticalAlignment='ALIGN_MIDDLE'>
+            <g:InlineHTML>
+              |
+            </g:InlineHTML>
+          </g:cell>
+          <g:cell verticalAlignment='ALIGN_MIDDLE'>
+            <g:Anchor ui:field='collapseLinkTop' addStyleNames='{style.smallActionLink}'>
+              collapse
+            </g:Anchor>
+          </g:cell> 
         </g:HorizontalPanel>
         
 	      <g:VerticalPanel addStyleNames='{style.responseContainer}'>
@@ -212,6 +227,21 @@
 	        <g:Button ui:field='deleteButtonBottom' addStyleNames='{style.deleteButton}'>
 	          Delete
 	        </g:Button>
+	        <g:cell verticalAlignment='ALIGN_MIDDLE'>
+            <g:Anchor ui:field='expandLinkBottom' addStyleNames='{style.smallActionLink}'>
+              expand
+            </g:Anchor>
+          </g:cell>
+          <g:cell verticalAlignment='ALIGN_MIDDLE'>
+            <g:InlineHTML>
+              |
+            </g:InlineHTML>
+          </g:cell>
+          <g:cell verticalAlignment='ALIGN_MIDDLE'>
+            <g:Anchor ui:field='collapseLinkBottom' addStyleNames='{style.smallActionLink}'>
+              collapse
+            </g:Anchor>
+          </g:cell>
        </g:HorizontalPanel>
      </g:HTMLPanel>
     </g:south>
