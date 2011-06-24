@@ -30,10 +30,8 @@ import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
-import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.exceptions.ApiException;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
-import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -135,6 +133,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
     String selectedSurvey = params.containsKey("sid") ? params.get("sid") : null;
     String selectedPrivacyString = params.containsKey("privacy") ? params.get("privacy") : null;
+    boolean onlyPhotoResponses = params.containsKey("photo") ? params.get("photo").equals("true") : false;
     String startDateString = params.containsKey("from") ? params.get("from") : null;
     String endDateString = params.containsKey("to") ? params.get("to") : null;
     
@@ -161,6 +160,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     Privacy selectedPrivacy = Privacy.fromServerString(selectedPrivacyString);
     view.selectPrivacyState(selectedPrivacy);
     
+    // set up photo filter
+    view.setPhotoFilter(onlyPhotoResponses);
+    
     // set up date filters
     Date startDate = null;
     Date endDate = null;
@@ -176,6 +178,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                           selectedCampaign, 
                           selectedSurvey, 
                           selectedPrivacy,
+                          onlyPhotoResponses,
                           startDate,
                           endDate);
   }
@@ -412,12 +415,14 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     String campaignId = view.getSelectedCampaign();
     String surveyName = view.getSelectedSurvey();
     Privacy privacy = view.getSelectedPrivacyState();
+    boolean onlyPhotoResponses = view.getHasPhotoToggleValue();
     Date startDate = view.getSelectedStartDate();
     Date endDate = view.getSelectedEndDate();
     History.newItem(HistoryTokens.responseList(participantName, 
                                                campaignId, 
                                                surveyName, 
                                                privacy,
+                                               onlyPhotoResponses,
                                                startDate,
                                                endDate));
   }
@@ -429,6 +434,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                      final String campaignIdOrNull, 
                                      final String surveyName,
                                      final Privacy privacy,
+                                     final boolean onlyPhotoResponses,
                                      final Date startDate,
                                      final Date endDate) {
     
@@ -449,6 +455,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           campaignsToQuery.get(campaignId),
           surveyName,
           privacy,
+          onlyPhotoResponses,
           startDate,
           endDate,
           suppressCampaignErrors);
@@ -465,6 +472,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                 final String campaignName,
                                                 final String surveyName,
                                                 final Privacy privacy,
+                                                final boolean onlyPhotoResponses,
                                                 final Date startDate,
                                                 final Date endDate, 
                                                 final boolean suppressCampaignErrors) {
@@ -500,12 +508,23 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           
           @Override
           public void onSuccess(List<SurveyResponse> result) {
+            // if succcessful, add the result to list of responses already
+            // fetched from other campaigns
+            
             // fill in campaign name before displaying
             for (SurveyResponse response : result) {
               response.setCampaignName(campaignName);
             }
-            // add to responses already fetched from other campaigns
-            responses.addAll(result);
+            
+            // if photo flag is set, keep only responses with images
+            if (onlyPhotoResponses) {
+              for (SurveyResponse response : result) {
+                if (response.hasImage()) responses.add(response);
+              }
+            } else { // otherwise, keep them all
+              responses.addAll(result);
+            }
+            
             // sort by date, newest first
             Collections.sort(responses, responseDateComparator);
             String numResponses = Integer.toString(responses.size());

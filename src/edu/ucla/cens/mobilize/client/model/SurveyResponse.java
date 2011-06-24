@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 public class SurveyResponse {
@@ -88,6 +89,21 @@ public class SurveyResponse {
 	    position++;
 	  }
 	  promptResponses.add(position, newResponse);
+	}
+	
+	/**
+	 * Useful for filtering survey responses
+	 * @return True if at least one prompt in the response is of type PHOTO
+	 */
+	public boolean hasImage() {
+	  boolean hasImage = false;
+	  for (PromptResponse promptResponse : promptResponses) {
+	    if (promptResponse.getPromptType().equals(PromptType.PHOTO)) {
+	      hasImage = true;
+	      break;
+	    }
+	  }
+	  return hasImage;
 	}
 	
 }

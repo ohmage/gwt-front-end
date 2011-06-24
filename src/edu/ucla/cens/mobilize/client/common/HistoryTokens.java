@@ -101,6 +101,7 @@ public class HistoryTokens {
                                     String campaign,
                                     String survey,
                                     Privacy privacy,
+                                    boolean onlyPhotoResponses,
                                     Date startDate,
                                     Date endDate) {
     Map<String, String> params = new HashMap<String, String>();
@@ -108,6 +109,7 @@ public class HistoryTokens {
     if (campaign != null) params.put("cid", campaign);
     if (survey != null) params.put("sid", survey);
     if (privacy != null) params.put("privacy", privacy.toServerString());
+    if (onlyPhotoResponses) params.put("photo", "true"); 
     if (startDate != null) params.put("from", DateUtils.translateToHistoryTokenFormat(startDate));
     if (endDate != null) params.put("to", DateUtils.translateToHistoryTokenFormat(endDate));
     return params.isEmpty() ? "responses" : "responses?" + MapUtils.translateToParameters(params);

@@ -31,6 +31,9 @@
       padding: 5px 0px 0px 5px;
       vertical-align: middle;
     }
+    .photoCheckBox {
+    	padding: 5px 0px;
+    }
     .responseList {
     	width: 100%;
     }
@@ -126,6 +129,9 @@
         <dp:DateBox ui:field='fromDateBox' addStyleNames='{style.dateBox}' />
         <g:Label addStyleNames='{style.label}'>To date:</g:Label>
         <dp:DateBox ui:field='toDateBox' addStyleNames='{style.dateBox}' />
+        <g:HTMLPanel addStyleNames='{style.photoCheckBox}'>
+          <g:CheckBox ui:field='hasPhotoCheckBox'>Only photo responses</g:CheckBox>
+        </g:HTMLPanel>
         <g:Button ui:field='applyFiltersButton'>Apply Filters</g:Button>
       </g:HTMLPanel>
     </g:west>

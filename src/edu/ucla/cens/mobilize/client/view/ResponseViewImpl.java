@@ -19,6 +19,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -58,6 +59,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField ListBox privacyFilter;
   @UiField DateBox fromDateBox;
   @UiField DateBox toDateBox;
+  @UiField CheckBox hasPhotoCheckBox;
   @UiField Button applyFiltersButton;
   @UiField MessageWidget messageWidget;
   @UiField Label sectionHeaderTitle;
@@ -305,6 +307,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
   
   @Override
+  public void setPhotoFilter(boolean showOnlyResponsesWithPhotos) {
+    hasPhotoCheckBox.setValue(showOnlyResponsesWithPhotos);
+  }
+  
+  @Override
   public void renderResponses(List<SurveyResponse> responses) {
     this.responseList.clear();
     for (SurveyResponse response : responses) {
@@ -383,6 +390,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public Date getSelectedEndDate() {
     return this.toDateBox.getValue();
+  }
+  
+  @Override
+  public boolean getHasPhotoToggleValue() {
+    return this.hasPhotoCheckBox.getValue();
   }
 
   @Override

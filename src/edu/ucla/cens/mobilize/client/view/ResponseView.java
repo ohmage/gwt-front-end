@@ -41,6 +41,7 @@ public interface ResponseView extends IsWidget {
   void selectPrivacyState(Privacy privacy);
   void selectStartDate(Date fromDate);
   void selectEndDate(Date toDate);
+  void setPhotoFilter(boolean showOnlyResponsesWithPhotos);
 
   // get selected filters
   String getSelectedParticipant();
@@ -49,6 +50,7 @@ public interface ResponseView extends IsWidget {
   Privacy getSelectedPrivacyState();
   Date getSelectedStartDate();
   Date getSelectedEndDate();
+  boolean getHasPhotoToggleValue();
   
   // display
   void renderResponses(List<SurveyResponse> responses);
