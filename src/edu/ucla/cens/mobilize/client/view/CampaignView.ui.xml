@@ -84,7 +84,7 @@
       </g:MenuBar>
     </g:north>
     
-    <g:west size='170'>
+    <g:west size='150'>
       <g:HTMLPanel addStyleNames='{style.leftSideBar}'>
         <g:Button ui:field='campaignCreateButton'>
           Create Campaign
@@ -119,7 +119,7 @@
 		  </g:HTMLPanel>
     </g:center>
     
-    <g:east size='200'>
+    <g:east size='170'>
       <g:HTMLPanel ui:field='rightSideBar' addStyleNames='{style.plotDiv}'>
        <g:Label ui:field='plotSideBarTitle' addStyleNames='{style.plotSideBarTitle}' />
        
@@ -133,6 +133,6 @@
        </g:VerticalPanel>
      </g:HTMLPanel>
     </g:east>
-  
+   
   </g:DockLayoutPanel>
 </ui:UiBinder> 

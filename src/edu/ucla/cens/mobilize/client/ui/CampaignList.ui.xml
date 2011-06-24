@@ -37,6 +37,10 @@
 		}
 		.listContainer {
 		}
+		.listContainer td {
+			/* don't wrap text when window is small - it changes row height, makes it hard to read */
+			white-space: nowrap;
+		}
 		.listContainer th {
 			background-color: #DDD;
 			border-bottom-color: #AAA;
