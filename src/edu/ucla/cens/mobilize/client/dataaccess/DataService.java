@@ -6,7 +6,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
-import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
@@ -94,10 +93,6 @@ public interface DataService {
   void deleteCampaign(final String campaignId,
                       final AsyncCallback<String> callback);
     
-  void fetchDataPoints(String campaignId,
-                       SurveyResponseReadParams params,
-                       final AsyncCallback<List<DataPointAwData>> callback);
-
   void fetchSurveyResponses(String userName,
                             String campaignId,
                             String surveyName,

@@ -19,7 +19,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
-import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.QueryAwData;
@@ -364,7 +363,7 @@ public class AndWellnessDataService implements DataService {
     assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
     params.put("auth_token", this.authToken);
     params.put("client", this.client);
-    params.put("user_list", username); // FIXME: allow more than one?
+    params.put("user_list", username); // this says user_list but we only allow one
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Attempting to fetch user info with parameters: " + postParams);
     try {
@@ -380,8 +379,7 @@ public class AndWellnessDataService implements DataService {
             callback.onFailure(exception);
           }
           if (userInfos != null && userInfos.size() > 0) {
-            // FIXME: assumes first user is the one you want. should check id instead
-            callback.onSuccess(userInfos.get(0));
+            callback.onSuccess(userInfos.get(0)); // there's only one
           } else {
             callback.onFailure(new Exception("Failed to parse user data."));
           }
@@ -493,11 +491,8 @@ public class AndWellnessDataService implements DataService {
     params.authToken = this.authToken;
     params.client = this.client;
     params.outputFormat = CampaignReadParams.OutputFormat.LONG;
+    params.campaignUrns_opt.add(campaignId);
     
-    // FIXME: uncomment this when query by urn is working (just getting all campaigns for now)
-    //List<String> campaignIdList = new ArrayList<String>();
-    //campaignIdList.add(campaignId);
-    //params.campaignUrns_opt = campaignIdList;
     String postParams = params.toString();
     _logger.fine("Attempting to fetch campaign detail list with parameters: " + postParams);
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getCampaignReadUrl());
@@ -509,15 +504,7 @@ public class AndWellnessDataService implements DataService {
             String responseText = getResponseTextOrThrowException(requestBuilder, response);
             List<CampaignDetailedInfo> campaigns = AwDataTranslators.translateCampaignReadQueryJSONtoCampaignDetailedInfoList(responseText);
             if (campaigns.size() > 0) {
-              // FIXME: there should just be one campaign here but getting all campaigns
-              // until api to get campaign by urn is finished
-              for (CampaignDetailedInfo campaign : campaigns) {
-                if (campaign.getCampaignId().equals(campaignId)) {
-                  callback.onSuccess(campaign);
-                  break;
-                }
-              }
-              //callback.onSuccess(campaigns.get(0)); // there's just one in the list
+              callback.onSuccess(campaigns.get(0)); // there's just one in the list
             } else {
               callback.onFailure(new Exception("Campaign with id not found. Id: " + campaignId));
             }
@@ -584,13 +571,6 @@ public class AndWellnessDataService implements DataService {
       _logger.severe(e.getMessage());
       throw new ServerException("Cannot contact server.");
     }    
-  }
-
-  @Override
-  public void fetchDataPoints(String campaignId, SurveyResponseReadParams params,
-      AsyncCallback<List<DataPointAwData>> callback) {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override

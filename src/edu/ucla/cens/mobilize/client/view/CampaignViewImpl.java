@@ -16,7 +16,6 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -98,7 +97,6 @@ public class CampaignViewImpl extends Composite implements CampaignView {
     campaignCreateButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        campaignEdit.clearFormFields(); // FIXME: is this needed?
         History.newItem(HistoryTokens.campaignCreate());
       }
     });

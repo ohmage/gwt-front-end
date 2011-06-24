@@ -3,7 +3,6 @@ package edu.ucla.cens.mobilize.client.dataaccess.awdataobjects;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
 
 public class DocumentAwData extends QueryAwData {

@@ -126,7 +126,6 @@ public class XmlConfigTranslator {
   private PromptInfo nodeToPromptInfo(Node n) {
     // TODO: check for null and log error if xml has unexpected format
     
-    // FIXME: are some of these values optional?
     PromptInfo info = new PromptInfo();
     info.setPromptId(n.selectValue("id")); 
     info.setDisplayLabel(n.selectValue("displayLabel"));

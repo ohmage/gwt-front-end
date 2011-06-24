@@ -116,7 +116,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       @Override
       public void onSuccess(CampaignDetailedInfo result) {
         view.enableSurveyFilter();
-        view.setSurveyList(result.getSurveyIds()); // FIXME: ok to have ids here instead of names?
+        view.setSurveyList(result.getSurveyIds()); 
         if (surveyToSelectWhenDone != null) view.selectSurvey(surveyToSelectWhenDone);
       }
     });
@@ -126,9 +126,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   public void go(Map<String, String> params) {
     assert view != null : "ResponsePresenter.go() called before view was set";
  
-    // clear any leftover error messages
-    //view.clearErrorMessages();
-    
     // check history token (url) params for value that should be selected in filters
     String selectedParticipant = params.containsKey("uid") ? params.get("uid") : userInfo.getUserName();
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;

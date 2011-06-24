@@ -21,7 +21,7 @@ public enum PromptType {
     String str = promptTypeString.trim().toUpperCase();
     try {
       return PromptType.valueOf(str);
-    } catch (Exception exception) { // FIXME: specific exception
+    } catch (Exception exception) { 
       return PromptType.UNRECOGNIZED;
     }
   }

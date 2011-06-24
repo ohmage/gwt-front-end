@@ -162,7 +162,6 @@ public class DocumentPresenter implements Presenter {
     } else {
       DocumentInfo docInfo = getDocumentInfo(documentId);
       if (docInfo != null) {
-        // FIXME: do we still need a separate param for canEdit?
         view.setDocumentDetail(docInfo, docInfo.userCanEdit());
         view.showDetailSubview();
       } else {

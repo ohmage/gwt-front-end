@@ -64,7 +64,6 @@ public class CampaignPresenter implements Presenter {
     if (userInfo.hasInfoMessage()) this.view.showMsg(userInfo.getInfoMessage());
     if (userInfo.hasErrorMessage()) this.view.showError(userInfo.getErrorMessage(), null);
     userInfo.clearMessages();
-    // FIXME: does above error messaging work?
     
     // get subview from url params
     if (params.isEmpty() || params.get("v").equals("list")) {
@@ -115,18 +114,18 @@ public class CampaignPresenter implements Presenter {
 
   // converts history token params to typesafe filter params before fetching
   private void fetchAndShowCampaignsFilteredByHistoryTokenParams(Map<String, String> params) {
-    // FIXME: instead of try/catch, add helper to enums that will return null for bad vals
     RunningState runningState = null;
     RoleCampaign role = null;
     Date fromDate = null;
     Date toDate = null;
     try {
       // keys must match those in HistoryTokens.campaignList()
-      if (params.containsKey("state")) runningState = RunningState.valueOf(params.get("state").toUpperCase());
-      if (params.containsKey("role")) role = RoleCampaign.valueOf(params.get("role").toUpperCase());
+      if (params.containsKey("state")) runningState = RunningState.fromServerString(params.get("state")); 
+      if (params.containsKey("role")) role = RoleCampaign.fromServerString(params.get("role"));
       if (params.containsKey("from")) fromDate = DateUtils.translateFromHistoryTokenFormat(params.get("from"));
       if (params.containsKey("to")) toDate = DateUtils.translateFromHistoryTokenFormat(params.get("to"));
     } catch (Exception e) {
+      // could happen if, e.g., user enters url manually and gives invalid date string
       _logger.warning(e.getMessage());
     }
     

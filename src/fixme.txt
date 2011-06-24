@@ -1,0 +1,37 @@
+./edu/ucla/cens/mobilize/client/dataaccess/AndWellnessDataService.java:  // FIXME: get cached data instead of refetching every time
+./edu/ucla/cens/mobilize/client/dataaccess/awdataobjects/DocumentAwData.java:  public final native float getSize() /*-{ return this.size; }-*/; // FIXME: int? 
+./edu/ucla/cens/mobilize/client/MainApp.java:    header.setAppName("MOBILIZE"); // FIXME: dynamic based on config
+./edu/ucla/cens/mobilize/client/model/CampaignDetailedInfo.java:    return authors.contains(username) || supervisors.contains(username); // && no responses FIXME
+./edu/ucla/cens/mobilize/client/model/PromptInfo.java:        myString.append(", unit: " + getUnit()); // FIXME: isn't unit optional?
+./edu/ucla/cens/mobilize/client/model/SurveyResponse.java:	  } catch (Exception exception) { // FIXME: IllegalArgumentException?
+./edu/ucla/cens/mobilize/client/presenter/AccountPresenter.java:    // FIXME: use real data
+./edu/ucla/cens/mobilize/client/presenter/ClassPresenter.java:        // FIXME: hard coded users because we don't have this api yet
+./edu/ucla/cens/mobilize/client/presenter/ClassPresenter.java:        _logger.warning("FIXME: hard-coded users in class tab");
+./edu/ucla/cens/mobilize/client/presenter/ClassPresenter.java:  // FIXME: should supervisors be able to see all classes in a school instead?
+./edu/ucla/cens/mobilize/client/presenter/DocumentPresenter.java:  // FIXME: assumes document list has already been loaded. this would
+./edu/ucla/cens/mobilize/client/presenter/DocumentPresenter.java:        // FIXME: better error handling.
+./edu/ucla/cens/mobilize/client/presenter/DocumentPresenter.java:    // FIXME: which way works better for error handling, etc? (url or form post)
+./edu/ucla/cens/mobilize/client/presenter/DocumentPresenter.java:  // FIXME: abstract this somehow
+./edu/ucla/cens/mobilize/client/ui/CampaignDetail.java:  DataService dataService; // FIXME: use presenter instead
+./edu/ucla/cens/mobilize/client/ui/CampaignDetail.java:    exportForm.setAction(AwConstants.getSurveyResponseReadUrl()); // FIXME
+./edu/ucla/cens/mobilize/client/ui/CampaignDetail.java:        this.classes.add(new HTML("<span>" + s + "</span>")); //fixme
+./edu/ucla/cens/mobilize/client/ui/CampaignEditFormPresenter.java:                                 classUrn; // put class urn if name not available // FIXME?
+./edu/ucla/cens/mobilize/client/ui/CampaignList.java:    // FIXME: only show roles from user's roles list
+./edu/ucla/cens/mobilize/client/ui/CampaignList.java:    // FIXME: hidden until explore data tab is done
+./edu/ucla/cens/mobilize/client/ui/CampaignList.java:  // FIXME: good way to handle this from CampaignPresenter so CampaignList widget
+./edu/ucla/cens/mobilize/client/ui/DocumentEdit.ui.xml:		          <g:Hidden ui:field='campaignsToRemoveHiddenField' /> <!-- FIXME: add name -->
+./edu/ucla/cens/mobilize/client/ui/DocumentEditView.java:    // FIXME: the add methods above serialize all as readers right now - should extend gui
+./edu/ucla/cens/mobilize/client/ui/DocumentEditView.java:      // FIXME: show campaign name instead of urn
+./edu/ucla/cens/mobilize/client/utils/AwDataTranslators.java:          surveyResponse.setResponseDate(surveyResponseAwData.getTimestamp()); // FIXME: timezone needed too?
+./edu/ucla/cens/mobilize/client/utils/AwDataTranslators.java:        // FIXME: assumes choices are stored as comma separated list - is that correct?
+./edu/ucla/cens/mobilize/client/utils/XmlConfigTranslator.java:      // FIXME: error handling
+./edu/ucla/cens/mobilize/client/utils/XmlConfigTranslator.java:      // FIXME: check for error
+./edu/ucla/cens/mobilize/client/view/CampaignViewImpl.java:    // FIXME: get class names from somewhere
+./edu/ucla/cens/mobilize/client/view/CampaignViewImpl.java:    // FIXME: how can this be hooked to presenter without needing to expose form?
+./edu/ucla/cens/mobilize/client/view/ClassView.ui.xml:	  /* styles copy-pasted from campaignView. fixme: generalize? */
+./edu/ucla/cens/mobilize/client/view/ExploreDataViewImpl.java:    // FIXME: this should be done by presenter with setCampaign instead
+./edu/ucla/cens/mobilize/client/view/ExploreDataViewImpl.java:    // FIXME: event should be reported to presenter instead and handled there
+./edu/ucla/cens/mobilize/client/view/ExploreDataViewImpl.java:    // FIXME: handler will be called twice
+./edu/ucla/cens/mobilize/client/view/ExploreDataViewImpl.java:    // FIXME: update existing image instead of creating a new one every time
+./edu/ucla/cens/mobilize/client/view/ResponseView.ui.xml:	        <!-- fixme: disable until something is checked -->
+./edu/ucla/cens/mobilize/client/view/ResponseView.ui.xml:	        <!-- fixme: disable until something is checked -->

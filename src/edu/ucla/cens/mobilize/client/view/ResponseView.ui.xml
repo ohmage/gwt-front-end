@@ -171,7 +171,6 @@
 	        <g:Button ui:field='makePrivateButtonTop' addStyleNames='{style.makePrivateButton}'>
 	          Make Private
 	        </g:Button>
-	        <!-- fixme: show confirm dialog for delete -->
 	        <g:Button ui:field='deleteButtonTop' addStyleNames='{style.deleteButton}'>
 	          Delete
 	        </g:Button>
@@ -229,7 +228,6 @@
 	        <g:Button ui:field='makePrivateButtonBottom' addStyleNames='{style.makePrivateButton}'>
 	          Make Private
 	        </g:Button>
-	        <!-- fixme: show confirm dialog for delete -->
 	        <g:Button ui:field='deleteButtonBottom' addStyleNames='{style.deleteButton}'>
 	          Delete
 	        </g:Button>

@@ -29,7 +29,6 @@ public class Header extends Composite {
     logoutButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        // FIXME: eventbus instead
         History.newItem("logout");
       }
     });
