@@ -808,8 +808,9 @@ public class AndWellnessDataService implements DataService {
     params.put("user_list", AwConstants.specialAllValuesToken);
     params.put("prompt_id_list", AwConstants.specialAllValuesToken);
     params.put("output_format", "csv");
-    params.put("column_list", "urn:ohmage:user:id,urn:ohmage:prompt:response");
-    params.put("sort_order", "timestamp,user,survey");
+    params.put("column_list", "urn:ohmage:user:id,urn:ohmage:context:timestamp,urn:ohmage:prompt:response,urn:ohmage:context:location:latitude,urn:ohmage:context:location:longitude");
+    params.put("sort_order", "survey,user,timestamp");
+    params.put("privacy_state", "shared");
     params.put("suppress_metadata", "true");
     return params;
   }
