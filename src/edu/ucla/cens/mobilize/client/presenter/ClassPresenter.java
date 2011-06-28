@@ -143,6 +143,8 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
   // fetch and display all classes visible to user (where a class is
   // visible if it's listed in the user's userinfo)
   // FIXME: should supervisors be able to see all classes in a school instead?
+  // FIXME: we get both class urn and class name in user info now, so fetch 
+  //   may not be needed here
   private void fetchAndShowClasses() { 
     List<String> classIdList = new ArrayList<String>();
     classIdList.addAll(this.userInfo.getClassIds());

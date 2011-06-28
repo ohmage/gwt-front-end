@@ -9,7 +9,6 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -23,7 +22,6 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.event.DocumentDownloadHandler;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
-import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
 
 public class DocumentDetail extends Composite {
 
@@ -58,6 +56,9 @@ public class DocumentDetail extends Composite {
   // set this delegate to define how download links are handled
   private DocumentDownloadHandler documentDownloadHandler;
   
+  // uuid of currently displayed document is needed for download handlers
+  private String documentId;
+  
   public DocumentDetail() {
     initWidget(uiBinder.createAndBindUi(this));
     initComponents();
@@ -72,10 +73,40 @@ public class DocumentDetail extends Composite {
       }
     });
     
+    
+    this.actionLinkDownloadDocument.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // download currently displayed document
+        String documentId = getDocumentId();
+        if (documentId != null && documentDownloadHandler != null ) {
+          documentDownloadHandler.onDownloadClick(documentId);
+        }
+      }
+    });
+    
+    this.downloadButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // download currently displayed document
+        String documentId = getDocumentId();
+        if (documentId != null && documentDownloadHandler != null) {
+          documentDownloadHandler.onDownloadClick(documentId);
+        }
+      }
+    });
+    
+  }
+  
+  private String getDocumentId() {
+    return this.documentId; // gets set in setDocumentDetail()
   }
   
   public void setDocumentDetail(DocumentInfo documentInfo, boolean canEdit) {
     if (documentInfo != null) {
+      // save document id so it can be used in download link/button click handlers
+      this.documentId = documentInfo.getDocumentId();
+      
       // creation details
       this.creatorLabel.setText(documentInfo.getCreator());
       this.lastModifiedDateLabel.setText(this.dateFormat.format(documentInfo.getLastModifiedTimestamp()));
@@ -109,7 +140,7 @@ public class DocumentDetail extends Composite {
       case SHARED:
         privacyLabelStyle = style.privacyShared();
         break;
-      default:
+      default: 
         privacyLabelStyle = "";
         break;
       }
@@ -122,27 +153,9 @@ public class DocumentDetail extends Composite {
         this.actionLinkEditDocument.setVisible(false);
       }
       
-      final String documentId = documentInfo.getDocumentId();
-      this.actionLinkDownloadDocument.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          if (documentDownloadHandler != null) {
-            documentDownloadHandler.onDownloadClick(documentId);
-          }
-        }
-      });
-      
-      this.downloadButton.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          if (documentDownloadHandler != null) {
-            documentDownloadHandler.onDownloadClick(documentId);
-          }
-        }
-      });
-
     }
   }
+
   
   public void setDocumentDownloadHandler(DocumentDownloadHandler handler) {
     this.documentDownloadHandler = handler;

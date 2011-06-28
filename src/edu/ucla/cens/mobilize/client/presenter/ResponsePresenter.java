@@ -509,7 +509,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           
           @Override
           public void onSuccess(List<SurveyResponse> result) {
-            // if succcessful, add the result to list of responses already
+            if (result == null || result.isEmpty()) return; // avoid unnecessary work 
+            
+            // if successful, add the result to list of responses already
             // fetched from other campaigns
             
             // fill in campaign name before displaying
