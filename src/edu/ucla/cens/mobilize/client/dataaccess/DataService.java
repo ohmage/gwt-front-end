@@ -106,7 +106,9 @@ public interface DataService {
                                 Privacy privacy,
                                 Date startDate,
                                 Date endDate,
-                                final AsyncCallback<Integer> callback);  
+                                final AsyncCallback<Integer> callback);
+  void fetchParticipantsWithResponses(String campaignId,
+                                      final AsyncCallback<List<String>> callback);
   void updateSurveyResponse(String campaignId,
                             int surveyKey,
                             Privacy newPrivacyState,

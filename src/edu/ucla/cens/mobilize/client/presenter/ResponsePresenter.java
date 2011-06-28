@@ -6,10 +6,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -32,7 +32,6 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.exceptions.ApiException;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
-import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
@@ -42,7 +41,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   EventBus eventBus;
   DataService dataService;
   
-  List<String> participants = new ArrayList<String>();
+  SortedSet<String> participants = new TreeSet<String>();
   List<String> campaignIds = new ArrayList<String>();
   List<String> surveys = new ArrayList<String>();
   List<SurveyResponse> responses = new ArrayList<SurveyResponse>();
@@ -57,49 +56,51 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.userInfo = userInfo;
   }
   
-  private void fetchAndFillParticipantChoices(final String participantToSelect) {
-    if (userInfo.isPrivileged()) { // privileged users see all members of classes
-      List<String> userClassIds = new ArrayList<String>(userInfo.getClassIds());
-      dataService.fetchClassList(userClassIds, new AsyncCallback<List<ClassInfo>>() {
-        @Override
-        public void onFailure(Throwable caught) {
-          _logger.fine("There was a problem loading participants for filter. " + 
-                       "Defaulting to show only logged in user.");
-          view.addErrorMessage("There was a problem loading response data.",
-                               caught.getMessage());
-          AwErrorUtils.logoutIfAuthException(caught);
-          
-          // fall back to showing only the current user
-          participants.clear();
-          participants.add(userInfo.getUserName());
-          view.setParticipantList(participants);
+  // set up participant list 
+  private void fetchAndFillParticipantChoices(String selectedCampaign, 
+                                              String selectedParticipant) {
+    // start with a fresh list
+    this.participants.clear();
+    
+    // all users see themselves
+    this.participants.add(userInfo.getUserName());
+    this.view.setParticipantList(this.participants);
+    this.view.selectParticipant(selectedParticipant);
+    
+    // if user is super of a campaign, she can see responses from anyone in the campaign
+    if (userInfo.isAdmin() || userInfo.isPrivileged() || userInfo.isSupervisor()) {
+      // if campaign is selected, show participants just for that campaign
+      if (selectedCampaign != null) {
+        fetchCampaignParticipantsAndAddToList(selectedCampaign, selectedParticipant);
+      } else { // otherwise show anyone visible to current user
+        for (String campaignId : userInfo.getCampaignIds()) {
+          fetchCampaignParticipantsAndAddToList(campaignId, selectedParticipant);
         }
-
-        @Override
-        public void onSuccess(List<ClassInfo> result) {
-          // Privileged member of a class can see responses from any member of that class.
-          // User that is privileged member of class1 and restricted member of class2 will
-          //   be able to see responses by members of class1 but not members of class2.
-          Set<String> uniqueParticipants = new HashSet<String>();
-          for (ClassInfo classInfo : result) {
-            if (classInfo.userIsPrivileged(userInfo.getUserName())) {
-              uniqueParticipants.addAll(classInfo.getMemberLogins());
-            }
-          }
-          participants.clear();
-          participants.addAll(uniqueParticipants);
-          Collections.sort(participants);
-          view.setParticipantList(participants);
-          if (participantToSelect != null) {
-            view.selectParticipant(participantToSelect);
-          }
-        }
-      });
-    } else { // user is not privileged in any class, sees only herself 
-      participants.clear();
-      participants.add(userInfo.getUserName());
-      view.setParticipantList(participants);
+      }
     }
+  }
+  
+  // fetches participants from just one campaign, adds them to the existing
+  // list of participants, and updates the display
+  private void fetchCampaignParticipantsAndAddToList(String campaignId, 
+                                                     final String participantToSelect) {
+    dataService.fetchParticipantsWithResponses(campaignId, new AsyncCallback<List<String>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        AwErrorUtils.logoutIfAuthException(caught);
+        // FIXME: ignore errors when user is not super of campaign?
+      }
+
+      @Override
+      public void onSuccess(List<String> result) {
+        if (result != null) {
+          // add participants to those already in list and update display
+          participants.addAll(result);
+          view.setParticipantList(participants);
+          view.selectParticipant(participantToSelect);
+        }
+      }
+    });
   }
   
   private void fetchAndFillSurveyChoicesForSelectedCampaign(String campaignId,
@@ -136,7 +137,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     String endDateString = params.containsKey("to") ? params.get("to") : null;
     
     // set up participant filter
-    fetchAndFillParticipantChoices(selectedParticipant);
+    fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
     
     // set up campaign filter
     view.setCampaignList(userInfo.getCampaigns()); 
@@ -219,8 +220,10 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       @Override
       public void onChange(ChangeEvent event) {
         String selectedCampaign = view.getSelectedCampaign();
+        String selectedParticipant = view.getSelectedParticipant();
         if (selectedCampaign != null && !selectedCampaign.isEmpty()) { // empty means "All" is selected
           fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, null);
+          fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
         } else {
           // clear survey list when user selects All campaigns
           view.clearSurveyList();  

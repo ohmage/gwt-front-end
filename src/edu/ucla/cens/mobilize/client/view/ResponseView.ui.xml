@@ -108,11 +108,6 @@
     
     <g:west size='170'>
       <g:HTMLPanel addStyleNames='{style.filterContainer} {style.leftSideBar}'>
-        <g:Label addStyleNames='{style.label}'>Participant:</g:Label>
-        <g:Label ui:field='singleParticipantLabel' />
-        <g:ListBox ui:field='participantFilter' 
-                   visibleItemCount='1'
-                   addStyleNames='{style.filter}' />
         <g:Label addStyleNames='{style.label}'>Campaign:</g:Label>
         <g:ListBox ui:field='campaignFilter'
                    visibleItemCount='1'
@@ -120,6 +115,11 @@
         <g:Label addStyleNames='{style.label}'>Survey:</g:Label>
         <g:ListBox ui:field='surveyFilter'
                    visibleItemCount='1' 
+                   addStyleNames='{style.filter}' />
+        <g:Label addStyleNames='{style.label}'>Participant:</g:Label>
+        <g:Label ui:field='singleParticipantLabel' />
+        <g:ListBox ui:field='participantFilter' 
+                   visibleItemCount='1'
                    addStyleNames='{style.filter}' />
         <g:Label addStyleNames='{style.label}'>Privacy:</g:Label>
         <g:ListBox ui:field='privacyFilter'

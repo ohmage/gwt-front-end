@@ -183,13 +183,31 @@ public class AwDataTranslators {
     }
     
     // Expects json like:
+    // {"result":"success","data":[{"user":"ohmage.ht"},{"user":"ohmage.johnj"},{"user":"ohmage.baa"},{"user":"ohmage.bab"},{"user":"ohmage.bac"},{"user":"ohmage.bag"},{"user":"ohmage.baj"},{"user":"ohmage.gail"}],"metadata":{"number_of_prompts":147,"items":["urn:ohmage:user:id"],"number_of_surveys":21}}
+    public static List<String> translateSurveyResponseParticipantQuery(String queryJSON) {
+      List<String> usernames = new ArrayList<String>();
+      try {
+        JSONValue value = JSONParser.parseStrict(queryJSON);
+        JSONObject responseObj = value.isObject();
+        if (responseObj == null || !responseObj.containsKey("data")) return null; // null for error
+        JSONArray objArray = responseObj.get("data").isArray();
+        for (int i = 0; i < objArray.size(); i++) {
+          usernames.add(objArray.get(i).isObject().get("user").isString().stringValue());
+        }
+      } catch (Exception e) {
+        _logger.severe("Failed to parse survey response participant query. JSON was: " + queryJSON);
+        usernames = null; // null indicates error
+      }
+      return usernames;
+    }
+    
+    // Expects json like:
     // {"result":"success","data":{"user.bh.pa":{"classes":{"urn:class:ca:lausd:BoyleHeights_HS:CS102:Spring:2011":"BH_HS_CS102_Spring_2011"},"permissions":{"can_create_campaigns":true},"campaign_roles":["participant","author","analyst"],"campaigns":{"urn:campaign:ca:lausd:BoyleHeights_HS:CS102:Spring:2011:Snack":"Snack"},"class_roles":["restricted"]}}}
     public static List<UserInfo> translateUserReadQueryJSONToUserInfoList(String userReadQueryResponseJSON) {
       List<UserInfo> users = new ArrayList<UserInfo>();
       
       // Parse response obj
-      @SuppressWarnings("deprecation")
-      JSONValue value = JSONParser.parse(userReadQueryResponseJSON);
+      JSONValue value = JSONParser.parseStrict(userReadQueryResponseJSON);
       JSONObject responseObj = value.isObject();
       
       // Get data field from response. It's a hash with usernames as keys and

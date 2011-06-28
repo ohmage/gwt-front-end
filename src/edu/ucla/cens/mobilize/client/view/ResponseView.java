@@ -3,6 +3,7 @@ package edu.ucla.cens.mobilize.client.view;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
@@ -28,7 +29,7 @@ public interface ResponseView extends IsWidget {
   void showConfirmDelete(ClickHandler onConfirmDelete);
   
   // load values in filters
-  void setParticipantList(List<String> participantNames);
+  void setParticipantList(SortedSet<String> participantNames);
   void setCampaignList(Map<String, String> campaignIdToNameMap);
   void setSurveyList(List<String> surveyNames);
   void setPrivacyStates(List<Privacy> privacyStates);

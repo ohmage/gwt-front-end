@@ -94,23 +94,23 @@ public class UserInfo {
   
   /******* USER ROLES ******/
   
-  public boolean isAdmin(String campaignId) {
+  public boolean isAdmin() {
     return this.campaignRoles.contains(RoleCampaign.ADMIN);
   }
   
-  public boolean isSupervisor(String campaignId) {
+  public boolean isSupervisor() {
     return this.campaignRoles.contains(RoleCampaign.SUPERVISOR);
   }
   
-  public boolean isAuthor(String campaignId) {
+  public boolean isAuthor() {
     return this.campaignRoles.contains(RoleCampaign.AUTHOR);
   }
   
-  public boolean isParticipant(String campaignId) {
+  public boolean isParticipant() {
     return this.campaignRoles.contains(RoleCampaign.PARTICIPANT);
   }
   
-  public boolean isAnalyst(String campaignId) {
+  public boolean isAnalyst() {
     return this.campaignRoles.contains(RoleCampaign.ANALYST);
   }
   

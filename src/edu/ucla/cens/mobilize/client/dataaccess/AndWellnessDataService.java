@@ -594,38 +594,7 @@ public class AndWellnessDataService implements DataService {
     params.startDate_opt = startDate;
     params.endDate_opt = DateUtils.addOneDay(endDate); // add one to make range inclusive
     
-    fetchSurveyResponses(params, callback);
-    /*
-    String postParams = params.toString();
-    _logger.fine("Fetching survey responses with params: " + postParams);
-    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getSurveyResponseReadUrl());
-    try {
-      requestBuilder.sendRequest(postParams, new RequestCallback() {
-        @Override
-        public void onResponseReceived(Request request, Response response) {          
-          try {
-            String responseText = getResponseTextOrThrowException(requestBuilder, response);
-            // no exception thrown? then it was a success
-            List<SurveyResponse> result =
-              AwDataTranslators.translateSurveyResponseReadQueryJSONToSurveyResponseList(responseText, campaignId);
-              callback.onSuccess(result);
-          } catch (Exception exception) {
-            _logger.severe(exception.getMessage());
-            callback.onFailure(exception);
-          }
-          
-        }
-  
-        @Override
-        public void onError(Request request, Throwable exception) {
-          _logger.severe(exception.getMessage());
-          callback.onFailure(exception);
-        }
-      });
-    } catch (RequestException e) {
-      _logger.severe(e.getMessage());
-      throw new ServerException("Cannot contact server.");
-    } */   
+    fetchSurveyResponses(params, callback);   
   }
   
 
@@ -637,6 +606,7 @@ public class AndWellnessDataService implements DataService {
                                        Date startDate, 
                                        Date endDate,
                                        final AsyncCallback<Integer> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     SurveyResponseReadParams params = new SurveyResponseReadParams();
     params.authToken = this.authToken;
     params.client = this.client;
@@ -662,6 +632,48 @@ public class AndWellnessDataService implements DataService {
         callback.onSuccess(result.size()); // just the # of records
       }
     });
+  }
+  
+  @Override
+  public void fetchParticipantsWithResponses(String campaignId,
+                                             final AsyncCallback<List<String>> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    SurveyResponseReadParams params = new SurveyResponseReadParams();
+    params.authToken = this.authToken;
+    params.client = this.client;
+    params.campaignUrn = campaignId;
+    params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
+    params.userList.add(AwConstants.specialAllValuesToken);
+    params.columnList_opt.add("urn:ohmage:user:id");
+    String postParams = params.toString();
+    _logger.fine("Fetching participant list with params: " + postParams);
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getSurveyResponseReadUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            List<String> result = AwDataTranslators.translateSurveyResponseParticipantQuery(responseText);
+            callback.onSuccess(result);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    } 
   }
   
   private void fetchSurveyResponses(SurveyResponseReadParams params,
@@ -987,5 +999,6 @@ public class AndWellnessDataService implements DataService {
     params.put("document_id", documentId);
     return params;
   }
+
 
 }

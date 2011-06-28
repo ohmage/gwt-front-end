@@ -1,11 +1,11 @@
 package edu.ucla.cens.mobilize.client.view;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -193,10 +193,10 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
 
   @Override
-  public void setParticipantList(List<String> participantNames) {
+  public void setParticipantList(SortedSet<String> participantNames) {
     if (participantNames.size() == 1) {
       singleParticipantLabel.setVisible(true);
-      singleParticipantLabel.setText(participantNames.get(0));
+      singleParticipantLabel.setText(participantNames.first());
       participantFilter.setVisible(false);
     } else {
       singleParticipantLabel.setVisible(false);
