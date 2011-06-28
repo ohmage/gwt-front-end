@@ -7,10 +7,7 @@
     }
     .leftPanel {
     	border: solid thin #DDD;
-    	/*
-			border: solid thin #CCECFC;
-			border-left: solid 1px #FCE4CD;
-			border-top: solid 1px #D7E8AB;*/
+    	box-shadow: -1px 1px 5px 1px #CCC;
       display: block;
       padding: 15px 10px 30px 35px;
       margin: 35px 0px 0px 40px;
@@ -77,6 +74,12 @@
     .notifyAuthor {
     	background-color: #CCECFC;
     	border: solid thin #25B4E7;
+    }
+    .notifyResponses, .notifyParticipant, .notifyAuthor {
+    	background-image: url('images/bg_white_transparent_50.png');
+    	background-position: top;
+    	background-repeat: repeat-x;
+    	box-shadow: -1px 1px 5px 1px #CCC;
     }
     .topBar {
     	background-color: #EEE;

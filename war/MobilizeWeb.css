@@ -139,7 +139,8 @@ a:hover, a:active {
 }
 
 .gwt-TabBarItem   {
-  background-color: #BBB;
+  /*background-color: #BBB;*/
+  background: #BBB top repeat-x url('images/bg_white_transparent_10.png');
   cursor: pointer;
   border: solid 1px #DDD;
   border-bottom: none;
@@ -149,10 +150,11 @@ a:hover, a:active {
 }
 
 .gwt-TabBarItem-selected {
-  background-color: #DDD;
+	background: #999 top repeat-x url('images/bg_white_transparent_50.png');
+  /*background-color: #DDD;*/
   border: solid 1px #FFF;
   border-bottom: none;
-  padding: 5px 10px;
+  padding: 5px 10px 6px;
   text-weight: bold;
 }
 
