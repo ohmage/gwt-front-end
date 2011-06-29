@@ -126,7 +126,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   @Override
   public void go(Map<String, String> params) {
     assert view != null : "ResponsePresenter.go() called before view was set";
- 
+    
     // check history token (url) params for value that should be selected in filters
     String selectedParticipant = params.containsKey("uid") ? params.get("uid") : userInfo.getUserName();
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
@@ -438,6 +438,11 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                      final boolean onlyPhotoResponses,
                                      final Date startDate,
                                      final Date endDate) {
+    
+    // clear previous display so app will show appropriate message if all
+    // the async requests return 0 responses
+    view.clearResponseList();
+    view.setSectionHeader("Showing 0 responses for " + userName);
     
     this.responses.clear();
     Map<String, String> campaignsToQuery = new HashMap<String, String>();

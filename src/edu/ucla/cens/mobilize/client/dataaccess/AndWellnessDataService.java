@@ -274,7 +274,7 @@ public class AndWellnessDataService implements DataService {
       // params 
       parameters.put("user", userName);
       parameters.put("password", password);
-      parameters.put("client", "2");  // Hack in client ID for now
+      parameters.put("client", this.client);  
       
       String postParams = MapUtils.translateToParameters(parameters);
       
