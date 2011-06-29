@@ -89,14 +89,14 @@
     }
   </ui:style>
   <g:HTMLPanel>
-   <g:HorizontalPanel id="dashboardContainer" addStyleNames="{style.dashboard}">
+   <g:HorizontalPanel id='dashboardContainer' addStyleNames='{style.dashboard}'>
      <g:HTMLPanel addStyleNames='{style.topBar}' />
      
-     <g:HTMLPanel ui:field="leftPanel" addStyleNames="{style.leftPanel}">
-       <p class="{style.question}">What would you like to do?</p>
+     <g:HTMLPanel ui:field='leftPanel' addStyleNames='{style.leftPanel}'>
+       <p class='{style.question}'>What would you like to do?</p>
        <g:MenuBar vertical='true' addStyleNames='{style.linkMenu}'>
          <g:MenuItem ui:field='quickLinkCreate' addStyleNames='{style.linkCreate}'>
-           <a href="#campaigns?v=create">Create a new campaign</a>
+           <a href='#campaigns?v=create'>Create a new campaign</a>
          </g:MenuItem>
          <g:MenuItem ui:field='quickLinkEdit' addStyleNames='{style.linkEdit}'>
            <a href="#campaigns?v=list">Edit an existing campaign</a>
@@ -118,8 +118,10 @@
        </g:MenuBar>
      </g:HTMLPanel>
      
-     <g:HTMLPanel ui:field="rightPanel" addStyleNames="{style.rightPanel}">
-       <g:HTMLPanel ui:field='notificationResponses' addStyleNames="{style.notify} {style.notifyResponses}">
+     <g:HTMLPanel ui:field='rightPanel' addStyleNames='{style.rightPanel}'>
+       <g:HTMLPanel ui:field='notificationResponses' 
+                    visible='false' 
+                    addStyleNames="{style.notify} {style.notifyResponses}">
          <p>
            You have <span ui:field="privateResponseCount">0</span> private survey 
            responses waiting to be shared or deleted.
@@ -131,7 +133,9 @@
            </g:InlineHyperlink>
          </p>
        </g:HTMLPanel>
-       <g:HTMLPanel ui:field='notificationParticipant' addStyleNames="{style.notify} {style.notifyParticipant}">
+       <g:HTMLPanel ui:field='notificationParticipant'  
+                    addStyleNames='{style.notify} {style.notifyParticipant}'
+                    visible='false'>
          <p>
            You are participating in 
            <span ui:field="campaignParticipantRoleCount">0</span> 
@@ -139,27 +143,27 @@
          </p>
          <p>
            &raquo;
-           <g:InlineHyperlink ui:field="participantCampaignsLink">
+           <g:InlineHyperlink ui:field='participantCampaignsLink'>
              view active campaigns 
            </g:InlineHyperlink>
          </p>
        </g:HTMLPanel>
-       <g:HTMLPanel ui:field='notificationAuthor' addStyleNames="{style.notify} {style.notifyAuthor}">
+       <g:HTMLPanel ui:field='notificationAuthor' 
+                    addStyleNames='{style.notify} {style.notifyAuthor}'
+                    visible='false'>
          <p>
-           You are running <span ui:field="campaignAuthorRoleCount">0</span> 
+           You are running <span ui:field='campaignAuthorRoleCount'>0</span> 
            active campaigns.
          </p>
          <p>
            &raquo;
-           <g:InlineHyperlink ui:field="authorCampaignsLink">
+           <g:InlineHyperlink ui:field='authorCampaignsLink'>
              see your running campaigns
            </g:InlineHyperlink>
          </p>
        </g:HTMLPanel>
      </g:HTMLPanel>
    </g:HorizontalPanel>
-  
-   <div class="floatstop"></div>
   
   </g:HTMLPanel>
 </ui:UiBinder> 

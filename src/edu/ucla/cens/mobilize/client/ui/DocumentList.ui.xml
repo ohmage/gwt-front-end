@@ -3,6 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 <ui:style type="edu.ucla.cens.mobilize.client.ui.DocumentList.DocumentListStyle">
     .documentGrid {
+    	white-space: nowrap;
       width: 100%;
     }
     .documentGridNameColumn {

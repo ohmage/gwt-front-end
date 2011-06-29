@@ -56,9 +56,6 @@ public class DashboardViewImpl extends Composite implements DashboardView {
   
   public DashboardViewImpl(String firstName) {
     initWidget(uiBinder.createAndBindUi(this));
-    notificationAuthor.setVisible(false);
-    notificationParticipant.setVisible(false);
-    notificationResponses.setVisible(false);
   }
   
   private void updateRoleSpecificDisplay() {
