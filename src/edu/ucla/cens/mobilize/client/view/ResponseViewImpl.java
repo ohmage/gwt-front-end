@@ -328,17 +328,24 @@ public class ResponseViewImpl extends Composite implements ResponseView {
             responseWidget.addPromptResponseTimestamp(promptResponse.getText(), timestamp);
             break;
           case PHOTO:
-            String thumbUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
-                response.getUserName(),
-                response.getCampaignId(),
-                AwUrlBasedResourceUtils.ImageSize.SMALL);
-            String fullSizedImageUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
-                response.getUserName(),
-                response.getCampaignId(),
-                AwUrlBasedResourceUtils.ImageSize.ORIGINAL);
-            responseWidget.addPromptResponsePhoto(promptResponse.getText(), 
-                                                  fullSizedImageUrl,
-                                                  thumbUrl);
+            String rawResponse = promptResponse.getResponseRaw();
+            // special case skipped/invalid photos by copying over the text
+            if ("NOT_DISPLAYED".equals(rawResponse) || "SKIPPED".equals(rawResponse)) {
+              responseWidget.addPromptResponseText(promptResponse.getText(), rawResponse);
+            } else {
+              // generate urls for thumbnail and full sized photo and pass to widget
+              String thumbUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
+                  response.getUserName(),
+                  response.getCampaignId(),
+                  AwUrlBasedResourceUtils.ImageSize.SMALL);
+              String fullSizedImageUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
+                  response.getUserName(),
+                  response.getCampaignId(),
+                  AwUrlBasedResourceUtils.ImageSize.ORIGINAL);
+              responseWidget.addPromptResponsePhoto(promptResponse.getText(), 
+                                                    fullSizedImageUrl,
+                                                    thumbUrl);
+            }
             break;
           default:
             responseWidget.addPromptResponseText(promptResponse.getText(), promptResponse.getResponsePrepared());
