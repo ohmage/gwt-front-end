@@ -31,6 +31,7 @@
   .responseWidgetContainer { /* the whole thing, including checkbox */
     border-top: solid thin #CCC;
     padding: 0px 10px;
+    white-space: nowrap;
     width: 100%;
   }
   /* underlying style for all privacy state cells */

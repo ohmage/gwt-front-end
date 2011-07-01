@@ -1,13 +1,8 @@
-html {
-	height: 100%;
-}
 
 body {
-	/*color: #222455;*/
 	color: #003;
 	font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
 	font-size: 11px;
-	height: 100%;
 	padding: 0px;
 	margin: 0px;
 	overflow: auto;
@@ -41,21 +36,6 @@ a:visited {
 
 a:hover, a:active {
 	color: red;
-}
-
-#main-content {
-	height: 85%;
-	margin: auto;
-	width: 100%;
-}
-
-#footer {
-}
-
-#copyright {
-}
-
-#footer-links {
 }
 
 .floatstop {
@@ -139,7 +119,6 @@ a:hover, a:active {
 }
 
 .gwt-TabBarItem   {
-  /*background-color: #BBB;*/
   background: #BBB top repeat-x url('images/bg_white_transparent_10.png');
   cursor: pointer;
   border: solid 1px #DDD;
@@ -166,7 +145,7 @@ a:hover, a:active {
 }
 
 .gwt-TabPanel {
-	height: 500px;
+	height: 100%; /* both TabPanel and TabPanel bottom need 100% height */
 	margin-left: auto;
 	margin-right: auto;
 	width: 100%;
@@ -177,9 +156,8 @@ a:hover, a:active {
 	border-bottom: none;
 	-moz-border-radius: 2px;
 	border-radius: 2px;
-	height: 550px;
+	height: 100%; /* both TabPanel and TabPanel bottom need 100% height */
 	margin-bottom: 50px;
-	/* fixme: handle long content better*/
 }
 
 
@@ -276,13 +254,9 @@ li.errorListItem {
 /********* end app-wide error message styles *********************/
 
 /********* hack for disclosure panels *********************/
-/*
-.gwt-DisclosurePanel .header td {
-  text-decoration: none;  
-}*/
 
 a.header, a.header td, a.header table, a.header tr {
-	text-decoration: none; /* Remove underline from header in disclosure panel */
+	text-decoration: none; /* Remove underline from header in disclosure panel in Firefox */
 }
 /********* end hack for disclosure panels *****************/
 

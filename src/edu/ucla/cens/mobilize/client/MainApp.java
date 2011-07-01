@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -16,7 +17,8 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 
 import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
@@ -74,6 +76,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   UserInfo userInfo;
 
 	// navigation
+  DockLayoutPanel mainDockLayoutPanel;
   Header header;
 	TabPanel tabPanel;
 	ArrayList<String> tabHistoryTokens;
@@ -149,7 +152,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   private void initLogin() {
     loginView = new LoginViewImpl();
     loginPresenter = new LoginPresenter(awDataService, eventBus, loginView, loginManager);
-    RootPanel.get("main-content").add(loginView);
+    RootLayoutPanel.get().add(loginView);
   }
   
   private void initUser() {
@@ -224,7 +227,6 @@ public class MainApp implements EntryPoint, HistoryListener {
   private void initLayoutAndNavigation() {
     header.setAppName("MOBILIZE"); // FIXME: dynamic based on config
     header.setUserName(loginManager.getLoggedInUserName());
-    RootPanel.get("header").add(header);
     
     // create tabs (use class to keep track of tab index b/c it may change for different users)
     int index = 0;
@@ -237,9 +239,9 @@ public class MainApp implements EntryPoint, HistoryListener {
     tabPanel.add(responseView, "Responses");
     tabHistoryTokens.add("responses");
     TabIndex.RESPONSES = index++;
-    //tabPanel.add(exploreDataView, "Explore Data");
-    //tabHistoryTokens.add("explore_data");
-    //TabIndex.EXPLORE_DATA = index++;
+    tabPanel.add(exploreDataView, "Explore Data");
+    tabHistoryTokens.add("explore_data");
+    TabIndex.EXPLORE_DATA = index++;
     tabPanel.add(documentView, "Documents");
     tabHistoryTokens.add("documents");
     TabIndex.DOCUMENTS = index++;
@@ -260,66 +262,73 @@ public class MainApp implements EntryPoint, HistoryListener {
       });
     }
     
-    
-    // tab panel, account page, and help all appear in the same
-    // place but only one of them will be visible at a time
-    RootPanel.get("main-content").add(tabPanel);
-    RootPanel.get("main-content").add(accountView);
-    RootPanel.get("main-content").add(helpView);
+    mainDockLayoutPanel = new DockLayoutPanel(Unit.PX);
+    mainDockLayoutPanel.addNorth(new Header(), 66);
+    mainDockLayoutPanel.add(tabPanel);
+    RootLayoutPanel.get().add(mainDockLayoutPanel);
 
+    // NOTE: tabPanel, accountView, and helpView all live in the center
+    // panel of the dock layout but are attached/removed so only one
+    // is visible at a time
   }
   
   /******** Methods to control visible widgets ************/
   private void showDashboard() {
-    hideAll();
-    tabPanel.setVisible(true);
+    setMainContentTabPanel();    
     tabPanel.selectTab(TabIndex.DASHBOARD);
   }
  
   private void showCampaigns() {
-    hideAll();
-    tabPanel.setVisible(true);
+    setMainContentTabPanel();
     tabPanel.selectTab(TabIndex.CAMPAIGNS);
   }
   
   private void showResponses() {
-    hideAll();
-    tabPanel.setVisible(true);
+    setMainContentTabPanel();
     tabPanel.selectTab(TabIndex.RESPONSES);
   }
   
   private void showExploreData() {
-    hideAll();
-    tabPanel.setVisible(true);
+    setMainContentTabPanel();
     tabPanel.selectTab(TabIndex.EXPLORE_DATA);
   }
   
   private void showDocuments() {
-    hideAll();
-    tabPanel.setVisible(true);
+    setMainContentTabPanel();
     tabPanel.selectTab(TabIndex.DOCUMENTS);
   }
   
   private void showClasses() {
-    hideAll();
-    tabPanel.setVisible(true);
+    setMainContentTabPanel();
     tabPanel.selectTab(TabIndex.CLASSES);
   }
 
   private void showAccount() {
-    hideAll();
+    setMainContentAccountView();
     accountView.setVisible(true);
   }
   
   private void showHelp() {
-    hideAll();
+    setMainContentHelpView();
     helpView.setVisible(true);
   }
+    
+  private void setMainContentTabPanel() {
+    if (accountView.isAttached()) accountView.removeFromParent();
+    if (helpView.isAttached()) helpView.removeFromParent();
+    if (!tabPanel.isAttached()) mainDockLayoutPanel.add(tabPanel);
+  }
   
-  private void hideAll() {
-    tabPanel.setVisible(false);
-    accountView.setVisible(false);
-    helpView.setVisible(false);
+  private void setMainContentAccountView() {
+    if (tabPanel.isAttached()) tabPanel.removeFromParent();
+    if (helpView.isAttached()) helpView.removeFromParent();
+    if (!accountView.isAttached()) mainDockLayoutPanel.add(accountView);
+  }
+  
+  private void setMainContentHelpView() {
+    if (tabPanel.isAttached()) tabPanel.removeFromParent();
+    if (accountView.isAttached()) accountView.removeFromParent();
+    if (!helpView.isAttached()) mainDockLayoutPanel.add(helpView);
   }
   
   /******** End methods to control visible widgets ********/
