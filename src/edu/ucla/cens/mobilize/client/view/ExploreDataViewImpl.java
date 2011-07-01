@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -28,47 +29,70 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   interface ExploreDataViewUiBinder extends UiBinder<Widget, ExploreDataViewImpl> {
   }
 
-  @UiField ListBox campaignListBox;
-  @UiField ListBox versionListBox;
-  @UiField ListBox surveyListBox;
-  @UiField ListBox groupListBox;
-  @UiField ListBox userListBox;
-  @UiField DateBox startDate;
-  @UiField DateBox endDate;
-  @UiField Tree variableTree;
-  @UiField FlowPanel content;
-  @UiField RadioButton byTimeRadio;
-  @UiField RadioButton byLocationRadio;
-  @UiField RadioButton rawDataRadio;
+  public interface ExploreDataStyles extends CssResource {
+    String treeItemCategory();
+    String treeItemPlotType();
+  }
   
-  ExploreDataView.Presenter presenter;
+  @UiField ExploreDataStyles style;
+  @UiField Tree plotTypeTree;
   
   public ExploreDataViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
-    LoadPlottableVariables();
-    LoadCampaigns();
-    WireUpEventHandlers();
-    byTimeRadio.setValue(true);
-    UpdateDisplay();
+    loadPlotTypeTree();
   }
+  
+  public void loadPlotTypeTree() {
 
-  @Override
-  public void setPresenter(Presenter presenter) {
-    this.presenter = presenter;
-  }
-
-  @Override
-  public void setVariableList(ArrayList<String> plottableVariables) {
-    // TODO Auto-generated method stub
+    // response count plot nodes 
+    TreeItem responseCount = new TreeItem("Response Count"); // category 
+    TreeItem surveyResponseCount = new TreeItem("Survey Response Count");
+    // style 
+    responseCount.setStyleName(style.treeItemCategory());
+    surveyResponseCount.setStyleName(style.treeItemPlotType());
     
-  }
-
-  @Override
-  public void setPlot(Image plot) {
-    // TODO Auto-generated method stub
+    // univariate plot nodes
+    TreeItem univariate = new TreeItem("Univariate"); // category
+    TreeItem userTimeseries = new TreeItem("User Timeseries");
+    TreeItem promptTimeseries = new TreeItem("Prompt Timeseries");
+    TreeItem promptDistribution = new TreeItem("PromptDistribution");
+    // style
+    univariate.setStyleName(style.treeItemCategory());
+    userTimeseries.setStyleName(style.treeItemPlotType());
+    promptTimeseries.setStyleName(style.treeItemPlotType());
+    promptDistribution.setStyleName(style.treeItemPlotType());
     
+    // multivariate plot nodes
+    TreeItem multivariate = new TreeItem("Multivariate"); // category
+    TreeItem scatterplot = new TreeItem("Scatterplot");
+    TreeItem density = new TreeItem("2D Density Plot");
+    // style    
+    multivariate.setStyleName(style.treeItemCategory());
+    scatterplot.setStyleName(style.treeItemPlotType());
+    density.setStyleName(style.treeItemPlotType());
+    
+    // geographic plot nodes
+    TreeItem geographic = new TreeItem("Geographical"); // category
+    TreeItem googleMap = new TreeItem("Google Map");
+    // style
+    geographic.setStyleName(style.treeItemCategory());
+    googleMap.setStyleName(style.treeItemPlotType());
+    
+    // build the tree
+    plotTypeTree.addItem(responseCount);
+    plotTypeTree.addItem(univariate);
+    plotTypeTree.addItem(multivariate);
+    plotTypeTree.addItem(geographic);
+    responseCount.addItem(surveyResponseCount);
+    univariate.addItem(userTimeseries);
+    univariate.addItem(promptTimeseries);
+    univariate.addItem(promptDistribution);
+    multivariate.addItem(scatterplot);
+    multivariate.addItem(density);
+    geographic.addItem(googleMap);
   }
 
+/*
   public void LoadPlottableVariables() {
     for (int k = 0; k < 3; k++) {
       TreeItem item = new TreeItem("Sleep Sens");
@@ -85,92 +109,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
       }
       variableTree.addItem(item);
     }
-  }
-  
-  public void LoadCampaigns() {
-    // FIXME: this should be done by presenter with setCampaign instead
-    campaignListBox.addItem("Sleep Sens");
-    campaignListBox.addItem("Advertising");
-    versionListBox.addItem("v1.0");
-    versionListBox.addItem("v2.0");
-    versionListBox.addItem("the-cool-one");
-    surveyListBox.addItem("Restedness");
-    surveyListBox.addItem("Some other example");
-    groupListBox.addItem("CS101");
-    groupListBox.addItem("CS102");
-    groupListBox.addItem("Bio");
-    userListBox.addItem("Joe Brown");
-  }
-  
-  public void WireUpEventHandlers() {
-    // FIXME: event should be reported to presenter instead and handled there
-    ValueChangeHandler<Boolean> radioChange = new ValueChangeHandler<Boolean>() {
-      public void onValueChange(ValueChangeEvent<Boolean> event) {
-        UpdateDisplay();
-      }
-    };
-
-    // FIXME: handler will be called twice
-    byTimeRadio.addValueChangeHandler(radioChange);
-    byLocationRadio.addValueChangeHandler(radioChange);
-    rawDataRadio.addValueChangeHandler(radioChange);
-  }
-  
-  public void UpdateDisplay() {
-    if (byTimeRadio.getValue() == true) {
-      ShowByTime();
-    } else if (byLocationRadio.getValue() == true) {
-      ShowByLocation();
-    } else if (rawDataRadio.getValue() == true) {
-      ShowRawData();
-    }
-  }
-  
-  private void ShowByTime() {
-    // FIXME: update existing image instead of creating a new one every time
-    Image plot = new Image();
-    plot.setUrl("images/histogram.png");
-    content.clear();
-    content.add(plot);
-
-  }
-  
-  private void ShowByLocation() {
-    Image plot = new Image();
-    plot.setUrl("images/map.gif");
-    content.clear();
-    content.add(plot);
-  }
-  
-  private void ShowRawData() {
-    FlexTable data = new FlexTable();
+  }*/
     
-    data.setText(0, 0, "Time");
-    data.setText(0, 1, "User");
-    data.setText(0, 2, "Location");
-    data.setText(0, 3, "Value");
-    data.setText(0, 4, "Campaign");
-    
-    data.setText(1, 0, "Tues 1/3/11 5:00");
-    data.setText(1, 1, "Joe Brown");
-    data.setText(1, 2, "1.23N 325E");
-    data.setText(1, 3, "100");
-    data.setText(1, 4, "Sleep Sens");
-    
-    data.setText(2, 0, "Wed 1/11/11 3:30");
-    data.setText(2, 1, "Joe Brown");
-    data.setText(2, 2, "123N 321W");
-    data.setText(2, 3, "Yes");
-    data.setText(2, 4, "Sleep Sens");
-    
-    data.setText(3, 0, "Sun 3/2/11 12:00");
-    data.setText(3, 1, "Jan Blue");
-    data.setText(3, 2, "908N 123E");
-    data.setText(3, 3, "12");
-    data.setText(3, 4, "Ads"); 
-    
-    content.clear();
-    content.add(data);
-  }
+   
   
 }

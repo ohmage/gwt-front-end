@@ -3,123 +3,80 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
 	
-  <ui:style>
-    .campaignFilter, .participantFilter, .dateFilter {
+  <ui:style type="edu.ucla.cens.mobilize.client.view.ExploreDataViewImpl.ExploreDataStyles">
+    .layout {
+      display: block;
+    }
+    .plotPanel {
+    }
+    .plotPanelInnerContainer {
+    }
+    .plotTypeTreePanel {
+    	height: 200px;
+    }
+    .plotTypeRadioPanel {
+    }
+    .dataControls {
+    	height: 150px;
+    	padding: 5px 10px;
+    	position: absolute;
+    	bottom: 0px;
+    }
+    .dataControlRow {
+    	padding-top: 3px;
+    }
+    .dataControlLabel {
     	font-weight: bold;
-    	height: 20px;
-    	padding: 5px 20px;
     }
-    div.campaignFilter {
-      background-color:#DDD;
+    .dataControlListBox {
+    	width: 150px;
     }
-    .participantFilter {
-      background-color:#EDEDED;
+    .menuSeparator {
+      padding-right: 2px;
     }
-    .campaignListBox {
-      width: 150px;
+    .rightSideBar {
+    	height: 100%;
     }
-    .container {
-      height:300px;
-      padding: 20px;
+    .topNav {
+      background-color: #DDD;
+      border-bottom: solid thin #AAA;
+      font-size: 0.9em;
+      margin: 0px;
+      padding: 5px 5px 10px 15px;
     }
-    .mainContent {
-      clear:none;
+    .treeItemCategory {
     }
-    .filterContainer {
-    	clear: none;
-    	display: block;
+    .treeItemPlotType {
     }
-    .filterContainer label {
-    	display: inline-block;
-    	padding: 0px 5px;
-    	text-align: right;
-    	width: 55px;
-    }
-    .filterContainer select {
-    	width: 100px;
-    }
-    .dateFilter {
-      background-color:#F5F5F5;
-      padding-left: 42px;
-    }
-    .dateFilter button {
-      margin-left: 10px;
-      text-align: right;
-    }
-    .dateFilter label {
-    	padding-right: 0px 5px;
-      width: auto;
-    }
-    .dateFilter input {
-      width: 105px;
-    }
-    .filterSpan {
-    }
-    .plotTypePanel {
-      clear:none;
-    } 
   </ui:style>
   
-  <g:VerticalPanel>
-  
-    <g:DockLayoutPanel addStyleNames='{style.container}' unit='PX'>
+    <g:DockLayoutPanel addStyleNames='{style.layout}' unit='PX'>
      
      <!-- filters -->
-     <g:north size='90'>
-       <g:HTMLPanel addStyleNames='{style.filterContainer}'>
-        <div class='{style.campaignFilter}'>
-          <span class='{style.filterSpan}'>
-            <label>Campaign:</label>
-            <g:ListBox ui:field='campaignListBox' visibleItemCount='1' />
-          </span>
-          <span class='{style.filterSpan}'>
-            <label>Version:</label>
-            <g:ListBox ui:field='versionListBox' visibleItemCount='1' />
-          </span>
-          <span class='{style.filterSpan}'>
-            <label>Survey:</label>
-            <g:ListBox ui:field='surveyListBox' visibleItemCount='1' />
-          </span>
-        </div>
-        <div class='{style.participantFilter}'>
-          <span class='{style.filterSpan}'>
-            <label>Group:</label>
-            <g:ListBox ui:field='groupListBox' visibleItemCount='1' />
-          </span>
-          <span class='{style.filterSpan}'>
-            <label>User:</label>
-            <g:ListBox ui:field='userListBox' visibleItemCount='1' />
-          </span>
-        </div>
-        <div class='{style.dateFilter}'>
-          <label>From:</label>
-          <dp:DateBox ui:field='startDate' />
-          <label>To:</label>
-          <dp:DateBox ui:field='endDate' />
-          <g:Button>Go</g:Button>
-        </div>
+     <g:north size='25'>
+       <g:HTMLPanel addStyleNames='{style.topNav}'>
+		     <g:InlineHyperlink>R-Web</g:InlineHyperlink>
+		     <span class='{style.menuSeparator}'>|</span>
+		     <g:InlineHyperlink ui:field='browseDocumentsLink'>Mobility</g:InlineHyperlink>
+		     <span class='{style.menuSeparator}'>|</span>
+		     <g:InlineHyperlink ui:field='uploadLink'>Charts</g:InlineHyperlink>
        </g:HTMLPanel>
      </g:north>
      
-     <!-- list of graphable variables -->
-     <g:west size='200'>
-       <g:Tree ui:field='variableTree'>
-       </g:Tree>
-     </g:west>
      
-     <g:center addStyleNames='{style.mainContent}'>
-      <g:FlowPanel ui:field='content'>
-        <g:Label text='select a plot type below'/>
-      </g:FlowPanel>
+     <g:center addStyleNames='{style.plotPanel}'>
+      <g:HTMLPanel ui:field='plotContainer' addStyleNames='{style.plotPanelInnerContainer}'>
+        <div class='floatstop' />
+      </g:HTMLPanel>
      </g:center>
      
      <g:south size='30'>
        <g:HorizontalPanel ui:field='plotTypePanel' 
-                          addStyleNames='{style.plotTypePanel}'>
-         <g:RadioButton ui:field='byTimeRadio' 
+                          addStyleNames='{style.plotTypeRadioPanel}'>
+         <g:RadioButton ui:field='rWebRadio' 
                         ui:name='plotType' 
                         ui:text='By Time' />
-         <g:RadioButton ui:field='byLocationRadio' 
+         <g:RadioButton ui:field='mapRadio' 
                         ui:name='plotType' 
                         ui:text='By Location' /> 
          <g:RadioButton ui:field='rawDataRadio' 
@@ -128,7 +85,32 @@
        </g:HorizontalPanel>
      </g:south>
     
+     <g:east size='200'>
+       <g:VerticalPanel addStyleNames='{style.rightSideBar}'>
+         <g:HTMLPanel addStyleNames='{style.plotTypeTreePanel}'>
+           <g:Tree ui:field='plotTypeTree' />
+         </g:HTMLPanel>
+         <g:HTMLPanel addStyleNames='{style.dataControls}'>
+           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
+             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Campaign:</g:InlineLabel>
+             <g:ListBox addStyleNames='{style.dataControlListBox}'></g:ListBox>
+           </g:HTMLPanel>
+           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
+             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Participant:</g:InlineLabel>
+             <g:ListBox addStyleNames='{style.dataControlListBox}'></g:ListBox>
+           </g:HTMLPanel>
+           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
+             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>PromptX:</g:InlineLabel>
+             <g:ListBox addStyleNames='{style.dataControlListBox}'></g:ListBox>
+           </g:HTMLPanel>
+           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
+             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>PromptY:</g:InlineLabel>
+             <g:ListBox addStyleNames='{style.dataControlListBox}'></g:ListBox>
+           </g:HTMLPanel>
+         </g:HTMLPanel>
+       </g:VerticalPanel>
+     </g:east>
+    
     </g:DockLayoutPanel>
-  </g:VerticalPanel>
   
 </ui:UiBinder> 

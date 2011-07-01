@@ -1,37 +1,48 @@
 package edu.ucla.cens.mobilize.client.view;
 
-import java.util.ArrayList;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface ExploreDataView extends IsWidget {
-  
-  public interface Presenter {
-    void setView(ExploreDataView view);
-    void onCampaignFilterChanged();
-    void onInstanceFilterChanged();
-    void onSurveyFilterChanged();
-    void onDateFilterChanged();
-    void onVariableSelectionChanged();
-  }
-  
-  public void setPresenter(Presenter presenter);
-  /*
-  public String getCampaign();
-  public String getInstance();
-  public String getSurvey();
-  public Date getStartDate();
-  public Date getEndDate();
-  public String getSelectedVariable();
 
-  public void setCampaign(String value);
-  public void setInstance(String value);
-  public void setSurvey(String value);
-  public void setStartDate(Date value);
-  public void setEndDate(Date value);
-  public void setSelectedVariable(String variableName);
-  */
-  public void setVariableList(ArrayList<String> plottableVariables);
-  public void setPlot(Image plot);
+  // set campaign list
+  // get selected campaign
+  // set selected campaign
   
+  // set participant list
+  // get selected participant
+  // set selected participant
+  // get participant drop down (for event handling)
+  // set participant drop down enabled true/false
+  
+  // set prompt x list
+  // get selected x
+  // set selected x
+  // get x drop down (for event handling)
+  // set x drop down enabled true/false
+  
+  // set prompt y list
+  // get selected y
+  // set selected y
+  // get y drop down (for event handling)
+  // set y drop down enabled true/false
+  
+  // get/set/select prompt type (from tree?)
+  
+  // get/set start date
+  // get/set end date
+  
+  // set plot url
+  // clear plot
+  
+  
+  // get draw plot button
+  // get pdf button
+  // get export data button (?)
+  // get campaign drop down
+  // get plotx dropdown
+  // get ploty dropdown
+  // get participant dropdown
+  
+  // addPlotChoice(parent, plot name, plot value, clickhandler);
+  // set data filters enabled (campaign, participant, promptx, prompty)
 }
