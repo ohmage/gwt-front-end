@@ -1,48 +1,60 @@
 package edu.ucla.cens.mobilize.client.view;
 
+import java.util.List;
+import java.util.Map;
+
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 
-public interface ExploreDataView extends IsWidget {
+import edu.ucla.cens.mobilize.client.common.PlotType;
 
-  // set campaign list
-  // get selected campaign
-  // set selected campaign
+public interface ExploreDataView extends IsWidget {
   
-  // set participant list
-  // get selected participant
-  // set selected participant
-  // get participant drop down (for event handling)
-  // set participant drop down enabled true/false
+  // campaign drop down
+  void setCampaignList(Map<String, String> campaignIdToNameMap);
+  void setSelectedCampaign(String campaignId);
+  String getSelectedCampaign(); // returns id
+
+  // participant drop down
+  void setParticipantList(List<String> participants);
+  void setSelectedParticipant(String participantName);
+  String getSelectedParticipant();
   
-  // set prompt x list
-  // get selected x
-  // set selected x
-  // get x drop down (for event handling)
-  // set x drop down enabled true/false
+  // prompt x
+  void setPromptXList(Map<String, String> promptIdToNameMap);
+  void setSelectedPromptX(String prompt);
+  String getSelectedPromptX(); // returns prompt_id
   
-  // set prompt y list
-  // get selected y
-  // set selected y
-  // get y drop down (for event handling)
-  // set y drop down enabled true/false
+  // prompt y
+  void setPromptYList(Map<String, String> promptIdToNameMap);
+  void setSelectedPromptY(String prompt);
+  String getSelectedPromptY(); // returns prompt_id
   
-  // get/set/select prompt type (from tree?)
+  // plot type tree
+  PlotType getSelectedPlotType();
+  void setSelectedPlotType(PlotType plotType);
   
-  // get/set start date
-  // get/set end date
+  // TODO: add start/end dates?
   
-  // set plot url
-  // clear plot
+  void setPlotUrl(String url);
+  void clearPlot();
+  // TODO: what about table/map?  
+
+  // methods for enabling/disabling form fields
+  void setParticipantDropDownEnabled(boolean isEnabled);
+  void setPromptXDropDownEnabled(boolean isEnabled);
+  void setPromptYDropDownEnabled(boolean isEnabled);
+  
+  // methods for event handling
+  HasClickHandlers getCampaignDropDown();
+  HasClickHandlers getParticipantDropDown();
+  HasClickHandlers getPromptXDropDown();
+  HasClickHandlers getPromptYDropDown();
+  HasClickHandlers getDrawPlotButton();
+  HasClickHandlers getPdfButton();
+  HasClickHandlers getExportDataButton();
   
   
-  // get draw plot button
-  // get pdf button
-  // get export data button (?)
-  // get campaign drop down
-  // get plotx dropdown
-  // get ploty dropdown
-  // get participant dropdown
   
-  // addPlotChoice(parent, plot name, plot value, clickhandler);
-  // set data filters enabled (campaign, participant, promptx, prompty)
+
 }

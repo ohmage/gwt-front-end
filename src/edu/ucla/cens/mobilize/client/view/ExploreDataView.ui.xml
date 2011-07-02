@@ -4,6 +4,8 @@
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
 	
   <ui:style type="edu.ucla.cens.mobilize.client.view.ExploreDataViewImpl.ExploreDataStyles">
+    .buttonDiv {
+    }
     .layout {
       display: block;
     }
@@ -12,14 +14,14 @@
     .plotPanelInnerContainer {
     }
     .plotTypeTreePanel {
-    	height: 200px;
+    	padding: 20px 5px; 
     }
     .plotTypeRadioPanel {
     }
     .dataControls {
     	height: 150px;
     	padding: 5px 10px;
-    	position: absolute;
+    	position: relative;
     	bottom: 0px;
     }
     .dataControlRow {
@@ -44,9 +46,26 @@
       margin: 0px;
       padding: 5px 5px 10px 15px;
     }
+    .treeItemCategory, .treeItemPlotType, .treeItemMap, .treeItemHist, .treeItemTimeseries, .treeItemTable {
+    	padding-left: 20px;
+    }
     .treeItemCategory {
+    	background: 0px 50% no-repeat url('images/folder.png');
     }
     .treeItemPlotType {
+    	background: 0px 50% no-repeat url('images/table.png');
+    }
+    .treeItemMap {
+    	background: 0px 50% no-repeat url('images/map.png');
+    }
+    .treeItemHist {
+    	background: 0px 50% no-repeat url('images/chart_bar.png');
+    }
+    .treeItemTimeseries {
+    	background: 0px 50% no-repeat url('images/chart_curve.png');
+    }
+    .treeItemTable {
+    	background: 0px 50% no-repeat url('images/table.png');
     }
   </ui:style>
   
@@ -86,26 +105,31 @@
      </g:south>
     
      <g:east size='200'>
-       <g:VerticalPanel addStyleNames='{style.rightSideBar}'>
+       <g:VerticalPanel ui:field='rightSideBar' addStyleNames='{style.rightSideBar}'>
          <g:HTMLPanel addStyleNames='{style.plotTypeTreePanel}'>
            <g:Tree ui:field='plotTypeTree' />
          </g:HTMLPanel>
          <g:HTMLPanel addStyleNames='{style.dataControls}'>
            <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
              <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Campaign:</g:InlineLabel>
-             <g:ListBox addStyleNames='{style.dataControlListBox}'></g:ListBox>
+             <g:ListBox ui:field='campaignListBox' addStyleNames='{style.dataControlListBox}' />
            </g:HTMLPanel>
            <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
              <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Participant:</g:InlineLabel>
-             <g:ListBox addStyleNames='{style.dataControlListBox}'></g:ListBox>
+             <g:ListBox ui:field='participantListBox' addStyleNames='{style.dataControlListBox}' />
            </g:HTMLPanel>
            <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
              <g:InlineLabel addStyleNames='{style.dataControlLabel}'>PromptX:</g:InlineLabel>
-             <g:ListBox addStyleNames='{style.dataControlListBox}'></g:ListBox>
+             <g:ListBox ui:field='promptXListBox' addStyleNames='{style.dataControlListBox}' />
            </g:HTMLPanel>
            <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
              <g:InlineLabel addStyleNames='{style.dataControlLabel}'>PromptY:</g:InlineLabel>
-             <g:ListBox addStyleNames='{style.dataControlListBox}'></g:ListBox>
+             <g:ListBox ui:field='promptYListBox' addStyleNames='{style.dataControlListBox}' />
+           </g:HTMLPanel>
+           <g:HTMLPanel addStyleNames='{style.buttonDiv}'>
+             <g:Button ui:field='drawPlotButton'>Draw Plot</g:Button>
+             <g:Button ui:field='pdfButton'>PDF</g:Button>
+             <g:Button ui:field='exportButton'>Export</g:Button>
            </g:HTMLPanel>
          </g:HTMLPanel>
        </g:VerticalPanel>

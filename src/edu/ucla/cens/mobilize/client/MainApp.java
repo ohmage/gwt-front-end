@@ -263,7 +263,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     }
     
     mainDockLayoutPanel = new DockLayoutPanel(Unit.PX);
-    mainDockLayoutPanel.addNorth(new Header(), 66);
+    mainDockLayoutPanel.addNorth(header, 66);
     mainDockLayoutPanel.add(tabPanel);
     RootLayoutPanel.get().add(mainDockLayoutPanel);
 

@@ -43,11 +43,5 @@ public interface CampaignView extends IsWidget {
   void setCampaignListFilters(RunningState state, RoleCampaign role, Date fromDate, Date toDate);
   void setCampaignDetail(CampaignDetailedInfo campaign);
   void setCampaignEdit(CampaignDetailedInfo campaign);
-  void setPlotSideBarTitle(String title);
-  
-  // R plots
-  void clearPlots();
-  void addPlot(String imgUrl);
-  void showPlots();
   
 }

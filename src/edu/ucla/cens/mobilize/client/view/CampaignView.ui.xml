@@ -118,7 +118,7 @@
 		    <w:CampaignEditFormView ui:field="campaignEdit"></w:CampaignEditFormView>
 		  </g:HTMLPanel>
     </g:center>
-    
+    <!--
     <g:east size='170'>
       <g:HTMLPanel ui:field='rightSideBar' addStyleNames='{style.plotDiv}'>
        <g:Label ui:field='plotSideBarTitle' addStyleNames='{style.plotSideBarTitle}' />
@@ -133,6 +133,6 @@
        </g:VerticalPanel>
      </g:HTMLPanel>
     </g:east>
-   
+   -->
   </g:DockLayoutPanel>
 </ui:UiBinder> 

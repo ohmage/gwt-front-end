@@ -160,6 +160,14 @@ a:hover, a:active {
 	margin-bottom: 50px;
 }
 
+.gwt-TreeItem {
+	cursor: pointer;
+	padding: 2px;
+}
+
+.gwt-TreeItem-selected {
+	background-color: #CCECFC;
+}
 
 .gwt-PopupPanelGlass {
   background-color: #000;
@@ -260,40 +268,3 @@ a.header, a.header td, a.header table, a.header tr {
 }
 /********* end hack for disclosure panels *****************/
 
-/********* styles for campaign browse tree *********************/
-/* FIXME: move these into uibinder template file */
-
-.gwt-Tree {
-	padding: 20px;
-}
-
-.gwt-TreeItem {
-	cursor: pointer;
-}
-
-.treeItemCampaign > table > tbody > tr > td > div.gwt-TreeItem, 
-.treeItemSurvey > table > tbody > tr > td > div.gwt-TreeItem, 
-.treeItemPrompt > div.gwt-TreeItem {
-	padding: 5px 0px 5px 20px;
-}
-
-.treeItemCampaign > table > tbody > tr > td > div.gwt-TreeItem {
-  background-image: url('images/report.png');
-  background-repeat: no-repeat;
-  background-position: 0px 2px;
-}
-
-.treeItemSurvey > table > tbody > tr > td > div.gwt-TreeItem {
-  background-image: url('images/page_white_text.png');
-  background-repeat: no-repeat;
-  background-position: 0px 2px;
-}
-
-.treeItemPrompt > div.gwt-TreeItem {
-  background-image: url('images/bullet_blue.png');
-  background-repeat: no-repeat;
-  background-position: 0px 2px;
-  margin-left: -16px;
-}
-
-/************ end styles for campaign browse tree **************/

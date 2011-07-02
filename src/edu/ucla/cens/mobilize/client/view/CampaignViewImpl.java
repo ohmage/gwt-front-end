@@ -17,11 +17,9 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
@@ -65,9 +63,6 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   @UiField CampaignDetail campaignDetail;
   @UiField CampaignEditFormView campaignEdit;
   
-  @UiField Label plotSideBarTitle;
-  @UiField VerticalPanel plotPanel;
-
   @UiField MenuItem quickFilterAll;
   @UiField MenuItem quickFilterCreatedLastWeek;
   @UiField MenuItem quickFilterCreatedLastMonth;
@@ -198,27 +193,6 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   private void updateRoleSpecificDisplay() {
     this.campaignCreateButton.setVisible(this.canCreate);
     this.quickFilterAuthored.setVisible(this.canCreate);
-  }
-  
-  @Override
-  public void setPlotSideBarTitle(String title) {
-    this.plotSideBarTitle.setText(title);
-  }
-  
-  @Override
-  public void clearPlots() {
-    this.plotSideBarTitle.setText("");
-    this.plotPanel.clear();
-  }
-
-  @Override
-  public void addPlot(String imgUrl) {
-    this.plotPanel.add(new Image(imgUrl));
-  }
-
-  @Override
-  public void showPlots() {
-    this.plotPanel.setVisible(true);
   }
 
   @Override

@@ -94,7 +94,6 @@ public class CampaignPresenter implements Presenter {
   public void fetchAndShowAllCampaigns() {
     CampaignReadParams params = new CampaignReadParams(); // empty params fetches everything
     params.outputFormat = CampaignReadParams.OutputFormat.SHORT;
-    this.view.clearPlots();
     this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignShortInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
@@ -144,7 +143,6 @@ public class CampaignPresenter implements Presenter {
     if (role != null) params.userRole_opt = role;
     if (fromDate != null) params.startDate_opt = fromDate;
     if (toDate != null) params.endDate_opt = toDate;
-    this.view.clearPlots();
     this.dataService.fetchCampaignListShort(params, new AsyncCallback<List<CampaignShortInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
@@ -167,8 +165,6 @@ public class CampaignPresenter implements Presenter {
   }
 
   private void fetchAndShowCampaignDetail(String campaignId) {
-    view.clearPlots();
-    view.setPlotSideBarTitle("Recent Activity");
     this.dataService.fetchCampaignDetail(campaignId, 
         new AsyncCallback<CampaignDetailedInfo>() {
 
@@ -182,9 +178,6 @@ public class CampaignPresenter implements Presenter {
           @Override
           public void onSuccess(CampaignDetailedInfo result) {
             view.setCampaignDetail(result);
-            // TODO: get plots dynamically (different for different roles)
-            //view.addPlot("images/histogram_small.png");
-            //view.addPlot("images/map_small.gif");
             view.showDetail();
           }
     });
