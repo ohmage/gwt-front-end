@@ -3,8 +3,10 @@ package edu.ucla.cens.mobilize.client.view;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.SourcesTreeEvents;
 
 import edu.ucla.cens.mobilize.client.common.PlotType;
 
@@ -34,18 +36,24 @@ public interface ExploreDataView extends IsWidget {
   PlotType getSelectedPlotType();
   void setSelectedPlotType(PlotType plotType);
   
-  // TODO: add start/end dates?
+  // TODO: add start/end dates
   
   void setPlotUrl(String url);
   void clearPlot();
   // TODO: what about table/map?  
 
   // methods for enabling/disabling form fields
+  void setCampaignDropDownEnabled(boolean isEnabled);
   void setParticipantDropDownEnabled(boolean isEnabled);
   void setPromptXDropDownEnabled(boolean isEnabled);
   void setPromptYDropDownEnabled(boolean isEnabled);
+  void setDataButtonsEnabled(boolean isEnabled);
+  void disableAllDataControls();
+  
   
   // methods for event handling
+  @SuppressWarnings("deprecation")
+  SourcesTreeEvents getPlotTypeTree();
   HasClickHandlers getCampaignDropDown();
   HasClickHandlers getParticipantDropDown();
   HasClickHandlers getPromptXDropDown();

@@ -11,10 +11,12 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.SourcesTreeEvents;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -79,7 +81,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
     // response count 
     TreeItem responseCount = getTreeItem("ResponseCount", style.treeItemCategory()); // category
-    TreeItem surveyResponseCount = getTreeItem("Survey Response Count", style.treeItemPlotType());
+    TreeItem surveyResponseCount = getTreeItem("Survey Response Count", PlotType.SURVEY_RESPONSE_COUNT, style.treeItemPlotType());
     
     // univariate 
     TreeItem univariate = getTreeItem("Univariate", style.treeItemCategory());
@@ -109,8 +111,6 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     multivariate.addItem(density);
     geographic.addItem(googleMap);
   }
-
-
 
   @Override
   public void setCampaignList(Map<String, String> campaignIdToNameMap) {
@@ -233,7 +233,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     Iterator<TreeItem> iter = plotTypeTree.treeItemIterator();
     while (iter.hasNext()) {
       TreeItem curr = iter.next();
-      if (curr.getUserObject().equals(plotType)) {
+      PlotType treeItemPlotType = (PlotType)curr.getUserObject();
+      if (treeItemPlotType != null && treeItemPlotType.equals(plotType)) {
         curr.setSelected(true);
         break;
       }
@@ -253,6 +254,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     plotContainer.clear();
   }
 
+  @Override
+  public void setCampaignDropDownEnabled(boolean isEnabled) {
+    campaignListBox.setEnabled(true);
+  }
 
   @Override
   public void setParticipantDropDownEnabled(boolean isEnabled) {
@@ -271,7 +276,28 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     promptYListBox.setEnabled(isEnabled);    
   }
 
-
+  @Override
+  public void disableAllDataControls() {
+    campaignListBox.clear();
+    participantListBox.clear();
+    promptXListBox.clear();
+    promptYListBox.clear();
+    campaignListBox.setEnabled(false);
+    participantListBox.setEnabled(false);
+    promptXListBox.setEnabled(false);
+    promptYListBox.setEnabled(false);
+    drawPlotButton.setEnabled(false);
+    pdfButton.setEnabled(false);
+    exportButton.setEnabled(false);
+  }
+  
+  @Override
+  public void setDataButtonsEnabled(boolean isEnabled) {
+    drawPlotButton.setEnabled(isEnabled);
+    pdfButton.setEnabled(isEnabled);
+    exportButton.setEnabled(isEnabled);
+  }
+  
   @Override
   public HasClickHandlers getCampaignDropDown() {
     return campaignListBox;
@@ -311,6 +337,12 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @Override
   public HasClickHandlers getExportDataButton() {
     return exportButton;
+  }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public SourcesTreeEvents getPlotTypeTree() {
+    return plotTypeTree;
   }
 
     

@@ -7,5 +7,17 @@ public enum PlotType {
   PROMPT_DISTRIBUTION,
   SCATTERPLOT,
   DENSITY_PLOT,
-  MAP
+  MAP;
+  
+  public String toHistoryTokenString() {
+    return this.toString().toLowerCase();
+  }
+  
+  public static PlotType fromHistoryTokenString(String str) {
+    PlotType retval = null;
+    try {
+      retval = PlotType.valueOf(str.toUpperCase());
+    } catch (Exception e) {}
+    return retval; // null if unrecognized
+  }
 }

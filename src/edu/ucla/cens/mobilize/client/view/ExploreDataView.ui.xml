@@ -5,6 +5,10 @@
 	
   <ui:style type="edu.ucla.cens.mobilize.client.view.ExploreDataViewImpl.ExploreDataStyles">
     .buttonDiv {
+    	padding: 5px 0px;
+    }
+    .disabled {
+    	color: #DDD;
     }
     .layout {
       display: block;
@@ -19,8 +23,9 @@
     .plotTypeRadioPanel {
     }
     .dataControls {
-    	height: 150px;
-    	padding: 5px 10px;
+    	border: solid thin #CCC;
+    	height: 170px;
+    	padding: 5px 10px 5px 15px;
     	position: relative;
     	bottom: 0px;
     }
@@ -28,10 +33,9 @@
     	padding-top: 3px;
     }
     .dataControlLabel {
-    	font-weight: bold;
     }
-    .dataControlListBox {
-    	width: 150px;
+    .dataControlListBox { /* (select) */
+    	width: 170px;
     }
     .menuSeparator {
       padding-right: 2px;
@@ -88,7 +92,7 @@
         <div class='floatstop' />
       </g:HTMLPanel>
      </g:center>
-     
+     <!--
      <g:south size='30'>
        <g:HorizontalPanel ui:field='plotTypePanel' 
                           addStyleNames='{style.plotTypeRadioPanel}'>
@@ -103,34 +107,38 @@
                         ui:text='Raw Data' />
        </g:HorizontalPanel>
      </g:south>
-    
-     <g:east size='200'>
+     -->
+     <g:east size='210'>
        <g:VerticalPanel ui:field='rightSideBar' addStyleNames='{style.rightSideBar}'>
          <g:HTMLPanel addStyleNames='{style.plotTypeTreePanel}'>
            <g:Tree ui:field='plotTypeTree' />
          </g:HTMLPanel>
-         <g:HTMLPanel addStyleNames='{style.dataControls}'>
-           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
-             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Campaign:</g:InlineLabel>
-             <g:ListBox ui:field='campaignListBox' addStyleNames='{style.dataControlListBox}' />
-           </g:HTMLPanel>
-           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
-             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Participant:</g:InlineLabel>
-             <g:ListBox ui:field='participantListBox' addStyleNames='{style.dataControlListBox}' />
-           </g:HTMLPanel>
-           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
-             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>PromptX:</g:InlineLabel>
-             <g:ListBox ui:field='promptXListBox' addStyleNames='{style.dataControlListBox}' />
-           </g:HTMLPanel>
-           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
-             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>PromptY:</g:InlineLabel>
-             <g:ListBox ui:field='promptYListBox' addStyleNames='{style.dataControlListBox}' />
-           </g:HTMLPanel>
-           <g:HTMLPanel addStyleNames='{style.buttonDiv}'>
-             <g:Button ui:field='drawPlotButton'>Draw Plot</g:Button>
-             <g:Button ui:field='pdfButton'>PDF</g:Button>
-             <g:Button ui:field='exportButton'>Export</g:Button>
-           </g:HTMLPanel>
+         <g:CaptionPanel addStyleNames='{style.dataControls}' 
+                         ui:field='dataControls' 
+                         captionText='Data Settings'>
+	         <g:HTMLPanel>
+	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
+	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Campaign:</g:InlineLabel>
+	             <g:ListBox ui:field='campaignListBox' addStyleNames='{style.dataControlListBox}' />
+	           </g:HTMLPanel>
+	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
+	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Participant:</g:InlineLabel>
+	             <g:ListBox ui:field='participantListBox' addStyleNames='{style.dataControlListBox}' />
+	           </g:HTMLPanel>
+	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
+	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>PromptX:</g:InlineLabel>
+	             <g:ListBox ui:field='promptXListBox' addStyleNames='{style.dataControlListBox}' />
+	           </g:HTMLPanel>
+	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
+	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>PromptY:</g:InlineLabel>
+	             <g:ListBox ui:field='promptYListBox' addStyleNames='{style.dataControlListBox}' />
+	           </g:HTMLPanel>
+	         </g:HTMLPanel>
+         </g:CaptionPanel>
+         <g:HTMLPanel addStyleNames='{style.buttonDiv}'>
+           <g:Button ui:field='drawPlotButton'>Draw Plot</g:Button>
+           <g:Button ui:field='pdfButton'>PDF</g:Button>
+           <g:Button ui:field='exportButton'>Export</g:Button>
          </g:HTMLPanel>
        </g:VerticalPanel>
      </g:east>
