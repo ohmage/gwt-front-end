@@ -97,6 +97,19 @@ public class XmlConfigTranslator {
     return ids;
   }
   
+  // gets a list of all prompt ids used in this campaign. assumes prompt ids
+  // are unique across all surveys
+  public List<String> getPromptIds() {
+    List<String> ids = null;
+    try {
+      ids = Arrays.asList(xmlDocument().selectValues("//prompt/id"));
+    } catch (XPathException exception) {
+      _logger.fine(exception.getMessage());
+      // function will return null
+    } 
+    return ids;
+  }
+  
   // gets list of survey infos matching the ids given in surveyIds
   public List<SurveyInfo> getSurveyInfos(List<String> surveyIds) {
     List<SurveyInfo> retVal = new ArrayList<SurveyInfo>(); 

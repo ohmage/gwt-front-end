@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
@@ -138,5 +139,13 @@ public interface DataService {
 
   // download is done with a formpanel, dataservice just provides params
   Map<String, String> getCampaignXmlDownloadParams(String campaignId);
+  
+  String getPlotUrl(PlotType plotType, 
+                    int width, 
+                    int height,
+                    String campaignId, 
+                    String participantId, 
+                    String promptX, 
+                    String promptY);
   
 }

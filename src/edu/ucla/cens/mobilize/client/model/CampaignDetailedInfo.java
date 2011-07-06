@@ -121,6 +121,10 @@ public class CampaignDetailedInfo {
     return this.configTranslator.getSurveyInfos(surveyIds);
   }
   
+  public List<String> getPromptIds() {
+    return this.configTranslator.getPromptIds(); 
+  }
+  
   // permissions 
   public List<RoleCampaign> getUserRoles() {
     return this.userRoles != null ? this.userRoles : new ArrayList<RoleCampaign>();

@@ -17,6 +17,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
+import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorAwData;
@@ -945,6 +946,7 @@ public class AndWellnessDataService implements DataService {
   
   @Override
   public void deleteDocument(String documentId, final AsyncCallback<String> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     // set up request params
     Map<String, String> params = new HashMap<String, String>();
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
@@ -998,6 +1000,35 @@ public class AndWellnessDataService implements DataService {
     params.put("client", this.client);
     params.put("document_id", documentId);
     return params;
+  }
+
+  @Override
+  public String getPlotUrl(PlotType plotType, 
+                           int width,
+                           int height,
+                           String campaignId, 
+                           String participantId, 
+                           String promptX, 
+                           String promptY) {
+    assert plotType != null : "plotType is required";
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", this.authToken());
+    params.put("client", this.client());
+    params.put("width", Integer.toString(width));
+    params.put("height", Integer.toString(height));
+    params.put("campaign_urn", campaignId);
+    if (participantId != null && !participantId.isEmpty()) {
+      params.put("user", participantId);
+    }
+    if (promptX != null && !promptX.isEmpty()) {
+      params.put("prompt_id", promptX);
+    }
+    if (promptY != null && !promptY.isEmpty()) {
+      params.put("prompt2_id", promptY);
+    }
+    String baseUrl = AwConstants.getVisualizationUrl(plotType.toServerString()); 
+    return baseUrl + "?" + MapUtils.translateToParameters(params);
   }
 
 

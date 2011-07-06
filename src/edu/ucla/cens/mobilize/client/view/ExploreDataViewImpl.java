@@ -11,8 +11,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.PlotType;
 
+@SuppressWarnings("deprecation")
 public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   private static ExploreDataViewUiBinder uiBinder = GWT
@@ -45,6 +46,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @UiField ExploreDataStyles style;
   @UiField Tree plotTypeTree;
   @UiField VerticalPanel rightSideBar;
+  @UiField DockLayoutPanel layoutPanel;
   @UiField HTMLPanel plotContainer;
   @UiField ListBox campaignListBox;
   @UiField ListBox participantListBox;
@@ -60,6 +62,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     
     // make data filter panel stick to the bottom of the page
     rightSideBar.setCellVerticalAlignment(rightSideBar.getWidget(1), VerticalPanel.ALIGN_BOTTOM);
+    
   }
 
   
@@ -91,7 +94,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     
     // multivariate 
     TreeItem multivariate = getTreeItem("Multivariate", style.treeItemCategory()); // category
-    TreeItem scatterplot = getTreeItem("Scatterplot", PlotType.SCATTERPLOT, style.treeItemTable());
+    TreeItem scatterplot = getTreeItem("Scatterplot", PlotType.SCATTER_PLOT, style.treeItemTable());
     TreeItem density = getTreeItem("2D Density Plot", PlotType.DENSITY_PLOT, style.treeItemTable());
     
     // geographic 
@@ -115,8 +118,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @Override
   public void setCampaignList(Map<String, String> campaignIdToNameMap) {
     campaignListBox.clear();
+    if (campaignIdToNameMap == null) return;
     for (String campaignId : campaignIdToNameMap.keySet()) {
-      campaignListBox.addItem(campaignId, campaignIdToNameMap.get(campaignId));
+      campaignListBox.addItem(campaignIdToNameMap.get(campaignId), campaignId);
     }
   }
 
@@ -135,13 +139,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public String getSelectedCampaign() {
-    return campaignListBox.getValue(campaignListBox.getSelectedIndex());
+    int index = campaignListBox.getSelectedIndex();
+    return (index > -1) ? campaignListBox.getValue(index) : null;
   }
 
 
   @Override
   public void setParticipantList(List<String> participants) {
     participantListBox.clear();
+    if (participants == null) return;
     for (String username : participants) {
       participantListBox.addItem(username, username);
     }
@@ -162,15 +168,17 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public String getSelectedParticipant() {
-    return participantListBox.getValue(participantListBox.getSelectedIndex());
+    int index = participantListBox.getSelectedIndex();
+    return (index > -1) ? participantListBox.getValue(index) : null;
   }
 
 
   @Override
   public void setPromptXList(Map<String, String> promptIdToNameMap) {
     promptXListBox.clear();
+    if (promptIdToNameMap == null) return;
     for (String promptId : promptIdToNameMap.keySet()) {
-      promptXListBox.addItem(promptId, promptIdToNameMap.get(promptId));
+      promptXListBox.addItem(promptIdToNameMap.get(promptId), promptId);
     }
   }
 
@@ -189,13 +197,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public String getSelectedPromptX() {
-    return promptXListBox.getValue(promptXListBox.getSelectedIndex());
+    int index = promptXListBox.getSelectedIndex();
+    return (index > -1) ? promptXListBox.getValue(index) : null;
   }
 
 
   @Override
   public void setPromptYList(Map<String, String> promptIdToNameMap) {
     promptYListBox.clear();
+    if (promptIdToNameMap == null) return;
     for (String promptId : promptIdToNameMap.keySet()) {
       promptYListBox.addItem(promptId, promptIdToNameMap.get(promptId));
     }    
@@ -216,7 +226,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public String getSelectedPromptY() {
-    return promptYListBox.getValue(promptYListBox.getSelectedIndex());
+    int index = promptYListBox.getSelectedIndex();
+    return (index > -1) ? promptYListBox.getValue(index) : null;
   }
 
 
@@ -235,7 +246,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
       TreeItem curr = iter.next();
       PlotType treeItemPlotType = (PlotType)curr.getUserObject();
       if (treeItemPlotType != null && treeItemPlotType.equals(plotType)) {
-        curr.setSelected(true);
+        plotTypeTree.setSelectedItem(curr);
         break;
       }
     }
@@ -343,6 +354,18 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @Override
   public SourcesTreeEvents getPlotTypeTree() {
     return plotTypeTree;
+  }
+
+
+  @Override
+  public int getPlotPanelWidth() {
+    return plotContainer.getElement().getClientWidth();
+  }
+
+
+  @Override
+  public int getPlotPanelHeight() {
+    return plotContainer.getElement().getClientHeight();
   }
 
     

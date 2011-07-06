@@ -1,19 +1,43 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
 
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.PlotType;
+import edu.ucla.cens.mobilize.client.dataaccess.DataService;
+import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
+import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.view.ExploreDataView;
 
+@SuppressWarnings("deprecation")
 public class ExploreDataPresenter implements Presenter {
   
+  UserInfo userInfo;
+  DataService dataService;
+  EventBus eventBus;
   ExploreDataView view;
 
+  private static Logger _logger = Logger.getLogger(ExploreDataPresenter.class.getName());
+  
+  public ExploreDataPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
+    this.userInfo = userInfo;
+    this.dataService = dataService;
+    this.eventBus = eventBus;
+  }
+  
   @Override
   public void go(Map<String, String> params) {
     String selectedPlotTypeString = params.containsKey("plot") ? params.get("plot") : null;
@@ -26,15 +50,19 @@ public class ExploreDataPresenter implements Presenter {
     // enable/disable filters based on plot selection
     setEnabledFiltersForPlotType(selectedPlotType);
     // fill campaign choices from userInfo
+    view.setCampaignList(userInfo.getCampaigns());
     // fetch and fill participant choices based on selected campaign (if appropriate for plot)
+    fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
     // fill prompt choices based on selected campaign (if appropriate for plot)
-    // if plot type is selected, fetch and display it
+    fetchAndFillPromptChoices(selectedCampaign, selectedX, selectedY);
     
     view.setSelectedCampaign(selectedCampaign);
     view.setSelectedParticipant(selectedParticipant);
-    //view.setSelectedPlotType(PlotType.fromServerString(selectdPlotType));
+    view.setSelectedPlotType(selectedPlotType);
     view.setSelectedPromptX(selectedX);
     view.setSelectedPromptY(selectedY);
+    
+    showPlot();
   }
     
   public void setView(ExploreDataView view) {
@@ -42,7 +70,6 @@ public class ExploreDataPresenter implements Presenter {
     addEventHandlersToView();
   }
   
-  @SuppressWarnings("deprecation")
   private void addEventHandlersToView() {
     assert view != null : "Attempted to add event handlers to view before calling setView()";
     
@@ -64,6 +91,13 @@ public class ExploreDataPresenter implements Presenter {
         String campaignId = view.getSelectedCampaign();
         fetchAndFillPromptChoices(campaignId, null, null);
         fetchAndFillParticipantChoices(campaignId, null);
+      }
+    });
+    
+    view.getDrawPlotButton().addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        fireHistoryTokenToMatchSelectedSettings();
       }
     });
     
@@ -95,7 +129,7 @@ public class ExploreDataPresenter implements Presenter {
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(false);
           break;
-        case SCATTERPLOT:
+        case SCATTER_PLOT:
         case DENSITY_PLOT:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(false);
@@ -115,13 +149,78 @@ public class ExploreDataPresenter implements Presenter {
   }
   
   private void fetchAndFillParticipantChoices(String campaignId, String participantToSelect) {
+    if (campaignId == null) return;
+    dataService.fetchParticipantsWithResponses(campaignId, new AsyncCallback<List<String>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        ErrorDialog.show("Could not load participant list for campaign.", caught.getMessage());
+        AwErrorUtils.logoutIfAuthException(caught);
+      }
+
+      @Override
+      public void onSuccess(List<String> result) {
+        view.setParticipantList(result);
+      }
+    });
   }
   
   private void fetchAndFillPromptChoices(String campaignId, 
-                                          String promptToSelectX, 
-                                          String promptToSelectY) {
+                                         final String promptToSelectX, 
+                                         final String promptToSelectY) {
+    if (campaignId == null) return;
+    dataService.fetchCampaignDetail(campaignId, new AsyncCallback<CampaignDetailedInfo>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        // TODO
+      }
+
+      @Override
+      public void onSuccess(CampaignDetailedInfo result) {
+        List<String> promptIds = result.getPromptIds();
+        Map<String, String> promptIdToNameMap = new HashMap<String, String>();
+        for (String promptId : promptIds) {
+          promptIdToNameMap.put(promptId, promptId);
+          // FIXME: display prompt text here instead of id?
+        }
+        view.setPromptXList(promptIdToNameMap);
+        view.setPromptYList(promptIdToNameMap);
+        view.setSelectedPromptX(promptToSelectX);
+        view.setSelectedPromptY(promptToSelectY);
+      }
+    });
+  }
+  
+  private void showPlot() {
+    PlotType plotType = view.getSelectedPlotType();
+    String campaignId = view.getSelectedCampaign();
+    if (plotType == null || campaignId == null) return; 
+    String participantId = view.getSelectedParticipant();
+    String promptX = view.getSelectedPromptX();
+    String promptY = view.getSelectedPromptY();
+    int width = view.getPlotPanelWidth();
+    int height = view.getPlotPanelHeight();
+    String url = dataService.getPlotUrl(plotType,
+                                        width,
+                                        height,
+                                        campaignId,
+                                        participantId,
+                                        promptX,
+                                        promptY);
+    _logger.fine("Displaying plot url: " + url);
+    view.setPlotUrl(url);
   }
 
-
+  private void fireHistoryTokenToMatchSelectedSettings() {
+    PlotType selectedPlotType = view.getSelectedPlotType();
+    String selectedCampaign = view.getSelectedCampaign();
+    String selectedParticipant = view.getSelectedParticipant();
+    String selectedPromptX = view.getSelectedPromptX();
+    String selectedPromptY = view.getSelectedPromptY();
+    History.newItem(HistoryTokens.exploreData(selectedPlotType, 
+                                              selectedCampaign, 
+                                              selectedParticipant, 
+                                              selectedPromptX, 
+                                              selectedPromptY));
+  }
 
 }

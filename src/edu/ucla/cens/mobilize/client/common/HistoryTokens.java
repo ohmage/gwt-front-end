@@ -72,6 +72,10 @@ public class HistoryTokens {
   public static String classEdit(String classId) {
     return "classes?v=edit&id=" + classId;
   }
+  
+  public static String dashboard() {
+    return "dashboard";
+  }
 
   public static String documentListAll() {
     return "documents?v=all";
@@ -91,6 +95,24 @@ public class HistoryTokens {
 
   public static String documentCreate() {
     return "documents?v=create";
+  }
+  
+  public static String exploreData() {
+    return "explore_data";
+  }
+  
+  public static String exploreData(PlotType plotType,
+                                   String campaign,
+                                   String participant,
+                                   String promptX,
+                                   String promptY) {
+    Map<String, String> params = new HashMap<String, String>();
+    if (plotType != null) params.put("plot", plotType.toHistoryTokenString());
+    if (campaign != null) params.put("cid", campaign);
+    if (participant != null) params.put("uid", participant);
+    if (promptX != null) params.put("x", promptX);
+    if (promptY != null) params.put("y", promptY);
+    return params.isEmpty() ? "explore_data" : "explore_data?" + MapUtils.translateToParameters(params);
   }
   
   public static String responseList() {

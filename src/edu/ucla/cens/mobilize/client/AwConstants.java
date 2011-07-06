@@ -52,6 +52,7 @@ public class AwConstants {
     private final static String DOCUMENT_UPDATE = "document/update";
     private final static String DOCUMENT_DELETE = "document/delete";
     private final static String DOCUMENT_DOWNLOAD = "document/read/contents";
+    private final static String VISUALIZATION_URL = "viz";
     
     
     /**
@@ -146,6 +147,10 @@ public class AwConstants {
 
     public static String getDocumentDownloadUrl() {
       return getServerLocation() + DOCUMENT_DOWNLOAD;
+    }
+    
+    public static String getVisualizationUrl(String plotType) {
+      return getServerLocation() + VISUALIZATION_URL + "/" + plotType + "/read";
     }
 
     

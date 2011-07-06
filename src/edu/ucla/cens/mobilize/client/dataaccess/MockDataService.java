@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.common.RoleDocument;
@@ -456,6 +457,13 @@ public class MockDataService implements DataService {
       AsyncCallback<List<String>> callback) {
     // TODO Auto-generated method stub
     
+  }
+
+  @Override
+  public String getPlotUrl(PlotType plotType, int width, int height, String campaignId,
+      String participantId, String promptX, String promptY) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

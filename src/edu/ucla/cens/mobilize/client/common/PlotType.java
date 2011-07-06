@@ -5,7 +5,7 @@ public enum PlotType {
   USER_TIMESERIES,
   PROMPT_TIMESERIES,
   PROMPT_DISTRIBUTION,
-  SCATTERPLOT,
+  SCATTER_PLOT,
   DENSITY_PLOT,
   MAP;
   
@@ -19,5 +19,28 @@ public enum PlotType {
       retval = PlotType.valueOf(str.toUpperCase());
     } catch (Exception e) {}
     return retval; // null if unrecognized
+  }
+  
+  // special cases 2d_density b/c can't have an enum that starts with a number
+  public String toServerString() {
+    String retval = null;
+    if (this.equals(DENSITY_PLOT)) {
+      retval = "2d_density";
+    } else {
+      retval = this.toString().toLowerCase();
+    }
+    return retval;
+  }
+  
+  public static PlotType fromServerString(String plotTypeInServerFormat) {
+    PlotType plotType = null;
+    if ("2d_density".equals(plotTypeInServerFormat)) {
+      plotType = DENSITY_PLOT;
+    } else {
+      try {
+        plotType = valueOf(plotTypeInServerFormat);
+      } catch (Exception e) {} // will return null
+    }
+    return plotType;
   }
 }

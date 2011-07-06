@@ -38,6 +38,9 @@ public interface ExploreDataView extends IsWidget {
   
   // TODO: add start/end dates
   
+  int getPlotPanelWidth();
+  int getPlotPanelHeight();
+  
   void setPlotUrl(String url);
   void clearPlot();
   // TODO: what about table/map?  
