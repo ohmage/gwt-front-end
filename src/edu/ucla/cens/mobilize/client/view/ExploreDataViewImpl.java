@@ -6,6 +6,8 @@ import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -41,6 +43,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     String treeItemHist();
     String treeItemTimeseries();
     String treeItemTable();
+    String waiting();
   }
   
   @UiField ExploreDataStyles style;
@@ -256,7 +259,17 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @Override
   public void setPlotUrl(String url) {
     clearPlot();
-    plotContainer.add(new Image(url));
+    final Image loading = new Image();
+    loading.setStyleName(style.waiting());
+    plotContainer.add(loading);
+    Image plot = new Image(url);
+    plot.addLoadHandler(new LoadHandler() {
+      @Override
+      public void onLoad(LoadEvent event) {
+        plotContainer.remove(loading);
+      }
+    });
+    plotContainer.add(plot);
   }
 
 

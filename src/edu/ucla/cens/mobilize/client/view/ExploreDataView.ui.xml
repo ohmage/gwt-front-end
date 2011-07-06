@@ -73,6 +73,15 @@
     .treeItemTable {
     	background: 0px 50% no-repeat url('images/table.png');
     }
+    .waiting {
+    	background: 50% 50% no-repeat url('images/loading.gif');
+    	position: absolute;
+    	top: 0;
+    	left: 0;
+    	height: 100%;
+    	width: 100%;
+    	/*z-index: -1;*/
+    }
   </ui:style>
   
     <g:DockLayoutPanel addStyleNames='{style.layout}' unit='PX' ui:field='layoutPanel'>

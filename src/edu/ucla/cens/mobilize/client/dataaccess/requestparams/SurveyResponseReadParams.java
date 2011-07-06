@@ -16,7 +16,7 @@ public class SurveyResponseReadParams extends RequestParams {
   public String authToken;
   public String campaignUrn;
   public String client;
-  public OutputFormat outputFormat;
+  public OutputFormat outputFormat; 
   
   // tell server to include survey response key (needed for updating response)
   public boolean returnId = true;
@@ -29,6 +29,7 @@ public class SurveyResponseReadParams extends RequestParams {
   public List<String> surveyIdList_opt = new ArrayList<String>();
   
   public Privacy privacyState_opt = Privacy.UNDEFINED;
+  public boolean collapse = false; // server removes dupes when true
   
   // start and end date are optional, but if one is present, both must be present
   public Date startDate_opt;
@@ -77,6 +78,10 @@ public class SurveyResponseReadParams extends RequestParams {
     
     if (this.endDate_opt != null) {
       params.put("end_date", DateUtils.translateToApiRequestFormat(this.endDate_opt));
+    }
+    
+    if (this.collapse) {
+      params.put("collapse", "true");
     }
     
     return MapUtils.translateToParameters(params);
