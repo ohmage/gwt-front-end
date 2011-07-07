@@ -216,11 +216,17 @@ public class ExploreDataPresenter implements Presenter {
     String selectedParticipant = view.getSelectedParticipant();
     String selectedPromptX = view.getSelectedPromptX();
     String selectedPromptY = view.getSelectedPromptY();
-    History.newItem(HistoryTokens.exploreData(selectedPlotType, 
-                                              selectedCampaign, 
-                                              selectedParticipant, 
-                                              selectedPromptX, 
-                                              selectedPromptY));
+    
+    String token = HistoryTokens.exploreData(selectedPlotType, 
+                                             selectedCampaign,  
+                                             selectedParticipant, 
+                                             selectedPromptX, 
+                                             selectedPromptY);
+    
+    // NOTE: forces plot to be redrawn even if the history token params haven't
+    // changed. This way the user can keep clicking Draw Plot to refresh. 
+    History.newItem(token, false); // false arg suppresses value change event
+    History.fireCurrentHistoryState(); // calls value change handler manually
   }
 
 }

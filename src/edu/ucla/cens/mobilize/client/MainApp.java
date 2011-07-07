@@ -8,9 +8,13 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.History;
@@ -125,6 +129,21 @@ public class MainApp implements EntryPoint, HistoryListener {
     } else {
       initLogin();
     }
+    
+    // if user is looking at explore_data tab when the window is resized,
+    // refresh so the plot will be redrawn in the new size
+    // FIXME: is this fired continuously while the window resizes or just at
+    // the end? (don't want to send a big stream of unneeded queries to the db...)
+    /*
+    Window.addResizeHandler(new ResizeHandler() {
+      @Override
+      public void onResize(ResizeEvent event) {
+        if (History.getToken().contains("explore_data")) {
+          History.fireCurrentHistoryState();
+        }
+      }
+    });*/
+    
   }
   
   // must be called before any data service fetches so data access class
@@ -337,7 +356,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   @Override
   public void onHistoryChanged(String historyToken) {
     String view = extractView(historyToken); 
-    Map<String, String> params = extractParams(historyToken);
+    final Map<String, String> params = extractParams(historyToken);
 
     if (view.equals("dashboard")) {
       dashboardPresenter.go(params);
@@ -352,8 +371,15 @@ public class MainApp implements EntryPoint, HistoryListener {
       showResponses();
     } else if (view.equals("explore_data")) {
       // filters and data set from params
-      exploreDataPresenter.go(params);
       showExploreData();
+      // waits until page is fully loaded before calling go() because plot 
+      // height/width are calculated from dom element size
+      Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+        @Override
+        public void execute() {
+          exploreDataPresenter.go(params);
+        }
+      });
     } else if (view.equals("documents")) {
       documentPresenter.go(params);
       showDocuments();

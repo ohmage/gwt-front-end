@@ -17,7 +17,7 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SourcesTreeEvents;
@@ -52,7 +52,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @UiField Tree plotTypeTree;
   @UiField VerticalPanel rightSideBar;
   @UiField DockLayoutPanel layoutPanel;
-  @UiField HTMLPanel plotContainer;
+  @UiField FlowPanel plotContainer;
   @UiField ListBox campaignListBox;
   @UiField ListBox participantListBox;
   @UiField ListBox promptXListBox;
@@ -67,7 +67,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     
     // make data filter panel stick to the bottom of the page
     rightSideBar.setCellVerticalAlignment(rightSideBar.getWidget(1), VerticalPanel.ALIGN_BOTTOM);
-    
+
   }
 
   
@@ -389,8 +389,5 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   public int getPlotPanelHeight() {
     return plotContainer.getElement().getClientHeight();
   }
-
-    
-   
   
 }

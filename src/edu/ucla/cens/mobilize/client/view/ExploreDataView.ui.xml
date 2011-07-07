@@ -64,11 +64,8 @@
     .treeItemMap {
     	background: 0px 50% no-repeat url('images/map.png');
     }
-    .treeItemHist {
+    .treeItemHist, .treeItemTimeseries {
     	background: 0px 50% no-repeat url('images/chart_bar.png');
-    }
-    .treeItemTimeseries {
-    	background: 0px 50% no-repeat url('images/chart_curve.png');
     }
     .treeItemTable {
     	background: 0px 50% no-repeat url('images/table.png');
@@ -88,20 +85,21 @@
      <!-- filters -->
      <g:north size='25'>
        <g:HTMLPanel addStyleNames='{style.topNav}'>
-		     <g:InlineHyperlink>R-Web</g:InlineHyperlink>
+		     <g:InlineHyperlink ui:field='rWebLink'>R-Web</g:InlineHyperlink>
 		     <span class='{style.menuSeparator}'>|</span>
-		     <g:InlineHyperlink ui:field='browseDocumentsLink'>Mobility</g:InlineHyperlink>
+		     <g:InlineHyperlink ui:field='mobilityLink'>Mobility</g:InlineHyperlink>
 		     <span class='{style.menuSeparator}'>|</span>
-		     <g:InlineHyperlink ui:field='uploadLink'>Charts</g:InlineHyperlink>
+		     <g:InlineHyperlink ui:field='chartsLink'>Charts</g:InlineHyperlink>
        </g:HTMLPanel>
      </g:north>
      
      
      <g:center addStyleNames='{style.plotPanel}'>
-      <g:HTMLPanel ui:field='plotContainer' addStyleNames='{style.plotPanelInnerContainer}'>
-        <div class='floatstop' />
-      </g:HTMLPanel>
+      <g:FlowPanel ui:field='plotContainer' addStyleNames='{style.plotPanelInnerContainer}'>
+        <g:HTMLPanel addStyleNames='floatstop' />
+      </g:FlowPanel>
      </g:center>
+     
      <!--
      <g:south size='30'>
        <g:HorizontalPanel ui:field='plotTypePanel' 
