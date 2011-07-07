@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ErrorEvent;
+import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
@@ -269,7 +271,14 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
         plotContainer.remove(loading);
       }
     });
+    plot.addErrorHandler(new ErrorHandler() {
+      @Override
+      public void onError(ErrorEvent event) {
+        plotContainer.remove(loading);
+      }
+    });
     plotContainer.add(plot);
+    
   }
 
 

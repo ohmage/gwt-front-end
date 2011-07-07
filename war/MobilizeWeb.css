@@ -166,7 +166,9 @@ a:hover, a:active {
 }
 
 .gwt-TreeItem-selected {
-	background-color: #CCECFC;
+	background-color: #DDEDFD;
+	border: solid thin #CCECFC;
+	padding: 2px 10px 2px 2px;
 }
 
 .gwt-PopupPanelGlass {
