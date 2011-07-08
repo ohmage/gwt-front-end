@@ -647,6 +647,7 @@ public class AndWellnessDataService implements DataService {
     params.userList.add(AwConstants.specialAllValuesToken);
     params.columnList_opt.add("urn:ohmage:user:id");
     params.collapse = true;
+    params.returnId = false;
     String postParams = params.toString();
     _logger.fine("Fetching participant list with params: " + postParams);
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getSurveyResponseReadUrl());

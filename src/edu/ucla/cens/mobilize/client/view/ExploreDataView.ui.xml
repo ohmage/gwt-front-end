@@ -9,7 +9,7 @@
     	text-align: right;
     }
     .disabled {
-    	color: #DDD;
+    	color: #AAA;
     }
     .layout {
       display: block;
@@ -20,16 +20,25 @@
     	height: 100%;
     	width: 100%;
     }
+    .plotTypeHeader {
+    	display: inline-block;
+    	font-weight: bold;
+    	padding: 5px 5px 10px 5px;
+    }
     .plotTypeTreePanel {
-    	padding: 20px 5px; 
+    	padding: 10px 5px; 
+    	margin-bottom: 15px; 
     }
     .plotTypeRadioPanel {
     }
     .dataControls {
     	border: solid thin #CCC;
-    	padding: 5px 10px 10px 15px;
+    	padding: 8px 10px 15px 15px;
     	/*position: relative;
     	bottom: 0px;*/
+    }
+    .dataControls legend {
+    	font-weight: bold;
     }
     .dataControlRow {
     	padding-top: 3px;
@@ -37,7 +46,7 @@
     .dataControlLabel {
     }
     .dataControlListBox { /* (select) */
-    	width: 175px;
+    	width: 180px;
     }
     .menuSeparator {
       padding-right: 2px;
@@ -57,7 +66,7 @@
     	padding: 5px 20px;
     }
     .dataControlSideBar {
-    	height: 100%;
+    	/*height: 100%;*/
     	padding: 10px;
     }
     .topNav {
@@ -115,31 +124,16 @@
         <g:HTMLPanel addStyleNames='floatstop' />
       </g:FlowPanel>
      </g:center>
-     
-     <!--
-     <g:south size='30'>
-       <g:HorizontalPanel ui:field='plotTypePanel' 
-                          addStyleNames='{style.plotTypeRadioPanel}'>
-         <g:RadioButton ui:field='rWebRadio' 
-                        ui:name='plotType' 
-                        ui:text='By Time' />
-         <g:RadioButton ui:field='mapRadio' 
-                        ui:name='plotType' 
-                        ui:text='By Location' /> 
-         <g:RadioButton ui:field='rawDataRadio' 
-                        ui:name='plotType' 
-                        ui:text='Raw Data' />
-       </g:HorizontalPanel>
-     </g:south>
-     -->
-     <g:west size='220'>
+
+     <g:west size='230'>
        <g:VerticalPanel ui:field='sideBar' addStyleNames='{style.dataControlSideBar}'>
          <g:HTMLPanel addStyleNames='{style.plotTypeTreePanel}'>
+           <g:InlineLabel addStyleNames='{style.plotTypeHeader}'>Choose a Plot Type:</g:InlineLabel>
            <g:Tree ui:field='plotTypeTree' />
          </g:HTMLPanel>
          <g:CaptionPanel addStyleNames='{style.dataControls}' 
                          ui:field='dataControls' 
-                         captionText='Data Settings'>
+                         captionText='Select data to plot'>
 	         <g:HTMLPanel>
 	           <g:Label ui:field='requiredFieldMissingMsg' 
 	                    visible='false' 

@@ -17,6 +17,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -43,6 +44,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   }
 
   public interface ExploreDataStyles extends CssResource {
+    String disabled();
     String requiredField();
     String requiredFieldMissing();
     String treeItemCategory();
@@ -55,10 +57,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   }
   
   @UiField ExploreDataStyles style;
-  @UiField Tree plotTypeTree;
-  @UiField VerticalPanel sideBar;
   @UiField DockLayoutPanel layoutPanel;
-  @UiField FlowPanel plotContainer;
+  @UiField VerticalPanel sideBar;
+  @UiField Tree plotTypeTree;
+  @UiField CaptionPanel dataControls;
   @UiField Label requiredFieldMissingMsg;
   @UiField ListBox campaignListBox;
   @UiField ListBox participantListBox;
@@ -67,6 +69,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @UiField Button drawPlotButton;
   @UiField Button pdfButton;
   @UiField Button exportButton;
+  @UiField FlowPanel plotContainer;
   
   private List<ListBox> requiredFields = new ArrayList<ListBox>();
   
@@ -345,10 +348,13 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     for (ListBox listBox : requiredFields) {
       setRequiredFlag(listBox, false);
     }
+    
+    dataControls.addStyleName(style.disabled());
   }
   
   @Override
   public void setDataButtonsEnabled(boolean isEnabled) {
+    dataControls.removeStyleName(style.disabled());
     drawPlotButton.setEnabled(isEnabled);
     pdfButton.setEnabled(isEnabled);
     exportButton.setEnabled(isEnabled);
