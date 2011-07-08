@@ -274,6 +274,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public void setPlotUrl(String url) {
+    setPlotUrl(url, null); // no custom error handler
     clearPlot();
     final Image loading = new Image();
     loading.setStyleName(style.waiting());
@@ -295,6 +296,32 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     
   }
 
+  @Override
+  public void setPlotUrl(String url, final ErrorHandler errorHandler) {
+    clearPlot();
+    final Image loading = new Image();
+    loading.setStyleName(style.waiting());
+    plotContainer.add(loading);
+    Image plot = new Image(url);
+    plot.addLoadHandler(new LoadHandler() {
+      @Override
+      public void onLoad(LoadEvent event) {
+        plotContainer.remove(loading);
+      }
+    });
+    plot.addErrorHandler(new ErrorHandler() {
+      @Override
+      public void onError(ErrorEvent event) {
+        // get rid of the loading indicator and broken image
+        plotContainer.clear();
+        // also call custom error handler, if given
+        if (errorHandler != null) errorHandler.onError(event);
+      }
+    });
+    
+    plotContainer.add(plot);
+    
+  }
 
   @Override
   public void clearPlot() {

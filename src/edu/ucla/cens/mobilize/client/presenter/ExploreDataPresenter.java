@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ErrorEvent;
+import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -196,23 +198,75 @@ public class ExploreDataPresenter implements Presenter {
   }
   
   private void showPlot() {
-    PlotType plotType = view.getSelectedPlotType();
-    String campaignId = view.getSelectedCampaign();
+    final PlotType plotType = view.getSelectedPlotType();
+    final String campaignId = view.getSelectedCampaign();
     if (plotType == null || campaignId == null) return; 
-    String participantId = view.getSelectedParticipant();
-    String promptX = view.getSelectedPromptX();
-    String promptY = view.getSelectedPromptY();
-    int width = view.getPlotPanelWidth();
-    int height = view.getPlotPanelHeight();
-    String url = dataService.getPlotUrl(plotType,
+    final String participantId = view.getSelectedParticipant();
+    final String promptX = view.getSelectedPromptX();
+    final String promptY = view.getSelectedPromptY();
+    final int width = view.getPlotPanelWidth();
+    final int height = view.getPlotPanelHeight();
+    String url = dataService.getVisualizationUrl(plotType,
+                                                 width,
+                                                 height,
+                                                 campaignId,
+                                                 participantId,
+                                                 promptX,
+                                                 promptY);
+    _logger.fine("Displaying plot url: " + url);
+    view.setPlotUrl(url, new ErrorHandler() {
+      @Override
+      public void onError(ErrorEvent event) {
+        // if the image doesn't load, make an ajax call with the same params to retrieve the error message
+        dataService.fetchVisualizationError(plotType, width, height, campaignId, participantId, promptX, promptY,
+          new AsyncCallback<String>() {
+            @Override
+            public void onFailure(Throwable caught) {
+              ErrorDialog.show("There was a problem loading the visualization.", caught.getMessage());
+            }
+            
+            @Override
+            public void onSuccess(String result) {
+              // must have been a transient error. try loading it again
+              view.setPlotUrl(result); // no error handler this time
+            }
+          }); // new AsyncCallback<String>() {  
+      }
+    });
+  }
+  
+  // when a plot fails to load, image onerror handler can call this function
+  // with the same arguments used to construct the image url to find out what
+  // the problem was
+  private void fetchAndShowPlotErrorMessage(PlotType plotType, 
+                                            int width, 
+                                            int height,
+                                            String campaignId,
+                                            String participantId,
+                                            String promptX,
+                                            String promptY) {
+    dataService.fetchVisualizationError(plotType,
                                         width,
                                         height,
                                         campaignId,
                                         participantId,
                                         promptX,
-                                        promptY);
-    _logger.fine("Displaying plot url: " + url);
-    view.setPlotUrl(url);
+                                        promptY,
+                                        new AsyncCallback<String>() {
+  
+        @Override
+        public void onFailure(Throwable caught) {
+          ErrorDialog.show("There was a problem loading the visualization.",
+                           caught.getMessage());
+        }
+    
+        @Override
+        public void onSuccess(String result) {
+          // must have been a transient error. try loading it again
+          view.setPlotUrl(result); // no error handler this time
+        }
+      }); 
+    
   }
 
   private void fireHistoryTokenToMatchSelectedSettings() {

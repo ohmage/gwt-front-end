@@ -1005,7 +1005,7 @@ public class AndWellnessDataService implements DataService {
   }
 
   @Override
-  public String getPlotUrl(PlotType plotType, 
+  public String getVisualizationUrl(PlotType plotType, 
                            int width,
                            int height,
                            String campaignId, 
@@ -1031,6 +1031,78 @@ public class AndWellnessDataService implements DataService {
     }
     String baseUrl = AwConstants.getVisualizationUrl(plotType.toServerString()); 
     return baseUrl + "?" + MapUtils.translateToParameters(params);
+  }
+
+  // Call this function in image onError handler to find out the reason
+  // for a broken image. Note that this means this function should almost
+  // always end up calling callback.onFailure().
+  @Override
+  public void fetchVisualizationError(final PlotType plotType, 
+                                      final int width, 
+                                      final int height,
+                                      final String campaignId, 
+                                      final String participantId, 
+                                      final String promptX, 
+                                      final String promptY,
+                                      final AsyncCallback<String> callback) {
+    assert plotType != null : "plotType is required";
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", this.authToken());
+    params.put("client", this.client());
+    params.put("width", Integer.toString(width));
+    params.put("height", Integer.toString(height));
+    params.put("campaign_urn", campaignId);
+    if (participantId != null && !participantId.isEmpty()) {
+      params.put("user", participantId);
+    }
+    if (promptX != null && !promptX.isEmpty()) {
+      params.put("prompt_id", promptX);
+    }
+    if (promptY != null && !promptY.isEmpty()) {
+      params.put("prompt2_id", promptY);
+    }
+
+    String postParams = MapUtils.translateToParameters(params);
+    _logger.fine("Querying viz api to find cause of image load error: " + postParams);
+    // make the request
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getVisualizationUrl(plotType.toServerString()));
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            if (response.getStatusCode() == 200 && response.getHeader("Content-Type").contains("image")) {
+              // Request works fine, which is unexpected. Maybe it was a transient error? 
+              // Pass back image url so caller can make another attempt to display it.
+              _logger.finest("fetchVisualization invoking onSuccess. Did you mean to call getVisualizationUrl instead?");
+              callback.onSuccess(getVisualizationUrl(plotType, 
+                                 width, 
+                                 height,
+                                 campaignId, 
+                                 participantId, 
+                                 promptX, 
+                                 promptY));
+            } else { 
+              getResponseTextOrThrowException(requestBuilder, response);
+              throw new RuntimeException("Mysterious visualization error."); // should never happen
+            }
+          } catch (Exception exception) {
+            callback.onFailure(exception);
+          }
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+    
   }
 
 

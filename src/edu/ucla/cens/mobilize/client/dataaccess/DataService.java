@@ -10,7 +10,6 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationToken
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
-import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -67,12 +66,21 @@ public interface DataService {
   void fetchAuthorizationToken(String userName, String password, 
                                final AsyncCallback<AuthorizationTokenQueryAwData> callback);
   
+  /**
+   * @param userName
+   * @param oldPassword
+   * @param newPassword
+   * @param callback
+   */
   void changePassword(String userName, 
                       String oldPassword, 
                       String newPassword, 
                       final AsyncCallback<String> callback);
-  
-  // users
+
+  /**
+   * @param userName
+   * @param asyncCallback returns UserInfo object on success
+   */
   void fetchUserInfo(String userName, final AsyncCallback<UserInfo> asyncCallback);
   
   // campaigns
@@ -82,18 +90,50 @@ public interface DataService {
   void fetchCampaignIdToNameMap(CampaignReadParams params,
                                 final AsyncCallback<Map<String, String>> callback);
   
+  /**
+   * Fetches short version of campaign info. If you need access to the xml config
+   * or member lists, use fetchCampaignListDetail instead.
+   * @param params
+   * @param callback
+   */
   void fetchCampaignListShort(CampaignReadParams params, 
                               final AsyncCallback<List<CampaignShortInfo>> callback);
   
+  /**
+   * Fetches long version of campaign info. If you do not need access to the
+   * xml config or member lists, use fetchCampaignListShort instead, since it
+   * transfers less data. 
+   * @param campaignIds
+   * @param callback return List\<CampaignDetailedInfo\> on success
+   */
   void fetchCampaignListDetail(List<String> campaignIds, 
                              final AsyncCallback<List<CampaignDetailedInfo>> callback);
   
+  /**
+   * Convenience method. Same as fetchCampaignListDetail but returns just one object.
+   * @param campaignId
+   * @param callback returns CampaignDetailedInfo on success
+   */
   void fetchCampaignDetail(String campaignId, 
       final AsyncCallback<CampaignDetailedInfo> callback);
   
+  /**
+   * @param campaignId
+   * @param callback
+   */
   void deleteCampaign(final String campaignId,
                       final AsyncCallback<String> callback);
     
+  /**
+   * 
+   * @param userName
+   * @param campaignId
+   * @param surveyName
+   * @param privacy
+   * @param startDate
+   * @param endDate
+   * @param callback returns List\<SurveyResponse\> on success
+   */
   void fetchSurveyResponses(String userName,
                             String campaignId,
                             String surveyName,
@@ -101,6 +141,17 @@ public interface DataService {
                             Date startDate,
                             Date endDate,
                             final AsyncCallback<List<SurveyResponse>> callback);
+  
+  /**
+   * Same as fetchSurveyResponses but just gives back the number of responses, not the data.
+   * @param userName
+   * @param campaignId
+   * @param surveyName
+   * @param privacy
+   * @param startDate
+   * @param endDate
+   * @param callback returns Integer on success (# of survey responses matching filter criteria)
+   */
   void fetchSurveyResponseCount(String userName,
                                 String campaignId,
                                 String surveyName,
@@ -108,44 +159,141 @@ public interface DataService {
                                 Date startDate,
                                 Date endDate,
                                 final AsyncCallback<Integer> callback);
+  
+  /**
+   * Fetches list of unique usernames of participants who've submitted
+   * at least one response to the campaign
+   * @param campaignId
+   * @param callback returns List\<String\> on success
+   */
   void fetchParticipantsWithResponses(String campaignId,
                                       final AsyncCallback<List<String>> callback);
+  
+  /**
+   * @param campaignId
+   * @param surveyKey
+   * @param newPrivacyState
+   * @param callback
+   */
   void updateSurveyResponse(String campaignId,
                             int surveyKey,
                             Privacy newPrivacyState,
                             final AsyncCallback<String> callback);
+  
+  /**
+   * @param campaignId
+   * @param surveyKey
+   * @param callback
+   */
   void deleteSurveyResponse(String campaignId,
                              int surveyKey,
                              final AsyncCallback<String> callback);
   
+  /** 
+   * Generates parameter names and values for making a request. Use this
+   * function instead of getSurveyResponses when you want to fill the
+   * names/values into an html form and do the request via a form post
+   * instead of with ajax. (You'd need to do this, for instance, if you 
+   * wanted the browser to prompt the user to save the response as a file.)
+   * @param campaignId
+   * @return Map\<String, String\> maps parameter names to parameter values
+   */  
   Map<String, String> getSurveyResponseExportParams(String campaignId);
   
+  /**
+   * @param classIds
+   * @param callback
+   */
   void fetchClassList(List<String> classIds,
                       final AsyncCallback<List<ClassInfo>> callback);
   
+  /**
+   * Convenience method for getting info about just one class
+   * @param classId
+   * @param callback
+   */ // FIXME: do we need this since we don't have short/long format for class info? 
   void fetchClassDetail(String classId, final AsyncCallback<ClassInfo> callback);
   
+  /**
+   * @param params
+   * @param callback
+   */
   void updateClass(ClassUpdateParams params, final AsyncCallback<String> callback);
-  
+
+  /**
+   * @param params
+   * @param callback returns List\<DocumentInfo\> on success
+   */
   void fetchDocumentList(DocumentReadParams params, 
       final AsyncCallback<List<DocumentInfo>> callback);
   
   // NOTE: createDocument and downloadDocument are done with FormPanels
-  
-  // download is done with a formpanel, dataservice just provides params
+
+  /**
+   * Generates parameter names and values for making a request. Use this
+   * function instead of getSurveyResponses when you want to fill the
+   * names/values into an html form and do the request via a form post
+   * instead of with ajax. (You'd need to do this, for instance, if you 
+   * wanted the browser to prompt the user to save the response as a file.)
+   * @param String documentId
+   */
   Map<String, String> getDocumentDownloadParams(String documentId);
-  
+
+  /**
+   * @param documentId
+   * @param callback
+   */
   void deleteDocument(String documentId, final AsyncCallback<String> callback);
 
-  // download is done with a formpanel, dataservice just provides params
+  /**
+   * Generates parameter names and values for making a request. Use this
+   * function instead of getSurveyResponses when you want to fill the
+   * names/values into an html form and do the request via a form post
+   * instead of with ajax. (You'd need to do this, for instance, if you 
+   * wanted the browser to prompt the user to save the response as a file.)
+   * @param campaignId
+   * @return
+   */
   Map<String, String> getCampaignXmlDownloadParams(String campaignId);
   
-  String getPlotUrl(PlotType plotType, 
-                    int width, 
-                    int height,
-                    String campaignId, 
-                    String participantId, 
-                    String promptX, 
-                    String promptY);
+  /**
+   * Generates url that, when fetched, generates a visualization on-the-fly.
+   * @param plotType
+   * @param width
+   * @param height
+   * @param campaignId
+   * @param participantId
+   * @param promptX
+   * @param promptY
+   * @return
+   */
+  String getVisualizationUrl(PlotType plotType, 
+                             int width,  
+                             int height,
+                             String campaignId, 
+                             String participantId, 
+                             String promptX, 
+                             String promptY);
+  
+  /**
+   * If a url returned from getVisualizationUrl gives a broken image, call 
+   * this method with the same params to find out what the error was. 
+   * (Can be done in the image's onError handler)
+   * @param plotType
+   * @param width
+   * @param height
+   * @param campaignId
+   * @param participantId
+   * @param promptX
+   * @param promptY
+   */
+  void fetchVisualizationError(PlotType plotType, 
+                               int width,  
+                               int height,
+                               String campaignId, 
+                               String participantId, 
+                               String promptX, 
+                               String promptY,
+                               AsyncCallback<String> callback); 
   
 }

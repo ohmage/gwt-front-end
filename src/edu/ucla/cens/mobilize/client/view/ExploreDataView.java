@@ -4,6 +4,7 @@ package edu.ucla.cens.mobilize.client.view;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SourcesTreeEvents;
@@ -42,6 +43,7 @@ public interface ExploreDataView extends IsWidget {
   int getPlotPanelHeight();
   
   void setPlotUrl(String url);
+  void setPlotUrl(String url, ErrorHandler errorHandler);
   void clearPlot();
   // TODO: what about table/map?  
 
