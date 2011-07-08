@@ -6,6 +6,7 @@
   <ui:style type="edu.ucla.cens.mobilize.client.view.ExploreDataViewImpl.ExploreDataStyles">
     .buttonDiv {
     	padding: 5px 0px;
+    	text-align: right;
     }
     .disabled {
     	color: #DDD;
@@ -26,10 +27,9 @@
     }
     .dataControls {
     	border: solid thin #CCC;
-    	height: 170px;
-    	padding: 5px 10px 5px 15px;
-    	position: relative;
-    	bottom: 0px;
+    	padding: 5px 10px 10px 15px;
+    	/*position: relative;
+    	bottom: 0px;*/
     }
     .dataControlRow {
     	padding-top: 3px;
@@ -37,13 +37,28 @@
     .dataControlLabel {
     }
     .dataControlListBox { /* (select) */
-    	width: 170px;
+    	width: 175px;
     }
     .menuSeparator {
       padding-right: 2px;
     }
-    .rightSideBar {
+    .requiredField {
+    }
+    .requiredFieldMissing {
+      border-width: 1px 2px;
+      border-color: #BD4020;
+      border-style: solid;
+      padding-right: 20px;
+    }
+    .requiredFieldMissingMsg {
+    	background: 0px 50% no-repeat url('images/exclamation.png');
+    	color: #BD4020;
+    	font-weight: bold;
+    	padding: 5px 20px;
+    }
+    .dataControlSideBar {
     	height: 100%;
+    	padding: 10px;
     }
     .topNav {
       background-color: #DDD;
@@ -79,17 +94,18 @@
     	width: 100%;
     }
   </ui:style>
-  
     <g:DockLayoutPanel addStyleNames='{style.layout}' unit='PX' ui:field='layoutPanel'>
      
      <!-- filters -->
      <g:north size='25'>
        <g:HTMLPanel addStyleNames='{style.topNav}'>
 		     <g:InlineHyperlink ui:field='rWebLink'>R-Web</g:InlineHyperlink>
+		     <!--
 		     <span class='{style.menuSeparator}'>|</span>
 		     <g:InlineHyperlink ui:field='mobilityLink'>Mobility</g:InlineHyperlink>
 		     <span class='{style.menuSeparator}'>|</span>
 		     <g:InlineHyperlink ui:field='chartsLink'>Charts</g:InlineHyperlink>
+		     -->
        </g:HTMLPanel>
      </g:north>
      
@@ -116,8 +132,8 @@
        </g:HorizontalPanel>
      </g:south>
      -->
-     <g:east size='210'>
-       <g:VerticalPanel ui:field='rightSideBar' addStyleNames='{style.rightSideBar}'>
+     <g:west size='220'>
+       <g:VerticalPanel ui:field='sideBar' addStyleNames='{style.dataControlSideBar}'>
          <g:HTMLPanel addStyleNames='{style.plotTypeTreePanel}'>
            <g:Tree ui:field='plotTypeTree' />
          </g:HTMLPanel>
@@ -125,6 +141,11 @@
                          ui:field='dataControls' 
                          captionText='Data Settings'>
 	         <g:HTMLPanel>
+	           <g:Label ui:field='requiredFieldMissingMsg' 
+	                    visible='false' 
+	                    addStyleNames='{style.requiredFieldMissingMsg}'>
+	             Missing required field
+	           </g:Label>
 	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
 	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Campaign:</g:InlineLabel>
 	             <g:ListBox ui:field='campaignListBox' addStyleNames='{style.dataControlListBox}' />
@@ -149,8 +170,7 @@
            <g:Button ui:field='exportButton'>Export</g:Button>
          </g:HTMLPanel>
        </g:VerticalPanel>
-     </g:east>
+     </g:west>
     
     </g:DockLayoutPanel>
-  
 </ui:UiBinder> 

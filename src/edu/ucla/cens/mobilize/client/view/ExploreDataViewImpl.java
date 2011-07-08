@@ -1,5 +1,7 @@
 package edu.ucla.cens.mobilize.client.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +21,12 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SourcesTreeEvents;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -39,6 +43,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   }
 
   public interface ExploreDataStyles extends CssResource {
+    String requiredField();
+    String requiredFieldMissing();
     String treeItemCategory();
     String treeItemPlotType();
     String treeItemMap();
@@ -50,9 +56,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   
   @UiField ExploreDataStyles style;
   @UiField Tree plotTypeTree;
-  @UiField VerticalPanel rightSideBar;
+  @UiField VerticalPanel sideBar;
   @UiField DockLayoutPanel layoutPanel;
   @UiField FlowPanel plotContainer;
+  @UiField Label requiredFieldMissingMsg;
   @UiField ListBox campaignListBox;
   @UiField ListBox participantListBox;
   @UiField ListBox promptXListBox;
@@ -61,13 +68,17 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @UiField Button pdfButton;
   @UiField Button exportButton;
   
+  private List<ListBox> requiredFields = new ArrayList<ListBox>();
+  
   public ExploreDataViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
     loadPlotTypeTree();
     
     // make data filter panel stick to the bottom of the page
-    rightSideBar.setCellVerticalAlignment(rightSideBar.getWidget(1), VerticalPanel.ALIGN_BOTTOM);
+    sideBar.setCellVerticalAlignment(sideBar.getWidget(1), VerticalPanel.ALIGN_BOTTOM);
 
+    // these are required when enabled
+    requiredFields = Arrays.asList(campaignListBox, participantListBox, promptXListBox, promptYListBox);
   }
 
   
@@ -290,23 +301,27 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @Override
   public void setCampaignDropDownEnabled(boolean isEnabled) {
     campaignListBox.setEnabled(true);
+    setRequiredFlag(campaignListBox, isEnabled);
   }
 
   @Override
   public void setParticipantDropDownEnabled(boolean isEnabled) {
     participantListBox.setEnabled(isEnabled);
+    setRequiredFlag(participantListBox, isEnabled);
   }
 
 
   @Override
   public void setPromptXDropDownEnabled(boolean isEnabled) {
     promptXListBox.setEnabled(isEnabled);
+    setRequiredFlag(promptXListBox, isEnabled);
   }
 
 
   @Override
   public void setPromptYDropDownEnabled(boolean isEnabled) {
-    promptYListBox.setEnabled(isEnabled);    
+    promptYListBox.setEnabled(isEnabled);
+    setRequiredFlag(promptYListBox, isEnabled);
   }
 
   @Override
@@ -315,6 +330,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     participantListBox.clear();
     promptXListBox.clear();
     promptYListBox.clear();
+    
+    // disable control
     campaignListBox.setEnabled(false);
     participantListBox.setEnabled(false);
     promptXListBox.setEnabled(false);
@@ -322,6 +339,12 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     drawPlotButton.setEnabled(false);
     pdfButton.setEnabled(false);
     exportButton.setEnabled(false);
+    
+    // remove style name that marks control as required
+    clearMissingFieldMarkers();
+    for (ListBox listBox : requiredFields) {
+      setRequiredFlag(listBox, false);
+    }
   }
   
   @Override
@@ -388,6 +411,54 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @Override
   public int getPlotPanelHeight() {
     return plotContainer.getElement().getClientHeight();
+  }
+
+
+  @Override
+  public boolean isMissingRequiredField() { 
+    clearMissingFieldMarkers(); // clear any left over from last validation
+    boolean atLeastOneFieldIsMissing = false;
+    for (ListBox listBox : requiredFields) {
+      if (listBox.getSelectedIndex() == -1 && isRequired(listBox)) {
+        markMissing(listBox);
+        atLeastOneFieldIsMissing = true;
+      }
+    }
+    
+    if (atLeastOneFieldIsMissing) {
+      requiredFieldMissingMsg.setVisible(true);      
+    }
+    
+    return atLeastOneFieldIsMissing;
+  }
+  
+  @Override
+  public void clearMissingFieldMarkers() {
+    for (ListBox listBox : requiredFields) {
+      clearMissingMarker(listBox);
+    }
+    requiredFieldMissingMsg.setVisible(false);      
+  }
+  
+  private boolean isRequired(UIObject field) {
+    return field.getStyleName().contains(style.requiredField());
+  }
+  
+  private void markMissing(UIObject field) {
+    field.addStyleName(style.requiredFieldMissing());
+  }
+  
+  private void clearMissingMarker(UIObject field) {
+    field.removeStyleName(style.requiredFieldMissing());
+  }
+  
+  // used for both styling and validation
+  private void setRequiredFlag(UIObject field, boolean isRequired) {
+    if (isRequired) {
+      field.addStyleName(style.requiredField());
+    } else {
+      field.removeStyleName(style.requiredField());
+    }
   }
   
 }

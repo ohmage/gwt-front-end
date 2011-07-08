@@ -77,6 +77,7 @@ public class ExploreDataPresenter implements Presenter {
     view.getPlotTypeTree().addTreeListener(new TreeListener() {
       @Override
       public void onTreeItemSelected(TreeItem item) {
+        view.clearMissingFieldMarkers(); // clear any leftover validation errors
         setEnabledFiltersForPlotType(view.getSelectedPlotType());
       }
 
@@ -97,7 +98,10 @@ public class ExploreDataPresenter implements Presenter {
     view.getDrawPlotButton().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        fireHistoryTokenToMatchSelectedSettings();
+        view.clearPlot();
+        if (!view.isMissingRequiredField()) {
+          fireHistoryTokenToMatchSelectedSettings();
+        }
       }
     });
     
@@ -148,7 +152,7 @@ public class ExploreDataPresenter implements Presenter {
     }
   }
   
-  private void fetchAndFillParticipantChoices(String campaignId, String participantToSelect) {
+  private void fetchAndFillParticipantChoices(String campaignId, final String participantToSelect) {
     if (campaignId == null) return;
     dataService.fetchParticipantsWithResponses(campaignId, new AsyncCallback<List<String>>() {
       @Override
@@ -160,6 +164,7 @@ public class ExploreDataPresenter implements Presenter {
       @Override
       public void onSuccess(List<String> result) {
         view.setParticipantList(result);
+        view.setSelectedParticipant(participantToSelect); // can be null
       }
     });
   }

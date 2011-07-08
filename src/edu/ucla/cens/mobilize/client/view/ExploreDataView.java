@@ -64,4 +64,8 @@ public interface ExploreDataView extends IsWidget {
   HasClickHandlers getDrawPlotButton();
   HasClickHandlers getPdfButton();
   HasClickHandlers getExportDataButton();
+  
+  // validation helpers
+  boolean isMissingRequiredField();
+  void clearMissingFieldMarkers();
 }
