@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -594,6 +595,18 @@ public class AndWellnessDataService implements DataService {
     params.privacyState_opt = privacy;
     params.startDate_opt = startDate;
     params.endDate_opt = DateUtils.addOneDay(endDate); // add one to make range inclusive
+    
+    // define which columns to fetch (comment out this line to fetch all columns)
+    params.columnList_opt = Arrays.asList("urn:ohmage:user:id",
+                                          "urn:ohmage:context:timestamp", 
+                                          "urn:ohmage:context:timezone",
+                                          "urn:ohmage:context:location:latitude",
+                                          "urn:ohmage:context:location:longitude",
+                                          "urn:ohmage:survey:id",
+                                          "urn:ohmage:survey:title",
+                                          "urn:ohmage:survey:description",
+                                          "urn:ohmage:survey:privacy_state",
+                                          "urn:ohmage:prompt:response");
     
     fetchSurveyResponses(params, callback);   
   }
