@@ -31,6 +31,10 @@ public class AwConstants {
     //private final static String debugServerLocation = "https://dev.mobilizingcs.org/app/";
     private final static String releaseServerLocation = "../app/"; // same as web server
     
+    // Google maps api keys
+    private final static String googleMapsApiKeyDebug = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxRi_j0U6kJrkFvY4-OX2XYmEAa76BQ2ZkOydhEh44vXPVI_djTFw81U0w";
+    private final static String googleMapsApiKeyRelease = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxSaGzzTMV7IrE3zhGi4xAUyZKf_rhQSdRF4uQQEE-RzoBWBBPLzb1MWNg";
+    
     // API Endpoints
     // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/AndWellness_Read_API_2.2
     private final static String AUTHORIZATION   = "user/auth_token";
