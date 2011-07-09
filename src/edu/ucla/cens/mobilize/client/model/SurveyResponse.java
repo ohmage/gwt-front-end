@@ -9,15 +9,26 @@ import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 public class SurveyResponse {
+
+  protected class Location {
+    public Location(Double latitude, Double longitude) { 
+      this.latitude = latitude; 
+      this.longitude = longitude; 
+    }
+    Double latitude; 
+    Double longitude; 
+  }
 	
+  int dbKey; // needed for updating response in db
+  String campaignId; // urn
+  String campaignName;
+  
   Date responseDate;
+  Location location;
   String userName;
   Privacy privacyState;
-  String campaignId; // urn
-	String campaignName;
-	String surveyId;
-	int dbKey; // needed for updating response in db
-	String surveyName;
+	String surveyId; // identifies survey in xml config
+	String surveyName; 
 	List<PromptResponse> promptResponses;
 	
   // NOTE: prompt responses above could be images, etc, but everything is 
@@ -48,7 +59,7 @@ public class SurveyResponse {
 	public String getSurveyName() { return this.surveyName; }
 	public void setSurveyName(String name) { this.surveyName = name; }
 	
-	// id and name same for now?
+	// id and name same for now? // FIXME: get rid of one of them?
 	public String getSurveyId() { return getSurveyName(); }
 	public void setSurveyId(String id) { setSurveyName(id); }
 	
@@ -63,9 +74,15 @@ public class SurveyResponse {
 	  } catch (Exception exception) { // FIXME: IllegalArgumentException?
 	    // TODO: log error message
 	    responseDate = new Date();
-	    
 	  }
 	}
+	
+	public void setLocation(Double latitude, Double longitude) {
+	  location = (latitude != null && longitude != null) ? new Location(latitude, longitude) : null;
+	}
+  public boolean hasLocation() { return this.location != null; }	
+	public Double getLatitude() { return this.location.latitude; }
+	public Double getLongitude() { return this.location.longitude; }
 	
 	public String getUserName() { return this.userName; }
 	public void setUserName(String userName) { this.userName = userName; }

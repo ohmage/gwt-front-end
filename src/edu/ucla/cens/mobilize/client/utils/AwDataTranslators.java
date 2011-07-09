@@ -71,24 +71,37 @@ public class AwDataTranslators {
       return errorCodeToDescriptionMap;
     }
     
+    public static Integer translateSurveyResponseReadQueryJSONToSurveyCount(String surveyResponseReadQueryJSON) {
+      int retval = -1;
+      try {
+        JSONValue value = JSONParser.parseStrict(surveyResponseReadQueryJSON);
+        JSONObject responseHash = value.isObject();
+        if (responseHash == null ) throw new RuntimeException("Invalid json response: " + surveyResponseReadQueryJSON);
+        JSONNumber numberOfSurveys = responseHash.get("metadata").isObject().get("number_of_surveys").isNumber();
+        retval = (int)numberOfSurveys.doubleValue();
+      } catch (Exception e) {
+        _logger.severe("Could not extract survey count. Json was: " + surveyResponseReadQueryJSON);
+      }
+      return retval;
+    }
+    
     // returns null if there were no responses
     public static List<SurveyResponse> translateSurveyResponseReadQueryJSONToSurveyResponseList(
         String promptResponseReadQueryJSON,
-        String campaignId) throws Exception {
-      @SuppressWarnings("deprecation")
-      JSONValue value = JSONParser.parse(promptResponseReadQueryJSON);
+        String campaignId) {
+      JSONValue value = JSONParser.parseStrict(promptResponseReadQueryJSON);
       JSONObject responseHash = value.isObject();
-      if (responseHash == null) throw new Exception("Invalid json response: " + responseHash);
+      if (responseHash == null) throw new RuntimeException("Invalid json response: " + promptResponseReadQueryJSON);
       
       // if there were no responses for this query (for this campaign) return empty list immediately
       JSONNumber numberOfPrompts = responseHash.get("metadata").isObject().get("number_of_prompts").isNumber();
       if (numberOfPrompts.doubleValue() < 1) return new ArrayList<SurveyResponse>();
       
       // data field contains a js array of survey response json objects
-      if (!responseHash.containsKey("data")) throw new Exception("data field missing");
+      if (!responseHash.containsKey("data")) throw new RuntimeException("data field missing");
       JSONValue dataValue = responseHash.get("data");
       JSONArray array = dataValue.isArray();
-      if (array == null) throw new Exception("Json in data field of response is not an array.");
+      if (array == null) throw new RuntimeException("Json in data field of response is not an array.");
       List<SurveyResponse> surveyResponses = new ArrayList<SurveyResponse>();
       for (int i = 0; i < array.size(); i++) {
         try {
@@ -109,6 +122,7 @@ public class AwDataTranslators {
           surveyResponse.setSurveyId(surveyResponseAwData.getSurveyId());
           surveyResponse.setSurveyName(surveyResponseAwData.getSurveyTitle());
           surveyResponse.setUserName(surveyResponseAwData.getUser());
+          surveyResponse.setLocation(surveyResponseAwData.getLatitude(), surveyResponseAwData.getLongitude());
           
           // survey response contains many prompt responses. parse those now.
           JsArrayString promptIds = surveyResponseAwData.getPromptIdsAsJsArray();

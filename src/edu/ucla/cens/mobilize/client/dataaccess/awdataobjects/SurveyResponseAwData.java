@@ -14,7 +14,27 @@ public class SurveyResponseAwData extends JavaScriptObject {
   public final native String getTimestamp() /*-{ return this.timestamp; }-*/;
   public final native String getTimezone() /*-{ return this.timezone; }-*/;
   public final native String getUser() /*-{ return this.user; }-*/;
+  private final native double getLatitudeUnsafe() /*-{ return this.latitude; }-*/; // could be null 
+  private final native double getLongitudeUnsafe() /*-{ return this.longitude; }-*/; // could be null
 
+  /**
+   * @return Double latitude or null if none
+   */
+  public final Double getLatitude() {
+    Double retval = null;
+    try { retval = getLatitudeUnsafe(); } catch (Exception e) {}
+    return retval;
+  }
+  
+  /**
+   * @return Double longitude or null if none
+   */
+  public final Double getLongitude() {
+    Double retval = null;
+    try { retval = getLongitudeUnsafe(); } catch (Exception e) {}
+    return retval;
+  }
+  
   public final native JsArrayString getPromptIdsAsJsArray() /*-{
     var retval = [];
     for (var prompt_id in this.responses) {
