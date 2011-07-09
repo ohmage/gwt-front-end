@@ -24,7 +24,9 @@ public class MapUtils {
             // Add the key=value
             parameterString.append(URL.encode(key.toString()));
             parameterString.append("=");
-            parameterString.append(URL.encode(toTranslate.get(key).toString()));
+            Object value = toTranslate.get(key);
+            if (value == null) throw new RuntimeException("MapUtils cannot translate null value for parameter with key: " + key.toString());
+            parameterString.append(URL.encode(value.toString()));
             
             firstParameter = false;
         }

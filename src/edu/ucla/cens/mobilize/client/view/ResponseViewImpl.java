@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -81,7 +82,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   ResponseView.Presenter presenter;
   Privacy selectedPrivacy = Privacy.UNDEFINED;
-
+  
   public ResponseViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
     setEventHandlers();
@@ -315,46 +316,50 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   public void renderResponses(List<SurveyResponse> responses) {
     this.responseList.clear();
     for (SurveyResponse response : responses) {
-      ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
-      responseWidget.setCampaignName(response.getCampaignName());
-      responseWidget.setDate(response.getResponseDate());
-      responseWidget.setPrivacy(response.getPrivacyState());
-      responseWidget.setSurveyResponseKey(response.getResponseKey());
-      responseWidget.setSurveyName(response.getSurveyName());
-      for (PromptResponse promptResponse : response.getPromptResponses()) {
-        switch (promptResponse.getPromptType()) {
-          case TIMESTAMP:
-            Date timestamp = DateUtils.translateFromServerFormat(promptResponse.getResponseRaw());
-            responseWidget.addPromptResponseTimestamp(promptResponse.getText(), timestamp);
-            break;
-          case PHOTO:
-            String rawResponse = promptResponse.getResponseRaw();
-            // special case skipped/invalid photos by copying over the text
-            if ("NOT_DISPLAYED".equals(rawResponse) || "SKIPPED".equals(rawResponse)) {
-              responseWidget.addPromptResponseText(promptResponse.getText(), rawResponse);
-            } else {
-              // generate urls for thumbnail and full sized photo and pass to widget
-              String thumbUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
-                  response.getUserName(),
-                  response.getCampaignId(),
-                  AwUrlBasedResourceUtils.ImageSize.SMALL);
-              String fullSizedImageUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
-                  response.getUserName(),
-                  response.getCampaignId(),
-                  AwUrlBasedResourceUtils.ImageSize.ORIGINAL);
-              responseWidget.addPromptResponsePhoto(promptResponse.getText(), 
-                                                    fullSizedImageUrl,
-                                                    thumbUrl);
-            }
-            break;
-          default:
-            responseWidget.addPromptResponseText(promptResponse.getText(), promptResponse.getResponsePrepared());
-            break;
-        }
-      }
+      ResponseDisclosurePanel responseWidget = renderResponseAsDisclosurePanel(response);
       this.responseList.add(responseWidget);
-      
     }
+  }
+  
+  private ResponseDisclosurePanel renderResponseAsDisclosurePanel(SurveyResponse response) {
+    ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
+    responseWidget.setCampaignName(response.getCampaignName());
+    responseWidget.setDate(response.getResponseDate());
+    responseWidget.setPrivacy(response.getPrivacyState());
+    responseWidget.setSurveyResponseKey(response.getResponseKey());
+    responseWidget.setSurveyName(response.getSurveyName());
+    for (PromptResponse promptResponse : response.getPromptResponses()) {
+      switch (promptResponse.getPromptType()) {
+        case TIMESTAMP:
+          Date timestamp = DateUtils.translateFromServerFormat(promptResponse.getResponseRaw());
+          responseWidget.addPromptResponseTimestamp(promptResponse.getText(), timestamp);
+          break;
+        case PHOTO:
+          String rawResponse = promptResponse.getResponseRaw();
+          // special case skipped/invalid photos by copying over the text
+          if ("NOT_DISPLAYED".equals(rawResponse) || "SKIPPED".equals(rawResponse)) {
+            responseWidget.addPromptResponseText(promptResponse.getText(), rawResponse);
+          } else {
+            // generate urls for thumbnail and full sized photo and pass to widget
+            String thumbUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
+                response.getUserName(),
+                response.getCampaignId(),
+                AwUrlBasedResourceUtils.ImageSize.SMALL);
+            String fullSizedImageUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
+                response.getUserName(),
+                response.getCampaignId(),
+                AwUrlBasedResourceUtils.ImageSize.ORIGINAL);
+            responseWidget.addPromptResponsePhoto(promptResponse.getText(), 
+                                                  fullSizedImageUrl,
+                                                  thumbUrl);
+          }
+          break;
+        default:
+          responseWidget.addPromptResponseText(promptResponse.getText(), promptResponse.getResponsePrepared());
+          break;
+      }
+    }
+    return responseWidget;
   }
 
   @Override
