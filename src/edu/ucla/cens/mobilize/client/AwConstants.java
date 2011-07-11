@@ -34,6 +34,15 @@ public class AwConstants {
     // Google maps api keys
     private final static String googleMapsApiKeyDebug = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxRi_j0U6kJrkFvY4-OX2XYmEAa76BQ2ZkOydhEh44vXPVI_djTFw81U0w";
     private final static String googleMapsApiKeyRelease = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxSaGzzTMV7IrE3zhGi4xAUyZKf_rhQSdRF4uQQEE-RzoBWBBPLzb1MWNg";
+    public static String getGoogleMapsApiKey() {
+      String mapKey = null;
+      if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
+        mapKey = googleMapsApiKeyDebug;
+      } else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
+        mapKey = googleMapsApiKeyRelease;
+      } 
+      return mapKey;
+    }
     
     // API Endpoints
     // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/AndWellness_Read_API_2.2

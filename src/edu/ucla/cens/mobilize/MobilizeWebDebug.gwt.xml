@@ -2,6 +2,7 @@
 <module rename-to='mobilizeweb'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
+  <inherits name="com.google.gwt.maps.GoogleMaps"/>
 
   <!-- GWT logging -->
   <inherits name='com.google.gwt.logging.Logging' />    
@@ -38,6 +39,7 @@
   <!-- Other module inherits                                      -->
   <inherits name="name.pehl.totoe.xml.XmlParser" /> <!-- for xpath -->
 
+
   <!-- Specify the app entry point class.                         -->
   <entry-point class='edu.ucla.cens.mobilize.client.MainApp'/>
 
@@ -48,7 +50,5 @@
   <!-- keep long css names so you can find them in web inspector/firebug -->
   <set-configuration-property name="CssResource.style" value="pretty"/>
   
-  <inherits name="com.google.gwt.xml.XML"/>
-  <inherits name="com.google.gwt.xml.XML"/>
   <inherits name="com.google.gwt.xml.XML"/>
 </module>

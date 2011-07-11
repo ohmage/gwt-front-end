@@ -68,7 +68,7 @@ public class SurveyResponseReadParams extends RequestParams {
     
     params.put("return_id", this.returnId ? "true" : "false");
         
-    if (!this.privacyState_opt.equals(Privacy.UNDEFINED)) { // leave off if undefined
+    if (this.privacyState_opt != null && !this.privacyState_opt.equals(Privacy.UNDEFINED)) { // leave off if undefined
       params.put("privacy_state", this.privacyState_opt.toString().toLowerCase());
     }
     
@@ -87,6 +87,7 @@ public class SurveyResponseReadParams extends RequestParams {
     return MapUtils.translateToParameters(params);
   }
 
+  // helper method
   // returns serialized list if not empty, special token meaning all values otherwise
   private String getStringOrDefault(List<String> optionalList) {
     String retval = null;

@@ -19,6 +19,7 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
@@ -42,6 +43,8 @@ public class ExploreDataPresenter implements Presenter {
   
   @Override
   public void go(Map<String, String> params) {
+    view.clearPlot(); // clear existing plot, if any
+    
     String selectedPlotTypeString = params.containsKey("plot") ? params.get("plot") : null;
     PlotType selectedPlotType = PlotType.fromHistoryTokenString(selectedPlotTypeString);
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
@@ -64,9 +67,35 @@ public class ExploreDataPresenter implements Presenter {
     view.setSelectedPromptX(selectedX);
     view.setSelectedPromptY(selectedY);
     
-    showPlot();
+    if (PlotType.MAP.equals(selectedPlotType)) {
+      // fetch points to match data filters
+      fetchResponseDataAndShowOnMap(selectedCampaign, selectedParticipant); // participant can be null
+    } else {
+      showPlot();
+    }
   }
     
+  private void fetchResponseDataAndShowOnMap(String campaignId, String participantUsername) {
+    dataService.fetchSurveyResponses(participantUsername, campaignId, 
+       null, //surveyName 
+       null, //privacy
+       null, //startDate 
+       null, //endDate 
+       new AsyncCallback<List<SurveyResponse>>() {
+          @Override
+          public void onFailure(Throwable caught) {
+            _logger.severe(caught.getMessage());
+            ErrorDialog.show("There was a problem fetching data points for the geo visualization",
+                             caught.getMessage());
+          }
+      
+          @Override
+          public void onSuccess(List<SurveyResponse> result) {
+            view.showResponsesOnMap(result);
+          }
+    });     
+  }
+  
   public void setView(ExploreDataView view) {
     this.view = view;
     addEventHandlersToView();
@@ -234,41 +263,8 @@ public class ExploreDataPresenter implements Presenter {
       }
     });
   }
-  
-  // when a plot fails to load, image onerror handler can call this function
-  // with the same arguments used to construct the image url to find out what
-  // the problem was
-  private void fetchAndShowPlotErrorMessage(PlotType plotType, 
-                                            int width, 
-                                            int height,
-                                            String campaignId,
-                                            String participantId,
-                                            String promptX,
-                                            String promptY) {
-    dataService.fetchVisualizationError(plotType,
-                                        width,
-                                        height,
-                                        campaignId,
-                                        participantId,
-                                        promptX,
-                                        promptY,
-                                        new AsyncCallback<String>() {
-  
-        @Override
-        public void onFailure(Throwable caught) {
-          ErrorDialog.show("There was a problem loading the visualization.",
-                           caught.getMessage());
-        }
-    
-        @Override
-        public void onSuccess(String result) {
-          // must have been a transient error. try loading it again
-          view.setPlotUrl(result); // no error handler this time
-        }
-      }); 
-    
-  }
 
+  
   private void fireHistoryTokenToMatchSelectedSettings() {
     PlotType selectedPlotType = view.getSelectedPlotType();
     String selectedCampaign = view.getSelectedCampaign();

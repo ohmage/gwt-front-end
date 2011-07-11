@@ -2,6 +2,7 @@
 <module rename-to='mobilizeweb'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
+  <inherits name='com.google.gwt.maps.GoogleMaps' />
 
   <!-- GWT logging -->
   <inherits name='com.google.gwt.logging.Logging' />    
@@ -40,8 +41,7 @@
 
   <!-- Other module inherits                                      -->
 
-  <!-- for xpath -->
-  <inherits name="name.pehl.totoe.xml.XmlParser" />
+  <inherits name="name.pehl.totoe.xml.XmlParser" /> <!-- for xpath -->
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='edu.ucla.cens.mobilize.client.MainApp'/>

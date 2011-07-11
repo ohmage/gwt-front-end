@@ -6,10 +6,12 @@ import java.util.Map;
 
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SourcesTreeEvents;
 
 import edu.ucla.cens.mobilize.client.common.PlotType;
+import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 
 public interface ExploreDataView extends IsWidget {
   
@@ -45,7 +47,9 @@ public interface ExploreDataView extends IsWidget {
   void setPlotUrl(String url);
   void setPlotUrl(String url, ErrorHandler errorHandler);
   void clearPlot();
-  // TODO: what about table/map?  
+  // FIXME: what if there are multiple responses from the same location?
+  void showResponsesOnMap(List<SurveyResponse> responses);
+  void showResponseDetail(LatLng location);
 
   // methods for enabling/disabling form fields
   void setCampaignDropDownEnabled(boolean isEnabled);
@@ -66,6 +70,7 @@ public interface ExploreDataView extends IsWidget {
   HasClickHandlers getDrawPlotButton();
   HasClickHandlers getPdfButton();
   HasClickHandlers getExportDataButton();
+  
   
   // validation helpers
   boolean isMissingRequiredField();

@@ -2,6 +2,8 @@ package edu.ucla.cens.mobilize.client.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +14,8 @@ import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.event.shared.HasHandlers;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -31,7 +35,23 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.google.gwt.maps.client.InfoWindowContent;
+import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.Maps;
+import com.google.gwt.maps.client.control.LargeMapControl;
+import com.google.gwt.maps.client.event.MapClickHandler;
+import com.google.gwt.maps.client.geom.LatLng;
+import com.google.gwt.maps.client.geom.LatLngBounds;
+import com.google.gwt.maps.client.overlay.Marker;
+
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.PlotType;
+import edu.ucla.cens.mobilize.client.model.PromptResponse;
+import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel;
+import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
+import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 @SuppressWarnings("deprecation")
 public class ExploreDataViewImpl extends Composite implements ExploreDataView {
@@ -72,6 +92,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @UiField FlowPanel plotContainer;
   
   private List<ListBox> requiredFields = new ArrayList<ListBox>();
+  private MapWidget map;
+  private Map<LatLng, SurveyResponse> locationToResponseMap = new HashMap<LatLng,SurveyResponse>();
+  private MapClickHandler mapClickHandler;
   
   public ExploreDataViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -82,6 +105,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
     // these are required when enabled
     requiredFields = Arrays.asList(campaignListBox, participantListBox, promptXListBox, promptYListBox);
+    
   }
 
   
@@ -158,8 +182,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public String getSelectedCampaign() {
+    if (!campaignListBox.isEnabled()) return null;
     int index = campaignListBox.getSelectedIndex();
     return (index > -1) ? campaignListBox.getValue(index) : null;
+    
   }
 
 
@@ -187,6 +213,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public String getSelectedParticipant() {
+    if (!participantListBox.isEnabled()) return null;
     int index = participantListBox.getSelectedIndex();
     return (index > -1) ? participantListBox.getValue(index) : null;
   }
@@ -216,6 +243,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public String getSelectedPromptX() {
+    if (!promptXListBox.isEnabled()) return null;
     int index = promptXListBox.getSelectedIndex();
     return (index > -1) ? promptXListBox.getValue(index) : null;
   }
@@ -245,6 +273,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public String getSelectedPromptY() {
+    if (!promptYListBox.isEnabled()) return null;
     int index = promptYListBox.getSelectedIndex();
     return (index > -1) ? promptYListBox.getValue(index) : null;
   }
@@ -275,25 +304,6 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @Override
   public void setPlotUrl(String url) {
     setPlotUrl(url, null); // no custom error handler
-    clearPlot();
-    final Image loading = new Image();
-    loading.setStyleName(style.waiting());
-    plotContainer.add(loading);
-    Image plot = new Image(url);
-    plot.addLoadHandler(new LoadHandler() {
-      @Override
-      public void onLoad(LoadEvent event) {
-        plotContainer.remove(loading);
-      }
-    });
-    plot.addErrorHandler(new ErrorHandler() {
-      @Override
-      public void onError(ErrorEvent event) {
-        plotContainer.remove(loading);
-      }
-    });
-    plotContainer.add(plot);
-    
   }
 
   @Override
@@ -493,5 +503,90 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
       field.removeStyleName(style.requiredField());
     }
   }
+
+
+  @Override
+  public void showResponsesOnMap(final List<SurveyResponse> responses) {
+    // hide previous plot, if any
+    clearPlot(); 
+
+    // add responses to map, attach it to the document to make it visible
+    if (map == null) { // lazy init map, add responses when done
+      initMap(new Runnable() {
+        @Override
+        public void run() {
+          setResponsesOnMap(responses);
+          plotContainer.add(map); // show it
+        }
+      });
+    } else { // map already initialized
+      setResponsesOnMap(responses); 
+      plotContainer.add(map); // show it
+    }
+  }
+  
+  private void setResponsesOnMap(List<SurveyResponse> responses) {
+    
+    // Clear any previous data points
+    map.clearOverlays();
+    locationToResponseMap.clear();
+    LatLngBounds bounds = LatLngBounds.newInstance();
+
+    // Add new data points 
+    for (SurveyResponse response : responses) {
+      if (response.hasLocation()) {
+        LatLng location = LatLng.newInstance(response.getLatitude(), response.getLongitude());
+        locationToResponseMap.put(location, response);
+        map.addOverlay(new Marker(location));
+        bounds.extend(location);
+      }
+    }    
+    
+    // Zoom and center the map to the new bounds
+    map.setZoomLevel(map.getBoundsZoomLevel(bounds));
+    map.setCenter(bounds.getCenter());
+    
+    
+  }
+  
+  
+  private void initMap(final Runnable actionToTakeWhenDone) {
+    WaitIndicator.show();
+    Maps.loadMapsApi(AwConstants.getGoogleMapsApiKey(), "2", false, new Runnable() {
+      public void run() {
+        map = new MapWidget();
+        map.setSize("100%", "100%");
+        map.addControl(new LargeMapControl());
+        map.setScrollWheelZoomEnabled(true);
+        
+        // if user clicks on a marker, show details for the response at that location
+        map.addMapClickHandler(new MapClickHandler() {
+          @Override
+          public void onClick(MapClickEvent event) {
+            if (event.getOverlay() != null && !event.getOverlay().equals(map.getInfoWindow())) {
+              showResponseDetail(event.getOverlayLatLng());
+            }
+          } 
+        }); 
+        
+        // map is initialized. now run the code
+        if (actionToTakeWhenDone != null) actionToTakeWhenDone.run();
+        WaitIndicator.hide();
+      } // end public void run()
+    }); // end Maps.loadMapsApi
+  }
+  
+  @Override
+  public void showResponseDetail(LatLng location) {
+    if (locationToResponseMap.containsKey(location)) {
+      SurveyResponse response = locationToResponseMap.get(location);
+      StringBuilder sb = new StringBuilder();
+      sb.append(response.getSurveyName()).append(" ");
+      DateTimeFormat format = DateUtils.getTableDisplayFormat();
+      sb.append(format.format(response.getResponseDate()));
+      map.getInfoWindow().open(location, new InfoWindowContent(sb.toString()));
+    }
+  }
+  
   
 }

@@ -576,7 +576,7 @@ public class AndWellnessDataService implements DataService {
   }
 
   @Override
-  public void fetchSurveyResponses(String userName,
+  public void fetchSurveyResponses(String userNameOrNull,
                                    final String campaignId,
                                    String surveyName, // ignored if null or ""
                                    Privacy privacy,
@@ -589,7 +589,8 @@ public class AndWellnessDataService implements DataService {
     params.client = this.client;
     params.campaignUrn = campaignId;
     params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
-    params.userList.add(userName);
+    String userName = userNameOrNull != null ? userNameOrNull : AwConstants.specialAllValuesToken;
+    params.userList.add(userName != null ? userName: AwConstants.specialAllValuesToken);
     // if surveyName is omitted, readparams object sends special token for all surveys
     if (surveyName != null && !surveyName.isEmpty())  params.surveyIdList_opt.add(surveyName);
     params.privacyState_opt = privacy;
@@ -626,7 +627,7 @@ public class AndWellnessDataService implements DataService {
     params.client = this.client;
     params.campaignUrn = campaignId;
     params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
-    params.userList.add(userName);
+    params.userList.add(userName != null ? userName : AwConstants.specialAllValuesToken);
     // if surveyName is omitted, readparams object sends special token for all surveys
     if (surveyName != null && !surveyName.isEmpty())  params.surveyIdList_opt.add(surveyName);
     params.privacyState_opt = privacy;

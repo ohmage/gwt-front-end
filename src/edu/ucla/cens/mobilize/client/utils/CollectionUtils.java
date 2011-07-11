@@ -31,10 +31,10 @@ public class CollectionUtils {
     
     /**
      * Joins a Collection of Strings into a single String with the passed delimiter.
-     * 
+     * Throws runtime exception if collection contains a null string.
      * @param s The Collection to join.
      * @param delimiter The delimiter to insert between joins.
-     * @return The single joined String.
+     * @return The single joined String. Returns the empty string if list was empty or null.
      */
     public static String join(Collection<String> s, String delimiter) {
         if (s == null || s.isEmpty()) return "";
@@ -42,7 +42,9 @@ public class CollectionUtils {
         StringBuilder builder = new StringBuilder(iter.next());
         while( iter.hasNext() )
         {
-            builder.append(delimiter).append(iter.next());
+            String item = iter.next();
+            if (item == null) throw new RuntimeException("CollectionUtils cannot join collection with null entry.");
+            builder.append(delimiter).append(item);
         }
         return builder.toString();
     }
