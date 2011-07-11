@@ -87,7 +87,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @UiField ListBox promptXListBox;
   @UiField ListBox promptYListBox;
   @UiField Button drawPlotButton;
-  @UiField Button pdfButton;
+  //@UiField Button pdfButton;
   @UiField Button exportButton;
   @UiField FlowPanel plotContainer;
   
@@ -95,6 +95,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   private MapWidget map;
   private Map<LatLng, SurveyResponse> locationToResponseMap = new HashMap<LatLng,SurveyResponse>();
   private MapClickHandler mapClickHandler;
+  private Image spinner; 
   
   public ExploreDataViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -106,6 +107,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     // these are required when enabled
     requiredFields = Arrays.asList(campaignListBox, participantListBox, promptXListBox, promptYListBox);
     
+    // set up image to use as wait indicator
+    spinner = new Image();
+    spinner.setStyleName(style.waiting());
   }
 
   
@@ -160,8 +164,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public void setCampaignList(Map<String, String> campaignIdToNameMap) {
-    campaignListBox.clear();
     if (campaignIdToNameMap == null) return;
+    campaignListBox.clear();
     for (String campaignId : campaignIdToNameMap.keySet()) {
       campaignListBox.addItem(campaignIdToNameMap.get(campaignId), campaignId);
     }
@@ -309,14 +313,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @Override
   public void setPlotUrl(String url, final ErrorHandler errorHandler) {
     clearPlot();
-    final Image loading = new Image();
-    loading.setStyleName(style.waiting());
-    plotContainer.add(loading);
+    //final Image loading = new Image();
+    //loading.setStyleName(style.waiting());
+    //plotContainer.add(loading);
+    showWaitIndicator();
     Image plot = new Image(url);
     plot.addLoadHandler(new LoadHandler() {
       @Override
       public void onLoad(LoadEvent event) {
-        plotContainer.remove(loading);
+        hideWaitIndicator();
       }
     });
     plot.addErrorHandler(new ErrorHandler() {
@@ -331,6 +336,17 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     
     plotContainer.add(plot);
     
+  }
+  
+  @Override
+  public void showWaitIndicator() {
+     clearPlot();
+     plotContainer.add(spinner);
+  }
+  
+  @Override
+  public void hideWaitIndicator() {
+    plotContainer.remove(spinner);
   }
 
   @Override
@@ -366,7 +382,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public void disableAllDataControls() {
-    campaignListBox.clear();
+    campaignListBox.setSelectedIndex(-1); // campaigns never change, just deselect
     participantListBox.clear();
     promptXListBox.clear();
     promptYListBox.clear();
@@ -377,7 +393,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     promptXListBox.setEnabled(false);
     promptYListBox.setEnabled(false);
     drawPlotButton.setEnabled(false);
-    pdfButton.setEnabled(false);
+    //pdfButton.setEnabled(false);
     exportButton.setEnabled(false);
     
     // remove style name that marks control as required
@@ -393,7 +409,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   public void setDataButtonsEnabled(boolean isEnabled) {
     dataControls.removeStyleName(style.disabled());
     drawPlotButton.setEnabled(isEnabled);
-    pdfButton.setEnabled(isEnabled);
+    //pdfButton.setEnabled(isEnabled);
     exportButton.setEnabled(isEnabled);
   }
   
@@ -426,12 +442,12 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     return drawPlotButton;
   }
 
-
+/*
   @Override
   public HasClickHandlers getPdfButton() {
     return pdfButton;
   }
-
+*/
 
   @Override
   public HasClickHandlers getExportDataButton() {
@@ -517,6 +533,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
         public void run() {
           setResponsesOnMap(responses);
           plotContainer.add(map); // show it
+          hideWaitIndicator();
         }
       });
     } else { // map already initialized
@@ -551,7 +568,6 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   
   
   private void initMap(final Runnable actionToTakeWhenDone) {
-    WaitIndicator.show();
     Maps.loadMapsApi(AwConstants.getGoogleMapsApiKey(), "2", false, new Runnable() {
       public void run() {
         map = new MapWidget();
@@ -571,7 +587,6 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
         
         // map is initialized. now run the code
         if (actionToTakeWhenDone != null) actionToTakeWhenDone.run();
-        WaitIndicator.hide();
       } // end public void run()
     }); // end Maps.loadMapsApi
   }

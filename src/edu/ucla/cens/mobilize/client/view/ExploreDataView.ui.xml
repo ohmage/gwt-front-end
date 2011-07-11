@@ -160,7 +160,7 @@
          </g:CaptionPanel>
          <g:HTMLPanel addStyleNames='{style.buttonDiv}'>
            <g:Button ui:field='drawPlotButton'>Draw Plot</g:Button>
-           <g:Button ui:field='pdfButton'>PDF</g:Button>
+           <!--<g:Button ui:field='pdfButton'>PDF</g:Button>-->
            <g:Button ui:field='exportButton'>Export</g:Button>
          </g:HTMLPanel>
        </g:VerticalPanel>

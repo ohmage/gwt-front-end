@@ -43,19 +43,22 @@ public class ExploreDataPresenter implements Presenter {
   
   @Override
   public void go(Map<String, String> params) {
-    view.clearPlot(); // clear existing plot, if any
     
+    // clear existing plot, if any
+    view.clearPlot(); 
+    
+    // get plot settings from params
     String selectedPlotTypeString = params.containsKey("plot") ? params.get("plot") : null;
     PlotType selectedPlotType = PlotType.fromHistoryTokenString(selectedPlotTypeString);
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
     String selectedParticipant = params.containsKey("uid") ? params.get("uid") : null;
     String selectedX = params.containsKey("x") ? params.get("x") : null;
     String selectedY = params.containsKey("y") ? params.get("y") : null;
-
-    // enable/disable filters based on plot selection
-    setEnabledFiltersForPlotType(selectedPlotType);
+    
     // fill campaign choices from userInfo
     view.setCampaignList(userInfo.getCampaigns());
+    // enable/disable filters based on plot selection
+    setEnabledFiltersForPlotType(selectedPlotType);
     // fetch and fill participant choices based on selected campaign (if appropriate for plot)
     fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
     // fill prompt choices based on selected campaign (if appropriate for plot)
@@ -76,6 +79,7 @@ public class ExploreDataPresenter implements Presenter {
   }
     
   private void fetchResponseDataAndShowOnMap(String campaignId, String participantUsername) {
+    view.showWaitIndicator();
     dataService.fetchSurveyResponses(participantUsername, campaignId, 
        null, //surveyName 
        null, //privacy
@@ -92,6 +96,7 @@ public class ExploreDataPresenter implements Presenter {
           @Override
           public void onSuccess(List<SurveyResponse> result) {
             view.showResponsesOnMap(result);
+            view.hideWaitIndicator();
           }
     });     
   }

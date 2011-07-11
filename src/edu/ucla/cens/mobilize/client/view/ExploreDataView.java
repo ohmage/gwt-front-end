@@ -59,6 +59,8 @@ public interface ExploreDataView extends IsWidget {
   void setDataButtonsEnabled(boolean isEnabled);
   void disableAllDataControls();
   
+  void showWaitIndicator();
+  void hideWaitIndicator();
   
   // methods for event handling
   @SuppressWarnings("deprecation")
@@ -68,7 +70,7 @@ public interface ExploreDataView extends IsWidget {
   HasClickHandlers getPromptXDropDown();
   HasClickHandlers getPromptYDropDown();
   HasClickHandlers getDrawPlotButton();
-  HasClickHandlers getPdfButton();
+  //HasClickHandlers getPdfButton();
   HasClickHandlers getExportDataButton();
   
   

@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client.model;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,9 +66,14 @@ public class UserInfo {
   public Set<String> getClassIds() {
     return this.classIdToNameMap.keySet();
   }
-  
+
+  // returns copy to prevent accidental mutate
   public Map<String, String> getCampaigns() {
-    return this.campaignIdToNameMap;
+    Map<String, String> copy = new HashMap<String, String>();
+    for (String campaignId : this.campaignIdToNameMap.keySet()) {
+      copy.put(campaignId, this.campaignIdToNameMap.get(campaignId));
+    }
+    return copy;
   }
   
   public void setCampaigns(Map<String, String> campaignIdToNameMap) {
