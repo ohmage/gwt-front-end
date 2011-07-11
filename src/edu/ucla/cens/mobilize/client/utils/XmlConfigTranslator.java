@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
+import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyInfo;
 
@@ -97,6 +98,15 @@ public class XmlConfigTranslator {
     return ids;
   }
   
+  public List<PromptInfo> getPromptInfos() {
+    List<PromptInfo> retval = new ArrayList<PromptInfo>();
+    List<Node> promptNodes = xmlDocument().selectNodes("//prompt");
+    for (Node n : promptNodes) {
+      retval.add(nodeToPromptInfo(n));
+    }
+    return retval;
+  }
+  
   // gets a list of all prompt ids used in this campaign. assumes prompt ids
   // are unique across all surveys
   public List<String> getPromptIds() {
@@ -143,7 +153,7 @@ public class XmlConfigTranslator {
     info.setPromptId(n.selectValue("id")); 
     info.setDisplayLabel(n.selectValue("displayLabel"));
     info.setDisplayType(n.selectValue("displayType"));
-    info.setPromptType(n.selectValue("promptType"));
+    info.setPromptType(PromptType.fromString(n.selectValue("promptType")));
     String unit = n.selectValue("unit"); // optional
     info.setUnit((unit != null) ? unit : ""); // set to blank if missing
     return info;

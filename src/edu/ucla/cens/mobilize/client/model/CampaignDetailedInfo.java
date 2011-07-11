@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.utils.XmlConfigTranslator;
@@ -123,6 +125,12 @@ public class CampaignDetailedInfo {
   
   public List<String> getPromptIds() {
     return this.configTranslator.getPromptIds(); 
+  }
+  
+  // Prompt ids are unique within a campaign (as of 07/2011) so it's reasonable
+  // to get just prompts without getting surveys
+  public List<PromptInfo> getPrompts() {
+    return this.configTranslator.getPromptInfos();
   }
   
   // permissions 

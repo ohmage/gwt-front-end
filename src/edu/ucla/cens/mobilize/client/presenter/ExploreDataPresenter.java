@@ -1,5 +1,7 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +19,10 @@ import com.google.gwt.user.client.ui.TreeListener;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.PlotType;
+import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
@@ -34,6 +38,14 @@ public class ExploreDataPresenter implements Presenter {
   ExploreDataView view;
 
   private static Logger _logger = Logger.getLogger(ExploreDataPresenter.class.getName());
+  
+  private static List<PromptType> supportedUnivariate = Arrays.asList(PromptType.NUMBER, 
+                                                                      PromptType.TEXT, 
+                                                                      PromptType.SINGLE_CHOICE, 
+                                                                      PromptType.REMOTE_ACTIVITY, 
+                                                                      PromptType.MULTI_CHOICE);
+  private static List<PromptType> supportedBivariate = Arrays.asList(PromptType.NUMBER,
+                                                                      PromptType.SINGLE_CHOICE);
   
   public ExploreDataPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
     this.userInfo = userInfo;
@@ -62,7 +74,7 @@ public class ExploreDataPresenter implements Presenter {
     // fetch and fill participant choices based on selected campaign (if appropriate for plot)
     fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
     // fill prompt choices based on selected campaign (if appropriate for plot)
-    fetchAndFillPromptChoices(selectedCampaign, selectedX, selectedY);
+    fetchAndFillPromptChoices(selectedCampaign, selectedPlotType, selectedX, selectedY);
     
     view.setSelectedCampaign(selectedCampaign);
     view.setSelectedParticipant(selectedParticipant);
@@ -126,7 +138,8 @@ public class ExploreDataPresenter implements Presenter {
       @Override
       public void onClick(ClickEvent event) {
         String campaignId = view.getSelectedCampaign();
-        fetchAndFillPromptChoices(campaignId, null, null);
+        PlotType plotType = view.getSelectedPlotType();
+        fetchAndFillPromptChoices(campaignId, plotType, null, null);
         fetchAndFillParticipantChoices(campaignId, null);
       }
     });
@@ -206,9 +219,10 @@ public class ExploreDataPresenter implements Presenter {
   }
   
   private void fetchAndFillPromptChoices(String campaignId, 
+                                         final PlotType plotType,
                                          final String promptToSelectX, 
                                          final String promptToSelectY) {
-    if (campaignId == null) return;
+    if (campaignId == null || plotType == null) return;
     dataService.fetchCampaignDetail(campaignId, new AsyncCallback<CampaignDetailedInfo>() {
       @Override
       public void onFailure(Throwable caught) {
@@ -217,18 +231,42 @@ public class ExploreDataPresenter implements Presenter {
 
       @Override
       public void onSuccess(CampaignDetailedInfo result) {
-        List<String> promptIds = result.getPromptIds();
         Map<String, String> promptIdToNameMap = new HashMap<String, String>();
-        for (String promptId : promptIds) {
-          promptIdToNameMap.put(promptId, promptId);
-          // FIXME: display prompt text here instead of id?
-        }
+        List<PromptInfo> prompts = result.getPrompts();
+        for (PromptInfo prompt : prompts) {
+          if (promptTypeIsSupported(plotType, prompt.getPromptType())) {
+            String promptId = prompt.getPromptId();
+            promptIdToNameMap.put(promptId, promptId); // name==id for now
+          }
+        }     
         view.setPromptXList(promptIdToNameMap);
         view.setPromptYList(promptIdToNameMap);
         view.setSelectedPromptX(promptToSelectX);
         view.setSelectedPromptY(promptToSelectY);
       }
     });
+  }
+  
+  private boolean promptTypeIsSupported(PlotType plotType, PromptType promptType) {
+    boolean isSupported = false;
+    switch (plotType) {
+    case SURVEY_RESPONSE_COUNT:
+    case USER_TIMESERIES:
+    case PROMPT_DISTRIBUTION:
+    case PROMPT_TIMESERIES:
+      isSupported = supportedUnivariate.contains(promptType);
+      break;
+    case SCATTER_PLOT:
+    case DENSITY_PLOT:
+      isSupported = supportedBivariate.contains(promptType);
+      break;
+    case MAP:
+      isSupported = true; // all prompt types supported for geo
+      break;
+    default:
+      break;
+    }
+    return isSupported;
   }
   
   private void showPlot() {
@@ -240,6 +278,8 @@ public class ExploreDataPresenter implements Presenter {
     final String promptY = view.getSelectedPromptY();
     final int width = view.getPlotPanelWidth();
     final int height = view.getPlotPanelHeight();
+    
+    
     String url = dataService.getVisualizationUrl(plotType,
                                                  width,
                                                  height,

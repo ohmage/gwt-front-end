@@ -1,5 +1,7 @@
 package edu.ucla.cens.mobilize.client.model;
 
+import edu.ucla.cens.mobilize.client.common.PromptType;
+
 /**
  * Stores information about an individual prompt.
  * 
@@ -11,7 +13,7 @@ package edu.ucla.cens.mobilize.client.model;
 public class PromptInfo {
   
     private String promptId;
-    private String promptType;
+    private PromptType promptType;
     private String displayLabel;
     private String displayType;
     private String unit;
@@ -31,9 +33,9 @@ public class PromptInfo {
     
     public void setDisplayLabel(String displayLabel) { this.displayLabel = displayLabel; }
     public String getDisplayLabel() { return displayLabel; }
-    
-    public void setPromptType(String promptType) { this.promptType = promptType; }
-    public String getPromptType() { return promptType; }
+
+    public void setPromptType(PromptType promptType) { this.promptType = promptType; }
+    public PromptType getPromptType() { return promptType; }
     
     public void setDisplayType(String displayType) { this.displayType = displayType; }
     public String getDisplayType() { return displayType; }

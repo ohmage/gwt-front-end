@@ -1,7 +1,6 @@
 package edu.ucla.cens.mobilize.client.common;
 
 public enum PromptType {
-  UNRECOGNIZED,
   TIMESTAMP,
   NUMBER,
   HOURS_BEFORE_NOW,
@@ -10,19 +9,20 @@ public enum PromptType {
   SINGLE_CHOICE,
   SINGLE_CHOICE_CUSTOM,
   MULTI_CHOICE_CUSTOM,
-  PHOTO;
+  PHOTO,
+  REMOTE_ACTIVITY;
 
   
   /**
    * @param promptTypeString
-   * @return matching enum value or UNRECOGNIZED if none match
+   * @return matching enum value or null if none match
    */
   public static PromptType fromString(String promptTypeString) {
     String str = promptTypeString.trim().toUpperCase();
-    try {
-      return PromptType.valueOf(str);
-    } catch (Exception exception) { 
-      return PromptType.UNRECOGNIZED;
-    }
+    PromptType retval = null;
+    try { 
+      retval = PromptType.valueOf(str);
+    } catch (Exception exception) { }
+    return retval;
   }
 }
