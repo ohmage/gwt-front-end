@@ -77,4 +77,6 @@ public interface ExploreDataView extends IsWidget {
   // validation helpers
   boolean isMissingRequiredField();
   void clearMissingFieldMarkers();
+  
+  void doExportCsvFormPost(String url, Map<String, String> params);
 }

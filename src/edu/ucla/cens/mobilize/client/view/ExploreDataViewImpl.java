@@ -25,6 +25,8 @@ import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -601,6 +603,23 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
       sb.append(format.format(response.getResponseDate()));
       map.getInfoWindow().open(location, new InfoWindowContent(sb.toString()));
     }
+  }
+
+
+  @Override
+  public void doExportCsvFormPost(String url, Map<String, String> params) {
+    FormPanel exportForm = new FormPanel(); // will post to hidden iframe
+    exportForm.setAction(url);
+    exportForm.setMethod(FormPanel.METHOD_POST);
+    FlowPanel innerContainer = new FlowPanel();    
+    for (String paramName : params.keySet()) {
+      Hidden field = new Hidden();
+      field.setName(paramName);
+      field.setValue(params.get(paramName));
+      innerContainer.add(field);
+    }
+    exportForm.add(innerContainer);
+    exportForm.submit();
   }
   
   

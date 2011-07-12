@@ -1,6 +1,5 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +16,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
 
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.PromptType;
@@ -151,6 +151,13 @@ public class ExploreDataPresenter implements Presenter {
         if (!view.isMissingRequiredField()) {
           fireHistoryTokenToMatchSelectedSettings();
         }
+      }
+    });
+    
+    view.getExportDataButton().addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        exportCsv(view.getSelectedCampaign());
       }
     });
     
@@ -328,5 +335,13 @@ public class ExploreDataPresenter implements Presenter {
     History.newItem(token, false); // false arg suppresses value change event
     History.fireCurrentHistoryState(); // calls value change handler manually
   }
+  
+  private void exportCsv(String campaignId) {
+    if (campaignId != null) {
+      view.doExportCsvFormPost(AwConstants.getSurveyResponseReadUrl(), 
+                               dataService.getSurveyResponseExportParams(campaignId));
+    }
+  }
+  
 
 }

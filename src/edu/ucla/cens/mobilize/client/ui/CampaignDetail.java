@@ -176,8 +176,8 @@ public class CampaignDetail extends Composite {
   
   private void exportCsv(String campaignId) {
     assert dataService != null : "DataService is null. Did you forget to call CampaignDetail.setDataService?";
-    FormPanel exportForm = new FormPanel("_blank"); // target="_blank" to open new window
-    exportForm.setAction(AwConstants.getSurveyResponseReadUrl()); // FIXME
+    FormPanel exportForm = new FormPanel(); // will post to hidden iframe
+    exportForm.setAction(AwConstants.getSurveyResponseReadUrl()); 
     exportForm.setMethod(FormPanel.METHOD_POST);
     FlowPanel innerContainer = new FlowPanel();
     
@@ -189,9 +189,7 @@ public class CampaignDetail extends Composite {
       innerContainer.add(field);
     }
     exportForm.add(innerContainer);
-    this.container.add(exportForm, "formPanelContainer"); // second arg needed in compiled version
     exportForm.submit();
-    exportForm.removeFromParent();
   }
   
   public void setCampaign(CampaignDetailedInfo campaign) {
