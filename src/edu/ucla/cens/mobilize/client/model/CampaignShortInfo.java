@@ -1,10 +1,8 @@
 package edu.ucla.cens.mobilize.client.model;
 
 import java.util.Date;
-import java.util.List;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
-import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 
@@ -93,5 +91,6 @@ public class CampaignShortInfo {
   public boolean isRunning() {
     return this.runningState.equals(RunningState.RUNNING);
   }
+
 }
 

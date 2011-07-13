@@ -1,5 +1,7 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -154,6 +156,7 @@ public class CampaignPresenter implements Presenter {
 
       @Override
       public void onSuccess(List<CampaignShortInfo> result) {
+        Collections.sort(result, campaignNameComparator);
         // display result
         view.setCampaignList(result);
         // set dropdown filters to match values used in query
@@ -192,5 +195,12 @@ public class CampaignPresenter implements Presenter {
     this.campaignEditPresenter.fetchCampaignAndInitFormForEdit(campaignId);
     this.view.showEditForm();
   }
+  
+  Comparator<CampaignShortInfo> campaignNameComparator = new Comparator<CampaignShortInfo>() {
+    @Override
+    public int compare(CampaignShortInfo arg0, CampaignShortInfo arg1) {
+      return arg0.getCampaignName().compareTo(arg1.getCampaignName());
+    }
+  };
 
 }
