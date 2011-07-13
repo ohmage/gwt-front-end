@@ -70,7 +70,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     // if user is super of a campaign, she can see responses from anyone in the campaign
     if (userInfo.isAdmin() || userInfo.isPrivileged() || userInfo.isSupervisor()) {
       // if campaign is selected, show participants just for that campaign
-      if (selectedCampaign != null) {
+      if (selectedCampaign != null && !selectedCampaign.isEmpty()) { // (would be empty when "All" is selected)
         fetchCampaignParticipantsAndAddToList(selectedCampaign, selectedParticipant);
       } else { // otherwise show anyone visible to current user
         for (String campaignId : userInfo.getCampaignIds()) {
@@ -254,9 +254,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       public void onChange(ChangeEvent event) {
         String selectedCampaign = view.getSelectedCampaign();
         String selectedParticipant = view.getSelectedParticipant();
+        fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
         if (selectedCampaign != null && !selectedCampaign.isEmpty()) { // empty means "All" is selected
           fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, null);
-          fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
         } else {
           // clear survey list when user selects All campaigns
           view.clearSurveyList();  
