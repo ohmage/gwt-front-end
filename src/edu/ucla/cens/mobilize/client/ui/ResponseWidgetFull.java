@@ -50,6 +50,7 @@ public class ResponseWidgetFull extends Composite implements ResponseDisplayWidg
   @UiField Hidden responseKeyHiddenField;
   @UiField CheckBox checkBox;
   @UiField InlineLabel dateLabel;
+  @UiField InlineLabel userLabel;
   @UiField InlineLabel campaignLabel;
   @UiField InlineLabel surveyLabel;
   @UiField InlineLabel privacyLabel;
@@ -118,6 +119,7 @@ public class ResponseWidgetFull extends Composite implements ResponseDisplayWidg
   public void setResponse(SurveyResponse response) {
     this.surveyResponseData = response;
     responseKeyHiddenField.setValue(Integer.toString(response.getResponseKey()));
+    userLabel.setText(response.getUserName());
     dateLabel.setText(response.getResponseDate().toString());
     campaignLabel.setText(response.getCampaignName());
     surveyLabel.setText(response.getSurveyName());

@@ -34,7 +34,7 @@ public interface ResponseView extends IsWidget {
   
   
   // load values in filters
-  void setParticipantList(SortedSet<String> participantNames);
+  void setParticipantList(SortedSet<String> participantNames, boolean makeFirstItemAll);
   void setCampaignList(Map<String, String> campaignIdToNameMap);
   void setSurveyList(List<String> surveyNames);
   void setPrivacyStates(List<Privacy> privacyStates);

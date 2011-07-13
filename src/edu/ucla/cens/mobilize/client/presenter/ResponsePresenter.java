@@ -23,6 +23,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
@@ -64,39 +65,45 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     
     // all users see themselves
     this.participants.add(userInfo.getUserName());
-    this.view.setParticipantList(this.participants);
-    this.view.selectParticipant(selectedParticipant);
     
     // if user is super of a campaign, she can see responses from anyone in the campaign
     if (userInfo.isAdmin() || userInfo.isPrivileged() || userInfo.isSupervisor()) {
-      // if campaign is selected, show participants just for that campaign
-      if (selectedCampaign != null && !selectedCampaign.isEmpty()) { // (would be empty when "All" is selected)
-        fetchCampaignParticipantsAndAddToList(selectedCampaign, selectedParticipant);
-      } else { // otherwise show anyone visible to current user
+      // if no campaign is selected, or "All" is selected fill participant drop down with 
+      //  everyone visible to the current user.
+      if (selectedCampaign == null || 
+          selectedCampaign.equals(AwConstants.specialAllValuesToken)) {
         for (String campaignId : userInfo.getCampaignIds()) {
-          fetchCampaignParticipantsAndAddToList(campaignId, selectedParticipant);
+          fetchCampaignParticipantsAndAddToList(campaignId, selectedParticipant, false);
         }
+      } else {
+        // If a specific campaign is selected, show only participants for that campaign,
+        //   including an "All" choice which shows all participants of that campaign.
+        // (Note that "All" should only appear if one campaign is selected.)
+        fetchCampaignParticipantsAndAddToList(selectedCampaign, selectedParticipant, true);
       }
+    } else {
+      this.participants.add(userInfo.getUserName());
+      view.setParticipantList(this.participants, false);
     }
   }
   
   // fetches participants from just one campaign, adds them to the existing
   // list of participants, and updates the display
   private void fetchCampaignParticipantsAndAddToList(String campaignId, 
-                                                     final String participantToSelect) {
+                                                     final String participantToSelect,
+                                                     final boolean includeAllChoice) {
     dataService.fetchParticipantsWithResponses(campaignId, new AsyncCallback<List<String>>() {
       @Override
       public void onFailure(Throwable caught) {
         AwErrorUtils.logoutIfAuthException(caught);
-        // FIXME: ignore errors when user is not super of campaign?
       }
 
       @Override
       public void onSuccess(List<String> result) {
         if (result != null) {
           // add participants to those already in list and update display
-          participants.addAll(result);
-          view.setParticipantList(participants);
+          participants.addAll(result); // sorted participants
+          view.setParticipantList(participants, includeAllChoice);
           view.selectParticipant(participantToSelect);
         }
       }
@@ -255,7 +262,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         String selectedCampaign = view.getSelectedCampaign();
         String selectedParticipant = view.getSelectedParticipant();
         fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
-        if (selectedCampaign != null && !selectedCampaign.isEmpty()) { // empty means "All" is selected
+        // if a specific campaign is selected (not "All" or none) fill survey drop down to match
+        if (selectedCampaign != null && 
+            !selectedCampaign.equals(AwConstants.specialAllValuesToken)) { 
           fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, null);
         } else {
           // clear survey list when user selects All campaigns
@@ -477,7 +486,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     // clear previous display so app will show appropriate message if all
     // the async requests return 0 responses
     view.clearResponseList();
-    view.setSectionHeader("Showing 0 responses for " + userName);
+    String userDisplayName = userName.equals(AwConstants.specialAllValuesToken) ? "all users" : userName;
+    view.setSectionHeader("Showing 0 responses from " + userDisplayName);
     
     this.responses.clear();
     Map<String, String> campaignsToQuery = new HashMap<String, String>();
@@ -574,7 +584,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             // sort by date, newest first
             Collections.sort(responses, responseDateComparator);
             String numResponses = Integer.toString(responses.size());
-            view.setSectionHeader("Showing " + numResponses + " responses for " + participantName);
+            String displayName = participantName.equals(AwConstants.specialAllValuesToken) ? " all users " : participantName; 
+            view.setSectionHeader("Showing " + numResponses + " responses from " + displayName);
             view.renderResponses(responses);
           }
     });

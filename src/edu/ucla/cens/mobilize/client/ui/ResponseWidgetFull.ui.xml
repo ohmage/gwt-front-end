@@ -4,7 +4,7 @@
 	<ui:style type="edu.ucla.cens.mobilize.client.ui.ResponseWidgetFull.ResponseWidgetStyle">
 	  .container {
 	  	border-bottom: solid 1px #CCC;
-	  	padding: 0px 0px 5px 2px;
+	  	padding: 0px 0px 5px 0px;
 	  }
 		.date {
 		}
@@ -30,7 +30,8 @@
 		.prompt {
 			display: block;
 			float: left;
-			font-size: 0.8em;
+			font-size: 0.9em;
+			min-height: 40px;
       padding: 4px 6px;
 			width: 30%;
     }
@@ -48,14 +49,19 @@
 		}
 		.selected {
 			border-left: solid 2px #A5CD3A;
-			padding-left: 0px; /* remove 2px of padding from .container so it doesn't move */
 		}
+		.selected .header {
+			background-color: #D7E8AB;
+			border-top: solid 1px #A5CD3A;
+			border-bottom: solid 1px #A5CD3A;
+	  }
 	</ui:style>
 	<g:HTMLPanel ui:field='container' addStyleNames='{style.container}'>
 	  <g:FlowPanel addStyleNames='{style.header}'>
 		  <g:Hidden ui:field='responseKeyHiddenField'></g:Hidden>
 		  <g:CheckBox ui:field='checkBox' />
 		  <g:InlineLabel ui:field='dateLabel' addStyleNames='{style.headerField}' />
+		  <g:InlineLabel ui:field='userLabel' addStyleNames='{style.headerField}' />
 		  <g:InlineLabel ui:field='campaignLabel' addStyleNames='{style.headerField}' />
 		  <g:InlineLabel ui:field='surveyLabel' addStyleNames='{style.headerField}' />
 		  <g:InlineLabel ui:field='privacyLabel' addStyleNames='{style.headerField}' />

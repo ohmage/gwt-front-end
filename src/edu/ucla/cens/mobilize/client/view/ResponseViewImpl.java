@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
@@ -194,7 +195,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
 
   @Override
-  public void setParticipantList(SortedSet<String> participantNames) {
+  public void setParticipantList(SortedSet<String> participantNames, boolean makeFirstItemAll) {
     if (participantNames.size() == 1) {
       singleParticipantLabel.setVisible(true);
       singleParticipantLabel.setText(participantNames.first());
@@ -203,9 +204,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       singleParticipantLabel.setVisible(false);
       participantFilter.setVisible(true);
       participantFilter.clear();
+      if (makeFirstItemAll) participantFilter.addItem("All", AwConstants.specialAllValuesToken);
       for (String name : participantNames) {
-        participantFilter.addItem(name); 
+        participantFilter.addItem(name, name); 
       }
+      participantFilter.setSelectedIndex(-1); // default is no selection
     }
   } 
 
@@ -213,7 +216,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   public void setCampaignList(Map<String, String> campaignIdToNameMap) {
     campaignFilter.clear();
     if (campaignIdToNameMap == null) return;
-    campaignFilter.addItem("All", "");
+    campaignFilter.addItem("All", AwConstants.specialAllValuesToken);
     
     // sort campaigns by name then by id
     List<String> nameKeyPairs = new ArrayList<String>();
@@ -251,13 +254,13 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void selectParticipant(String participantName) {
     for (int i = 0; i < participantFilter.getItemCount(); i++) {
-      if (participantFilter.getItemText(i).equals(participantName)) {
+      if (participantFilter.getValue(i).equals(participantName)) {
         participantFilter.setSelectedIndex(i);
         return;
       }
     }
-    // if not found, select first item ("All")
-    participantFilter.setSelectedIndex(0);
+    // if not found, select none
+    participantFilter.setSelectedIndex(-1);
   }
 
   @Override
