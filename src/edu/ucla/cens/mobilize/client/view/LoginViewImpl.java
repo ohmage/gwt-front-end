@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -29,6 +30,10 @@ public class LoginViewImpl extends Composite implements LoginView {
     @UiField TextBox userNameTextBox;
     @UiField PasswordTextBox passwordTextBox;
     @UiField Button loginButton;
+    // dynamically fill html here depending on the installation
+    @UiField HTMLPanel logoPanel;
+    @UiField HTMLPanel linkListDiv;
+    @UiField HTMLPanel descriptionPanel;
     
     private Presenter presenter;
     

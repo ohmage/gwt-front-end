@@ -107,7 +107,7 @@
   <g:HTMLPanel addStyleNames='{style.mainPanel}'>
 
     <g:HTMLPanel addStyleNames='{style.left}'>
-		  <g:HTMLPanel tag='span' addStyleNames='{style.logoPanel}' />
+		  <g:HTMLPanel tag='span' ui:field='logoPanel' addStyleNames='{style.logoPanel}' />
 	  </g:HTMLPanel>
 	  
 	  <g:HTMLPanel addStyleNames='{style.right}'>
@@ -127,7 +127,7 @@
 			  </g:FlowPanel>
 			</g:FormPanel>
 			
-			<g:HTMLPanel addStyleNames='{style.linkListDiv}'>
+			<g:HTMLPanel ui:field='linkListDiv' addStyleNames='{style.linkListDiv}'>
         Find out more about...
         <ul class='{style.linkList}'>
           <li>
@@ -158,18 +158,29 @@
 		<div class='floatstop' />
 	
 		<g:HTMLPanel addStyleNames='{style.leftBottom}'>
-	    <g:HTMLPanel addStyleNames='{style.description}'>
-        <h2>Mobilize: Mobilizing for Innovative Computer Science Teaching and Learning</h2> 
-        <p><em>Mobilize</em> builds upon teenagers' enchantment, fascination, and 
-            engagement with mobile technology. At the heart of <em>Mobilize </em>is the 
-            CENS Participatory Sensing system-an innovative method of data collection 
-            and analysis in which individuals use mobile phones to systematically collect 
-            and interpret data about issues important to them and their communities.</p> 
-            <p><em>Mobilize</em> builds upon teenagers' enchantment, fascination, and 
-            engagement with mobile technology. At the heart of <em>Mobilize </em>is the 
-            CENS Participatory Sensing system-an innovative method of data collection 
-            and analysis in which individuals use mobile phones to systematically collect 
-            and interpret data about issues important to them and their communities.</p> 
+	    <g:HTMLPanel ui:field='descriptionPanel' addStyleNames='{style.description}'>
+        <h2>Mobilize = Computational Thinking + Data for Social Awareness &amp; Civil Engagement</h2>
+
+        <p>Through Mobilize students use mobile phones and web services to
+				systematically collect and interpret data about issues important to
+				them and their communities. The goal of Mobilize is to strengthen
+				computer science instruction throughout our educational system and to
+				develop innovative methods for educating and engaging students in
+				computational thinking and data analysis.
+				</p>
+				<p>The core lessons in the Mobilize units will be framed around
+				principles of Computational Thinking.  Specifically, through
+				Participatory Sensing campaigns, students will identify phenomena to
+				study, consider "designs" for how data are to be collected, and rally
+				the computational resources to execute their plans. Along the way they
+				will grapple with questions related to the nature of data (its
+				representation, formats and protocols for sharing) and of algorithms
+				(rules governing data collection, strategies for analysis). Students
+				will learn about classical themes in Computer Science, from databases
+				to networking, as well as lessons in Statistics, from visualization to
+				basic inference.
+				</p>
+				<p>For more information, visit Mobilize at <a href="http://www.mobilizingcs.org">http://www.mobilizingcs.org</a></p> 
       </g:HTMLPanel>
     </g:HTMLPanel>
     
