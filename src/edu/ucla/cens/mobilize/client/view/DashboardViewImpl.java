@@ -63,7 +63,7 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     this.quickLinkEdit.setVisible(this.canEdit);
     this.quickLinkUpload.setVisible(this.canUpload);
     this.notificationAuthor.setVisible(this.canEdit);
-    this.privateResponsesLink.setTargetHistoryToken(HistoryTokens.responseList(null, null, null, Privacy.PRIVATE, false, null, null));
+    this.privateResponsesLink.setTargetHistoryToken(HistoryTokens.responseList(null, null, null, null, Privacy.PRIVATE, false, null, null));
     this.authorCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.AUTHOR, null, null));
     this.participantCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.PARTICIPANT, null, null));
   }

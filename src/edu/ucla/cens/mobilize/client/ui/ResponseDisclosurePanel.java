@@ -110,6 +110,7 @@ public class ResponseDisclosurePanel extends Composite
 	  this.promptResponseVerticalPanel.clear();
 	}
 	
+	
 	private void addPromptResponse(String promptText, Widget typeSpecificDisplayWidget) {
     // wrap prompt text in styled div
 	  HTML promptTextHtml = new HTML(promptText);
@@ -134,17 +135,18 @@ public class ResponseDisclosurePanel extends Composite
 	  addPromptResponse(promptText, timestampHtml);
 	}
 	
+	/*
 	// integers only
 	public void addPromptResponseNumber(String promptText, int number) {
 	  // TODO: try/catch/
 	  HTML numberHtml = new HTML(Integer.toString(number));
 	  addPromptResponse(promptText, numberHtml);
-	}
+	}*/
 	
 	public void addPromptResponseText(String promptText, String userInputText) {
 	  addPromptResponse(promptText, new HTML(userInputText));
 	}
-	
+	/*
 	// also works for multi-choice custom
 	public void addPromptResponseMultiChoice(String promptText, 
 	                                         List<String> choiceKeys, 
@@ -168,7 +170,7 @@ public class ResponseDisclosurePanel extends Composite
 	  String promptValue = glossary.containsKey(choiceKey) ? 
 	                       glossary.get(choiceKey) : "unrecognized choice";
 	  addPromptResponse(promptText, new HTML(promptValue));
-	}
+	}*/
 	
 	public void addPromptResponsePhoto(String promptText, final String imageUrl, String thumbnailUrl) {
 	  Image image = new Image();

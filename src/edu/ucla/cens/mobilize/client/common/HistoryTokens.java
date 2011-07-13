@@ -119,7 +119,8 @@ public class HistoryTokens {
     return "responses";
   }
   
-  public static String responseList(String participant,
+  public static String responseList(String view,
+                                    String participant,
                                     String campaign,
                                     String survey,
                                     Privacy privacy,
@@ -127,6 +128,7 @@ public class HistoryTokens {
                                     Date startDate,
                                     Date endDate) {
     Map<String, String> params = new HashMap<String, String>();
+    if (view != null) params.put("v", view);
     if (participant != null) params.put("uid", participant);
     if (campaign != null) params.put("cid", campaign);
     if (survey != null) params.put("sid", survey);
@@ -136,6 +138,7 @@ public class HistoryTokens {
     if (endDate != null) params.put("to", DateUtils.translateToHistoryTokenFormat(endDate));
     return params.isEmpty() ? "responses" : "responses?" + MapUtils.translateToParameters(params);
   }
+                                    
 
   
 }

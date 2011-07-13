@@ -128,6 +128,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     assert view != null : "ResponsePresenter.go() called before view was set";
     
     // check history token (url) params for value that should be selected in filters
+    String selectedSubView = params.containsKey("v") ? params.get("v") : "quick";
     String selectedParticipant = params.containsKey("uid") ? params.get("uid") : userInfo.getUserName();
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
     String selectedSurvey = params.containsKey("sid") ? params.get("sid") : null;
@@ -135,6 +136,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     boolean onlyPhotoResponses = params.containsKey("photo") ? params.get("photo").equals("true") : false;
     String startDateString = params.containsKey("from") ? params.get("from") : null;
     String endDateString = params.containsKey("to") ? params.get("to") : null;
+    
+    // set up display
+    view.setSelectedSubView(selectedSubView);
     
     // set up participant filter
     fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
@@ -192,6 +196,35 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   // view must be set before calling this
   private void setViewEventHandlers() {
     assert view != null : "view must be set before calling setViewEventHandlers";
+    
+    // set up subview menu
+    view.getViewLinkFull().addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        view.setSelectedSubView("full");
+        fireHistoryTokenToMatchFilterValues();
+        // FIXME: just update view, don't reload data
+      }
+    });
+
+    view.getViewLinkQuick().addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        view.setSelectedSubView("quick");
+        fireHistoryTokenToMatchFilterValues();
+        // FIXME: just update view, don't reload data
+      }
+    });
+    
+    view.getViewLinkPhoto().addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        view.setSelectedSubView("photo");
+        fireHistoryTokenToMatchFilterValues();
+        // FIXME: just update view, don't reload data
+      }
+    });
+    
     // clicking a share buttons shares all selected responses
     for (HasClickHandlers shareButton : this.view.getShareButtons()) {
       shareButton.addClickHandler(shareClickHandler);
@@ -409,6 +442,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   }
   
   private void fireHistoryTokenToMatchFilterValues() {
+    String selectedSubView = view.getSelectedSubView();
     String participantName = view.getSelectedParticipant();
     if (participantName == null || participantName.isEmpty()) {
       participantName = userInfo.getUserName(); // default to logged in user
@@ -419,7 +453,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     boolean onlyPhotoResponses = view.getHasPhotoToggleValue();
     Date startDate = view.getSelectedStartDate();
     Date endDate = view.getSelectedEndDate();
-    History.newItem(HistoryTokens.responseList(participantName, 
+    History.newItem(HistoryTokens.responseList(selectedSubView,
+                                               participantName, 
                                                campaignId, 
                                                surveyName, 
                                                privacy,

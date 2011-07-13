@@ -28,6 +28,11 @@ public interface ResponseView extends IsWidget {
   void clearErrorMessages();
   void showConfirmDelete(ClickHandler onConfirmDelete);
   
+  // navigation
+  String getSelectedSubView();
+  void setSelectedSubView(String subView);
+  
+  
   // load values in filters
   void setParticipantList(SortedSet<String> participantNames);
   void setCampaignList(Map<String, String> campaignIdToNameMap);
@@ -64,6 +69,9 @@ public interface ResponseView extends IsWidget {
   void setSectionHeader(String headerText);
   
   // gui elements needed by presenter for event handling
+  HasClickHandlers getViewLinkQuick();
+  HasClickHandlers getViewLinkFull();
+  HasClickHandlers getViewLinkPhoto();
   List<HasClickHandlers> getShareButtons();
   List<HasClickHandlers> getMakePrivateButtons();
   List<HasClickHandlers> getDeleteButtons();

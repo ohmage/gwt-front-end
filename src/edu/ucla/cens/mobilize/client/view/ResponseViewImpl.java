@@ -1,12 +1,12 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -35,6 +35,7 @@ import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel;
+import edu.ucla.cens.mobilize.client.ui.ResponseWidgetFull;
 import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
@@ -48,11 +49,13 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
 
   public interface ResponseViewStyles extends CssResource {
-    String sideBarItemSelected();
+    String selectedTopNav();
   }
 
   @UiField ResponseViewStyles style;
-  
+  @UiField Anchor viewLinkQuick;
+  @UiField Anchor viewLinkFull;
+  @UiField Anchor viewLinkPhoto;
   @UiField Label singleParticipantLabel;
   @UiField ListBox participantFilter;
   @UiField ListBox campaignFilter;
@@ -64,7 +67,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField Button applyFiltersButton;
   @UiField MessageWidget messageWidget;
   @UiField Label sectionHeaderTitle;
-  @UiField VerticalPanel responseList;
+  @UiField FlowPanel responseList;
   @UiField Button shareButtonTop;
   @UiField Button makePrivateButtonTop;
   @UiField Button deleteButtonTop;
@@ -82,6 +85,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   ResponseView.Presenter presenter;
   Privacy selectedPrivacy = Privacy.UNDEFINED;
+  private String selectedSubView; // "quick", "full" or "photo"
   
   public ResponseViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -314,11 +318,34 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @Override
   public void renderResponses(List<SurveyResponse> responses) {
+    if ("quick".equals(selectedSubView)) {
+      renderResponsesQuickView(responses);
+    } else if ("full".equals(selectedSubView)) {
+      renderResponsesFullView(responses);
+    } else if ("photo".equals(selectedSubView)) {
+      renderResponsesPhotoView(responses);
+    } 
+  }
+  
+  private void renderResponsesQuickView(List<SurveyResponse> responses) {
     this.responseList.clear();
     for (SurveyResponse response : responses) {
       ResponseDisclosurePanel responseWidget = renderResponseAsDisclosurePanel(response);
       this.responseList.add(responseWidget);
     }
+  }
+  
+  private void renderResponsesFullView(List<SurveyResponse> responses) {
+    this.responseList.clear();
+    for (SurveyResponse response : responses) {
+      ResponseWidgetFull responseWidget = new ResponseWidgetFull();
+      responseWidget.setResponse(response);
+      this.responseList.add(responseWidget);
+    }
+  }
+  
+  private void renderResponsesPhotoView(List<SurveyResponse> responses) {
+    assert false : "UNIMPLEMENTED: renderResponsePhotoView";
   }
   
   private ResponseDisclosurePanel renderResponseAsDisclosurePanel(SurveyResponse response) {
@@ -589,6 +616,51 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void setSectionHeader(String headerText) {
     this.sectionHeaderTitle.setText(headerText);
+  }
+
+  @Override
+  public String getSelectedSubView() {
+    return selectedSubView != null ? selectedSubView : "full"; // default to full view
+  }
+  
+
+  @Override
+  public void setSelectedSubView(String subView) {
+    clearSelectedView();
+    if (subView != null && Arrays.asList("quick","full","photo").contains(subView)) {
+      selectedSubView = subView;
+    } else {
+      selectedSubView = "full"; // default to full view
+    }
+    if ("quick".equals(selectedSubView)) {
+      viewLinkQuick.addStyleName(style.selectedTopNav());
+    } else if ("full".equals(selectedSubView)) {
+      viewLinkFull.addStyleName(style.selectedTopNav());
+    } else if ("photo".equals(selectedSubView)) {
+      viewLinkPhoto.addStyleName(style.selectedTopNav());
+    } 
+  }  
+
+  private void clearSelectedView() {
+    selectedSubView = null;
+    viewLinkFull.removeStyleName(style.selectedTopNav());
+    viewLinkQuick.removeStyleName(style.selectedTopNav());
+    viewLinkPhoto.removeStyleName(style.selectedTopNav());
+  }
+
+  @Override
+  public HasClickHandlers getViewLinkQuick() {
+    return this.viewLinkQuick;
+  }
+
+  @Override
+  public HasClickHandlers getViewLinkFull() {
+    return this.viewLinkFull;
+  }
+
+  @Override
+  public HasClickHandlers getViewLinkPhoto() {
+    return this.viewLinkPhoto;
   }
 
 }
