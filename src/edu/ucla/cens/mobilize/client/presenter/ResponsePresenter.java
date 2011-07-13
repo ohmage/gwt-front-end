@@ -128,7 +128,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     assert view != null : "ResponsePresenter.go() called before view was set";
     
     // check history token (url) params for value that should be selected in filters
-    String selectedSubView = params.containsKey("v") ? params.get("v") : "quick";
+    String selectedSubView = params.containsKey("v") ? params.get("v") : "full";
     String selectedParticipant = params.containsKey("uid") ? params.get("uid") : userInfo.getUserName();
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
     String selectedSurvey = params.containsKey("sid") ? params.get("sid") : null;

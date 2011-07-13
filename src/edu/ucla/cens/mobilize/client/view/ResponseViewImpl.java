@@ -26,17 +26,15 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
-import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel;
+import edu.ucla.cens.mobilize.client.ui.ResponseDisplayWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetFull;
-import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 public class ResponseViewImpl extends Composite implements ResponseView {
@@ -158,23 +156,20 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   private void selectAll() {
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
-      if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
-        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
-        panel.setChecked(true);
-      }
+        ResponseDisplayWidget widget = (ResponseDisplayWidget)responseList.getWidget(i);
+        widget.setSelected(true); // TODO: test for null?
     }
   }
   
   private void selectNone() {
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
-      if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
-        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
-        panel.setChecked(false);
-      }
+      ResponseDisplayWidget widget = (ResponseDisplayWidget)responseList.getWidget(i);
+      widget.setSelected(false); // TODO: test for null?
     }
   }
   
   private void expandAll() {
+    if (!"quick".equals(selectedSubView)) return;
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
       if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
         ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
@@ -184,6 +179,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
   
   private void collapseAll() {
+    if (!"quick".equals(selectedSubView)) return;
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
       if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
         ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
@@ -330,7 +326,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   private void renderResponsesQuickView(List<SurveyResponse> responses) {
     this.responseList.clear();
     for (SurveyResponse response : responses) {
-      ResponseDisclosurePanel responseWidget = renderResponseAsDisclosurePanel(response);
+      ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
+      responseWidget.setResponse(response);
       this.responseList.add(responseWidget);
     }
   }
@@ -346,47 +343,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   private void renderResponsesPhotoView(List<SurveyResponse> responses) {
     assert false : "UNIMPLEMENTED: renderResponsePhotoView";
-  }
-  
-  private ResponseDisclosurePanel renderResponseAsDisclosurePanel(SurveyResponse response) {
-    ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
-    responseWidget.setCampaignName(response.getCampaignName());
-    responseWidget.setDate(response.getResponseDate());
-    responseWidget.setPrivacy(response.getPrivacyState());
-    responseWidget.setSurveyResponseKey(response.getResponseKey());
-    responseWidget.setSurveyName(response.getSurveyName());
-    for (PromptResponse promptResponse : response.getPromptResponses()) {
-      switch (promptResponse.getPromptType()) {
-        case TIMESTAMP:
-          Date timestamp = DateUtils.translateFromServerFormat(promptResponse.getResponseRaw());
-          responseWidget.addPromptResponseTimestamp(promptResponse.getText(), timestamp);
-          break;
-        case PHOTO:
-          String rawResponse = promptResponse.getResponseRaw();
-          // special case skipped/invalid photos by copying over the text
-          if ("NOT_DISPLAYED".equals(rawResponse) || "SKIPPED".equals(rawResponse)) {
-            responseWidget.addPromptResponseText(promptResponse.getText(), rawResponse);
-          } else {
-            // generate urls for thumbnail and full sized photo and pass to widget
-            String thumbUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
-                response.getUserName(),
-                response.getCampaignId(),
-                AwUrlBasedResourceUtils.ImageSize.SMALL);
-            String fullSizedImageUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
-                response.getUserName(),
-                response.getCampaignId(),
-                AwUrlBasedResourceUtils.ImageSize.ORIGINAL);
-            responseWidget.addPromptResponsePhoto(promptResponse.getText(), 
-                                                  fullSizedImageUrl,
-                                                  thumbUrl);
-          }
-          break;
-        default:
-          responseWidget.addPromptResponseText(promptResponse.getText(), promptResponse.getResponsePrepared());
-          break;
-      }
-    }
-    return responseWidget;
   }
 
   @Override
@@ -500,14 +456,18 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   public List<String> getSelectedSurveyResponseKeys() {
     List<String> keys = new ArrayList<String>();
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
-      if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
-        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
-        if (panel.isSelected()) {
-          keys.add(Integer.toString(panel.getResponseKey()));
-        }
+      ResponseDisplayWidget widget = (ResponseDisplayWidget)responseList.getWidget(i);
+      if (widget != null && widget.isSelected()) {
+        keys.add(Integer.toString(widget.getResponseKey()));
+        
       }
     }    
     return keys;
+  }
+  
+  @Override
+  public void clearSelectedSurveyResponseKeys() {
+    selectNone();
   }
 
   @Override
@@ -519,7 +479,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   public void markShared(int responseKey) {
     int numWidgets = this.responseList.getWidgetCount();
     for (int i = 0; i < numWidgets; i++) {
-      ResponseDisclosurePanel responseWidget = (ResponseDisclosurePanel)responseList.getWidget(i);
+      ResponseDisplayWidget responseWidget = (ResponseDisplayWidget)responseList.getWidget(i);
       if (responseWidget.getResponseKey() == responseKey) {
         responseWidget.setPrivacy(Privacy.SHARED);
         break;
@@ -531,7 +491,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   public void markPrivate(int responseKey) {
     int numWidgets = this.responseList.getWidgetCount();
     for (int i = 0; i < numWidgets; i++) {
-      ResponseDisclosurePanel responseWidget = (ResponseDisclosurePanel)responseList.getWidget(i);
+      ResponseDisplayWidget responseWidget = (ResponseDisplayWidget)responseList.getWidget(i);
       if (responseWidget.getResponseKey() == responseKey) {
         responseWidget.setPrivacy(Privacy.PRIVATE);
         break;
@@ -543,7 +503,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   public void removeResponse(int responseKey) {
     int numWidgets = this.responseList.getWidgetCount();
     for (int i = 0; i < numWidgets; i++) {
-      ResponseDisclosurePanel responseWidget = (ResponseDisclosurePanel)responseList.getWidget(i);
+      ResponseDisplayWidget responseWidget = (ResponseDisplayWidget)responseList.getWidget(i);
       if (responseWidget.getResponseKey() == responseKey) {
         this.responseList.remove(i);
         break;

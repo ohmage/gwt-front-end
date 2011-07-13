@@ -1,9 +1,7 @@
 package edu.ucla.cens.mobilize.client.ui;
 
-import java.util.ArrayList;
+
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -32,10 +30,13 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
-import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
+import edu.ucla.cens.mobilize.client.model.PromptResponse;
+import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 public class ResponseDisclosurePanel extends Composite
-	implements HasMouseOverHandlers, HasMouseOutHandlers {
+	implements HasMouseOverHandlers, HasMouseOutHandlers, ResponseDisplayWidget {
   
   public interface ResponseDisclosurePanelStyle extends CssResource {
     String privacyPrivate();
@@ -197,7 +198,8 @@ public class ResponseDisclosurePanel extends Composite
 		return addDomHandler(handler, MouseOverEvent.getType());
 	}
 	
-	public void setChecked(boolean isChecked) {
+	@Override
+	public void setSelected(boolean isChecked) {
 	  checkbox.setValue(isChecked);
 	}
 	
@@ -234,5 +236,45 @@ public class ResponseDisclosurePanel extends Composite
 	public int getResponseKey() {
 	  return Integer.parseInt(this.responseKey.getValue());
 	}
+
+  @Override
+  public void setResponse(SurveyResponse response) {
+    this.setCampaignName(response.getCampaignName());
+    this.setDate(response.getResponseDate());
+    this.setSurveyName(response.getSurveyName());
+    this.setSurveyResponseKey(response.getResponseKey());
+    this.setPrivacy(response.getPrivacyState());
+    for (PromptResponse promptResponse : response.getPromptResponses()) {
+      switch (promptResponse.getPromptType()) {
+        case TIMESTAMP:
+          Date timestamp = DateUtils.translateFromServerFormat(promptResponse.getResponseRaw());
+          addPromptResponseTimestamp(promptResponse.getText(), timestamp);
+          break;
+        case PHOTO:
+          String rawResponse = promptResponse.getResponseRaw();
+          // special case skipped/invalid photos by copying over the text
+          if ("NOT_DISPLAYED".equals(rawResponse) || "SKIPPED".equals(rawResponse)) {
+            addPromptResponseText(promptResponse.getText(), rawResponse);
+          } else {
+            // generate urls for thumbnail and full sized photo and pass to widget
+            String thumbUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
+                response.getUserName(),
+                response.getCampaignId(),
+                AwUrlBasedResourceUtils.ImageSize.SMALL);
+            String fullSizedImageUrl = AwUrlBasedResourceUtils.getImageUrl(promptResponse.getResponseRaw(), 
+                response.getUserName(),
+                response.getCampaignId(),
+                AwUrlBasedResourceUtils.ImageSize.ORIGINAL);
+            addPromptResponsePhoto(promptResponse.getText(), 
+                                   fullSizedImageUrl,
+                                   thumbUrl);
+          }
+          break;
+        default:
+          addPromptResponseText(promptResponse.getText(), promptResponse.getResponsePrepared());
+          break;
+      }
+    }
+  }
 	
 }

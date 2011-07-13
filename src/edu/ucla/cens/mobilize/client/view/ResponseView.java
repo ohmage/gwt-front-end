@@ -58,6 +58,10 @@ public interface ResponseView extends IsWidget {
   Date getSelectedEndDate();
   boolean getHasPhotoToggleValue();
   
+  // response management
+  List<String> getSelectedSurveyResponseKeys();
+  void clearSelectedSurveyResponseKeys();
+  
   // display
   void renderResponses(List<SurveyResponse> responses);
   void clearResponseList();
@@ -75,7 +79,6 @@ public interface ResponseView extends IsWidget {
   List<HasClickHandlers> getShareButtons();
   List<HasClickHandlers> getMakePrivateButtons();
   List<HasClickHandlers> getDeleteButtons();
-  List<String> getSelectedSurveyResponseKeys();
   HasClickHandlers getApplyFiltersButton();
   HasChangeHandlers getCampaignFilter();
   HasChangeHandlers getSurveyFilter();

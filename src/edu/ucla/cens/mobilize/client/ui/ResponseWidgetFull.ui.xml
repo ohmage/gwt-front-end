@@ -3,8 +3,8 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style type="edu.ucla.cens.mobilize.client.ui.ResponseWidgetFull.ResponseWidgetStyle">
 	  .container {
-	  	border-bottom: solid 1px #DDD;
-	  	padding: 0px 0px 5px 0px;
+	  	border-bottom: solid 1px #CCC;
+	  	padding: 0px 0px 5px 2px;
 	  }
 		.date {
 		}
@@ -35,6 +35,7 @@
 			width: 30%;
     }
     .promptContainer { /* holds list of prompts */
+      overflow-x: hidden;
       padding: 5px 10px 10px 25px;
     }
 		.promptQuestion {
@@ -46,9 +47,11 @@
 		.promptImage {
 		}
 		.selected {
+			border-left: solid 2px #A5CD3A;
+			padding-left: 0px; /* remove 2px of padding from .container so it doesn't move */
 		}
 	</ui:style>
-	<g:HTMLPanel addStyleNames='{style.container}'>
+	<g:HTMLPanel ui:field='container' addStyleNames='{style.container}'>
 	  <g:FlowPanel addStyleNames='{style.header}'>
 		  <g:Hidden ui:field='responseKeyHiddenField'></g:Hidden>
 		  <g:CheckBox ui:field='checkBox' />

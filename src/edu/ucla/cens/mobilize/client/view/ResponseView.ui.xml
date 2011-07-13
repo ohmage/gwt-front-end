@@ -14,8 +14,8 @@
     	border-bottom: solid 1px #A5CD3A;
     }
     .buttonPanelWrapperBottom {
-    	border-top: solid 1px #A5CD3A;
-    	border-bottom: solid 1px #A5CD3A;
+    	border: solid 1px #A5CD3A;
+    	border-right: none;
     }
     .container {
     	padding: 10px 15px; 
@@ -56,12 +56,12 @@
     }
     .scrollable {
     	height: 100%;
+    	overflow-x: hidden;
       overflow-y: auto;
     }
     .sectionHeader {
       background: #FCE4CD repeat-x url("images/bg_white_transparent_50.png");
-			border-bottom: solid 1px #F58F3E;
-			border-top: solid 1px #F58F3E;
+      border-bottom: solid 1px #F58F3E;
 			color: #333;
 			font-weight: bold;
 			padding: 10px 15px;
