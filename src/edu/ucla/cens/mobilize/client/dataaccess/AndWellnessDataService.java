@@ -40,6 +40,7 @@ import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
@@ -58,7 +59,7 @@ public class AndWellnessDataService implements DataService {
   // NOTE: campaignCreate and campaignUpdate are not included in the DataService
   // because they require file upload and so much be done with a formPanel
 
-  String userName;
+  String username;
   String authToken;
   String client = AwConstants.apiClientString;
   boolean isInitialized = false;
@@ -242,8 +243,8 @@ public class AndWellnessDataService implements DataService {
    * Must be called before any fetch* methods
    */
   @Override
-  public void init(String userName, String authToken) {
-    this.userName = userName;
+  public void init(String username, String authToken) {
+    this.username = username;
     this.authToken = authToken;
     this.isInitialized = true;
   }
@@ -263,18 +264,18 @@ public class AndWellnessDataService implements DataService {
    * Sends the passed in username and password to the AW server.  Checks the server response
    * to determine whether the login succeeded or failed, and notifies the callback of such.
    * Saves auth info for use in future data fetches.
-   * @param userName The user name to authenticate.
+   * @param username The user name to authenticate.
    * @param password The password for the user name.
    * @param callback The interface to handle the server response.
    */
-  public void fetchAuthorizationToken(final String userName, String password,
+  public void fetchAuthorizationToken(final String username, String password,
           final AsyncCallback<AuthorizationTokenQueryAwData> callback) {
    
       // Setup the post parameters
       Map<String,String> parameters = new HashMap<String,String>();
 
       // params 
-      parameters.put("user", userName);
+      parameters.put("user", username);
       parameters.put("password", password);
       parameters.put("client", this.client);  
       
@@ -300,7 +301,7 @@ public class AndWellnessDataService implements DataService {
                   try {
                     responseText = getResponseTextOrThrowException(requestBuilder, response);
                     result = AuthorizationTokenQueryAwData.fromJsonString(responseText);
-                    init(userName, result.getAuthorizationToken()); // save for future fetches
+                    init(username, result.getAuthorizationToken()); // save for future fetches
                     callback.onSuccess(result);
                   } catch (Exception exception) {
                     callback.onFailure(exception);
@@ -317,7 +318,7 @@ public class AndWellnessDataService implements DataService {
 
 
   @Override
-  public void changePassword(String userName, 
+  public void changePassword(String username, 
                              String oldPassword, 
                              String newPassword,
                              final AsyncCallback<String> callback) {
@@ -326,7 +327,7 @@ public class AndWellnessDataService implements DataService {
     Map<String, String> params = new HashMap<String, String>();
     params.put("auth_token", this.authToken);
     params.put("client", this.client);
-    params.put("username", userName);
+    params.put("username", username);
     params.put("password", oldPassword);
     params.put("new_password", newPassword);
     String postParams = MapUtils.translateToParameters(params);
@@ -360,7 +361,7 @@ public class AndWellnessDataService implements DataService {
   
   @Override
   public void fetchUserInfo(final String username, final AsyncCallback<UserInfo> callback) {
-    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserReadUrl());
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserInfoReadUrl());
     Map<String, String> params = new HashMap<String, String>();
     assert this.isInitialized : "You must call init(username, auth_token) before any fetches";
     params.put("auth_token", this.authToken);
@@ -400,6 +401,48 @@ public class AndWellnessDataService implements DataService {
     }
   }
 
+
+  @Override
+  public void fetchClassMembers(String classUrn, final AsyncCallback<List<UserShortInfo>> callback) {
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserReadUrl());
+    Map<String, String> params = new HashMap<String, String>();
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.put("auth_token", this.authToken);
+    params.put("client", this.client);
+    params.put("class_urn_list", classUrn); 
+    String postParams = MapUtils.translateToParameters(params);
+    _logger.fine("Attempting to fetch user info with parameters: " + postParams);
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          List<UserShortInfo> userInfos = null;
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            userInfos = AwDataTranslators.translateUserReadQueryJSONToUserShortInfoList(responseText);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          if (userInfos != null && userInfos.size() > 0) {
+            callback.onSuccess(userInfos); 
+          } else {
+            callback.onFailure(new Exception("Failed to parse user data."));
+          }
+          
+        }
+
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }    
+  }
 
   @Override
   public void fetchCampaignIds(CampaignReadParams params, 
@@ -576,7 +619,7 @@ public class AndWellnessDataService implements DataService {
   }
 
   @Override
-  public void fetchSurveyResponses(String userNameOrNull,
+  public void fetchSurveyResponses(String usernameOrNull,
                                    final String campaignId,
                                    String surveyName, // ignored if null or ""
                                    Privacy privacy,
@@ -589,8 +632,8 @@ public class AndWellnessDataService implements DataService {
     params.client = this.client;
     params.campaignUrn = campaignId;
     params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
-    String userName = userNameOrNull != null ? userNameOrNull : AwConstants.specialAllValuesToken;
-    params.userList.add(userName != null ? userName: AwConstants.specialAllValuesToken);
+    String username = usernameOrNull != null ? usernameOrNull : AwConstants.specialAllValuesToken;
+    params.userList.add(username != null ? username: AwConstants.specialAllValuesToken);
     // if surveyName is omitted, readparams object sends special token for all surveys
     if (surveyName != null && !surveyName.isEmpty())  params.surveyIdList_opt.add(surveyName);
     params.privacyState_opt = privacy;
@@ -614,7 +657,7 @@ public class AndWellnessDataService implements DataService {
   
 
   @Override
-  public void fetchSurveyResponseCount(String userName, 
+  public void fetchSurveyResponseCount(String username, 
                                        String campaignId,
                                        String surveyName, 
                                        Privacy privacy, 
@@ -627,7 +670,7 @@ public class AndWellnessDataService implements DataService {
     params.client = this.client;
     params.campaignUrn = campaignId;
     params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
-    params.userList.add(userName != null ? userName : AwConstants.specialAllValuesToken);
+    params.userList.add(username != null ? username : AwConstants.specialAllValuesToken);
     // if surveyName is omitted, readparams object sends special token for all surveys
     if (surveyName != null && !surveyName.isEmpty())  params.surveyIdList_opt.add(surveyName);
     params.privacyState_opt = privacy;
@@ -1135,6 +1178,7 @@ public class AndWellnessDataService implements DataService {
     }
     
   }
+
 
 
 }

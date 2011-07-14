@@ -28,6 +28,7 @@ import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 import edu.ucla.cens.mobilize.client.utils.XmlConfigTranslator;
 
 public class MockDataService implements DataService {
@@ -470,6 +471,13 @@ public class MockDataService implements DataService {
   public void fetchVisualizationError(PlotType plotType, int width, int height,
       String campaignId, String participantId, String promptX, String promptY,
       AsyncCallback<String> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void fetchClassMembers(String classUrn,
+      AsyncCallback<List<UserShortInfo>> callback) {
     // TODO Auto-generated method stub
     
   }

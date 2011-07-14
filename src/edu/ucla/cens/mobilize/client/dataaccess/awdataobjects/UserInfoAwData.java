@@ -10,6 +10,10 @@ import com.google.gwt.core.client.JsArrayString;
 
 // {"classes":{"urn:class:ca:lausd:BoyleHeights_HS:CS102:Spring:2011":"BH_HS_CS102_Spring_2011","urn:class:ca:lausd:Addams_HS:CS101:Fall:2011":"Addams_HS_CS101_Fall_2011"},"permissions":{"cancreate":true},"campaign_roles":["participant","author","supervisor"],"class_roles":["privileged"]}
 
+/**
+ * Detailed info about user's relationship to other data objects, usually used 
+ * by the app when building the gui for the currently logged in user.
+ */
 public class UserInfoAwData extends JavaScriptObject {
   protected UserInfoAwData() {};
   

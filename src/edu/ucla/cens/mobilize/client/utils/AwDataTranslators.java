@@ -22,6 +22,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DocumentAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.PromptResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.SurveyResponseAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
@@ -30,6 +31,7 @@ import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 
 // json
 import com.google.gwt.json.client.JSONArray;
@@ -227,16 +229,16 @@ public class AwDataTranslators {
       // Get data field from response. It's a hash with usernames as keys and
       // serialized userinfos as values.
       if (responseObj == null || !responseObj.containsKey("data")) return null;
-      JSONObject userNameToUserDataHash = responseObj.get("data").isObject();
+      JSONObject usernameToUserDataHash = responseObj.get("data").isObject();
       
       // For each user, translate the serialized info into a UserInfo object and save
-      if (userNameToUserDataHash == null) return null;
-      Set<String> userNames = userNameToUserDataHash.keySet();
+      if (usernameToUserDataHash == null) return null;
+      Set<String> usernames = usernameToUserDataHash.keySet();
       JSONValue jsonValue = null;
-      for (String userName : userNames) {
+      for (String username : usernames) {
         // wrap in try/catch because it uses a UserInfoAwData
         try { 
-          jsonValue = userNameToUserDataHash.get(userName);
+          jsonValue = usernameToUserDataHash.get(username);
           JSONObject userJSONObject = jsonValue.isObject();
           if (userJSONObject == null) throw new Exception("user data field not a valid JSON object");
           UserInfoAwData userDataJSObject = (UserInfoAwData)userJSONObject.getJavaScriptObject();
@@ -254,7 +256,7 @@ public class AwDataTranslators {
           boolean isPrivileged = classRolesAsStrings.contains(RoleClass.PRIVILEGED.toServerString());
           
           UserInfo userInfo = new UserInfo();
-          userInfo.setUserName(userName);
+          userInfo.setUserName(username);
           userInfo.setPrivilegeFlag(isPrivileged);
           userInfo.setCanCreateFlag(canCreateFlag);
           userInfo.setCampaigns(campaignIdToNameMap);
@@ -263,7 +265,7 @@ public class AwDataTranslators {
           users.add(userInfo);
           
         } catch (Exception e) { 
-          _logger.warning("Could not parse json for user: " + userName + ". Skipping record.");
+          _logger.warning("Could not parse json for user: " + username + ". Skipping record.");
           _logger.fine(e.getMessage());
           _logger.finer("jsonValue: " + (jsonValue != null ? jsonValue.toString() : "null"));
         }
@@ -271,6 +273,47 @@ public class AwDataTranslators {
       return users;
     }
 
+    // {"result":"success","data":{"xerox.gimp":{"first_name":"firstName","organization":"organization","json_data":{},"last_name":"lastName","personal_id":"123456789","email_address":"test@example.com"}}}
+    public static List<UserShortInfo> translateUserReadQueryJSONToUserShortInfoList(String userReadQueryResponseJSON) {
+      List<UserShortInfo> users = new ArrayList<UserShortInfo>();
+      
+      // Parse response obj
+      JSONValue value = JSONParser.parseStrict(userReadQueryResponseJSON);
+      JSONObject responseObj = value.isObject();
+      
+      // Get data field from response. It's a hash with usernames as keys and
+      // serialized userShortInfos as values.
+      if (responseObj == null || !responseObj.containsKey("data")) return null;
+      JSONObject usernameToUserDataHash = responseObj.get("data").isObject();
+      
+      // For each user, translate the serialized info into a UserInfo object and save
+      if (usernameToUserDataHash == null) return null;
+      Set<String> usernames = usernameToUserDataHash.keySet();
+      JSONValue jsonValue = null;
+      for (String username : usernames) {
+        // wrap in try/catch because it uses a UserInfoAwData
+        try { 
+          jsonValue = usernameToUserDataHash.get(username);
+          JSONObject userJSONObject = jsonValue.isObject();
+          if (userJSONObject == null) throw new Exception("user data field not a valid JSON object");
+          UserAwData userAwData = (UserAwData)userJSONObject.getJavaScriptObject();
+          UserShortInfo userInfo = new UserShortInfo();
+          userInfo.setUsername(username);
+          userInfo.setFirstName(userAwData.getFirstName());
+          userInfo.setLastName(userAwData.getLastName());
+          userInfo.setPersonalId(userAwData.getPersonalId());
+          userInfo.setOrganization(userAwData.getOrganization());
+          userInfo.setEmail(userAwData.getEmail());
+          users.add(userInfo);
+          
+        } catch (Exception e) { 
+          _logger.warning("Could not parse json for user: " + username + ". Skipping record.");
+          _logger.fine(e.getMessage());
+          _logger.finer("jsonValue: " + (jsonValue != null ? jsonValue.toString() : "null"));
+        }
+      }
+      return users;
+    }
     
     // {"result":"success","data":{"urn:andwellness:nih":{"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}},"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
     public static List<CampaignShortInfo> translateCampaignReadQueryJSONtoCampaignShortInfoList(
@@ -415,13 +458,13 @@ public class AwDataTranslators {
           classInfo.setClassName(awData.getName());
           JsArrayString users = awData.getUserNames();
           for (int i = 0; i < users.length(); i++) {
-            String userName = users.get(i);
-            String roleString = awData.getUserRole(userName);
+            String username = users.get(i);
+            String roleString = awData.getUserRole(username);
             // Restricted users only get a blank string instead of a member role in the json.
             // For simplicity, we set the role to restricted in that case.
             RoleClass role = roleString.isEmpty() ? RoleClass.RESTRICTED : 
-                                                    RoleClass.valueOf(awData.getUserRole(userName).toUpperCase());
-            classInfo.addMember(userName, role);
+                                                    RoleClass.valueOf(awData.getUserRole(username).toUpperCase());
+            classInfo.addMember(username, role);
           }
           classInfos.add(classInfo);
         } catch (Exception e) { 
@@ -469,5 +512,6 @@ public class AwDataTranslators {
       }
       return documentInfos;
     }
+
     
 }

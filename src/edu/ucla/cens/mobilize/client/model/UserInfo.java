@@ -8,6 +8,10 @@ import java.util.Set;
 
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 
+/**
+ * Info about the logged in user. 
+ * @author shlurbee
+ */
 public class UserInfo {
   private String userName; // login id
   boolean isPrivileged = false; // true if user is privileged member of any class

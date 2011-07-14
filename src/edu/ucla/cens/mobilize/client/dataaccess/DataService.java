@@ -16,6 +16,7 @@ import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 
 
 /**
@@ -82,6 +83,8 @@ public interface DataService {
    * @param asyncCallback returns UserInfo object on success
    */
   void fetchUserInfo(String userName, final AsyncCallback<UserInfo> asyncCallback);
+  
+  void fetchClassMembers(String classUrn, final AsyncCallback<List<UserShortInfo>> callback);
   
   // campaigns
   void fetchCampaignIds(CampaignReadParams params,
