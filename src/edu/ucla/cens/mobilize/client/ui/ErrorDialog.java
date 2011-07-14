@@ -15,6 +15,7 @@ public class ErrorDialog {
   private static DialogBox _dialog;
   
   public static void show(String msg, String detail) {
+    if (_dialog != null) _dialog.hide(); // don't allow layered dialogs
     _dialog = new DialogBox();
     _dialog.setGlassEnabled(true);
     _dialog.setText(msg);
