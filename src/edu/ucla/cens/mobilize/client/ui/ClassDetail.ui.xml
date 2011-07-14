@@ -24,6 +24,7 @@
    }
    .membersTable {
      margin: auto;
+     margin-bottom: 20px;
    }
    .membersTable td {
    	padding-left: 22px;

@@ -176,6 +176,7 @@ public class ClassViewImpl extends Composite implements ClassView {
 
   @Override
   public void clearClassMembers() {
+    this.classDetail.clearClassMembers();
   }
 
 }

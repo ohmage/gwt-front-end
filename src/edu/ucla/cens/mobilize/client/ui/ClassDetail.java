@@ -75,6 +75,10 @@ public class ClassDetail extends Composite {
     this.classUrn.setText(classDetail.getClassId());
     this.classDescription.setText(classDetail.getDescription());    
   }
+  
+  public void clearClassMembers() {
+    this.membersTable.resizeRows(0);
+  }
 
   // use this OR setClassMemberDetails
   public void setClassMemberNames(List<String> usernames) {

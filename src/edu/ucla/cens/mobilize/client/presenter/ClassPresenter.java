@@ -127,6 +127,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       @Override
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());
+        view.clearClassMembers();
         ErrorDialog.show("There was a problem retrieving class member info.",
                           caught.getMessage());
       }
