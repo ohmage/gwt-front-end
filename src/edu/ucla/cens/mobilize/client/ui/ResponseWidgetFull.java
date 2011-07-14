@@ -130,12 +130,12 @@ public class ResponseWidgetFull extends Composite implements ResponseDisplayWidg
   }
 
   private void addPromptResponse(PromptResponse prompt) {
-    String responseDisplayString = "";
+    Widget responseDisplayWidget = null;
     switch (prompt.getPromptType()) {
     case PHOTO:
       String raw = prompt.getResponseRaw();
       if (raw.equals("SKIPPED") || raw.equals("NOT_DISPLAYED")) {
-        responseDisplayString = raw;
+        responseDisplayWidget = new HTML(raw);
       } else {
         // generate urls for thumbnail and full sized photo and pass to widget
         String thumbUrl = AwUrlBasedResourceUtils.getImageUrl(prompt.getResponseRaw(), 
@@ -154,27 +154,33 @@ public class ResponseWidgetFull extends Composite implements ResponseDisplayWidg
             Window.open(fullSizedImageUrl, "_blank", "");
           }
         });
-        responseDisplayString = img.toString();
+        FlowPanel panel = new FlowPanel();
+        panel.add(img);
+        responseDisplayWidget = panel;
       }
       break;
     // TODO: special case timestamp?
     default:
       // anything other than a photo, just copy it verbatim
-      responseDisplayString = prompt.getResponsePrepared();
+      responseDisplayWidget = new HTML(prompt.getResponsePrepared());
       break;
     }
     
-    StringBuilder sb = new StringBuilder();
-    sb.append("<div class='" + style.promptQuestion() +"'>");
-      sb.append(prompt.getText());
-    sb.append("</div>");
-    sb.append("<div class='" + style.promptResponse() +"'>");
-      sb.append(responseDisplayString);
-    sb.append("</div>");
+    // set up and style question
+    HTML question = new HTML(prompt.getText());
+    question.setStyleName(style.promptQuestion());
+
+    // add style to response
+    responseDisplayWidget.setStyleName(style.promptResponse());
     
-    HTML html = new HTML(sb.toString());
-    html.setStyleName(style.prompt());
-    promptContainer.add(html);
+    // add question and response to styled div
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName(style.prompt());
+    panel.add(question);
+    panel.add(responseDisplayWidget);
+    
+    // add the whole thing to prompt list
+    promptContainer.add(panel);
     
   }
 

@@ -46,6 +46,7 @@
 			padding-left: 8px;
 		}
 		.promptImage {
+			cursor: pointer;
 		}
 		.selected {
 			border-left: solid 2px #A5CD3A;
