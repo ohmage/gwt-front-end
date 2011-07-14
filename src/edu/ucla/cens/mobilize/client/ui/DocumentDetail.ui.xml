@@ -97,7 +97,7 @@
       border: solid thin #DDD6A4;
     }
     .sectionHeader {
-      background-color: #EAEFF3;
+      background: #EAEFF3 repeat-x url("images/bg_white_transparent_50.png");
       border-bottom: thin solid #DDD;
       padding: 15px 0px;
       text-align: center;

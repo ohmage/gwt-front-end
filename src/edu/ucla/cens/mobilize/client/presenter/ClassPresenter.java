@@ -13,10 +13,13 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserShortInfo;
+import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.view.ClassView;
@@ -112,11 +115,27 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
 
       @Override
       public void onSuccess(ClassInfo result) {
-        view.setDetail(result, result.userCanEdit(userInfo.getUserName()));
+        view.setDetail(result);
         view.showDetailSubview();
+        fetchAndShowClassMembers(result.getClassId(), result.getUsernameToRoleMap());
       }
     });
-    
+  }
+  
+  private void fetchAndShowClassMembers(String classId, final Map<String, RoleClass> usernameToRoleMap) {
+    dataService.fetchClassMembers(classId, new AsyncCallback<List<UserShortInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        _logger.severe(caught.getMessage());
+        ErrorDialog.show("There was a problem retrieving class member info.",
+                          caught.getMessage());
+      }
+
+      @Override
+      public void onSuccess(List<UserShortInfo> result) {
+        view.setDetailClassMembers(result, usernameToRoleMap);
+      }
+    });
   }
   
   private void fetchAndShowClassEdit(String classId) {
@@ -125,7 +144,8 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       @Override
       public void onFailure(Throwable caught) {
         _logger.fine(caught.getMessage());
-        view.showError("There was a problem retrieving the class data.");
+        ErrorDialog.show("There was a problem retrieving the class data.",
+                         caught.getMessage());
         AwErrorUtils.logoutIfAuthException(caught);
       }
 

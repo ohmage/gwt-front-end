@@ -3,7 +3,6 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
 	<ui:style>
-	  /* styles copy-pasted from campaignView. fixme: generalize? */
     .topNav {
       background-color: #DDD;
       border-bottom: solid thin #AAA;

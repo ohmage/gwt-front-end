@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -17,7 +18,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.Composite;
 
+import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
+import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 import edu.ucla.cens.mobilize.client.ui.ClassDetail;
 import edu.ucla.cens.mobilize.client.ui.ClassEditForm;
 import edu.ucla.cens.mobilize.client.ui.ClassList;
@@ -88,8 +91,8 @@ public class ClassViewImpl extends Composite implements ClassView {
   }
 
   @Override
-  public void setDetail(ClassInfo classDetail, boolean userCanEdit) {
-    this.classDetail.setClassDetail(classDetail, userCanEdit);
+  public void setDetail(ClassInfo classDetail) {
+    this.classDetail.setClassDetail(classDetail);
   }
 
   @Override
@@ -164,6 +167,15 @@ public class ClassViewImpl extends Composite implements ClassView {
   @Override
   public HasClickHandlers getEditFormAddMembersButton() {
     return this.classEdit.getAddMembersButton();
+  }
+
+  @Override
+  public void setDetailClassMembers(List<UserShortInfo> members, Map<String, RoleClass> usernameToRoleMap) {
+    this.classDetail.setClassMemberDetails(members, usernameToRoleMap);
+  }
+
+  @Override
+  public void clearClassMembers() {
   }
 
 }

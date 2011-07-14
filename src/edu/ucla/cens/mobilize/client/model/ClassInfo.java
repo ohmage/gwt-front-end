@@ -30,6 +30,10 @@ public class ClassInfo {
     return this.memberNameToRoleMap.get(memberLogin);
   }
   
+  public Map<String, RoleClass> getUsernameToRoleMap() {
+    return new HashMap<String, RoleClass>(this.memberNameToRoleMap);
+  }
+  
   public boolean userIsPrivileged(String memberLogin) {
     return this.memberNameToRoleMap.containsKey(memberLogin) &&
            this.memberNameToRoleMap.get(memberLogin).equals(RoleClass.PRIVILEGED);
