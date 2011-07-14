@@ -22,6 +22,17 @@
    .detailRow {
      white-space: nowrap;
    }
+   .legend {
+     border: solid 1px #EEE;
+     padding: 2px;
+     white-space: nowrap;
+   }
+   .legendItem {
+     padding-right: 7px;
+   }
+   .membersRow {
+     margin-top: 10px;
+   }
    .membersTable {
      margin: auto;
      margin-bottom: 20px;
@@ -33,8 +44,13 @@
    .membersTableHeader {
      font-weight: bold;
    }
+   .missingValue {
+     color: #AAA;
+     font-style: italic;
+   }
    .rolePrivileged {
      background: 5px 50% no-repeat url("images/asterisk_orange_small.png");
+     padding-left: 22px;
    }
    .rolePrivilegedRow {
    	color: #950;
@@ -78,8 +94,13 @@
         <g:InlineLabel ui:field='classDescription' />
       </g:HTMLPanel>
       
-      <g:HTMLPanel>
+      <g:HTMLPanel addStyleNames='{style.membersRow}'>
         <g:InlineLabel addStyleNames='{style.detailLabel}'>Members:</g:InlineLabel>
+        <g:HTMLPanel tag='span' addStyleNames='{style.legend}'>
+        <g:InlineLabel addStyleNames='{style.rolePrivileged} {style.legendItem}'>privileged</g:InlineLabel>
+        <g:InlineLabel addStyleNames='{style.missingValue}'>---</g:InlineLabel>
+        <g:InlineLabel addStyleNames='{style.legendItem}'>missing value</g:InlineLabel>
+        </g:HTMLPanel>
         <g:Grid ui:field='membersTable' addStyleNames='{style.membersTable}' />
       </g:HTMLPanel>
     </g:HTMLPanel>

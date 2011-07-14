@@ -4,6 +4,7 @@ package edu.ucla.cens.mobilize.client.ui;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ public class ClassDetail extends Composite {
 
   interface ClassDetailStyle extends CssResource {
     String membersTableHeader();
+    String missingValue();
     String rolePrivileged();
     String rolePrivilegedRow();
   }
@@ -87,12 +89,30 @@ public class ClassDetail extends Composite {
 
   // use this OR setClassMemberNamesAndRoles
   public void setClassMemberDetails(List<UserShortInfo> members, Map<String, RoleClass> usernameToRoleMap) {
-    initClassMemberDetailTable();
-    this.membersTable.resizeRows(members.size() + 1); // + 1 for header
-    List<UserShortInfo> sortedMembers = new ArrayList<UserShortInfo>(members);
-    Collections.sort(sortedMembers, new UsernameComparator());
-    int row = 1; // 0th row is header
+    // create a hash of usernames to infos so you can see which infos are missing
+    HashMap<String, UserShortInfo> usernameToInfoMap = new HashMap<String, UserShortInfo>();
     for (UserShortInfo member : members) {
+      usernameToInfoMap.put(member.getUsername(), member);
+    }
+    
+    // make sure every user in the class has an info, or create an empty one if they don't
+    for (String username : usernameToRoleMap.keySet()) {
+      if (!usernameToInfoMap.containsKey(username)) {
+        UserShortInfo emptyInfo = new UserShortInfo();
+        emptyInfo.setUsername(username);
+        usernameToInfoMap.put(username, emptyInfo);
+      }
+    }
+    
+    // sort the list of users by username
+    List<UserShortInfo> sortedMembers = new ArrayList<UserShortInfo>(usernameToInfoMap.values());
+    Collections.sort(sortedMembers, new UsernameComparator());
+    
+    // copy list into table
+    initClassMemberDetailTable();
+    this.membersTable.resizeRows(sortedMembers.size() + 1); // + 1 for header
+    int row = 1; // 0th row is header
+    for (UserShortInfo member : sortedMembers) {
       String username = member.getUsername();
       RoleClass role = usernameToRoleMap.containsKey(username) ? usernameToRoleMap.get(username) : RoleClass.UNRECOGNIZED;
       addClassMember(row++, member, role);
@@ -110,16 +130,30 @@ public class ClassDetail extends Composite {
     membersTable.setText(0, Column.EMAIL, "Email");
   }
   
+  // sets default value (and style) if text is null or empty string
+  private void setMemberTableText(int row, int column, String text) {
+    if (text == null || text.isEmpty()) {
+      this.membersTable.setText(row, column, "---");
+      this.membersTable.getCellFormatter().addStyleName(row, column, style.missingValue());
+    } else {
+      this.membersTable.setText(row, column, text);
+      this.membersTable.getCellFormatter().removeStyleName(row, column, style.missingValue());
+    }
+  }
+  
   private void addClassMember(int row, UserShortInfo userInfo, RoleClass role) {
+    // display username with css style to indicate whether user is privileged
     this.membersTable.setText(row, Column.USERNAME, userInfo.getUsername());
-    this.membersTable.setText(row, Column.FIRST_NAME, userInfo.getFirstName());
-    this.membersTable.setText(row, Column.LAST_NAME, userInfo.getLastName());
-    this.membersTable.setText(row, Column.ORGANIZATION, userInfo.getOrganization());
-    this.membersTable.setText(row, Column.EMAIL, userInfo.getEmail());
     if (RoleClass.PRIVILEGED.equals(role)) {
       this.membersTable.getCellFormatter().setStyleName(row, Column.USERNAME, style.rolePrivileged());
       this.membersTable.getRowFormatter().setStyleName(row, style.rolePrivilegedRow());
     }
+    
+    // fill in personal info or default value if it's missing
+    setMemberTableText(row, Column.FIRST_NAME, userInfo.getFirstName());
+    setMemberTableText(row, Column.LAST_NAME, userInfo.getLastName());
+    setMemberTableText(row, Column.ORGANIZATION, userInfo.getOrganization());
+    setMemberTableText(row, Column.EMAIL, userInfo.getEmail());
   }
   
   protected class UsernameComparator implements Comparator<UserShortInfo> {
