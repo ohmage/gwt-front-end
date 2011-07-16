@@ -3,6 +3,7 @@ package edu.ucla.cens.mobilize.client.ui;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -41,6 +42,7 @@ public class ResponseWidgetPopup extends Composite {
   @UiField InlineLabel survey;
   //@UiField InlineLabel user;
   @UiField FlowPanel prompts;
+  @UiField InlineLabel location;
   
   @UiField ResponseWidgetPopupStyle style;
   
@@ -53,6 +55,10 @@ public class ResponseWidgetPopup extends Composite {
     campaign.setText(surveyResponse.getCampaignName());
     survey.setText(surveyResponse.getSurveyName());
     //user.setText(surveyResponse.getUserName());
+    NumberFormat locationFormat = NumberFormat.getFormat("####.000");
+    String latString = locationFormat.format(surveyResponse.getLatitude());
+    String longString = locationFormat.format(surveyResponse.getLongitude());
+    location.setText(latString + ", " + longString);
     
     for (PromptResponse promptResponse : surveyResponse.getPromptResponses()) {
       Widget responseDisplayWidget = null;

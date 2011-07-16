@@ -23,6 +23,12 @@
 	  	margin: 5px 0px;
 	  	padding: 3px;
 	  }
+	  .location {
+	  	background-color: #DDD;
+	  	border: solid thin #CCC;
+	  	font-style: italic;
+	  	padding: 3px;
+	  }
     .promptContainer {
     	border: solid thin 1px;
     }
@@ -33,6 +39,7 @@
     	width: 45%;
     }
     .promptImage {
+    	cursor: pointer;
     	height: 50px;
     	width: auto;
     }
@@ -56,5 +63,9 @@
 	  <!--<g:InlineLabel ui:field='user' addStyleNames='{style.user} {style.info}' />-->
 	  <g:FlowPanel ui:field='prompts' addStyleNames='{style.promptContainer}' />
 	  <div class='floatstop' />
+	  <g:HTMLPanel addStyleNames='{style.location}'>
+	    <g:InlineLabel>Location:</g:InlineLabel>
+	    <g:InlineLabel ui:field='location' />
+	  </g:HTMLPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 
