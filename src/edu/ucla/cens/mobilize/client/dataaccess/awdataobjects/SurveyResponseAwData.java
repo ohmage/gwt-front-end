@@ -14,8 +14,10 @@ public class SurveyResponseAwData extends JavaScriptObject {
   public final native String getTimestamp() /*-{ return this.timestamp; }-*/;
   public final native String getTimezone() /*-{ return this.timezone; }-*/;
   public final native String getUser() /*-{ return this.user; }-*/;
+  public final native String getLocationStatus() /*-{ return this.location_status; }-*/;
   private final native double getLatitudeUnsafe() /*-{ return this.latitude; }-*/; // could be null 
   private final native double getLongitudeUnsafe() /*-{ return this.longitude; }-*/; // could be null
+ 
 
   /**
    * @return Double latitude or null if none

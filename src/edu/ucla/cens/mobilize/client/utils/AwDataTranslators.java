@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import com.google.gwt.core.client.JsArrayString;
 
+import edu.ucla.cens.mobilize.client.common.LocationStatus;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.common.RoleClass;
@@ -125,7 +126,7 @@ public class AwDataTranslators {
           surveyResponse.setSurveyName(surveyResponseAwData.getSurveyTitle());
           surveyResponse.setUserName(surveyResponseAwData.getUser());
           surveyResponse.setLocation(surveyResponseAwData.getLatitude(), surveyResponseAwData.getLongitude());
-          
+          surveyResponse.setLocationStatus(LocationStatus.fromServerString(surveyResponseAwData.getLocationStatus()));
           // survey response contains many prompt responses. parse those now.
           JsArrayString promptIds = surveyResponseAwData.getPromptIdsAsJsArray();
           String promptId = null;

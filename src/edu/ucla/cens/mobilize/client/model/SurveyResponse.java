@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import edu.ucla.cens.mobilize.client.common.LocationStatus;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
@@ -25,6 +26,7 @@ public class SurveyResponse {
   
   Date responseDate;
   Location location;
+  LocationStatus locationStatus; // even if location is there, it might be inaccurate or stale
   String userName;
   Privacy privacyState;
 	String surveyId; // identifies survey in xml config
@@ -80,9 +82,20 @@ public class SurveyResponse {
 	public void setLocation(Double latitude, Double longitude) {
 	  location = (latitude != null && longitude != null) ? new Location(latitude, longitude) : null;
 	}
-  public boolean hasLocation() { return this.location != null; }	
+	
+	public boolean hasLocation() {
+	  return this.locationStatus != null && 
+	         this.location != null &&
+	         !this.locationStatus.equals(LocationStatus.UNAVAILABLE);
+	}
+	
 	public Double getLatitude() { return this.location.latitude; }
 	public Double getLongitude() { return this.location.longitude; }
+	
+	public LocationStatus getLocationStatus() { return this.locationStatus; }
+	public void setLocationStatus(LocationStatus status) { 
+	  this.locationStatus = status; 
+	}
 	
 	public String getUserName() { return this.userName; }
 	public void setUserName(String userName) { this.userName = userName; }

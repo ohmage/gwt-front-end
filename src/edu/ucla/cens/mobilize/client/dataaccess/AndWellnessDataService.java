@@ -646,6 +646,7 @@ public class AndWellnessDataService implements DataService {
                                           "urn:ohmage:context:timezone",
                                           "urn:ohmage:context:location:latitude",
                                           "urn:ohmage:context:location:longitude",
+                                          "urn:ohmage:context:location:status",
                                           "urn:ohmage:survey:id",
                                           "urn:ohmage:survey:title",
                                           "urn:ohmage:survey:description",
