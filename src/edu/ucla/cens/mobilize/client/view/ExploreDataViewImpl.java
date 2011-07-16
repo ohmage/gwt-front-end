@@ -2,7 +2,6 @@ package edu.ucla.cens.mobilize.client.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,8 +13,6 @@ import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
-import com.google.gwt.event.shared.HasHandlers;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -48,12 +45,8 @@ import com.google.gwt.maps.client.overlay.Marker;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.PlotType;
-import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
-import edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel;
-import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
-import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
-import edu.ucla.cens.mobilize.client.utils.DateUtils;
+import edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup;
 
 @SuppressWarnings("deprecation")
 public class ExploreDataViewImpl extends Composite implements ExploreDataView {
@@ -94,9 +87,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @UiField FlowPanel plotContainer;
   
   private List<ListBox> requiredFields = new ArrayList<ListBox>();
-  private MapWidget map;
+  private MapWidget mapWidget;
   private Map<LatLng, SurveyResponse> locationToResponseMap = new HashMap<LatLng,SurveyResponse>();
-  private MapClickHandler mapClickHandler;
   private Image spinner; 
   
   public ExploreDataViewImpl() {
@@ -456,7 +448,6 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     return exportButton;
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public SourcesTreeEvents getPlotTypeTree() {
     return plotTypeTree;
@@ -529,41 +520,42 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     clearPlot(); 
 
     // add responses to map, attach it to the document to make it visible
-    if (map == null) { // lazy init map, add responses when done
+    if (mapWidget == null) { // lazy init map, add responses when done
       initMap(new Runnable() {
         @Override
         public void run() {
           setResponsesOnMap(responses);
-          plotContainer.add(map); // show it
+          plotContainer.add(mapWidget); // show it
           hideWaitIndicator();
         }
       });
     } else { // map already initialized
       setResponsesOnMap(responses); 
-      plotContainer.add(map); // show it
+      plotContainer.add(mapWidget); // show it
     }
   }
   
   private void setResponsesOnMap(List<SurveyResponse> responses) {
     
     // Clear any previous data points
-    map.clearOverlays();
+    mapWidget.clearOverlays();
     locationToResponseMap.clear();
-    LatLngBounds bounds = LatLngBounds.newInstance();
+    //LatLngBounds bounds = LatLngBounds.newInstance();
 
     // Add new data points 
     for (SurveyResponse response : responses) {
       if (response.hasLocation()) {
         LatLng location = LatLng.newInstance(response.getLatitude(), response.getLongitude());
         locationToResponseMap.put(location, response);
-        map.addOverlay(new Marker(location));
-        bounds.extend(location);
+        mapWidget.addOverlay(new Marker(location));
+        //bounds.extend(location); 
       }
     }    
     
+    // FIXME: zoom
     // Zoom and center the map to the new bounds
-    map.setZoomLevel(map.getBoundsZoomLevel(bounds));
-    map.setCenter(bounds.getCenter());
+    //mapWidget.setZoomLevel(mapWidget.getBoundsZoomLevel(bounds));
+    //mapWidget.setCenter(bounds.getCenter());
     
     
   }
@@ -572,16 +564,16 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   private void initMap(final Runnable actionToTakeWhenDone) {
     Maps.loadMapsApi(AwConstants.getGoogleMapsApiKey(), "2", false, new Runnable() {
       public void run() {
-        map = new MapWidget();
-        map.setSize("100%", "100%");
-        map.addControl(new LargeMapControl());
-        map.setScrollWheelZoomEnabled(true);
+        mapWidget = new MapWidget();
+        mapWidget.setSize("100%", "100%");
+        mapWidget.addControl(new LargeMapControl());
+        mapWidget.setScrollWheelZoomEnabled(true);
         
         // if user clicks on a marker, show details for the response at that location
-        map.addMapClickHandler(new MapClickHandler() {
+        mapWidget.addMapClickHandler(new MapClickHandler() {
           @Override
           public void onClick(MapClickEvent event) {
-            if (event.getOverlay() != null && !event.getOverlay().equals(map.getInfoWindow())) {
+            if (event.getOverlay() != null && !event.getOverlay().equals(mapWidget.getInfoWindow())) {
               showResponseDetail(event.getOverlayLatLng());
             }
           } 
@@ -597,11 +589,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   public void showResponseDetail(LatLng location) {
     if (locationToResponseMap.containsKey(location)) {
       SurveyResponse response = locationToResponseMap.get(location);
-      StringBuilder sb = new StringBuilder();
-      sb.append(response.getSurveyName()).append(" ");
-      DateTimeFormat format = DateUtils.getTableDisplayFormat();
-      sb.append(format.format(response.getResponseDate()));
-      map.getInfoWindow().open(location, new InfoWindowContent(sb.toString()));
+      ResponseWidgetPopup displayWidget = new ResponseWidgetPopup();
+      displayWidget.setResponse(response);
+      InfoWindowContent content = new InfoWindowContent(displayWidget);
+      mapWidget.getInfoWindow().open(location, content);
     }
   }
 
@@ -621,6 +612,5 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     exportForm.add(innerContainer);
     exportForm.submit();
   }
-  
-  
+    
 }

@@ -1,0 +1,60 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup.ResponseWidgetPopupStyle">
+	  .campaign {
+	  	font-weight: bold;
+    }
+    .container {
+    	display: block;
+    	font-size: 10px;
+    	overflow-y: auto;
+    	width: 300px;
+    }
+		.date {
+			background: #FFF no-repeat 0px 50% url("images/phone.png");
+			font-style: italic;
+			height: 15px;
+			padding-left: 15px;
+	  }
+	  .header {
+	  	background-color: #FFC288;
+	  	border: solid 1px #F58F3E;
+	  	margin: 5px 0px;
+	  	padding: 3px;
+	  }
+    .promptContainer {
+    	border: solid thin 1px;
+    }
+    .prompt {
+    	float: left;
+    	min-height: 35px; 
+    	padding: 3px;
+    	width: 45%;
+    }
+    .promptImage {
+    	height: 50px;
+    	width: auto;
+    }
+    .promptQuestion {
+    }
+    .promptResponse {
+    	font-style: italic;
+    	padding-left: 10px;
+    }
+    .survey {
+    }
+    .user {
+    }
+	</ui:style>
+	<g:HTMLPanel addStyleNames='{style.container}'>
+	  <g:Label ui:field='date' addStyleNames='{style.date}' />
+	  <g:HTMLPanel addStyleNames='{style.header}'>
+		  <g:InlineLabel ui:field='campaign' addStyleNames='{style.campaign}' />:&nbsp;
+		  <g:InlineLabel ui:field='survey' addStyleNames='{style.survey}' />
+	  </g:HTMLPanel>
+	  <!--<g:InlineLabel ui:field='user' addStyleNames='{style.user} {style.info}' />-->
+	  <g:FlowPanel ui:field='prompts' addStyleNames='{style.promptContainer}' />
+	  <div class='floatstop' />
+	</g:HTMLPanel>
+</ui:UiBinder> 

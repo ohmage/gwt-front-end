@@ -91,6 +91,7 @@ public class ExploreDataPresenter implements Presenter {
   }
     
   private void fetchResponseDataAndShowOnMap(String campaignId, String participantUsername) {
+    final String campaignName = userInfo.getCampaigns().get(campaignId);
     view.showWaitIndicator();
     dataService.fetchSurveyResponses(participantUsername, campaignId, 
        null, //surveyName 
@@ -107,6 +108,11 @@ public class ExploreDataPresenter implements Presenter {
       
           @Override
           public void onSuccess(List<SurveyResponse> result) {
+            // fill in campaign name since it's not returned with api data
+            for (SurveyResponse response : result) {
+              response.setCampaignName(campaignName);
+            }
+            // show responses on map
             view.showResponsesOnMap(result);
             view.hideWaitIndicator();
           }
