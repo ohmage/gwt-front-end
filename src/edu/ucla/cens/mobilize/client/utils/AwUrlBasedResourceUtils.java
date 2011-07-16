@@ -24,7 +24,7 @@ public class AwUrlBasedResourceUtils {
     params.put("id", imageId);
     params.put("campaign_urn", campaignUrn);
     params.put("auth_token", Cookies.getCookie(AwConstants.cookieAuthToken));
-    params.put("user", imageOwnerId);
+    params.put("owner", imageOwnerId);
     params.put("client", AwConstants.apiClientString);
     if (size != null && size.equals(ImageSize.SMALL)) params.put("size", "small");
     String paramString = MapUtils.translateToParameters(params);
