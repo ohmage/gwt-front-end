@@ -83,16 +83,16 @@
     	background: 0px 50% no-repeat url('images/folder.png');
     }
     .treeItemPlotType {
-    	background: 0px 50% no-repeat url('images/table.png');
+    	background: 0px 50% no-repeat url('images/table_small.png');
     }
     .treeItemMap {
-    	background: 0px 50% no-repeat url('images/map.png');
+    	background: 0px 50% no-repeat url('images/map_small.png');
     }
     .treeItemHist, .treeItemTimeseries {
-    	background: 0px 50% no-repeat url('images/chart_bar.png');
+    	background: 0px 50% no-repeat url('images/chart_bar_small.png');
     }
     .treeItemTable {
-    	background: 0px 50% no-repeat url('images/table.png');
+    	background: 0px 50% no-repeat url('images/table_small.png');
     }
     .waiting {
     	background: 50% 50% no-repeat url('images/loading.gif');
