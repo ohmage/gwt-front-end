@@ -525,13 +525,11 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
         @Override
         public void run() {
           setResponsesOnMap(responses);
-          plotContainer.add(mapWidget); // show it
           hideWaitIndicator();
         }
       });
     } else { // map already initialized
       setResponsesOnMap(responses); 
-      plotContainer.add(mapWidget); // show it
     }
   }
   
@@ -540,23 +538,27 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     // Clear any previous data points
     mapWidget.clearOverlays();
     locationToResponseMap.clear();
-    //LatLngBounds bounds = LatLngBounds.newInstance();
-
+    
+    if (responses == null || responses.isEmpty()) return;
+    
+    LatLngBounds bounds = LatLngBounds.newInstance();
+    
     // Add new data points 
     for (SurveyResponse response : responses) {
       if (response.hasLocation()) {
         LatLng location = LatLng.newInstance(response.getLatitude(), response.getLongitude());
         locationToResponseMap.put(location, response);
         mapWidget.addOverlay(new Marker(location));
-        //bounds.extend(location); 
+        bounds.extend(location);
       }
     }    
+
+    // Attach map before calculating zoom level or it might be incorrectly set to 0 (?)
+    if (!mapWidget.isAttached()) plotContainer.add(mapWidget);
     
-    // FIXME: zoom
     // Zoom and center the map to the new bounds
-    //mapWidget.setZoomLevel(mapWidget.getBoundsZoomLevel(bounds));
-    //mapWidget.setCenter(bounds.getCenter());
-    
+    mapWidget.setCenter(bounds.getCenter());
+    mapWidget.setZoomLevel(mapWidget.getBoundsZoomLevel(bounds));
     
   }
   
