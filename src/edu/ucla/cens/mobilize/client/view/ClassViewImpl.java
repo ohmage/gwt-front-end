@@ -104,8 +104,13 @@ public class ClassViewImpl extends Composite implements ClassView {
   }
 
   @Override
-  public void setDetailClassMembers(List<UserShortInfo> members, Map<String, RoleClass> usernameToRoleMap) {
-    this.classDetail.setClassMemberDetails(members, usernameToRoleMap);
+  public void setDetailClassMemberDetails(List<UserShortInfo> members, Map<String, RoleClass> usernameToRoleMap) {
+    this.classDetail.showClassMemberDetails(members, usernameToRoleMap);
+  }
+  
+  @Override
+  public void setDetailClassMemberUsernames(List<String> usernames) {
+    this.classDetail.showClassMemberUsernames(usernames);
   }
 
   @Override

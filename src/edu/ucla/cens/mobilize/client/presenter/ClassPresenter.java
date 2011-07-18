@@ -1,7 +1,6 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -70,12 +69,17 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       public void onSuccess(ClassInfo result) {
         view.setDetail(result);
         view.showDetailSubview();
-        fetchAndShowClassMembers(result.getClassId(), result.getUsernameToRoleMap());
+        Map<String, RoleClass> usernameToRoleMap = result.getUsernameToRoleMap();
+        if (RoleClass.PRIVILEGED.equals(usernameToRoleMap.get(userInfo.getUserName()))) {
+          fetchAndShowClassMemberDetails(result.getClassId(), result.getUsernameToRoleMap());
+        } else {
+          view.setDetailClassMemberUsernames(result.getMemberLogins());
+        }
       }
     });
   }
   
-  private void fetchAndShowClassMembers(String classId, final Map<String, RoleClass> usernameToRoleMap) {
+  private void fetchAndShowClassMemberDetails(String classId, final Map<String, RoleClass> usernameToRoleMap) {
     dataService.fetchClassMembers(classId, new AsyncCallback<List<UserShortInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
@@ -87,7 +91,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
 
       @Override
       public void onSuccess(List<UserShortInfo> result) {
-        view.setDetailClassMembers(result, usernameToRoleMap);
+        view.setDetailClassMemberDetails(result, usernameToRoleMap);
       }
     });
   }

@@ -24,7 +24,8 @@ public interface ClassView extends IsWidget {
   void setList(Map<String, String> classIdToNameMap);
   void setDetail(ClassInfo classDetail);
   // members details should only be visible to privileged users
-  void setDetailClassMembers(List<UserShortInfo> members, Map<String, RoleClass> usernameToRoleMap); 
+  void setDetailClassMemberDetails(List<UserShortInfo> members, Map<String, RoleClass> usernameToRoleMap);
+  void setDetailClassMemberUsernames(List<String> usernames);
   void clearClassMembers();
   
   // show messages to user

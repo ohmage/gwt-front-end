@@ -96,7 +96,7 @@
       
       <g:HTMLPanel addStyleNames='{style.membersRow}'>
         <g:InlineLabel addStyleNames='{style.detailLabel}'>Members:</g:InlineLabel>
-        <g:HTMLPanel tag='span' addStyleNames='{style.legend}'>
+        <g:HTMLPanel tag='span' ui:field='legend' addStyleNames='{style.legend}'>
         <g:InlineLabel addStyleNames='{style.rolePrivileged} {style.legendItem}'>privileged</g:InlineLabel>
         <g:InlineLabel addStyleNames='{style.missingValue}'>---</g:InlineLabel>
         <g:InlineLabel addStyleNames='{style.legendItem}'>missing value</g:InlineLabel>

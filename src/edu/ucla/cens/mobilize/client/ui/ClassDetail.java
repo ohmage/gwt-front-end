@@ -18,6 +18,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -45,9 +46,10 @@ public class ClassDetail extends Composite {
   @UiField InlineLabel className;
   @UiField InlineLabel classUrn;
   @UiField InlineLabel classDescription;
+  @UiField HTMLPanel legend;
   @UiField Grid membersTable;
   
-  // convenience class for column indices
+  // convenience class for column indices of member detail table
   private class Column {
     private static final int USERNAME = 0;
     private static final int FIRST_NAME = 1;
@@ -55,7 +57,7 @@ public class ClassDetail extends Composite {
     private static final int ORGANIZATION = 3;
     private static final int EMAIL = 4;
     
-    private static final int count = 5; // sum of above
+    private static final int count = 5; // number of columns (count of above)
   }
   
   public ClassDetail() {
@@ -72,23 +74,51 @@ public class ClassDetail extends Composite {
     });
   }
   
+  /**
+   * Displays all info about a class except the list of members.
+   * @param classDetail
+   */
   public void setClassDetail(ClassInfo classDetail) {
     this.className.setText(classDetail.getClassName());
     this.classUrn.setText(classDetail.getClassId());
-    this.classDescription.setText(classDetail.getDescription());    
+    this.classDescription.setText(classDetail.getDescription());
   }
   
   public void clearClassMembers() {
     this.membersTable.resizeRows(0);
   }
-
-  // use this OR setClassMemberDetails
-  public void setClassMemberNames(List<String> usernames) {
-    throw new RuntimeException("setClassMemberNames unimplemented");
+  
+  /**
+   * Displays columns of usernames. Doesn't show details or highlight privileged members.
+   * Use this method when rendering class detail page for non-privileged members
+   * (who should not be able to see personal details for other members.) 
+   * Use setClassMemberDetails instead if you want the extra info.
+   */
+  public void showClassMemberUsernames(final List<String> usernames) {
+    clearClassMembers();
+    legend.setVisible(false); // legend not needed since privileged members are not highlighted
+    int numClassMembers = usernames.size();
+    int numColumns = 5;
+    int numRows = numClassMembers / numColumns + 1; // integer division, +1 for remainder
+    membersTable.resize(numRows, numColumns);
+    List<String> sortedUsernames = new ArrayList<String>(usernames);
+    Collections.sort(sortedUsernames);
+    int row = 0; 
+    int col = 0;
+    for (String username : sortedUsernames) {
+      membersTable.setText(row, col, username);
+      if (++row == numRows) { row = 0; col++; }
+    }    
   }
-
-  // use this OR setClassMemberNamesAndRoles
-  public void setClassMemberDetails(List<UserShortInfo> members, Map<String, RoleClass> usernameToRoleMap) {
+  
+  /**
+   * Displays a table of usernames and personal details for members of a class,
+   * with an asterisk next to the name of privileged users.
+   * If you only want to show usernames and not personal info (e.g., if the logged
+   * in user is not privileged in this class and should not be able to see other
+   * members' details) use setClassMemberUsernames instead.
+   */
+  public void showClassMemberDetails(List<UserShortInfo> members, Map<String, RoleClass> usernameToRoleMap) {
     // create a hash of usernames to infos so you can see which infos are missing
     HashMap<String, UserShortInfo> usernameToInfoMap = new HashMap<String, UserShortInfo>();
     for (UserShortInfo member : members) {
@@ -115,12 +145,14 @@ public class ClassDetail extends Composite {
     for (UserShortInfo member : sortedMembers) {
       String username = member.getUsername();
       RoleClass role = usernameToRoleMap.containsKey(username) ? usernameToRoleMap.get(username) : RoleClass.UNRECOGNIZED;
-      addClassMember(row++, member, role);
+      addClassMemberDetail(row++, member, role);
     }
   }
 
   
   private void initClassMemberDetailTable() {
+    clearClassMembers();
+    legend.setVisible(true); // legend identifies style used for privileged members
     membersTable.resize(1, Column.count);
     membersTable.getRowFormatter().setStyleName(0, style.membersTableHeader());
     membersTable.setText(0, Column.USERNAME, "Username");
@@ -130,8 +162,9 @@ public class ClassDetail extends Composite {
     membersTable.setText(0, Column.EMAIL, "Email");
   }
   
-  // sets default value (and style) if text is null or empty string
-  private void setMemberTableText(int row, int column, String text) {
+  // Sets default value (and style) if text is null or empty string. Use this
+  // for displaying personal details that might be missing from the db
+  private void setMemberDetailTableText(int row, int column, String text) {
     if (text == null || text.isEmpty()) {
       this.membersTable.setText(row, column, "---");
       this.membersTable.getCellFormatter().addStyleName(row, column, style.missingValue());
@@ -141,7 +174,7 @@ public class ClassDetail extends Composite {
     }
   }
   
-  private void addClassMember(int row, UserShortInfo userInfo, RoleClass role) {
+  private void addClassMemberDetail(int row, UserShortInfo userInfo, RoleClass role) {
     // display username with css style to indicate whether user is privileged
     this.membersTable.setText(row, Column.USERNAME, userInfo.getUsername());
     if (RoleClass.PRIVILEGED.equals(role)) {
@@ -150,16 +183,17 @@ public class ClassDetail extends Composite {
     }
     
     // fill in personal info or default value if it's missing
-    setMemberTableText(row, Column.FIRST_NAME, userInfo.getFirstName());
-    setMemberTableText(row, Column.LAST_NAME, userInfo.getLastName());
-    setMemberTableText(row, Column.ORGANIZATION, userInfo.getOrganization());
-    setMemberTableText(row, Column.EMAIL, userInfo.getEmail());
+    setMemberDetailTableText(row, Column.FIRST_NAME, userInfo.getFirstName());
+    setMemberDetailTableText(row, Column.LAST_NAME, userInfo.getLastName());
+    setMemberDetailTableText(row, Column.ORGANIZATION, userInfo.getOrganization());
+    setMemberDetailTableText(row, Column.EMAIL, userInfo.getEmail());
   }
-  
+
   protected class UsernameComparator implements Comparator<UserShortInfo> {
     @Override
     public int compare(UserShortInfo o1, UserShortInfo o2) {
       return o1.getUsername().compareTo(o2.getUsername());
     }
   }
+  
 }
