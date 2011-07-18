@@ -2,6 +2,9 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
+	  .classGrid td {
+	  	padding: 2px 15px 2px 2px;
+	  }
 	  .container {
 	  	padding: 20px;
 	  }
@@ -17,7 +20,7 @@
 	   Click on a class name to view details.
 	 </div>
    <div class="{style.listContainer}">
-    <g:Grid ui:field='classGrid'></g:Grid>
+    <g:Grid ui:field='classGrid' addStyleNames='{style.classGrid}'></g:Grid>
    </div>
 	</g:HTMLPanel>
 </ui:UiBinder> 

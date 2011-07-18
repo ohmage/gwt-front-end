@@ -21,26 +21,15 @@ public interface ClassView extends IsWidget {
   
   void showListSubview();
   void showDetailSubview();
-  void showEditSubview();
-  void setList(List<ClassInfo> classes);
+  void setList(Map<String, String> classIdToNameMap);
   void setDetail(ClassInfo classDetail);
   // members details should only be visible to privileged users
   void setDetailClassMembers(List<UserShortInfo> members, Map<String, RoleClass> usernameToRoleMap); 
   void clearClassMembers();
-  void setEdit(ClassInfo classDetail);
-  void showEditFormAddMembersDialog(List<String> userLoginsToChooseFrom);
   
   // show messages to user
   void showError(String msg);
   void showMsg(String msg);
   void hideMsg();
-  
-  HasClickHandlers getEditFormSubmitButton();
-  HasClickHandlers getEditFormCancelButton();
-  HasClickHandlers getEditFormAddMembersButton();
-  void clearEditForm();
-  String getClassId();
-  String getDescription();
-  List<String> getMembers();
   
 }

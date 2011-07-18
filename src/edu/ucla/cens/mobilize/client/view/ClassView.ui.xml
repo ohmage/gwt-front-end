@@ -104,7 +104,6 @@
         <!-- only one of these will be visible at a time depending on selected subview -->
         <w:ClassList ui:field="classList" />
         <w:ClassDetail ui:field="classDetail" />
-        <w:ClassEditForm ui:field="classEdit" />
       </g:HTMLPanel>
     </g:center>
 
