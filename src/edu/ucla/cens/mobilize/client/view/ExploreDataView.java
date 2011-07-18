@@ -26,12 +26,14 @@ public interface ExploreDataView extends IsWidget {
   String getSelectedParticipant();
   
   // prompt x
-  void setPromptXList(Map<String, String> promptIdToNameMap);
+  void clearPromptXList();
+  void addPromptX(String promptId, String displayString, boolean isSupported);
   void setSelectedPromptX(String prompt);
   String getSelectedPromptX(); // returns prompt_id
   
   // prompt y
-  void setPromptYList(Map<String, String> promptIdToNameMap);
+  void clearPromptYList();
+  void addPromptY(String promptId, String displayString, boolean isSupported);
   void setSelectedPromptY(String prompt);
   String getSelectedPromptY(); // returns prompt_id
   

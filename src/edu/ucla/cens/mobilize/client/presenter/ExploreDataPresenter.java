@@ -239,21 +239,20 @@ public class ExploreDataPresenter implements Presenter {
     dataService.fetchCampaignDetail(campaignId, new AsyncCallback<CampaignDetailedInfo>() {
       @Override
       public void onFailure(Throwable caught) {
-        // TODO
+        _logger.severe("Could not load prompt list: " + caught.getMessage());
       }
 
       @Override
       public void onSuccess(CampaignDetailedInfo result) {
-        Map<String, String> promptIdToNameMap = new HashMap<String, String>();
+        view.clearPromptXList();
+        view.clearPromptYList();
         List<PromptInfo> prompts = result.getPrompts();
         for (PromptInfo prompt : prompts) {
-          if (promptTypeIsSupported(plotType, prompt.getPromptType())) {
-            String promptId = prompt.getPromptId();
-            promptIdToNameMap.put(promptId, promptId); // name==id for now
-          }
+          boolean isSupported = promptTypeIsSupported(plotType, prompt.getPromptType());
+          String promptId = prompt.getPromptId();
+          view.addPromptX(promptId, promptId, isSupported); // display text == id for now
+          view.addPromptY(promptId, promptId, isSupported); // display text == id for now
         }     
-        view.setPromptXList(promptIdToNameMap);
-        view.setPromptYList(promptIdToNameMap);
         view.setSelectedPromptX(promptToSelectX);
         view.setSelectedPromptY(promptToSelectY);
       }

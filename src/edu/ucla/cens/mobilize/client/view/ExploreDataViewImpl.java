@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -17,6 +18,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Composite;
@@ -216,17 +218,6 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     return (index > -1) ? participantListBox.getValue(index) : null;
   }
 
-
-  @Override
-  public void setPromptXList(Map<String, String> promptIdToNameMap) {
-    promptXListBox.clear();
-    if (promptIdToNameMap == null) return;
-    for (String promptId : promptIdToNameMap.keySet()) {
-      promptXListBox.addItem(promptIdToNameMap.get(promptId), promptId);
-    }
-  }
-
-
   @Override
   public void setSelectedPromptX(String promptId) {
     promptXListBox.setSelectedIndex(-1);
@@ -245,17 +236,6 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     int index = promptXListBox.getSelectedIndex();
     return (index > -1) ? promptXListBox.getValue(index) : null;
   }
-
-
-  @Override
-  public void setPromptYList(Map<String, String> promptIdToNameMap) {
-    promptYListBox.clear();
-    if (promptIdToNameMap == null) return;
-    for (String promptId : promptIdToNameMap.keySet()) {
-      promptYListBox.addItem(promptId, promptIdToNameMap.get(promptId));
-    }    
-  }
-
 
   @Override
   public void setSelectedPromptY(String promptId) {
@@ -613,6 +593,41 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     }
     exportForm.add(innerContainer);
     exportForm.submit();
+  }
+
+
+  @Override
+  public void clearPromptXList() {
+    this.promptXListBox.clear();
+  }
+
+
+  @Override
+  public void addPromptX(String promptId, String displayString, boolean isSupported) {
+    this.promptXListBox.addItem(displayString, promptId);
+    if (!isSupported) { // unsupported prompts are disabled. // FIXME: IE?
+      int itemIndex = this.promptXListBox.getItemCount() - 1;
+      NodeList<Element> items = this.promptXListBox.getElement().getElementsByTagName("option");
+      items.getItem(itemIndex).setAttribute("disabled", "disabled");
+    }
+  }
+
+
+  @Override
+  public void clearPromptYList() {
+    this.promptYListBox.clear();
+  }
+
+
+  @Override
+  public void addPromptY(String promptId, String displayString,
+      boolean isSupported) {
+    this.promptYListBox.addItem(displayString, promptId);
+    if (!isSupported) { // unsupported prompts are disabled. // FIXME: IE?
+      int itemIndex = this.promptYListBox.getItemCount() - 1;
+      NodeList<Element> items = this.promptYListBox.getElement().getElementsByTagName("option");
+      items.getItem(itemIndex).setAttribute("disabled", "disabled");
+    }    
   }
     
 }
