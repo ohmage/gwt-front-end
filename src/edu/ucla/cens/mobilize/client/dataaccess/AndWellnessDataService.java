@@ -424,7 +424,7 @@ public class AndWellnessDataService implements DataService {
             _logger.severe(exception.getMessage());
             callback.onFailure(exception);
           }
-          if (userInfos != null && userInfos.size() > 0) {
+          if (userInfos != null) {
             callback.onSuccess(userInfos); 
           } else {
             callback.onFailure(new Exception("Failed to parse user data."));
