@@ -154,7 +154,9 @@ public class ExploreDataPresenter implements Presenter {
       @Override
       public void onClick(ClickEvent event) {
         view.clearPlot();
-        if (!view.isMissingRequiredField()) {
+        if (view.getSelectedPromptX().equals(view.getSelectedPromptY())) {
+          ErrorDialog.show("Invalid prompt choice", "X and Y prompts must be different.");
+        } else if (!view.isMissingRequiredField()) {
           fireHistoryTokenToMatchSelectedSettings();
         }
       }
