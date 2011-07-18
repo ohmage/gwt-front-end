@@ -68,7 +68,9 @@
      }
      .mainPanel { 
      	 height: 150px;
+     	 margin: 0px auto 0px auto;
        white-space: nowrap; 
+       width: 90%;
      }    
      .textBox {
      	width: 175px;
