@@ -113,7 +113,7 @@
          </g:MenuItem>
          -->
          <g:MenuItem ui:field='quickLinkUpload' addStyleNames='{style.linkDocuments}'>
-           <a href="#documents">Upload documents</a>
+           <a href="#documents?v=create">Upload documents</a>
          </g:MenuItem>
        </g:MenuBar>
      </g:HTMLPanel>
