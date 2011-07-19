@@ -64,7 +64,7 @@
       vertical-align: middle;
     }
     .sectionHeader {
-      background-color: #FFFFE0;
+      background: #FFFFE0 repeat-x url("images/bg_white_transparent_50.png");
       border-bottom: solid 1px #CCC;
       margin-bottom: 10px;
       padding: 0px;

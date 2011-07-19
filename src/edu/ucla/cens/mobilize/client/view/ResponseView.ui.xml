@@ -10,10 +10,7 @@
     .buttonPanelWrapperTop, .buttonPanelWrapperBottom {
     	background-color: #EBF3D7;
     }
-    .buttonPanelWrapperTop {
-    	border-bottom: solid 1px #A5CD3A;
-    }
-    .buttonPanelWrapperBottom {
+    .buttonPanelWrapperTop, .buttonPanelWrapperBottom {
     	border: solid 1px #A5CD3A;
     	border-right: none;
     	border-left: none;
@@ -64,8 +61,7 @@
       overflow-y: auto;
     }
     .sectionHeader {
-      background: #FCE4CD repeat-x url("images/bg_white_transparent_50.png");
-      border-bottom: solid 1px #FFC288; /* #F58F3E;*/
+      background: lightYellow repeat-x url("images/bg_white_transparent_50.png");
 			color: #333;
 			font-weight: bold;
 			padding: 10px 15px;
