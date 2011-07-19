@@ -124,8 +124,9 @@
           <g:Anchor ui:field='viewLinkQuick' addStyleNames="link">Quick View</g:Anchor>
           <span class='{style.separator}'>|</span>
           <g:Anchor ui:field='viewLinkFull' addStyleNames="link">Full View</g:Anchor>
-          <span class='{style.separator}'>|</span>
-          <g:Anchor ui:field='viewLinkPhoto' addStyleNames="link">Photo View</g:Anchor>
+          <!-- photo link hidden b/c it's not hooked up yet -->
+          <span class='{style.separator}' style="display:none;">|</span>
+          <g:Anchor ui:field='viewLinkPhoto' visible="false" addStyleNames="link">Photo View</g:Anchor>
       </g:HTMLPanel>
     </g:north>
     
