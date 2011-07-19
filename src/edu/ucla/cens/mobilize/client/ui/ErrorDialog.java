@@ -39,6 +39,7 @@ public class ErrorDialog {
         _dialog.hide(); 
       }
     });
+    
     HTMLPanel dialogFooter = new HTMLPanel("<div id='buttonDiv' class='errorDialogButtonDiv'></div>");
     dialogFooter.add(dismissButton, "buttonDiv");
     dialogFooter.addStyleName("buttonDiv");
@@ -49,6 +50,9 @@ public class ErrorDialog {
     
     // show it
     _dialog.center();
+    
+    // put focus on the dismiss button so enter will dismiss it
+    dismissButton.setFocus(true);
   }
   
   public static void show(String msg) {
