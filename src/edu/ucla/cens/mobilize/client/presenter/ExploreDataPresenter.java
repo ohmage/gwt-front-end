@@ -153,10 +153,12 @@ public class ExploreDataPresenter implements Presenter {
     view.getDrawPlotButton().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        view.clearPlot();
-        if (view.getSelectedPromptX().equals(view.getSelectedPromptY())) {
+        view.clearPlot(); // prev plot is cleared even if inputs are invalid
+        String promptX = view.getSelectedPromptX();
+        String promptY = view.getSelectedPromptY();
+        if (promptX != null && promptX.equals(promptY)) {
           ErrorDialog.show("Invalid prompt choice", "X and Y prompts must be different.");
-        } else if (!view.isMissingRequiredField()) {
+        } else if (!view.isMissingRequiredField()) { // view marks missing fields, if any
           fireHistoryTokenToMatchSelectedSettings();
         }
       }
