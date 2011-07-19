@@ -52,12 +52,12 @@ public class ClassDetail extends Composite {
   // convenience class for column indices of member detail table
   private class Column {
     private static final int USERNAME = 0;
-    private static final int FIRST_NAME = 1;
-    private static final int LAST_NAME = 2;
-    private static final int ORGANIZATION = 3;
-    private static final int EMAIL = 4;
+    private static final int PERSONAL_ID = 1; // e.g., user's school id
+    private static final int FIRST_NAME = 2;
+    private static final int LAST_NAME = 3;
+    private static final int ORGANIZATION = 4;
     
-    private static final int count = 5; // number of columns (count of above)
+    private static final int count = 6; // number of columns (count of above)
   }
   
   public ClassDetail() {
@@ -156,10 +156,10 @@ public class ClassDetail extends Composite {
     membersTable.resize(1, Column.count);
     membersTable.getRowFormatter().setStyleName(0, style.membersTableHeader());
     membersTable.setText(0, Column.USERNAME, "Username");
+    membersTable.setText(0, Column.PERSONAL_ID, "ID");
     membersTable.setText(0, Column.FIRST_NAME, "First name");
     membersTable.setText(0, Column.LAST_NAME, "Last name");
     membersTable.setText(0, Column.ORGANIZATION, "Organization");
-    membersTable.setText(0, Column.EMAIL, "Email");
   }
   
   // Sets default value (and style) if text is null or empty string. Use this
@@ -183,10 +183,10 @@ public class ClassDetail extends Composite {
     }
     
     // fill in personal info or default value if it's missing
+    setMemberDetailTableText(row, Column.PERSONAL_ID, userInfo.getPersonalId());
     setMemberDetailTableText(row, Column.FIRST_NAME, userInfo.getFirstName());
     setMemberDetailTableText(row, Column.LAST_NAME, userInfo.getLastName());
     setMemberDetailTableText(row, Column.ORGANIZATION, userInfo.getOrganization());
-    setMemberDetailTableText(row, Column.EMAIL, userInfo.getEmail());
   }
 
   protected class UsernameComparator implements Comparator<UserShortInfo> {
