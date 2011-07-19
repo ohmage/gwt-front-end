@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -77,6 +78,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField Anchor selectNoneLinkTop;
   @UiField Anchor selectAllLinkBottom;
   @UiField Anchor selectNoneLinkBottom;
+  @UiField HTMLPanel expandCollapseLinksTop;
   @UiField Anchor expandLinkTop;
   @UiField Anchor collapseLinkTop;
   @UiField Anchor expandLinkBottom;
@@ -328,6 +330,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   private void renderResponsesQuickView(List<SurveyResponse> responses) {
     this.responseList.clear();
+    this.expandCollapseLinksTop.setVisible(true);
     for (SurveyResponse response : responses) {
       ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
       responseWidget.setResponse(response);
@@ -337,6 +340,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   private void renderResponsesFullView(List<SurveyResponse> responses) {
     this.responseList.clear();
+    this.expandCollapseLinksTop.setVisible(false);
     for (SurveyResponse response : responses) {
       ResponseWidgetFull responseWidget = new ResponseWidgetFull();
       responseWidget.setResponse(response);

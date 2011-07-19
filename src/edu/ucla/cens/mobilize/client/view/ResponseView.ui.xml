@@ -25,6 +25,9 @@
     .dateBox {
     	width: 100px;
     }
+    .expandCollapseLinkMenu {
+    	padding-left: 5px;
+    }
     .leftSideBar {
     	background-color: #EEE;
     	border-right: solid 1px #CCC;
@@ -199,21 +202,17 @@
 		        <g:Button ui:field='deleteButtonTop' addStyleNames='{style.deleteButton}'>
 		          Delete
 		        </g:Button>
-		        <g:cell verticalAlignment='ALIGN_MIDDLE'>
+		        <g:HTMLPanel tag='span' ui:field='expandCollapseLinksTop' addStyleNames='{style.expandCollapseLinkMenu}'>
 	            <g:Anchor ui:field='expandLinkTop' addStyleNames='{style.smallActionLink}'>
 	              expand
 	            </g:Anchor>
-	          </g:cell>
-	          <g:cell verticalAlignment='ALIGN_MIDDLE'>
 	            <g:InlineHTML>
 	              |
 	            </g:InlineHTML>
-	          </g:cell>
-	          <g:cell verticalAlignment='ALIGN_MIDDLE'>
 	            <g:Anchor ui:field='collapseLinkTop' addStyleNames='{style.smallActionLink}'>
 	              collapse
 	            </g:Anchor>
-	          </g:cell> 
+	          </g:HTMLPanel>
 	        </g:HorizontalPanel>
         </g:HTMLPanel>
 	      <g:FlowPanel addStyleNames='{style.responseContainer}'>
