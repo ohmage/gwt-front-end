@@ -89,7 +89,7 @@
     }
   </ui:style>
   <g:HTMLPanel>
-   <g:HorizontalPanel id='dashboardContainer' addStyleNames='{style.dashboard}'>
+   <g:HorizontalPanel ui:field='dashboardContainer' addStyleNames='{style.dashboard}'>
      <g:HTMLPanel addStyleNames='{style.topBar}' />
      
      <g:HTMLPanel ui:field='leftPanel' addStyleNames='{style.leftPanel}'>

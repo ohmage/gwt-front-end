@@ -67,24 +67,26 @@
 	  <g:Button ui:field='passwordChangeButton'>Change Password</g:Button>
 	</g:HTMLPanel>
 	
-	<g:HTMLPanel ui:field='passwordChangePanel'>
-	  <g:HTMLPanel addStyleNames='{style.detailRow}'>
-	    <g:InlineLabel addStyleNames='{style.detailLabel}'>Old Password:</g:InlineLabel>
-	    <g:PasswordTextBox ui:field='oldPasswordTextBox' />
-	  </g:HTMLPanel>
-	  <g:HTMLPanel addStyleNames='{style.detailRow}'>
-	    <g:InlineLabel addStyleNames='{style.detailLabel}'>New Password:</g:InlineLabel>
-	    <g:PasswordTextBox ui:field='newPasswordTextBox' />
-	  </g:HTMLPanel>
-	  <g:HTMLPanel addStyleNames='{style.detailRow}'>
-	    <g:InlineLabel addStyleNames='{style.detailLabel}'>Confirm New Password:</g:InlineLabel>
-	    <g:PasswordTextBox ui:field='newPasswordConfirmTextBox' />
-	  </g:HTMLPanel>
-	  <g:HTMLPanel addStyleNames='{style.buttonPanel}'>
-		  <g:Button ui:field='passwordChangeSubmitButton'>Submit</g:Button>
-		  <g:Button ui:field='passwordChangeCancelButton'>Cancel</g:Button>
-	  </g:HTMLPanel>
-	</g:HTMLPanel>
+	<g:FormPanel ui:field='passwordChangeForm'>
+		<g:HTMLPanel ui:field='passwordChangePanel'>
+		  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+		    <g:InlineLabel addStyleNames='{style.detailLabel}'>Old Password:</g:InlineLabel>
+		    <g:PasswordTextBox ui:field='oldPasswordTextBox' />
+		  </g:HTMLPanel>
+		  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+		    <g:InlineLabel addStyleNames='{style.detailLabel}'>New Password:</g:InlineLabel>
+		    <g:PasswordTextBox ui:field='newPasswordTextBox' />
+		  </g:HTMLPanel>
+		  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+		    <g:InlineLabel addStyleNames='{style.detailLabel}'>Confirm New Password:</g:InlineLabel>
+		    <g:PasswordTextBox ui:field='newPasswordConfirmTextBox' />
+		  </g:HTMLPanel>
+		  <g:HTMLPanel addStyleNames='{style.buttonPanel}'>
+		    <g:SubmitButton ui:field='passwordChangeSubmitButton'>Submit</g:SubmitButton>
+			  <g:Button ui:field='passwordChangeCancelButton'>Cancel</g:Button>
+		  </g:HTMLPanel>
+		</g:HTMLPanel>
+	</g:FormPanel>
 </g:HTMLPanel>
 
 

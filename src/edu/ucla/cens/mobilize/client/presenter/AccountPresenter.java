@@ -6,10 +6,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
-import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.view.AccountView;
 
 public class AccountPresenter implements AccountView.Presenter, Presenter {
@@ -33,9 +34,9 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
       }
     });
     
-    this.view.getPasswordChangeSubmitButton().addClickHandler(new ClickHandler() {
+    this.view.setPasswordChangeSubmitHandler(new SubmitHandler() {
       @Override
-      public void onClick(ClickEvent event) {
+      public void onSubmit(SubmitEvent event) {
         view.disablePasswordChangeForm();
         view.showWaitIndicator();
         String userName = view.getUserName();
@@ -43,14 +44,19 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
         String newPassword = view.getNewPassword();
         String newPasswordConfirm = view.getNewPasswordConfirm();
         if (!newPassword.equals(newPasswordConfirm)) {
+          view.resetPasswordChangeForm();
+          view.enablePasswordChangeForm();
+          view.hideWaitIndicator();
           view.showError("Password change failed.", 
                          "Passwords do not match. Please try again.");
           return;
         }
         dataService.changePassword(userName, oldPassword, newPassword, new AsyncCallback<String>() {
-
           @Override
           public void onFailure(Throwable caught) {
+            view.resetPasswordChangeForm();
+            view.enablePasswordChangeForm();
+            view.hideWaitIndicator();
             view.showError("There was a problem completing the password change request.",
                            caught.getMessage());
             // NOTE: If user types her password incorrectly here, it's an auth
@@ -68,6 +74,7 @@ public class AccountPresenter implements AccountView.Presenter, Presenter {
         });
       }
     });
+    
     
     this.view.getPasswordChangeCancelButton().addClickHandler(new ClickHandler() {
       @Override

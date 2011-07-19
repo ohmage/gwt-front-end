@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface AccountView extends IsWidget {
@@ -24,7 +25,8 @@ public interface AccountView extends IsWidget {
   void showMessage(String message);
   void showError(String message, String detail);
   void hideMessage();
-  
+
+  void setPasswordChangeSubmitHandler(SubmitHandler handler);
   HasClickHandlers getPasswordChangeButton();
   HasClickHandlers getPasswordChangeSubmitButton();
   HasClickHandlers getPasswordChangeCancelButton();

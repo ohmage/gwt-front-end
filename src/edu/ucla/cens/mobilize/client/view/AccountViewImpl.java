@@ -7,6 +7,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -32,6 +34,7 @@ public class AccountViewImpl extends Composite implements AccountView {
   @UiField InlineLabel loginLabel;
   @UiField InlineLabel canCreateLabel;
   @UiField VerticalPanel classesVerticalPanel;
+  @UiField FormPanel passwordChangeForm;
   @UiField HTMLPanel passwordChangePanel;
   @UiField Button passwordChangeButton;
   @UiField Button passwordChangeCancelButton;
@@ -80,9 +83,7 @@ public class AccountViewImpl extends Composite implements AccountView {
 
   @Override
   public void resetPasswordChangeForm() {
-    this.oldPasswordTextBox.setText("");
-    this.newPasswordTextBox.setText("");
-    this.newPasswordConfirmTextBox.setText("");
+    this.passwordChangeForm.reset();
   }
 
   @Override
@@ -99,6 +100,11 @@ public class AccountViewImpl extends Composite implements AccountView {
     this.oldPasswordTextBox.setEnabled(false);
     this.newPasswordTextBox.setEnabled(false);
     this.newPasswordConfirmTextBox.setEnabled(false);
+  }
+
+  @Override
+  public void setPasswordChangeSubmitHandler(SubmitHandler handler) {
+    this.passwordChangeForm.addSubmitHandler(handler);
   }
   
   @Override
