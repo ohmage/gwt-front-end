@@ -8,6 +8,21 @@ body {
 	overflow: auto;
 }
 
+button {
+	background: repeat-x url("images/button_bw.gif");
+  border: solid thin #AAA;
+  /*box-shadow: -1px 1px 5px 0px #CCC;*/
+  height: 22px;
+  border-bottom: solid thin #888;
+  cursor: pointer;
+  padding: 2px 5px 4px;
+}
+
+button:active {
+	border: solid thin #8A8;
+	color: #686;
+}
+
 input, textarea {
 	font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
 	font-size: 11px;

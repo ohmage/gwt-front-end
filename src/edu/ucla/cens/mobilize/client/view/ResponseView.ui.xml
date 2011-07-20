@@ -3,7 +3,17 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui"
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
-  <ui:style type="edu.ucla.cens.mobilize.client.view.ResponseViewImpl.ResponseViewStyles"> 
+  <ui:style type="edu.ucla.cens.mobilize.client.view.ResponseViewImpl.ResponseViewStyles">
+    .actionButton {
+    	box-shadow: none;
+    	margin: 0px 2px;
+    	padding: 2px 5px 2px 3px;
+    }
+    .actionButtonImage {
+    	margin: 0px 0px 2px 0px;
+      padding: 0px;
+    	vertical-align: middle;
+    } 
     .buttonPanel {
     	padding: 0px 12px;
     }
@@ -188,14 +198,16 @@
 		            none
 		          </g:Anchor>
 	          </g:cell> 
-		        <!-- fixme: disable until something is checked -->
-		        <g:Button ui:field='shareButtonTop' addStyleNames='{style.shareButton}'>
+		        <g:Button ui:field='shareButtonTop' addStyleNames='{style.actionButton}'>
+		          <img src='images/group_small.png' class='{style.actionButtonImage}' />
 		          Share
 		        </g:Button> 
-		        <g:Button ui:field='makePrivateButtonTop' addStyleNames='{style.makePrivateButton}'>
+		        <g:Button ui:field='makePrivateButtonTop' addStyleNames='{style.actionButton}'>
+		          <img src='images/lock_small.png' class='{style.actionButtonImage}' />
 		          Make Private
 		        </g:Button>
-		        <g:Button ui:field='deleteButtonTop' addStyleNames='{style.deleteButton}'>
+		        <g:Button ui:field='deleteButtonTop' addStyleNames='{style.actionButton}'>
+		          <img src='images/delete.png' class='{style.actionButtonImage}' />
 		          Delete
 		        </g:Button>
 		        <g:HTMLPanel tag='span' ui:field='expandCollapseLinksTop' addStyleNames='{style.expandCollapseLinkMenu}'>
@@ -242,13 +254,16 @@
 		        </g:Anchor>
 	        </g:cell>
 	        <!-- fixme: disable until something is checked -->
-	        <g:Button ui:field='shareButtonBottom' addStyleNames='{style.shareButton}'>
+	        <g:Button ui:field='shareButtonBottom' addStyleNames='{style.actionButton}'>
+	          <img src='images/group_small.png' class='{style.actionButtonImage}' />
 	          Share
 	        </g:Button> 
-	        <g:Button ui:field='makePrivateButtonBottom' addStyleNames='{style.makePrivateButton}'>
+	        <g:Button ui:field='makePrivateButtonBottom' addStyleNames='{style.actionButton}'>
+	          <img src='images/lock_small.png' class='{style.actionButtonImage}' />
 	          Make Private
 	        </g:Button>
-	        <g:Button ui:field='deleteButtonBottom' addStyleNames='{style.deleteButton}'>
+	        <g:Button ui:field='deleteButtonBottom' addStyleNames='{style.actionButton}'>
+	          <img src='images/delete.png' class='{style.actionButtonImage}' />
 	          Delete
 	        </g:Button>
 	        <g:cell verticalAlignment='ALIGN_MIDDLE'>
