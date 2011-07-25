@@ -13,6 +13,7 @@
     }
 		.date {
 			background: #FFF no-repeat 0px 50% url("images/phone.png");
+			display: inline-block;
 			font-style: italic;
 			height: 15px;
 			padding-left: 15px;
@@ -23,11 +24,13 @@
 	  	margin: 5px 0px;
 	  	padding: 3px;
 	  }
-	  .location {
+	  .infobar {
 	  	background-color: #DDD;
 	  	border: solid thin #CCC;
 	  	font-style: italic;
 	  	padding: 3px;
+	  }
+	  .location {
 	  }
     .promptContainer {
     	border: solid thin 1px;
@@ -51,11 +54,15 @@
     }
     .survey {
     }
-    .user {
+    .username {
+    	font-style: italic;
+    	font-weight: bold;
     }
 	</ui:style>
 	<g:HTMLPanel addStyleNames='{style.container}'>
-	  <g:Label ui:field='date' addStyleNames='{style.date}' />
+	  <g:InlineLabel ui:field='date' addStyleNames='{style.date}' />
+	  <span>-</span>
+	  <g:InlineLabel ui:field='username' addStyleNames='{style.username}' />
 	  <g:HTMLPanel addStyleNames='{style.header}'>
 		  <g:InlineLabel ui:field='campaign' addStyleNames='{style.campaign}' />:&nbsp;
 		  <g:InlineLabel ui:field='survey' addStyleNames='{style.survey}' />
@@ -63,9 +70,11 @@
 	  <!--<g:InlineLabel ui:field='user' addStyleNames='{style.user} {style.info}' />-->
 	  <g:FlowPanel ui:field='prompts' addStyleNames='{style.promptContainer}' />
 	  <div class='floatstop' />
-	  <g:HTMLPanel addStyleNames='{style.location}'>
-	    <g:InlineLabel>Location:</g:InlineLabel>
-	    <g:InlineLabel ui:field='location' />
+	  <g:HTMLPanel addStyleNames='{style.infobar}'>
+	    <g:HTMLPanel tag='span' addStyleNames='{style.location}'>
+		    <g:InlineLabel>Location:</g:InlineLabel>
+		    <g:InlineLabel ui:field='location' />
+	    </g:HTMLPanel>
 	  </g:HTMLPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 

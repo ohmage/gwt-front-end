@@ -37,10 +37,10 @@ public class ResponseWidgetPopup extends Composite {
       UiBinder<Widget, ResponseWidgetPopup> {
   }
 
-  @UiField Label date;
+  @UiField InlineLabel date;
   @UiField InlineLabel campaign;
   @UiField InlineLabel survey;
-  //@UiField InlineLabel user;
+  @UiField InlineLabel username;
   @UiField FlowPanel prompts;
   @UiField InlineLabel location;
   
@@ -54,7 +54,7 @@ public class ResponseWidgetPopup extends Composite {
     date.setText(surveyResponse.getResponseDate().toString());
     campaign.setText(surveyResponse.getCampaignName());
     survey.setText(surveyResponse.getSurveyName());
-    //user.setText(surveyResponse.getUserName());
+    username.setText(surveyResponse.getUserName());
     NumberFormat locationFormat = NumberFormat.getFormat("####.000");
     String latString = locationFormat.format(surveyResponse.getLatitude());
     String longString = locationFormat.format(surveyResponse.getLongitude());
