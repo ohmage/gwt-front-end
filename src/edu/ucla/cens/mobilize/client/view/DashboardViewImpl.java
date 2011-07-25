@@ -56,16 +56,15 @@ public class DashboardViewImpl extends Composite implements DashboardView {
   
   public DashboardViewImpl(String firstName) {
     initWidget(uiBinder.createAndBindUi(this));
+    this.privateResponsesLink.setTargetHistoryToken(HistoryTokens.responseList(null, null, null, null, Privacy.PRIVATE, false, null, null));
+    this.authorCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.AUTHOR, null, null));
+    this.participantCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.PARTICIPANT, null, null));
   }
   
   private void updateRoleSpecificDisplay() {
     this.quickLinkCreate.setVisible(this.canEdit);
     this.quickLinkEdit.setVisible(this.canEdit);
     this.quickLinkUpload.setVisible(this.canUpload);
-    this.notificationAuthor.setVisible(this.canEdit);
-    this.privateResponsesLink.setTargetHistoryToken(HistoryTokens.responseList(null, null, null, null, Privacy.PRIVATE, false, null, null));
-    this.authorCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.AUTHOR, null, null));
-    this.participantCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.PARTICIPANT, null, null));
   }
   
   @Override

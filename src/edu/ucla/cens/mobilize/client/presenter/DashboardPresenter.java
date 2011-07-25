@@ -41,15 +41,13 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
 
   @Override
   public void go(Map<String, String> params) {
-
+    assert view != null : "view must be set before displaying dashboard data";
     if (userInfo != null) {
       this.canEdit = userInfo.canCreate();
       this.canUpload = userInfo.canUpload();
+      this.view.setPermissions(this.canEdit, this.canUpload);
     }
-      
-    assert view != null : "view must be set before displaying dashboard data";
     fetchAndShowDashboardData();    
-    updateDisplay();
   }
   
   @Override
@@ -59,7 +57,7 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
   }
   
   public void updateDisplay() {
-    this.view.setPermissions(this.canEdit, this.canUpload);
+
   }
   
   private void fetchAndShowDashboardData() {
