@@ -47,6 +47,8 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
       this.canUpload = userInfo.canUpload();
     }
       
+    assert view != null : "view must be set before displaying dashboard data";
+    fetchAndShowDashboardData();    
     updateDisplay();
   }
   
@@ -54,8 +56,6 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
   public void setView(DashboardView view) {
     this.view = view;
     this.view.setPresenter(this);
-    fetchAndShowDashboardData();
-    updateDisplay();
   }
   
   public void updateDisplay() {
