@@ -11,6 +11,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
@@ -386,28 +387,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     //pdfButton.setEnabled(isEnabled);
     exportButton.setEnabled(isEnabled);
   }
-  
-  @Override
-  public HasClickHandlers getCampaignDropDown() {
+
+  @Override 
+  public HasChangeHandlers getCampaignDropDown() {
     return campaignListBox;
-  }
-
-
-  @Override
-  public HasClickHandlers getParticipantDropDown() {
-    return participantListBox;
-  }
-
-
-  @Override
-  public HasClickHandlers getPromptXDropDown() {
-    return promptXListBox;
-  }
-
-
-  @Override
-  public HasClickHandlers getPromptYDropDown() {
-    return promptYListBox;
   }
 
 

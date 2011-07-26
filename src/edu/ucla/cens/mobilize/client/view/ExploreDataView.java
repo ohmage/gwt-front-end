@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -67,10 +68,7 @@ public interface ExploreDataView extends IsWidget {
   // methods for event handling
   @SuppressWarnings("deprecation")
   SourcesTreeEvents getPlotTypeTree();
-  HasClickHandlers getCampaignDropDown();
-  HasClickHandlers getParticipantDropDown();
-  HasClickHandlers getPromptXDropDown();
-  HasClickHandlers getPromptYDropDown();
+  HasChangeHandlers getCampaignDropDown();
   HasClickHandlers getDrawPlotButton();
   //HasClickHandlers getPdfButton();
   HasClickHandlers getExportDataButton();

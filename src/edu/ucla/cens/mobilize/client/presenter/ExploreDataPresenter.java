@@ -1,11 +1,12 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ErrorEvent;
@@ -140,9 +141,9 @@ public class ExploreDataPresenter implements Presenter {
       }
     });
     
-    view.getCampaignDropDown().addClickHandler(new ClickHandler() {
+    view.getCampaignDropDown().addChangeHandler(new ChangeHandler() {
       @Override
-      public void onClick(ClickEvent event) {
+      public void onChange(ChangeEvent event) {
         String campaignId = view.getSelectedCampaign();
         PlotType plotType = view.getSelectedPlotType();
         fetchAndFillPromptChoices(campaignId, plotType, null, null);
