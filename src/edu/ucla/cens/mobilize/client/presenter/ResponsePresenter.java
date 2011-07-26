@@ -62,9 +62,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                               String selectedParticipant) {
     // start with a fresh list
     this.participants.clear();
-    
-    // all users see themselves
-    this.participants.add(userInfo.getUserName());
+    view.clearParticipantList();
     
     // if user is super of a campaign, she can see responses from anyone in the campaign
     if (userInfo.isAdmin() || userInfo.isPrivileged() || userInfo.isSupervisor()) {
@@ -100,11 +98,15 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
       @Override
       public void onSuccess(List<String> result) {
-        if (result != null) {
+        if (result != null && !result.isEmpty()) {
           // add participants to those already in list and update display
           participants.addAll(result); // sorted participants
           view.setParticipantList(participants, includeAllChoice);
-          view.selectParticipant(participantToSelect);
+          if (participantToSelect != null) view.selectParticipant(participantToSelect);
+        } else {
+          // set the list anyway. if it already contained participants from a previous fetch,
+          // there will be no effect. if not, the view will update display to indicate no participants
+          view.setParticipantList(participants, includeAllChoice);
         }
       }
     });
@@ -259,17 +261,14 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.view.getCampaignFilter().addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent event) {
+        view.clearSurveyList();
         String selectedCampaign = view.getSelectedCampaign();
-        String selectedParticipant = view.getSelectedParticipant();
-        fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
+        fetchAndFillParticipantChoices(selectedCampaign, null);
         // if a specific campaign is selected (not "All" or none) fill survey drop down to match
         if (selectedCampaign != null && 
             !selectedCampaign.equals(AwConstants.specialAllValuesToken)) { 
           fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, null);
-        } else {
-          // clear survey list when user selects All campaigns
-          view.clearSurveyList();  
-        }
+        } 
       }
     });
     

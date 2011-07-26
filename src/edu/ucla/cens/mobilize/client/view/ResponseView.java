@@ -39,6 +39,7 @@ public interface ResponseView extends IsWidget {
   void setSurveyList(List<String> surveyNames);
   void setPrivacyStates(List<Privacy> privacyStates);
   void clearSurveyList();
+  void clearParticipantList();
   
   // set selected filters
   void selectParticipant(String participant);

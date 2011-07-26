@@ -87,6 +87,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   ResponseView.Presenter presenter;
   Privacy selectedPrivacy = Privacy.UNDEFINED;
   private String selectedSubView; // "quick", "full" or "photo"
+  private String emptyParticipantListString = "No one has responded.";
   
   public ResponseViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -198,7 +199,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   @Override
   public void setParticipantList(SortedSet<String> participantNames, boolean makeFirstItemAll) {
-    if (participantNames.size() == 1) {
+    if (participantNames == null || participantNames.size() == 0) {
+      singleParticipantLabel.setVisible(true);
+      singleParticipantLabel.setText(this.emptyParticipantListString);
+      participantFilter.setVisible(false);
+    } else if (participantNames.size() == 1) {
       singleParticipantLabel.setVisible(true);
       singleParticipantLabel.setText(participantNames.first());
       participantFilter.setVisible(false);
@@ -210,7 +215,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       for (String name : participantNames) {
         participantFilter.addItem(name, name); 
       }
-      participantFilter.setSelectedIndex(-1); // default is no selection
+      // default is "All" if it's an option or no selection otherwise
+      participantFilter.setSelectedIndex(makeFirstItemAll ? 0 : -1);
     }
   } 
 
@@ -358,6 +364,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     if (this.singleParticipantLabel.isVisible()) {
       // when only one user is visible, that is the selected user
       selectedUser = this.singleParticipantLabel.getText();
+      // check for special case where there are no participants
     } else { 
       // otherwise, get selection from dropdown
       int index = this.participantFilter.getSelectedIndex();
@@ -578,6 +585,12 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   public void clearSurveyList() {
     this.surveyFilter.clear();
     this.surveyFilter.setEnabled(false);
+  }
+  
+  @Override 
+  public void clearParticipantList() {
+    this.participantFilter.clear();
+    this.singleParticipantLabel.setText("");
   }
 
   @Override
