@@ -16,7 +16,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
@@ -26,7 +25,7 @@ import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
 
-public class ResponseWidgetFull extends Composite implements ResponseDisplayWidget {
+public class ResponseWidgetBasic extends Composite implements ResponseDisplayWidget {
 
   public interface ResponseWidgetStyle extends CssResource {
     String privacyPrivate();
@@ -38,11 +37,11 @@ public class ResponseWidgetFull extends Composite implements ResponseDisplayWidg
     String selected();
   }
   
-  private static ResponseWidgetFullUiBinder uiBinder = GWT
-      .create(ResponseWidgetFullUiBinder.class);
+  private static ResponseWidgetBasicUiBinder uiBinder = GWT
+      .create(ResponseWidgetBasicUiBinder.class);
 
-  interface ResponseWidgetFullUiBinder extends
-      UiBinder<Widget, ResponseWidgetFull> {
+  interface ResponseWidgetBasicUiBinder extends
+      UiBinder<Widget, ResponseWidgetBasic> {
   }
 
   @UiField ResponseWidgetStyle style;
@@ -55,11 +54,10 @@ public class ResponseWidgetFull extends Composite implements ResponseDisplayWidg
   @UiField InlineLabel surveyLabel;
   @UiField InlineLabel privacyLabel;
   @UiField FlowPanel promptContainer;
-  @UiField HorizontalPanel imageContainer;
   
   private SurveyResponse surveyResponseData;
   
-  public ResponseWidgetFull() {
+  public ResponseWidgetBasic() {
     initWidget(uiBinder.createAndBindUi(this));
     bind();
   }
@@ -71,6 +69,11 @@ public class ResponseWidgetFull extends Composite implements ResponseDisplayWidg
         setSelectedStyle(event.getValue());
       }
     });
+  }
+  
+  // show/hide the checkbox
+  public void setSelectable(boolean isSelectable) {
+    this.checkBox.setVisible(isSelectable);
   }
 
   @Override
@@ -182,6 +185,16 @@ public class ResponseWidgetFull extends Composite implements ResponseDisplayWidg
     // add the whole thing to prompt list
     promptContainer.add(panel);
     
+  }
+
+  @Override
+  public void expand() {
+    this.promptContainer.setVisible(true);
+  }
+
+  @Override
+  public void collapse() {
+    this.promptContainer.setVisible(false);
   }
 
 }

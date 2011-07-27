@@ -34,9 +34,8 @@ import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
-import edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisplayWidget;
-import edu.ucla.cens.mobilize.client.ui.ResponseWidgetFull;
+import edu.ucla.cens.mobilize.client.ui.ResponseWidgetBasic;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 public class ResponseViewImpl extends Composite implements ResponseView {
@@ -53,9 +52,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
 
   @UiField ResponseViewStyles style;
-  @UiField Anchor viewLinkQuick;
-  @UiField Anchor viewLinkFull;
-  @UiField Anchor viewLinkPhoto;
+  @UiField Anchor viewLinkEdit;
+  @UiField Anchor viewLinkBrowse;
   @UiField Label singleParticipantLabel;
   @UiField ListBox participantFilter;
   @UiField ListBox campaignFilter;
@@ -83,10 +81,12 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField Anchor collapseLinkTop;
   @UiField Anchor expandLinkBottom;
   @UiField Anchor collapseLinkBottom;
+  @UiField HTMLPanel buttonPanelTop;
+  @UiField HTMLPanel buttonPanelBottom;
   
   ResponseView.Presenter presenter;
   Privacy selectedPrivacy = Privacy.UNDEFINED;
-  private String selectedSubView; // "quick", "full" or "photo"
+  private String selectedSubView; // "browse" or "edit"
   private String emptyParticipantListString = "No one has responded.";
   
   public ResponseViewImpl() {
@@ -173,21 +173,19 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
   
   private void expandAll() {
-    if (!"quick".equals(selectedSubView)) return;
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
-      if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
-        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
-        panel.setOpen(true);
+      if (responseList.getWidget(i).getClass() == ResponseDisplayWidget.class) {
+        ResponseDisplayWidget widget = (ResponseDisplayWidget)responseList.getWidget(i);
+        widget.expand();
       }
     }
   }
   
   private void collapseAll() {
-    if (!"quick".equals(selectedSubView)) return;
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
-      if (responseList.getWidget(i).getClass() == ResponseDisclosurePanel.class) {
-        ResponseDisclosurePanel panel = (ResponseDisclosurePanel)responseList.getWidget(i);
-        panel.setOpen(false);
+      if (responseList.getWidget(i).getClass() == ResponseDisplayWidget.class) {
+        ResponseDisplayWidget widget = (ResponseDisplayWidget)responseList.getWidget(i);
+        widget.collapse();
       }
     }    
   }
@@ -325,39 +323,44 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @Override
   public void renderResponses(List<SurveyResponse> responses) {
-    if ("quick".equals(selectedSubView)) {
-      renderResponsesQuickView(responses);
-    } else if ("full".equals(selectedSubView)) {
-      renderResponsesFullView(responses);
-    } else if ("photo".equals(selectedSubView)) {
-      renderResponsesPhotoView(responses);
-    } 
-  }
-  
-  private void renderResponsesQuickView(List<SurveyResponse> responses) {
-    this.responseList.clear();
-    this.expandCollapseLinksTop.setVisible(true);
-    for (SurveyResponse response : responses) {
-      ResponseDisclosurePanel responseWidget = new ResponseDisclosurePanel();
-      responseWidget.setResponse(response);
-      this.responseList.add(responseWidget);
+    if ("edit".equals(selectedSubView)) {
+      renderResponsesEditView(responses);
+    } else if ("browse".equals(selectedSubView)) {
+      renderResponsesBrowseView(responses);
+    } else { // default to browse
+      renderResponsesBrowseView(responses);
     }
-  }
-  
-  private void renderResponsesFullView(List<SurveyResponse> responses) {
-    this.responseList.clear();
-    this.expandCollapseLinksTop.setVisible(false);
-    for (SurveyResponse response : responses) {
-      ResponseWidgetFull responseWidget = new ResponseWidgetFull();
-      responseWidget.setResponse(response);
-      this.responseList.add(responseWidget);
-    }
-  }
-  
-  private void renderResponsesPhotoView(List<SurveyResponse> responses) {
-    assert false : "UNIMPLEMENTED: renderResponsePhotoView";
   }
 
+  private void renderResponsesEditView(List<SurveyResponse> responses) {
+    this.responseList.clear();
+    this.expandCollapseLinksTop.setVisible(true);
+    setEditControlsVisible(true);
+    for (SurveyResponse response : responses) {
+      ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
+      responseWidget.setSelectable(true);
+      responseWidget.setResponse(response);
+      this.responseList.add(responseWidget);
+    }
+  }
+  
+  private void renderResponsesBrowseView(List<SurveyResponse> responses) {
+    this.responseList.clear();
+    this.expandCollapseLinksTop.setVisible(true);
+    setEditControlsVisible(false);
+    for (SurveyResponse response : responses) {
+      ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
+      responseWidget.setSelectable(false);
+      responseWidget.setResponse(response);
+      this.responseList.add(responseWidget);
+    }
+  }
+
+  private void setEditControlsVisible(boolean isVisible) {
+    this.buttonPanelTop.setVisible(isVisible);
+    this.buttonPanelBottom.setVisible(isVisible);
+  }
+  
   @Override
   public String getSelectedParticipant() {
     String selectedUser = null;
@@ -607,40 +610,32 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void setSelectedSubView(String subView) {
     clearSelectedView();
-    if (subView != null && Arrays.asList("quick","full","photo").contains(subView)) {
+    if (subView != null && Arrays.asList("edit","browse").contains(subView)) {
       selectedSubView = subView;
     } else {
-      selectedSubView = "full"; // default to full view
+      selectedSubView = "browse"; // default to browse view
     }
-    if ("quick".equals(selectedSubView)) {
-      viewLinkQuick.addStyleName(style.selectedTopNav());
-    } else if ("full".equals(selectedSubView)) {
-      viewLinkFull.addStyleName(style.selectedTopNav());
-    } else if ("photo".equals(selectedSubView)) {
-      viewLinkPhoto.addStyleName(style.selectedTopNav());
+    if ("browse".equals(selectedSubView)) {
+      viewLinkBrowse.addStyleName(style.selectedTopNav());
+    } else if ("edit".equals(selectedSubView)) {
+      viewLinkEdit.addStyleName(style.selectedTopNav());
     } 
   }  
 
   private void clearSelectedView() {
     selectedSubView = null;
-    viewLinkFull.removeStyleName(style.selectedTopNav());
-    viewLinkQuick.removeStyleName(style.selectedTopNav());
-    viewLinkPhoto.removeStyleName(style.selectedTopNav());
+    viewLinkEdit.removeStyleName(style.selectedTopNav());
+    viewLinkBrowse.removeStyleName(style.selectedTopNav());
   }
 
   @Override
-  public HasClickHandlers getViewLinkQuick() {
-    return this.viewLinkQuick;
+  public HasClickHandlers getViewLinkBrowse() {
+    return this.viewLinkBrowse;
   }
 
   @Override
-  public HasClickHandlers getViewLinkFull() {
-    return this.viewLinkFull;
-  }
-
-  @Override
-  public HasClickHandlers getViewLinkPhoto() {
-    return this.viewLinkPhoto;
+  public HasClickHandlers getViewLinkEdit() {
+    return this.viewLinkEdit;
   }
 
 }

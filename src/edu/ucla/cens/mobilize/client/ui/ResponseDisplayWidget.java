@@ -9,4 +9,6 @@ public interface ResponseDisplayWidget {
   void setSelected(boolean isSelected);
   void setPrivacy(Privacy privacy);
   void setResponse(SurveyResponse response);
+  void expand();
+  void collapse();
 }

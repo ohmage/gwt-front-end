@@ -207,28 +207,19 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     assert view != null : "view must be set before calling setViewEventHandlers";
     
     // set up subview menu
-    view.getViewLinkFull().addClickHandler(new ClickHandler() {
+    view.getViewLinkEdit().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        view.setSelectedSubView("full");
+        view.setSelectedSubView("edit");
         fireHistoryTokenToMatchFilterValues();
         // FIXME: just update view, don't reload data
       }
     });
 
-    view.getViewLinkQuick().addClickHandler(new ClickHandler() {
+    view.getViewLinkBrowse().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        view.setSelectedSubView("quick");
-        fireHistoryTokenToMatchFilterValues();
-        // FIXME: just update view, don't reload data
-      }
-    });
-    
-    view.getViewLinkPhoto().addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        view.setSelectedSubView("photo");
+        view.setSelectedSubView("browse");
         fireHistoryTokenToMatchFilterValues();
         // FIXME: just update view, don't reload data
       }

@@ -14,11 +14,18 @@
       padding: 0px;
     	vertical-align: middle;
     } 
+    .actionLinkWrapper {
+    	display: inline-block;
+    	height: 22px;
+    	padding-top: 3px;
+    }
     .buttonPanel {
     	padding: 0px 12px;
     }
     .buttonPanelWrapperTop, .buttonPanelWrapperBottom {
     	background-color: #EBF3D7;
+    	height: 22px;
+    	white-space: nowrap;
     }
     .buttonPanelWrapperTop, .buttonPanelWrapperBottom {
     	border: solid 1px #A5CD3A;
@@ -130,12 +137,9 @@
   
     <g:north size='25'>
       <g:HTMLPanel addStyleNames='{style.topNav}'>
-          <g:Anchor ui:field='viewLinkQuick' addStyleNames="link">Quick View</g:Anchor>
+          <g:Anchor ui:field='viewLinkEdit' addStyleNames="link">Manage Pending Responses</g:Anchor>
           <span class='{style.separator}'>|</span>
-          <g:Anchor ui:field='viewLinkFull' addStyleNames="link">Full View</g:Anchor>
-          <!-- photo link hidden b/c it's not hooked up yet -->
-          <span class='{style.separator}' style="display:none;">|</span>
-          <g:Anchor ui:field='viewLinkPhoto' visible="false" addStyleNames="link">Photo View</g:Anchor>
+          <g:Anchor ui:field='viewLinkBrowse' addStyleNames="link">Browse All Responses</g:Anchor>
       </g:HTMLPanel>
     </g:north>
     
@@ -182,46 +186,44 @@
         
         <!-- buttons that affect selected responses -->
         <g:HTMLPanel addStyleNames='{style.buttonPanelWrapperTop}'>
-		      <g:HorizontalPanel addStyleNames='{style.buttonPanel}' verticalAlignment='ALIGN_MIDDLE'>
-	          <g:cell verticalAlignment='ALIGN_MIDDLE'> 
-			        <g:Anchor ui:field='selectAllLinkTop' addStyleNames='{style.smallActionLink}'>
-		            select all
-		          </g:Anchor>
-	          </g:cell>
-	          <g:cell verticalAlignment='ALIGN_MIDDLE'>
-	            <g:InlineHTML>
-	              |
-	            </g:InlineHTML>
-	          </g:cell>
-	          <g:cell verticalAlignment='ALIGN_MIDDLE'>
-		          <g:Anchor ui:field='selectNoneLinkTop' addStyleNames='{style.smallActionLink}'>
-		            none
-		          </g:Anchor>
-	          </g:cell> 
-		        <g:Button ui:field='shareButtonTop' addStyleNames='{style.actionButton}'>
-		          <img src='images/group_small.png' class='{style.actionButtonImage}' />
-		          Share
-		        </g:Button> 
-		        <g:Button ui:field='makePrivateButtonTop' addStyleNames='{style.actionButton}'>
-		          <img src='images/lock_small.png' class='{style.actionButtonImage}' />
-		          Make Private
-		        </g:Button>
-		        <g:Button ui:field='deleteButtonTop' addStyleNames='{style.actionButton}'>
-		          <img src='images/delete.png' class='{style.actionButtonImage}' />
-		          Delete
-		        </g:Button>
-		        <g:HTMLPanel tag='span' ui:field='expandCollapseLinksTop' addStyleNames='{style.expandCollapseLinkMenu}'>
+          <g:HTMLPanel tag='span' ui:field='buttonPanelTop'>
+	          <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
+	            <g:Anchor ui:field='selectAllLinkTop' addStyleNames='{style.smallActionLink}'>
+	              select all
+	            </g:Anchor>
+	          </g:HTMLPanel>
+	          <g:HTMLPanel tag='span' addStyleNames='{style.separator}'>|</g:HTMLPanel>
+	          <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
+	            <g:Anchor ui:field='selectNoneLinkTop' addStyleNames='{style.smallActionLink}'>
+                none
+              </g:Anchor>
+            </g:HTMLPanel>
+            <g:Button ui:field='shareButtonTop' addStyleNames='{style.actionButton}'>
+              <img src='images/group_small.png' class='{style.actionButtonImage}' />
+              Share
+            </g:Button> 
+            <g:Button ui:field='makePrivateButtonTop' addStyleNames='{style.actionButton}'>
+              <img src='images/lock_small.png' class='{style.actionButtonImage}' />
+              Make Private
+            </g:Button>
+            <g:Button ui:field='deleteButtonTop' addStyleNames='{style.actionButton}'>
+              <img src='images/delete.png' class='{style.actionButtonImage}' />
+              Delete
+            </g:Button>
+          </g:HTMLPanel>
+		      <g:HTMLPanel tag='span' ui:field='expandCollapseLinksTop' addStyleNames='{style.expandCollapseLinkMenu}'>
+		        <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
 	            <g:Anchor ui:field='expandLinkTop' addStyleNames='{style.smallActionLink}'>
 	              expand
 	            </g:Anchor>
-	            <g:InlineHTML>
-	              |
-	            </g:InlineHTML>
+	          </g:HTMLPanel>
+	          <g:HTMLPanel tag='span' addStyleNames='{style.separator}'>|</g:HTMLPanel>
+	          <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
 	            <g:Anchor ui:field='collapseLinkTop' addStyleNames='{style.smallActionLink}'>
 	              collapse
 	            </g:Anchor>
 	          </g:HTMLPanel>
-	        </g:HorizontalPanel>
+	        </g:HTMLPanel>
         </g:HTMLPanel>
 	      <g:FlowPanel addStyleNames='{style.responseContainer}'>
 	      
@@ -234,55 +236,46 @@
     
     <g:south size='40'>
       <g:HTMLPanel>
-        <g:HTMLPanel addStyleNames='{style.buttonPanelWrapperBottom}'>
-        <!-- buttons that affect the selected responses -->
-	      <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
-	        <g:cell verticalAlignment='ALIGN_MIDDLE'>
-	        <!-- select all/none action links -->
-		        <g:Anchor ui:field='selectAllLinkBottom' addStyleNames='{style.smallActionLink}'>
-		          select all
-		        </g:Anchor>
-		      </g:cell>
-		      <g:cell verticalAlignment='ALIGN_MIDDLE'>
-		        <g:InlineHTML>
-		        |
-		        </g:InlineHTML>
-		      </g:cell>
-		      <g:cell verticalAlignment='ALIGN_MIDDLE'>
-		        <g:Anchor ui:field='selectNoneLinkBottom' addStyleNames='{style.smallActionLink}'>
-		          none
-		        </g:Anchor>
-	        </g:cell>
-	        <!-- fixme: disable until something is checked -->
-	        <g:Button ui:field='shareButtonBottom' addStyleNames='{style.actionButton}'>
-	          <img src='images/group_small.png' class='{style.actionButtonImage}' />
-	          Share
-	        </g:Button> 
-	        <g:Button ui:field='makePrivateButtonBottom' addStyleNames='{style.actionButton}'>
-	          <img src='images/lock_small.png' class='{style.actionButtonImage}' />
-	          Make Private
-	        </g:Button>
-	        <g:Button ui:field='deleteButtonBottom' addStyleNames='{style.actionButton}'>
-	          <img src='images/delete.png' class='{style.actionButtonImage}' />
-	          Delete
-	        </g:Button>
-	        <g:cell verticalAlignment='ALIGN_MIDDLE'>
-            <g:Anchor ui:field='expandLinkBottom' addStyleNames='{style.smallActionLink}'>
-              expand
-            </g:Anchor>
-          </g:cell>
-          <g:cell verticalAlignment='ALIGN_MIDDLE'>
-            <g:InlineHTML>
-              |
-            </g:InlineHTML>
-          </g:cell>
-          <g:cell verticalAlignment='ALIGN_MIDDLE'>
-            <g:Anchor ui:field='collapseLinkBottom' addStyleNames='{style.smallActionLink}'>
-              collapse
-            </g:Anchor>
-          </g:cell>
-       </g:HorizontalPanel>
-       </g:HTMLPanel>
+      <g:HTMLPanel addStyleNames='{style.buttonPanelWrapperBottom}'>
+          <g:HTMLPanel tag='span' ui:field='buttonPanelBottom'>
+            <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
+              <g:Anchor ui:field='selectAllLinkBottom' addStyleNames='{style.smallActionLink}'>
+                select all
+              </g:Anchor>
+            </g:HTMLPanel>
+            <g:HTMLPanel tag='span' addStyleNames='{style.separator}'>|</g:HTMLPanel>
+            <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
+              <g:Anchor ui:field='selectNoneLinkBottom' addStyleNames='{style.smallActionLink}'>
+                none
+              </g:Anchor>
+            </g:HTMLPanel>
+            <g:Button ui:field='shareButtonBottom' addStyleNames='{style.actionButton}'>
+              <img src='images/group_small.png' class='{style.actionButtonImage}' />
+              Share
+            </g:Button> 
+            <g:Button ui:field='makePrivateButtonBottom' addStyleNames='{style.actionButton}'>
+              <img src='images/lock_small.png' class='{style.actionButtonImage}' />
+              Make Private
+            </g:Button>
+            <g:Button ui:field='deleteButtonBottom' addStyleNames='{style.actionButton}'>
+              <img src='images/delete.png' class='{style.actionButtonImage}' />
+              Delete
+            </g:Button>
+          </g:HTMLPanel>
+          <g:HTMLPanel tag='span' ui:field='expandCollapseLinksBottom' addStyleNames='{style.expandCollapseLinkMenu}'>
+            <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
+              <g:Anchor ui:field='expandLinkBottom' addStyleNames='{style.smallActionLink}'>
+                expand
+              </g:Anchor>
+            </g:HTMLPanel>
+            <g:HTMLPanel tag='span' addStyleNames='{style.separator}'>|</g:HTMLPanel>
+            <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
+              <g:Anchor ui:field='collapseLinkBottom' addStyleNames='{style.smallActionLink}'>
+                collapse
+              </g:Anchor>
+            </g:HTMLPanel>
+          </g:HTMLPanel>
+        </g:HTMLPanel>
      </g:HTMLPanel>
     </g:south>
     

@@ -276,5 +276,15 @@ public class ResponseDisclosurePanel extends Composite
       }
     }
   }
+
+  @Override
+  public void expand() {
+    this.disclosurePanel.setOpen(true);
+  }
+
+  @Override
+  public void collapse() {
+    this.disclosurePanel.setOpen(false);
+  }
 	
 }

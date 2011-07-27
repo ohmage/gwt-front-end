@@ -74,9 +74,8 @@ public interface ResponseView extends IsWidget {
   void setSectionHeader(String headerText);
   
   // gui elements needed by presenter for event handling
-  HasClickHandlers getViewLinkQuick();
-  HasClickHandlers getViewLinkFull();
-  HasClickHandlers getViewLinkPhoto();
+  HasClickHandlers getViewLinkBrowse();
+  HasClickHandlers getViewLinkEdit();
   List<HasClickHandlers> getShareButtons();
   List<HasClickHandlers> getMakePrivateButtons();
   List<HasClickHandlers> getDeleteButtons();
