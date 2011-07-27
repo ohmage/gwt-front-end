@@ -3,6 +3,7 @@ package edu.ucla.cens.mobilize.client.model;
 import java.util.Date;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 
@@ -56,6 +57,8 @@ public class CampaignShortInfo {
   }
   
   //******** PERMISSIONS ********
+  // Make sure these stay in sync with the permissions in CampaignDetailedInfo
+  // TODO: abstract them?
   
   public boolean userCanViewDetails() {
     return true; // everyone
@@ -77,6 +80,23 @@ public class CampaignShortInfo {
            this.userRoles.supervisor || this.userRoles.admin ||
            this.userRoles.author;
   }
+  
+  // used for response tab. make sure this matches permissions in detailed info
+  public boolean userCanEditResponses() {
+    return this.userRoles.supervisor || this.userRoles.admin;
+  }
+  
+  // used for response tab. make sure this matches permissions in detailed info
+  public boolean userCanSeeSharedResponses() {
+    // user can see other users' shared responses if:
+    // 1. he is admin or supervisor
+    // 2. he is author of the campaign
+    // 3. he is an analyst and the campaign is shared
+    return this.userRoles.supervisor ||
+           this.userRoles.admin ||
+           this.userRoles.author ||
+           (this.userRoles.analyst && this.isShared());
+  }
 
   //******** CONVENIENCE METHODS ********
   
@@ -88,8 +108,16 @@ public class CampaignShortInfo {
     return this.userRoles.participant;
   }
   
+  public boolean userIsSupervisor() {
+    return this.userRoles.supervisor;
+  }
+  
   public boolean isRunning() {
     return this.runningState.equals(RunningState.RUNNING);
+  }
+  
+  public boolean isShared() {
+    return this.privacy.equals(Privacy.SHARED);
   }
 
 }

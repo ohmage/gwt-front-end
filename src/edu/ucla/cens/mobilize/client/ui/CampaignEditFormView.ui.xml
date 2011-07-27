@@ -106,6 +106,7 @@
         <g:FormPanel ui:field='formPanel'>
           <g:HTMLPanel>
           <g:Hidden ui:field='authTokenHiddenField' name='auth_token' />
+          <g:Hidden ui:field='clientHiddenField' name='client' />
           <table class='{style.detailTable}'>
             <tr>
               <td class='{style.label}'>

@@ -61,9 +61,33 @@ public class CampaignDetailedInfo {
            this.userRoles.contains(RoleCampaign.AUTHOR);
   }
   
+  public boolean userCanSeeSharedResponses() {
+    // user can see other users' shared responses if:
+    // 1. he is admin or supervisor
+    // 2. he is author of the campaign
+    // 3. he is an analyst and the campaign is shared
+    return this.userRoles.contains(RoleCampaign.SUPERVISOR) ||
+           this.userRoles.contains(RoleCampaign.ADMIN) ||
+           this.userRoles.contains(RoleCampaign.AUTHOR) ||
+           (this.userRoles.contains(RoleCampaign.ANALYST) && this.isShared());
+  }
+  
   /************ CONVENIENCE METHODS **************/
-  public boolean isActive() {
+  public boolean isRunning() {
     return this.runningState.equals(RunningState.RUNNING);
+  }
+  
+  public boolean isShared() {
+    return this.privacy.equals(Privacy.SHARED);
+  }
+  
+  public boolean userIsSupervisorOrAdmin() {
+    return this.userRoles.contains(RoleCampaign.SUPERVISOR) || 
+           this.userRoles.contains(RoleCampaign.ADMIN);
+  }
+  
+  public boolean userIsParticipant() {
+    return this.userRoles.contains(RoleCampaign.PARTICIPANT);
   }
   
   /************ GETTERS **************/

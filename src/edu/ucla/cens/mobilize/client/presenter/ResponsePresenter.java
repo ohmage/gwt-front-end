@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.presenter;
 
 import java.util.ArrayList;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -31,8 +32,10 @@ import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.exceptions.ApiException;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
@@ -48,7 +51,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   List<SurveyResponse> responses = new ArrayList<SurveyResponse>();
   
   UserInfo userInfo;
-  
+  List<CampaignShortInfo> campaigns;
+
   private static Logger _logger = Logger.getLogger(ResponsePresenter.class.getName());
   
   public ResponsePresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
@@ -56,40 +60,234 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.dataService = dataService;
     this.userInfo = userInfo;
   }
+
   
-  // set up participant list 
-  private void fetchAndFillParticipantChoices(String selectedCampaign, 
-                                              String selectedParticipant) {
-    // start with a fresh list
-    this.participants.clear();
-    view.clearParticipantList();
+  @Override
+  public void go(Map<String, String> params) {
+    assert view != null : "ResponsePresenter.go() called before view was set";
     
-    // if user is super of a campaign, she can see responses from anyone in the campaign
-    if (userInfo.isAdmin() || userInfo.isPrivileged() || userInfo.isSupervisor()) {
-      // if no campaign is selected, or "All" is selected fill participant drop down with 
-      //  everyone visible to the current user.
-      if (selectedCampaign == null || 
-          selectedCampaign.equals(AwConstants.specialAllValuesToken)) {
-        for (String campaignId : userInfo.getCampaignIds()) {
-          fetchCampaignParticipantsAndAddToList(campaignId, selectedParticipant, false);
-        }
-      } else {
-        // If a specific campaign is selected, show only participants for that campaign,
-        //   including an "All" choice which shows all participants of that campaign.
-        // (Note that "All" should only appear if one campaign is selected.)
-        fetchCampaignParticipantsAndAddToList(selectedCampaign, selectedParticipant, true);
-      }
+    // get params from history tokens
+    String selectedSubView = params.containsKey("v") ? params.get("v") : "browse";
+    String selectedParticipant = params.containsKey("uid") ? params.get("uid") : null;
+    String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
+    String selectedSurvey = params.containsKey("sid") ? params.get("sid") : null;
+    String selectedPrivacyString = params.containsKey("privacy") ? params.get("privacy") : null;
+    boolean onlyPhotoResponses = params.containsKey("photo") ? params.get("photo").equals("true") : false;
+    String startDateString = params.containsKey("from") ? params.get("from") : null;
+    String endDateString = params.containsKey("to") ? params.get("to") : null;
+    
+    Date startDate = null;
+    Date endDate = null;
+    if (startDateString != null && endDateString != null) {
+      startDate = DateUtils.translateFromHistoryTokenFormat(startDateString);
+      endDate = DateUtils.translateFromHistoryTokenFormat(endDateString);
+    } 
+    
+    Privacy selectedPrivacy = Privacy.fromServerString(selectedPrivacyString);
+    // NOTE: If subview is browse, privacy should always be set to shared. If it's
+    // not (would happen if user tried to edit the url param by hand) back end
+    // should reject the request.
+    
+    view.setSelectedSubView(selectedSubView);
+    selectedSubView = view.getSelectedSubView(); // in case string was unrecognized and changed to default
+    
+    // set up campaign filter
+    view.setCampaignList(userInfo.getCampaigns()); 
+    if (selectedCampaign != null) view.selectCampaign(selectedCampaign);
+    selectedCampaign = view.getSelectedCampaign();
+    
+    // set up date filters
+    if (startDateString != null && endDateString != null) {
+      startDate = DateUtils.translateFromHistoryTokenFormat(startDateString);
+      endDate = DateUtils.translateFromHistoryTokenFormat(endDateString);
+    } 
+    view.selectStartDate(startDate);
+    view.selectEndDate(endDate);
+    
+    if (selectedSubView.equals("edit")) {
+      view.setSectionHeaderDetail("Campaign participants may share or delete their responses " +
+          "while the campaign is still running. Once a campaign has been stopped, only " +
+          "supervisors may change responses.");
+      fetchAndDisplayDataForEditView(selectedParticipant,
+                                     selectedCampaign, 
+                                     selectedSurvey, 
+                                     selectedPrivacy,
+                                     onlyPhotoResponses,
+                                     startDate,
+                                     endDate);
+      // when editing, user can see both shared and private responses
+      List<Privacy> privacyChoices = new ArrayList<Privacy>();
+      privacyChoices.add(Privacy.PRIVATE);
+      privacyChoices.add(Privacy.SHARED);
+      // TODO: check to see if INVISIBLE is allowed in this installation and add it too
+      view.setPrivacyStates(privacyChoices);
+      view.selectPrivacyState(selectedPrivacy);
+      
     } else {
-      this.participants.add(userInfo.getUserName());
-      view.setParticipantList(this.participants, false);
-    }
+      view.setSectionHeaderDetail("Shared responses can be exported and analyzed by other members of the campaign.");
+      // when browsing, user can only see shared responses
+      view.setPrivacyStates(Arrays.asList(Privacy.SHARED));
+      view.selectPrivacyState(Privacy.SHARED);
+      selectedPrivacy = Privacy.SHARED;
+      fetchAndDisplayDataForBrowseView(selectedParticipant,
+                                       selectedCampaign, 
+                                       selectedSurvey, 
+                                       selectedPrivacy,
+                                       onlyPhotoResponses,
+                                       startDate,
+                                       endDate);
+    }         
+
+  }
+
+  // GOTCHA: make sure the drop downs are populated the same in this function 
+  // as in fetchAndFillFiltersForEditView() which is called when user makes
+  // a selection in the campaign drop down
+  void fetchAndDisplayDataForEditView(final String selectedParticipant, 
+                                      final String selectedCampaign, 
+                                      final String selectedSurvey, 
+                                      final Privacy selectedPrivacy,
+                                      final boolean onlyPhotoResponses,
+                                      final Date startDate,
+                                      final Date endDate) {
+    
+    // clear previous data, if any
+    this.responses.clear();
+    this.view.clearResponseList();
+    this.participants.clear();
+    this.view.clearParticipantList();
+    this.surveys.clear();
+    this.view.clearSurveyList();
+    this.view.disableSurveyFilter(); // disabled if campaign not selected
+
+    // campaign must be selected in edit view
+    if (selectedCampaign == null || selectedCampaign.isEmpty()) return;
+    
+    // fetch info about selected campaign - user's role and campaign running state
+    CampaignReadParams params = new CampaignReadParams();
+    params.campaignUrns_opt.add(selectedCampaign);
+
+    dataService.fetchCampaignDetail(selectedCampaign, new AsyncCallback<CampaignDetailedInfo>() {
+        @Override
+        public void onFailure(Throwable caught) {
+          AwErrorUtils.logoutIfAuthException(caught);
+          ErrorDialog.show("Could not load data for campaign: " + selectedCampaign); 
+        }
+  
+        @Override
+        public void onSuccess(CampaignDetailedInfo campaignInfo) {
+          // set up survey filter with survey ids from campaign info (comes from xml config)
+          view.enableSurveyFilter();
+          view.setSurveyList(campaignInfo.getSurveyIds());
+          if (selectedSurvey != null) view.selectSurvey(selectedSurvey);
+          
+          if (campaignInfo.userIsSupervisorOrAdmin()) { 
+            // supervisors can edit responses from any participant for any campaign
+            boolean includeAllChoice = true; 
+            fetchParticipantsWithResponsesAndAddToList(selectedCampaign, 
+                                                       selectedParticipant, 
+                                                       includeAllChoice);
+            fetchAndShowResponses(selectedParticipant, 
+                                  selectedCampaign, 
+                                  selectedSurvey, 
+                                  selectedPrivacy,
+                                  onlyPhotoResponses,
+                                  startDate,
+                                  endDate);
+          } else if (campaignInfo.userIsParticipant()) {
+            if (campaignInfo.isRunning()) {
+              // participants can edit their own responses if the campaign is running
+              String currentUser = userInfo.getUserName();
+              participants.add(currentUser);
+              view.setParticipantList(participants, false);
+              view.selectParticipant(currentUser);
+              fetchAndShowResponses(currentUser,
+                                    selectedCampaign, 
+                                    selectedSurvey, 
+                                    selectedPrivacy,
+                                    onlyPhotoResponses,
+                                    startDate,
+                                    endDate);
+            } else {
+              // user is participant but campaign is stopped - show an error message
+              view.showInfoMessage(campaignInfo.getCampaignName() + " is stopped. " +
+                  "Only supervisors can edit responses when campaign is not running.");
+            }
+          } else { 
+            // if not supervisor or participant, set empty participant list and do not show responses.
+            view.setParticipantList(participants, false);
+          }
+        }
+    });    
   }
   
-  // fetches participants from just one campaign, adds them to the existing
-  // list of participants, and updates the display
-  private void fetchCampaignParticipantsAndAddToList(String campaignId, 
-                                                     final String participantToSelect,
-                                                     final boolean includeAllChoice) {
+  // GOTCHA: make sure the drop downs are populated the same in this function 
+  // as in fetchAndFillFiltersForBrowseView() which is called when user makes
+  // a selection in the campaign drop down
+  void fetchAndDisplayDataForBrowseView(final String selectedParticipant, 
+                                        final String selectedCampaign, 
+                                        final String selectedSurvey, 
+                                        final Privacy selectedPrivacy,
+                                        final boolean onlyPhotoResponses,
+                                        final Date startDate,
+                                        final Date endDate) {
+    // clear previous data, if any
+    this.responses.clear();
+    this.view.clearResponseList();
+    this.participants.clear();
+    this.view.clearParticipantList();
+    this.surveys.clear();
+    this.view.clearSurveyList();
+    this.view.disableSurveyFilter(); // disabled if campaign not selected
+    
+    // campaign must be selected in browse view
+    if (selectedCampaign == null || selectedCampaign.isEmpty()) return;
+    
+    assert selectedPrivacy.equals(Privacy.SHARED) : "Privacy should always be shared in browse view";
+
+    // fetch info about campaign: surveys, user's roles, campaign privacy setting
+    dataService.fetchCampaignDetail(selectedCampaign, new AsyncCallback<CampaignDetailedInfo>() {
+        @Override
+        public void onFailure(Throwable caught) {
+          AwErrorUtils.logoutIfAuthException(caught);
+          ErrorDialog.show("Could not load data for campaign: " + selectedCampaign); 
+        }
+  
+        @Override
+        public void onSuccess(CampaignDetailedInfo campaignInfo) {
+          if (campaignInfo.userCanSeeSharedResponses()) {
+            // populate the participant list with only those users that have shared responses
+            boolean includeAllChoice = true;
+            fetchParticipantsWithSharedResponsesAndAddToList(selectedCampaign,
+                                                             selectedParticipant,
+                                                             includeAllChoice);
+            // fill responses            
+            fetchAndShowResponses(selectedParticipant, 
+                                  selectedCampaign, 
+                                  selectedSurvey, 
+                                  selectedPrivacy,
+                                  onlyPhotoResponses,
+                                  startDate,
+                                  endDate);
+            // fill survey filter with survey ids from campaign info (comes from xml config)
+            view.enableSurveyFilter();
+            view.setSurveyList(campaignInfo.getSurveyIds()); 
+            if (selectedSurvey != null) view.selectSurvey(selectedSurvey);
+          } else {
+            view.showInfoMessage("Responses not browsable due to campaign privacy settings.");
+            view.setParticipantList(participants, false); // empty list
+          }
+        }
+    });    
+  }
+
+  // Fetches a list of all participants in one campaign that have submitted at least
+  // one response to the campaign, adds the participants to this.participants internal
+  // data structure, and updates the view to match the data structure.
+  private void fetchParticipantsWithResponsesAndAddToList(String campaignId, 
+                                                          final String participantToSelect,
+                                                          final boolean includeAllChoice) {
+    if (campaignId == null) return;
     dataService.fetchParticipantsWithResponses(campaignId, new AsyncCallback<List<String>>() {
       @Override
       public void onFailure(Throwable caught) {
@@ -112,89 +310,106 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     });
   }
   
-  private void fetchAndFillSurveyChoicesForSelectedCampaign(String campaignId,
-                                                            final String surveyToSelectWhenDone) {
-    dataService.fetchCampaignDetail(campaignId, new AsyncCallback<CampaignDetailedInfo>() {
+  // Fetches a list of all participants in one campaign that have submitted (and shared) 
+  // at least one response, adds the participants to this.participants internal
+  // data structure, and updates the view to match the data structure.
+  private void fetchParticipantsWithSharedResponsesAndAddToList(String campaignId, 
+                                                           final String participantToSelect,
+                                                           final boolean includeAllChoice) {
+    if (campaignId == null) return;
+    dataService.fetchParticipantsWithResponses(campaignId, new AsyncCallback<List<String>>() {
       @Override
       public void onFailure(Throwable caught) {
-        _logger.severe("Failed to load campaign filter. Error was: " + caught.getMessage());
-        // not really necessary to show user error here. effect is that the survey filter
-        //  won't load, so they won't be able to drill down to a specific survey
         AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override
-      public void onSuccess(CampaignDetailedInfo result) {
+      public void onSuccess(List<String> result) {
+        if (result != null && !result.isEmpty()) {
+          // add participants to those already in list and update display
+          participants.addAll(result); // sorted participants
+          view.setParticipantList(participants, includeAllChoice);
+          if (participantToSelect != null) view.selectParticipant(participantToSelect);
+        } else {
+          // set the list anyway. if it already contained participants from a previous fetch,
+          // there will be no effect. if not, the view will update display to indicate no participants
+          view.setParticipantList(participants, includeAllChoice);
+        }
+      }
+    });
+  }
+
+  // GOTCHA: make sure the dropdowns are populated the same in this function
+  // as in fetchAndDisplayDataForEditView() which is called when the page is loaded
+  void fetchAndFillFiltersForEditView() {
+    this.participants.clear();
+    this.view.clearParticipantList();
+    this.surveys.clear();
+    this.view.clearSurveyList();
+    final String selectedCampaign = view.getSelectedCampaign();
+    dataService.fetchCampaignDetail(selectedCampaign, new AsyncCallback<CampaignDetailedInfo>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        AwErrorUtils.logoutIfAuthException(caught);
+        ErrorDialog.show("There was a problem loading campaign data for " + selectedCampaign,
+                         caught.getMessage());
+      }
+
+      @Override
+      public void onSuccess(CampaignDetailedInfo campaignInfo) {
         view.enableSurveyFilter();
-        view.setSurveyList(result.getSurveyIds()); 
-        if (surveyToSelectWhenDone != null) view.selectSurvey(surveyToSelectWhenDone);
+        view.setSurveyList(campaignInfo.getSurveyIds());
+        if (campaignInfo.userIsSupervisorOrAdmin()) { 
+          // supervisors can edit responses from any participant for any campaign
+          boolean includeAllChoice = true; 
+          fetchParticipantsWithResponsesAndAddToList(selectedCampaign, 
+                                                     null, // selectedParticipant 
+                                                     includeAllChoice);
+        } else if (campaignInfo.userIsParticipant() && campaignInfo.isRunning()) {
+          // participants can edit their own responses if the campaign is running
+          participants.add(userInfo.getUserName());
+          view.setParticipantList(participants, false);
+        } else { 
+          // if not a supervisor or participant, set participant list to empty
+          view.setParticipantList(participants, false);
+        }
       }
     });
   }
   
-  @Override
-  public void go(Map<String, String> params) {
-    assert view != null : "ResponsePresenter.go() called before view was set";
-    
-    // check history token (url) params for value that should be selected in filters
-    String selectedSubView = params.containsKey("v") ? params.get("v") : "full";
-    String selectedParticipant = params.containsKey("uid") ? params.get("uid") : userInfo.getUserName();
-    String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
-    String selectedSurvey = params.containsKey("sid") ? params.get("sid") : null;
-    String selectedPrivacyString = params.containsKey("privacy") ? params.get("privacy") : null;
-    boolean onlyPhotoResponses = params.containsKey("photo") ? params.get("photo").equals("true") : false;
-    String startDateString = params.containsKey("from") ? params.get("from") : null;
-    String endDateString = params.containsKey("to") ? params.get("to") : null;
-    
-    // set up display
-    view.setSelectedSubView(selectedSubView);
-    
-    // set up participant filter
-    fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
-    
-    // set up campaign filter
-    view.setCampaignList(userInfo.getCampaigns()); 
-    if (selectedCampaign != null) view.selectCampaign(selectedCampaign);
-    
-    // set up survey filter (contents depend on selected campaign filter)
-    view.disableSurveyFilter(); // disabled if campaign not selected 
-    if (selectedCampaign != null) {
-      // re-enables survey filter on success
-      fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, selectedSurvey);
-    } 
-    
-    // set up privacy filter
-    List<Privacy> privacyChoices = new ArrayList<Privacy>();
-    privacyChoices.add(Privacy.PRIVATE);
-    privacyChoices.add(Privacy.SHARED);
-    // TODO: check to see if INVISIBLE is allowed in this installation and add it too
-    view.setPrivacyStates(privacyChoices);
-    Privacy selectedPrivacy = Privacy.fromServerString(selectedPrivacyString);
-    view.selectPrivacyState(selectedPrivacy);
-    
-    // set up photo filter
-    view.setPhotoFilter(onlyPhotoResponses);
-    
-    // set up date filters
-    Date startDate = null;
-    Date endDate = null;
-    if (startDateString != null && endDateString != null) {
-      startDate = DateUtils.translateFromHistoryTokenFormat(startDateString);
-      endDate = DateUtils.translateFromHistoryTokenFormat(endDateString);
-    } 
-    view.selectStartDate(startDate);
-    view.selectEndDate(endDate);
+  // GOTCHA: make sure the dropdowns are populated the same in this function
+  // as in fetchAndDisplayDataForBrowseView() which is called when the page is loaded
+  void fetchAndFillFiltersForBrowseView() {
+    this.participants.clear();
+    this.view.clearParticipantList();
+    this.surveys.clear();
+    this.view.clearSurveyList();
+    final String selectedCampaign = view.getSelectedCampaign();
+    dataService.fetchCampaignDetail(selectedCampaign, new AsyncCallback<CampaignDetailedInfo>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        AwErrorUtils.logoutIfAuthException(caught);
+        ErrorDialog.show("There was a problem loading campaign data for " + selectedCampaign,
+                         caught.getMessage());
+      }
 
-    // fetch responses filtered by selected values
-    fetchAndShowResponses(selectedParticipant, 
-                          selectedCampaign, 
-                          selectedSurvey, 
-                          selectedPrivacy,
-                          onlyPhotoResponses,
-                          startDate,
-                          endDate);
+      @Override
+      public void onSuccess(CampaignDetailedInfo campaignInfo) {
+        if (campaignInfo.userCanSeeSharedResponses()) {
+          // populate the participant list with only those users that have shared responses
+          boolean includeAllChoice = true;
+          fetchParticipantsWithSharedResponsesAndAddToList(selectedCampaign,
+                                                           null,
+                                                           includeAllChoice);
+          view.enableSurveyFilter();
+          view.setSurveyList(campaignInfo.getSurveyIds());
+        } else {
+          view.setParticipantList(participants, false);
+        }
+      }
+    });
   }
-
+  
   @Override
   public void setView(ResponseView view) {
     this.view = view;
@@ -211,8 +426,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       @Override
       public void onClick(ClickEvent event) {
         view.setSelectedSubView("edit");
+        view.selectPrivacyState(null); // so "All" will be selected when view changes
         fireHistoryTokenToMatchFilterValues();
-        // FIXME: just update view, don't reload data
       }
     });
 
@@ -221,7 +436,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       public void onClick(ClickEvent event) {
         view.setSelectedSubView("browse");
         fireHistoryTokenToMatchFilterValues();
-        // FIXME: just update view, don't reload data
       }
     });
     
@@ -247,19 +461,20 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       }
     });
     
-    // when user selects a campaign, survey choice list is filled with names
-    // of surveys from that campaign
+    // When user selects a campaign, survey choice list is filled with names
+    // of surveys from that campaign. Participant list filled with a list of 
+    // participants that have responses visible in the current view.
     this.view.getCampaignFilter().addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent event) {
-        view.clearSurveyList();
-        String selectedCampaign = view.getSelectedCampaign();
-        fetchAndFillParticipantChoices(selectedCampaign, null);
-        // if a specific campaign is selected (not "All" or none) fill survey drop down to match
-        if (selectedCampaign != null && 
-            !selectedCampaign.equals(AwConstants.specialAllValuesToken)) { 
-          fetchAndFillSurveyChoicesForSelectedCampaign(selectedCampaign, null);
-        } 
+        String selectedSubView = view.getSelectedSubView();
+        if ("browse".equals(selectedSubView)) {
+          fetchAndFillFiltersForBrowseView();
+        } else if ("edit".equals(selectedSubView)) {
+          fetchAndFillFiltersForEditView();
+        } else { // default is browse
+          fetchAndFillFiltersForBrowseView();
+        }
       }
     });
     
@@ -443,9 +658,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   private void fireHistoryTokenToMatchFilterValues() {
     String selectedSubView = view.getSelectedSubView();
     String participantName = view.getSelectedParticipant();
-    if (participantName == null || participantName.isEmpty()) {
-      participantName = userInfo.getUserName(); // default to logged in user
-    }
     String campaignId = view.getSelectedCampaign();
     String surveyName = view.getSelectedSurvey();
     Privacy privacy = view.getSelectedPrivacyState();
@@ -462,9 +674,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                endDate));
   }
   
-  // fetches list of campaigns, then fetches responses for each 
-  // args are values to filter by. any arg set to null or "" is ignored
-  // if campaignIdOrNull is set to null, query is done against all user's campaigns
+  // Fetches list of campaigns, then fetches responses for each. 
+  // Args are values to filter by. Any arg set to null or "" is ignored.
+  // If campaignIdOrNull is set to null, query is done against all user's campaigns.
   private void fetchAndShowResponses(final String userName,
                                      final String campaignIdOrNull, 
                                      final String surveyName,
@@ -475,11 +687,15 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     
     // clear previous display so app will show appropriate message if all
     // the async requests return 0 responses
+    this.responses.clear();
     view.clearResponseList();
+    
+    if (userName == null || userName.isEmpty()) return;
+
+    // set header that will be shown if all requests return 0 responses
     String userDisplayName = userName.equals(AwConstants.specialAllValuesToken) ? "all users" : userName;
     view.setSectionHeader("Showing 0 responses from " + userDisplayName);
     
-    this.responses.clear();
     Map<String, String> campaignsToQuery = new HashMap<String, String>();
     boolean suppressCampaignErrors; 
     if (campaignIdOrNull != null && userInfo.getCampaigns().containsKey(campaignIdOrNull)) {

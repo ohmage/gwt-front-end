@@ -139,7 +139,7 @@
       <g:HTMLPanel addStyleNames='{style.topNav}'>
           <g:Anchor ui:field='viewLinkEdit' addStyleNames="link">Manage Pending Responses</g:Anchor>
           <span class='{style.separator}'>|</span>
-          <g:Anchor ui:field='viewLinkBrowse' addStyleNames="link">Browse All Responses</g:Anchor>
+          <g:Anchor ui:field='viewLinkBrowse' addStyleNames="link">Browse Shared Responses</g:Anchor>
       </g:HTMLPanel>
     </g:north>
     
@@ -178,8 +178,10 @@
         <w:MessageWidget ui:field='messageWidget' />
         <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
             <!-- title changes depending on filter selections -->
-            <g:Label ui:field='sectionHeaderTitle' addStyleNames='{style.sectionHeaderTitle}' />
-            <g:Label addStyleNames='{style.sectionHeaderDetail}'>
+            <g:Label ui:field='sectionHeaderTitle' addStyleNames='{style.sectionHeaderTitle}'>
+              Please make a selection from the filters on the left.
+            </g:Label>
+            <g:Label ui:field='sectionHeaderDetail' addStyleNames='{style.sectionHeaderDetail}'>
               Shared responses can be exported and analyzed by other members of the campaign.
             </g:Label>
         </g:HTMLPanel>

@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
@@ -45,7 +46,8 @@ public class CampaignEditFormView extends Composite {
   }
 
   @UiField Label header;
-  @UiField Hidden authTokenHiddenField; 
+  @UiField Hidden authTokenHiddenField;
+  @UiField Hidden clientHiddenField;
   @UiField InlineLabel campaignName;
   @UiField InlineLabel campaignUrn;
   @UiField Hidden campaignUrnHiddenField;
@@ -396,6 +398,7 @@ public class CampaignEditFormView extends Composite {
 
   public void initializeForm(String authToken, String serverLocation) {
     this.authTokenHiddenField.setValue(authToken);
+    this.clientHiddenField.setValue(AwConstants.apiClientString);
     this.formPanel.setAction(serverLocation);
     this.formPanel.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
     this.formPanel.setMethod(FormPanel.METHOD_POST);

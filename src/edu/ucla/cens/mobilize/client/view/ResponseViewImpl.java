@@ -65,6 +65,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField Button applyFiltersButton;
   @UiField MessageWidget messageWidget;
   @UiField Label sectionHeaderTitle;
+  @UiField Label sectionHeaderDetail;
   @UiField FlowPanel responseList;
   @UiField Button shareButtonTop;
   @UiField Button makePrivateButtonTop;
@@ -87,7 +88,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   ResponseView.Presenter presenter;
   Privacy selectedPrivacy = Privacy.UNDEFINED;
   private String selectedSubView; // "browse" or "edit"
-  private String emptyParticipantListString = "No one has responded.";
+  private String emptyParticipantListString = "None visible.";
   
   public ResponseViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -222,7 +223,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   public void setCampaignList(Map<String, String> campaignIdToNameMap) {
     campaignFilter.clear();
     if (campaignIdToNameMap == null) return;
-    campaignFilter.addItem("All", AwConstants.specialAllValuesToken);
     
     // sort campaigns by name then by id
     List<String> nameKeyPairs = new ArrayList<String>();
@@ -235,6 +235,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       String[] arr = nameKeyPair.split("###"); // 0 = name, 1 = id
       campaignFilter.addItem(arr[0], arr[1]); // name is visible text, id is value
     }
+    
+    campaignFilter.setSelectedIndex(-1);
   }
 
   @Override
@@ -277,8 +279,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
         return;
       }
     }
-    // if not found, select first item ("All")
-    campaignFilter.setSelectedIndex(0);
+    // if not found, select nothing
+    campaignFilter.setSelectedIndex(-1);
   }
 
   @Override
@@ -295,6 +297,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @Override 
   public void selectPrivacyState(Privacy privacy) {
+    if (privacy == null) {
+      privacyFilter.setSelectedIndex(-1);
+      return;
+    }
+    
     String serverString = privacy.toServerString();
     for (int i = 0; i < privacyFilter.getItemCount(); i++) {
       if (privacyFilter.getValue(i).equals(serverString)) {
@@ -368,6 +375,9 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       // when only one user is visible, that is the selected user
       selectedUser = this.singleParticipantLabel.getText();
       // check for special case where there are no participants
+      if (selectedUser.equals(this.emptyParticipantListString)) {
+        selectedUser = "";
+      }
     } else { 
       // otherwise, get selection from dropdown
       int index = this.participantFilter.getSelectedIndex();
@@ -601,6 +611,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     this.sectionHeaderTitle.setText(headerText);
   }
 
+  @Override
+  public void setSectionHeaderDetail(String detailText) {
+    this.sectionHeaderDetail.setText(detailText);
+  }
+  
   @Override
   public String getSelectedSubView() {
     return selectedSubView != null ? selectedSubView : "full"; // default to full view
