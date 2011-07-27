@@ -33,7 +33,7 @@
       padding: 4px 6px;
 			width: 30%;
     }
-    .promptContainer { /* holds list of prompts */
+    .promptContainerWrapper { /* holds list of prompts */
       overflow-x: hidden;
       padding: 5px 10px 10px 25px;
     }
@@ -65,7 +65,7 @@
 		  <g:InlineLabel ui:field='surveyLabel' addStyleNames='{style.headerField}' />
 		  <g:InlineLabel ui:field='privacyLabel' addStyleNames='{style.headerField}' />
 	  </g:FlowPanel>
-	  <g:HTMLPanel addStyleNames='{style.promptContainer}'>
+	  <g:HTMLPanel ui:field='promptContainerWrapper' addStyleNames='{style.promptContainerWrapper}'>
 	    <g:FlowPanel ui:field='promptContainer' />
 	    <div class='floatstop'/>
 	  </g:HTMLPanel>

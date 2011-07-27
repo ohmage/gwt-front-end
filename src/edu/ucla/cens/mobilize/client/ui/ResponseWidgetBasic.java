@@ -53,6 +53,7 @@ public class ResponseWidgetBasic extends Composite implements ResponseDisplayWid
   @UiField InlineLabel campaignLabel;
   @UiField InlineLabel surveyLabel;
   @UiField InlineLabel privacyLabel;
+  @UiField HTMLPanel promptContainerWrapper;
   @UiField FlowPanel promptContainer;
   
   private SurveyResponse surveyResponseData;
@@ -189,12 +190,12 @@ public class ResponseWidgetBasic extends Composite implements ResponseDisplayWid
 
   @Override
   public void expand() {
-    this.promptContainer.setVisible(true);
+    this.promptContainerWrapper.setVisible(true);
   }
 
   @Override
   public void collapse() {
-    this.promptContainer.setVisible(false);
+    this.promptContainerWrapper.setVisible(false);
   }
 
 }

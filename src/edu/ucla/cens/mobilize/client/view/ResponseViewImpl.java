@@ -174,7 +174,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   private void expandAll() {
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
-      if (responseList.getWidget(i).getClass() == ResponseDisplayWidget.class) {
+      if (responseList.getWidget(i).getClass() == ResponseWidgetBasic.class) {
         ResponseDisplayWidget widget = (ResponseDisplayWidget)responseList.getWidget(i);
         widget.expand();
       }
@@ -183,7 +183,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   private void collapseAll() {
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
-      if (responseList.getWidget(i).getClass() == ResponseDisplayWidget.class) {
+      if (responseList.getWidget(i).getClass() == ResponseWidgetBasic.class) {
         ResponseDisplayWidget widget = (ResponseDisplayWidget)responseList.getWidget(i);
         widget.collapse();
       }
