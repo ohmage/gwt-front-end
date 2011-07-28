@@ -14,6 +14,12 @@
     .layout {
       display: block;
     }
+    .leftSideBarInnerContainer {
+    	/* adds scrollbar to control panel when window is too short */
+    	height: 100%;
+    	overflow-x: hidden;
+    	overflow-y: auto;
+    }
     .plotPanel {
     }
     .plotPanelInnerContainer {
@@ -125,7 +131,8 @@
       </g:FlowPanel>
      </g:center>
 
-     <g:west size='230'>
+     <g:west size='240'>
+       <g:HTMLPanel addStyleNames='{style.leftSideBarInnerContainer}'>
        <g:VerticalPanel ui:field='sideBar' addStyleNames='{style.dataControlSideBar}'>
          <g:HTMLPanel addStyleNames='{style.plotTypeTreePanel}'>
            <g:InlineLabel addStyleNames='{style.plotTypeHeader}'>Choose a Plot Type:</g:InlineLabel>
@@ -164,6 +171,7 @@
            <g:Button ui:field='exportButton'>Export</g:Button>
          </g:HTMLPanel>
        </g:VerticalPanel>
+       </g:HTMLPanel>
      </g:west>
     
     </g:DockLayoutPanel>
