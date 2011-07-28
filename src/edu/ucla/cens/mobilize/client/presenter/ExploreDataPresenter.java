@@ -22,6 +22,8 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
@@ -52,6 +54,16 @@ public class ExploreDataPresenter implements Presenter {
     this.userInfo = userInfo;
     this.dataService = dataService;
     this.eventBus = eventBus;
+    bind();
+  }
+  
+  private void bind() {
+    this.eventBus.addHandler(UserInfoUpdatedEvent.TYPE, new UserInfoUpdatedEventHandler() {
+      @Override
+      public void onUserInfoChanged(UserInfoUpdatedEvent event) {
+        userInfo = event.getUserInfo();
+      }
+    });
   }
   
   @Override

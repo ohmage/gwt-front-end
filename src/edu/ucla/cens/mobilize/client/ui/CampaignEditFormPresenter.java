@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
+import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEvent;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -106,9 +107,9 @@ public class CampaignEditFormPresenter {
             }
             @Override
             public void onSuccess(String result) {
-              // redirect to campaign list so user can verify that 
-              // deleted campaign is gone and display success message
-              userInfo.setInfoMessage("Campaign " + campaignUrn + " has been deleted.");
+              // report event so other displays can be updated
+              eventBus.fireEvent(new CampaignDataChangedEvent());
+              // redirect to campaign list so user can verify that deleted campaign is gone
               History.newItem(HistoryTokens.campaignList());
             }
       });
@@ -209,6 +210,8 @@ public class CampaignEditFormPresenter {
         status = "success";
       } 
       if (status != null && status.equals("success")) {
+        // report event so other views can be updated
+        eventBus.fireEvent(new CampaignDataChangedEvent());
         // redirect to campaign list so user can see results
         view.clearFormFields();
         History.newItem(HistoryTokens.campaignList());

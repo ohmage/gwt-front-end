@@ -29,6 +29,9 @@ import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 //import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
 import edu.ucla.cens.mobilize.client.dataaccess.AndWellnessDataService;
+import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEvent;
+import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEventHandler;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.exceptions.AuthenticationException;
 import edu.ucla.cens.mobilize.client.presenter.AccountPresenter;
 import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
@@ -144,6 +147,16 @@ public class MainApp implements EntryPoint, HistoryListener {
       }
     });*/
     
+    bind();
+  }
+  
+  private void bind() {
+    eventBus.addHandler(CampaignDataChangedEvent.TYPE, new CampaignDataChangedEventHandler() {
+      @Override
+      public void onCampaignDataChanged(CampaignDataChangedEvent event) {
+        refreshUserInfo(); // because campaigns listed in userInfo may have changed
+      }
+    });
   }
   
   // must be called before any data service fetches so data access class
@@ -205,6 +218,25 @@ public class MainApp implements EntryPoint, HistoryListener {
         } else {
           _logger.severe("Failed to fetch user info for user " + userName);
         }
+      }
+    });
+  }
+
+  // useful for responding to an event that might have changed userinfo data
+  private void refreshUserInfo() {
+    final String username = userInfo.getUserName();
+    awDataService.fetchUserInfo(username, new AsyncCallback<UserInfo>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        _logger.severe("Failed to fetch info for user " + username);
+      }
+
+      @Override
+      public void onSuccess(UserInfo result) {
+        // save new userInfo object
+        userInfo = result; 
+        // notify all subscribed presenters that userInfo has changed
+        eventBus.fireEvent(new UserInfoUpdatedEvent(result));
       }
     });
   }

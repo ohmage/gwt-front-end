@@ -10,6 +10,8 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
+import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEvent;
+import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEventHandler;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.view.DashboardView;
@@ -28,6 +30,8 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
 
   private boolean canEdit = false;
   private boolean canUpload = false;
+  
+  private boolean isLoaded = false;
 
   private static Logger _logger = Logger.getLogger(DashboardPresenter.class.getName());
   
@@ -47,7 +51,17 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
       this.canUpload = userInfo.canUpload();
       this.view.setPermissions(this.canEdit, this.canUpload);
     }
-    fetchAndShowDashboardData();    
+    if (!isLoaded) fetchAndShowDashboardData(); // load counts first time the dashboard is shown 
+    bind(); // update counts on data change events
+  }
+  
+  private void bind() {
+    eventBus.addHandler(CampaignDataChangedEvent.TYPE, new CampaignDataChangedEventHandler() {
+      @Override
+      public void onCampaignDataChanged(CampaignDataChangedEvent event) {
+        fetchAndShowDashboardData(); // updates counts
+      }
+    });
   }
   
   @Override
@@ -56,13 +70,10 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
     this.view.setPresenter(this);
   }
   
-  public void updateDisplay() {
-
-  }
-  
   private void fetchAndShowDashboardData() {
     fetchAndShowCampaignCounts();
     fetchAndShowResponseCounts();
+    isLoaded = true;
   }
   
   private void fetchAndShowCampaignCounts() {

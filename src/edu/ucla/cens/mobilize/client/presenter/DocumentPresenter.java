@@ -18,6 +18,8 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
 import edu.ucla.cens.mobilize.client.event.DocumentDownloadHandler;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.ui.DocumentEditPresenter;
@@ -46,8 +48,19 @@ public class DocumentPresenter implements Presenter {
     this.userInfo = userInfo;
     this.dataService = dataService;
     this.eventBus = eventBus;
-    
+
     this.documentEditPresenter = new DocumentEditPresenter(userInfo, dataService, eventBus);
+    
+    bind();
+  }
+  
+  private void bind() {
+    this.eventBus.addHandler(UserInfoUpdatedEvent.TYPE, new UserInfoUpdatedEventHandler() {
+      @Override
+      public void onUserInfoChanged(UserInfoUpdatedEvent event) {
+        userInfo = event.getUserInfo();
+      }
+    });
   }
   
   private void addEventHandlersToView() {

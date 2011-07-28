@@ -33,6 +33,8 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.exceptions.ApiException;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
@@ -59,6 +61,16 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.eventBus = eventBus;
     this.dataService = dataService;
     this.userInfo = userInfo;
+    bind();
+  }
+
+  private void bind() {
+    eventBus.addHandler(UserInfoUpdatedEvent.TYPE, new UserInfoUpdatedEventHandler() {
+      @Override
+      public void onUserInfoChanged(UserInfoUpdatedEvent event) {
+        userInfo = event.getUserInfo();
+      }
+    });
   }
 
   
