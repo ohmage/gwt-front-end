@@ -213,8 +213,8 @@ public class MainApp implements EntryPoint, HistoryListener {
 
       @Override
       public void onFailure(Throwable caught) {
-        AwErrorUtils.logoutIfAuthException(caught);
         _logger.severe("Failed to fetch user info: " + caught.getMessage());
+        logout();
       }
 
       @Override

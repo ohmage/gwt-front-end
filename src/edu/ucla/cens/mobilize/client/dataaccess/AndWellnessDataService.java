@@ -225,7 +225,7 @@ public class AndWellnessDataService implements DataService {
           
         }
     } else if (0 == statusCode) {
-      // Server down or incorrect request url
+      // Server down, incorrect request url, servlet exception (check catalina log), etc
       throw new ServerUnavailableException(requestBuilder.getUrl());
     }else {
       // NOTE(4/14/2011): josh says the server returns 404 for all server errors

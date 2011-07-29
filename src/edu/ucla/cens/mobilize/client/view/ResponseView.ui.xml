@@ -25,6 +25,7 @@
     .buttonPanelWrapperTop, .buttonPanelWrapperBottom {
     	background-color: #EBF3D7;
     	height: 22px;
+    	padding-left: 10px;
     	white-space: nowrap;
     }
     .buttonPanelWrapperTop, .buttonPanelWrapperBottom {
