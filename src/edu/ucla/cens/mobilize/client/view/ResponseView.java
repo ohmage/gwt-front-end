@@ -73,6 +73,7 @@ public interface ResponseView extends IsWidget {
   void disableSurveyFilter();
   void setSectionHeader(String headerText);
   void setSectionHeaderDetail(String detailText);
+  void showResponseCountInSectionHeader(String username, int responseCount);
   
   // gui elements needed by presenter for event handling
   HasClickHandlers getViewLinkBrowse();

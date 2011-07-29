@@ -618,6 +618,12 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
   
   @Override
+  public void showResponseCountInSectionHeader(String username, int responseCount) {
+    String userDisplayName = username.equals(AwConstants.specialAllValuesToken) ? "all users" : username;
+    setSectionHeader("Showing " + Integer.toString(responseCount) + " responses from " + userDisplayName);
+  }
+  
+  @Override
   public String getSelectedSubView() {
     return selectedSubView != null ? selectedSubView : "full"; // default to full view
   }

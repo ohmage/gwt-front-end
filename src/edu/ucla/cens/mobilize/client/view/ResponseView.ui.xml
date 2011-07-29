@@ -92,7 +92,7 @@
     }
     .sectionHeaderDetail {
     	font-weight: normal;
-    	font-size: 0.8em;
+    	font-size: 0.9em;
     	padding-top: 2px;
     }
     .selectAllNoneLinks {
@@ -138,9 +138,9 @@
   
     <g:north size='25'>
       <g:HTMLPanel addStyleNames='{style.topNav}'>
-          <g:Anchor ui:field='viewLinkEdit' addStyleNames="link">Manage Pending Responses</g:Anchor>
+          <g:Anchor ui:field='viewLinkBrowse' addStyleNames="link">Browse Responses</g:Anchor>
           <span class='{style.separator}'>|</span>
-          <g:Anchor ui:field='viewLinkBrowse' addStyleNames="link">Browse Shared Responses</g:Anchor>
+          <g:Anchor ui:field='viewLinkEdit' addStyleNames="link">Edit Responses</g:Anchor>
       </g:HTMLPanel>
     </g:north>
     
@@ -170,7 +170,7 @@
         <g:HTMLPanel addStyleNames='{style.photoCheckBox}'>
           <g:CheckBox ui:field='hasPhotoCheckBox'>Only photo responses</g:CheckBox>
         </g:HTMLPanel>
-        <g:Button ui:field='applyFiltersButton'>Apply Filters</g:Button>
+        <g:Button ui:field='applyFiltersButton'>Show Responses</g:Button>
       </g:HTMLPanel>
     </g:west>
     
@@ -179,12 +179,8 @@
         <w:MessageWidget ui:field='messageWidget' />
         <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
             <!-- title changes depending on filter selections -->
-            <g:Label ui:field='sectionHeaderTitle' addStyleNames='{style.sectionHeaderTitle}'>
-              Please make a selection from the filters on the left.
-            </g:Label>
-            <g:Label ui:field='sectionHeaderDetail' addStyleNames='{style.sectionHeaderDetail}'>
-              Shared responses can be exported and analyzed by other members of the campaign.
-            </g:Label>
+            <g:Label ui:field='sectionHeaderTitle' addStyleNames='{style.sectionHeaderTitle}' />
+            <g:Label ui:field='sectionHeaderDetail' addStyleNames='{style.sectionHeaderDetail}' />
         </g:HTMLPanel>
         
         <!-- buttons that affect selected responses -->

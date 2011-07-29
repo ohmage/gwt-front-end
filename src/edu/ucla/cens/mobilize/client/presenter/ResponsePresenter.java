@@ -2,7 +2,6 @@ package edu.ucla.cens.mobilize.client.presenter;
 
 import java.util.ArrayList;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -81,6 +80,10 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     // remove leftover error messages, if any
     view.clearErrorMessages();
     
+    // set default section header
+    view.setSectionHeader("Please make a selection from the filters on the left.");
+    view.setSectionHeaderDetail("");
+    
     // get params from history tokens
     String selectedSubView = params.containsKey("v") ? params.get("v") : "browse";
     String selectedParticipant = params.containsKey("uid") ? params.get("uid") : null;
@@ -90,6 +93,11 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     boolean onlyPhotoResponses = params.containsKey("photo") ? params.get("photo").equals("true") : false;
     String startDateString = params.containsKey("from") ? params.get("from") : null;
     String endDateString = params.containsKey("to") ? params.get("to") : null;
+    
+    // if no username given, default to all
+    if (selectedParticipant == null || selectedParticipant.isEmpty()) {
+      selectedParticipant = AwConstants.specialAllValuesToken;
+    }
     
     Date startDate = null;
     Date endDate = null;
@@ -111,6 +119,14 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     if (selectedCampaign != null) view.selectCampaign(selectedCampaign);
     selectedCampaign = view.getSelectedCampaign();
     
+    // set up privacy filters
+    List<Privacy> privacyChoices = new ArrayList<Privacy>();
+    privacyChoices.add(Privacy.PRIVATE);
+    privacyChoices.add(Privacy.SHARED);
+    // TODO: check to see if INVISIBLE is allowed in this installation and add it too
+    view.setPrivacyStates(privacyChoices);
+    view.selectPrivacyState(selectedPrivacy);
+    
     // set up date filters
     if (startDateString != null && endDateString != null) {
       startDate = DateUtils.translateFromHistoryTokenFormat(startDateString);
@@ -130,20 +146,12 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                      onlyPhotoResponses,
                                      startDate,
                                      endDate);
-      // when editing, user can see both shared and private responses
-      List<Privacy> privacyChoices = new ArrayList<Privacy>();
-      privacyChoices.add(Privacy.PRIVATE);
-      privacyChoices.add(Privacy.SHARED);
-      // TODO: check to see if INVISIBLE is allowed in this installation and add it too
-      view.setPrivacyStates(privacyChoices);
-      view.selectPrivacyState(selectedPrivacy);
       
     } else {
-      view.setSectionHeaderDetail("Shared responses can be exported and analyzed by other members of the campaign.");
-      // when browsing, user can only see shared responses
-      view.setPrivacyStates(Arrays.asList(Privacy.SHARED));
-      view.selectPrivacyState(Privacy.SHARED);
-      selectedPrivacy = Privacy.SHARED;
+      view.setSectionHeaderDetail("Private responses are visible only to the participant and supervisors. " +
+        "Shared responses are visible to anyone in the campaign.");
+      view.setSectionHeaderDetail("Shared responses can be viewed by anyone in the campaign. " +
+          "Private responses are visible only to the responder and campaign supervisors.");
       fetchAndDisplayDataForBrowseView(selectedParticipant,
                                        selectedCampaign, 
                                        selectedSurvey, 
@@ -225,8 +233,10 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                     endDate);
             } else {
               // user is participant but campaign is stopped - show an error message
-              view.showInfoMessage(campaignInfo.getCampaignName() + " is stopped. " +
+              view.setSectionHeader(campaignInfo.getCampaignName() + " is stopped. " +
                   "Only supervisors can edit responses when campaign is not running.");
+              view.setSectionHeaderDetail("");
+              view.setParticipantList(participants, false);
             }
           } else { 
             // if not supervisor or participant, set empty participant list and do not show responses.
@@ -258,8 +268,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     // campaign must be selected in browse view
     if (selectedCampaign == null || selectedCampaign.isEmpty()) return;
     
-    assert selectedPrivacy.equals(Privacy.SHARED) : "Privacy should always be shared in browse view";
-
     // fetch info about campaign: surveys, user's roles, campaign privacy setting
     dataService.fetchCampaignDetail(selectedCampaign, new AsyncCallback<CampaignDetailedInfo>() {
         @Override
@@ -270,28 +278,22 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   
         @Override
         public void onSuccess(CampaignDetailedInfo campaignInfo) {
-          if (campaignInfo.userCanSeeSharedResponses()) {
-            // populate the participant list with only those users that have shared responses
-            boolean includeAllChoice = true;
-            fetchParticipantsWithSharedResponsesAndAddToList(selectedCampaign,
-                                                             selectedParticipant,
-                                                             includeAllChoice);
-            // fill responses            
-            fetchAndShowResponses(selectedParticipant, 
-                                  selectedCampaign, 
-                                  selectedSurvey, 
-                                  selectedPrivacy,
-                                  onlyPhotoResponses,
-                                  startDate,
-                                  endDate);
-            // fill survey filter with survey ids from campaign info (comes from xml config)
-            view.enableSurveyFilter();
-            view.setSurveyList(campaignInfo.getSurveyIds()); 
-            if (selectedSurvey != null) view.selectSurvey(selectedSurvey);
-          } else {
-            view.showInfoMessage("Responses not browsable due to campaign privacy settings.");
-            view.setParticipantList(participants, false); // empty list
-          }
+          boolean includeAllChoice = true;
+          fetchParticipantsWithResponsesAndAddToList(selectedCampaign,
+                                                     selectedParticipant,
+                                                     includeAllChoice);
+          // fill responses            
+          fetchAndShowResponses(selectedParticipant, 
+                                selectedCampaign, 
+                                selectedSurvey, 
+                                selectedPrivacy,
+                                onlyPhotoResponses,
+                                startDate,
+                                endDate);
+          // fill survey filter with survey ids from campaign info (comes from xml config)
+          view.enableSurveyFilter();
+          view.setSurveyList(campaignInfo.getSurveyIds()); 
+          if (selectedSurvey != null) view.selectSurvey(selectedSurvey);
         }
     });    
   }
@@ -304,35 +306,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                           final boolean includeAllChoice) {
     if (campaignId == null) return;
     dataService.fetchParticipantsWithResponses(campaignId, false, new AsyncCallback<List<String>>() {
-      @Override
-      public void onFailure(Throwable caught) {
-        AwErrorUtils.logoutIfAuthException(caught);
-      }
-
-      @Override
-      public void onSuccess(List<String> result) {
-        if (result != null && !result.isEmpty()) {
-          // add participants to those already in list and update display
-          participants.addAll(result); // sorted participants
-          view.setParticipantList(participants, includeAllChoice);
-          if (participantToSelect != null) view.selectParticipant(participantToSelect);
-        } else {
-          // set the list anyway. if it already contained participants from a previous fetch,
-          // there will be no effect. if not, the view will update display to indicate no participants
-          view.setParticipantList(participants, includeAllChoice);
-        }
-      }
-    });
-  }
-  
-  // Fetches a list of all participants in one campaign that have submitted (and shared) 
-  // at least one response, adds the participants to this.participants internal
-  // data structure, and updates the view to match the data structure.
-  private void fetchParticipantsWithSharedResponsesAndAddToList(String campaignId, 
-                                                           final String participantToSelect,
-                                                           final boolean includeAllChoice) {
-    if (campaignId == null) return;
-    dataService.fetchParticipantsWithResponses(campaignId, true, new AsyncCallback<List<String>>() {
       @Override
       public void onFailure(Throwable caught) {
         AwErrorUtils.logoutIfAuthException(caught);
@@ -410,18 +383,14 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
       @Override
       public void onSuccess(CampaignDetailedInfo campaignInfo) {
-        if (campaignInfo.userCanSeeSharedResponses()) {
           // populate the participant list with only those users that have shared responses
           boolean includeAllChoice = true;
-          fetchParticipantsWithSharedResponsesAndAddToList(selectedCampaign,
-                                                           null,
-                                                           includeAllChoice);
+          fetchParticipantsWithResponsesAndAddToList(selectedCampaign,
+                                                     null,
+                                                     includeAllChoice);
           view.enableSurveyFilter();
           view.setSurveyList(campaignInfo.getSurveyIds());
-        } else {
-          view.setParticipantList(participants, false);
-        }
-      }
+        } 
     });
   }
   
@@ -708,8 +677,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     if (userName == null || userName.isEmpty()) return;
 
     // set header that will be shown if all requests return 0 responses
-    String userDisplayName = userName.equals(AwConstants.specialAllValuesToken) ? "all users" : userName;
-    view.setSectionHeader("Showing 0 responses from " + userDisplayName);
+    view.showResponseCountInSectionHeader(userName, 0);
     
     Map<String, String> campaignsToQuery = new HashMap<String, String>();
     boolean suppressCampaignErrors; 
@@ -804,15 +772,13 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             
             // sort by date, newest first
             Collections.sort(responses, responseDateComparator);
-            String numResponses = Integer.toString(responses.size());
-            String displayName = participantName.equals(AwConstants.specialAllValuesToken) ? " all users " : participantName; 
-            view.setSectionHeader("Showing " + numResponses + " responses from " + displayName);
+            view.showResponseCountInSectionHeader(participantName, responses.size());
             view.renderResponses(responses);
           }
     });
 
   }
-
+  
   // for sorting
   private Comparator<SurveyResponse> responseDateComparator = new Comparator<SurveyResponse>() {
     @Override
