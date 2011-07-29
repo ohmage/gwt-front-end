@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -22,9 +23,12 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
+import edu.ucla.cens.mobilize.client.event.CampaignInfoUpdatedEvent;
+import edu.ucla.cens.mobilize.client.event.CampaignInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -35,9 +39,12 @@ import edu.ucla.cens.mobilize.client.view.ExploreDataView;
 @SuppressWarnings("deprecation")
 public class ExploreDataPresenter implements Presenter {
   
+  // data that's shared across presenters
   UserInfo userInfo;
+  private List<CampaignShortInfo> campaigns;
   DataService dataService;
   EventBus eventBus;
+  
   ExploreDataView view;
 
   private static Logger _logger = Logger.getLogger(ExploreDataPresenter.class.getName());
@@ -50,10 +57,17 @@ public class ExploreDataPresenter implements Presenter {
   private static List<PromptType> supportedBivariate = Arrays.asList(PromptType.NUMBER,
                                                                       PromptType.SINGLE_CHOICE);
   
-  public ExploreDataPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
+
+  private String selectedParticipant;
+  
+  public ExploreDataPresenter(UserInfo userInfo, 
+                              DataService dataService, 
+                              EventBus eventBus,
+                              List<CampaignShortInfo> campaigns) {
     this.userInfo = userInfo;
     this.dataService = dataService;
     this.eventBus = eventBus;
+    this.campaigns = campaigns;
     bind();
   }
   
@@ -62,6 +76,13 @@ public class ExploreDataPresenter implements Presenter {
       @Override
       public void onUserInfoChanged(UserInfoUpdatedEvent event) {
         userInfo = event.getUserInfo();
+      }
+    });
+    
+    this.eventBus.addHandler(CampaignInfoUpdatedEvent.TYPE, new CampaignInfoUpdatedEventHandler() {
+      @Override
+      public void onCampaignInfoUpdated(CampaignInfoUpdatedEvent event) {
+        campaigns = event.getCampaigns();
       }
     });
   }
@@ -80,8 +101,8 @@ public class ExploreDataPresenter implements Presenter {
     String selectedX = params.containsKey("x") ? params.get("x") : null;
     String selectedY = params.containsKey("y") ? params.get("y") : null;
     
-    // fill campaign choices from userInfo
-    view.setCampaignList(userInfo.getCampaigns());
+    // fill campaign choices based on user's role and campaign privacy
+    fillCampaignChoices(this.campaigns);
     // enable/disable filters based on plot selection
     setEnabledFiltersForPlotType(selectedPlotType);
     // fetch and fill participant choices based on selected campaign (if appropriate for plot)
@@ -102,6 +123,21 @@ public class ExploreDataPresenter implements Presenter {
       showPlot();
     }
   }
+  
+  // adds campaign to dropdown if user is allowed to see responses from it
+  private void fillCampaignChoices(List<CampaignShortInfo> campaigns) {
+    Map<String, String> campaignIdToNameMap = new HashMap<String, String>();
+    for (CampaignShortInfo campaign : campaigns) {
+      if (campaign.userIsSupervisorOrAdmin() ||                 // supers see everything
+          campaign.userIsAuthor() ||                            // authors see shared data
+          (campaign.userIsAnalyst() && campaign.isShared()) ||  // analysts see data if campaign is shared
+          campaign.userIsParticipant()) {                       // participants see their own data
+        campaignIdToNameMap.put(campaign.getCampaignId(), campaign.getCampaignName());
+      }
+    }
+    view.setCampaignList(campaignIdToNameMap);
+  }
+  
     
   private void fetchResponseDataAndShowOnMap(String campaignId, String participantUsername) {
     final String campaignName = userInfo.getCampaigns().get(campaignId);
@@ -231,22 +267,53 @@ public class ExploreDataPresenter implements Presenter {
     }
   }
   
-  private void fetchAndFillParticipantChoices(String campaignId, final String participantToSelect) {
-    if (campaignId == null) return;
-    dataService.fetchParticipantsWithResponses(campaignId, new AsyncCallback<List<String>>() {
-      @Override
-      public void onFailure(Throwable caught) {
-        ErrorDialog.show("Could not load participant list for campaign.", caught.getMessage());
-        AwErrorUtils.logoutIfAuthException(caught);
+  // Returns info about campaign with given id or null if that campaign is not loaded.
+  private CampaignShortInfo getCampaignInfo(String campaignId) {
+    CampaignShortInfo retval = null;
+    for (CampaignShortInfo campaign : this.campaigns) {
+      if (campaign.getCampaignId().equals(campaignId)) {
+        retval = campaign; // gotcha: not a defensive copy
+        break;
       }
-
-      @Override
-      public void onSuccess(List<String> result) {
-        view.setParticipantList(result);
-        view.setSelectedParticipant(participantToSelect); // can be null
-      }
-    });
+    }
+    return retval;
   }
+  
+  private void fetchAndFillParticipantChoices(String campaignId, String participantToSelect) {
+    if (campaignId == null) return;
+    this.selectedParticipant = participantToSelect; // participantFetchCallback needs this
+    CampaignShortInfo campaign = getCampaignInfo(campaignId);
+    if (campaign == null) {
+      // show all participants. user will see error if they try to plot something they can't see
+      dataService.fetchParticipantsWithResponses(campaignId, false, this.participantFetchCallback);
+    } else if (campaign.userIsSupervisorOrAdmin()) {
+      // supers can see everyone's responses
+      dataService.fetchParticipantsWithResponses(campaignId, false, this.participantFetchCallback);
+    } else if (campaign.userIsAuthor()) {
+      // campaign author can only see shared responses
+      dataService.fetchParticipantsWithResponses(campaignId, true, this.participantFetchCallback);
+    } else {
+      // participants can only see themselves.
+      view.setParticipantList(Arrays.asList(userInfo.getUserName()));
+    }
+  }
+  
+  
+  // callback that populates participant dialog
+  private AsyncCallback<List<String>> participantFetchCallback = new AsyncCallback<List<String>>() {
+    @Override
+    public void onFailure(Throwable caught) {
+      ErrorDialog.show("Could not load participant list for campaign.", caught.getMessage());
+      AwErrorUtils.logoutIfAuthException(caught);
+    }
+
+    @Override
+    public void onSuccess(List<String> result) {
+      view.setParticipantList(result);
+      view.setSelectedParticipant(selectedParticipant);
+      // class member var selectedParticipant should have been set just before fetch
+    }
+  };
   
   private void fetchAndFillPromptChoices(String campaignId, 
                                          final PlotType plotType,

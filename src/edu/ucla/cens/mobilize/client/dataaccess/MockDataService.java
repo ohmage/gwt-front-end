@@ -455,6 +455,7 @@ public class MockDataService implements DataService {
 
   @Override
   public void fetchParticipantsWithResponses(String campaignId,
+      boolean onlySharedResponses,
       AsyncCallback<List<String>> callback) {
     // TODO Auto-generated method stub
     

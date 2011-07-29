@@ -29,8 +29,10 @@ import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 //import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
 import edu.ucla.cens.mobilize.client.dataaccess.AndWellnessDataService;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEvent;
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEventHandler;
+import edu.ucla.cens.mobilize.client.event.CampaignInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.exceptions.AuthenticationException;
 import edu.ucla.cens.mobilize.client.presenter.AccountPresenter;
@@ -42,6 +44,7 @@ import edu.ucla.cens.mobilize.client.presenter.ExploreDataPresenter;
 import edu.ucla.cens.mobilize.client.presenter.LoginPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ResponsePresenter;
 import edu.ucla.cens.mobilize.client.ui.Header;
+import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.view.AccountViewImpl;
 import edu.ucla.cens.mobilize.client.view.CampaignView;
 import edu.ucla.cens.mobilize.client.view.CampaignViewImpl;
@@ -58,6 +61,7 @@ import edu.ucla.cens.mobilize.client.view.LoginViewImpl;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.view.ResponseViewImpl;
 
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
 /**
@@ -80,8 +84,11 @@ public class MainApp implements EntryPoint, HistoryListener {
   TokenLoginManager loginManager = new TokenLoginManager(eventBus);
   LoginView loginView;
   LoginPresenter loginPresenter;
+  
+  // data that's used throughout the app
   UserInfo userInfo;
-
+  List<CampaignShortInfo> campaigns;
+  
 	// navigation
   DockLayoutPanel mainDockLayoutPanel;
   Header header;
@@ -128,7 +135,8 @@ public class MainApp implements EntryPoint, HistoryListener {
     
     if (loginManager.isCurrentlyLoggedIn()) {
       initDataService(loginManager.getLoggedInUserName(), loginManager.getAuthorizationToken());
-      initUser();
+      loadDataAndInitApp();
+      bind();
     } else {
       initLogin();
     }
@@ -147,7 +155,6 @@ public class MainApp implements EntryPoint, HistoryListener {
       }
     });*/
     
-    bind();
   }
   
   private void bind() {
@@ -155,6 +162,7 @@ public class MainApp implements EntryPoint, HistoryListener {
       @Override
       public void onCampaignDataChanged(CampaignDataChangedEvent event) {
         refreshUserInfo(); // because campaigns listed in userInfo may have changed
+        refreshCampaignList();
       }
     });
   }
@@ -165,8 +173,9 @@ public class MainApp implements EntryPoint, HistoryListener {
     this.awDataService.init(userName, authToken);
   }
   
-  private void initAppForUser(UserInfo userInfo) {
+  private void initApp(UserInfo userInfo, List<CampaignShortInfo> campaigns) {
     this.userInfo = userInfo;
+    this.campaigns = campaigns;
     initComponents(userInfo);
     initLayoutAndNavigation();
     initHistory();
@@ -187,7 +196,9 @@ public class MainApp implements EntryPoint, HistoryListener {
     RootLayoutPanel.get().add(loginView);
   }
   
-  private void initUser() {
+  // Loads UserInfo and list of CampaignShortInfos that are passed to presenters and
+  // used throughout the app. Updated when a data change event is detected on the event bus.
+  private void loadDataAndInitApp() {
     if (!loginManager.isCurrentlyLoggedIn()) {
       _logger.warning("Cannot fetch user info if not logged in.");
     }
@@ -197,27 +208,32 @@ public class MainApp implements EntryPoint, HistoryListener {
     final String authToken = loginManager.getAuthorizationToken();
     awDataService.init(userName, authToken);
     
-    // get user info 
+    // Load user info. When done, load campaign info and initialize app.
     awDataService.fetchUserInfo(userName, new AsyncCallback<UserInfo>() {
 
       @Override
       public void onFailure(Throwable caught) {
-        // auth exception would be thrown here if user still has login cookie 
-        // in the browser but has been logged out on the server
-        if (caught.getClass().equals(AuthenticationException.class)) {
-          logout(); // update cookie and refresh so user sees login page
-        } else {
-          _logger.severe("Failed to fetch user info: " + caught.getMessage());
-        }
+        AwErrorUtils.logoutIfAuthException(caught);
+        _logger.severe("Failed to fetch user info: " + caught.getMessage());
       }
 
       @Override
-      public void onSuccess(UserInfo user) {
-        if (user != null) {
-          initAppForUser(user);
-        } else {
-          _logger.severe("Failed to fetch user info for user " + userName);
-        }
+      public void onSuccess(UserInfo result) {
+        final UserInfo userInfo = result;
+        awDataService.fetchCampaignListShort(new CampaignReadParams(), 
+                                             new AsyncCallback<List<CampaignShortInfo>>() {
+
+          @Override
+          public void onFailure(Throwable caught) {
+            AwErrorUtils.logoutIfAuthException(caught);
+            _logger.severe("Failed to fetch campaign short infos: " + caught.getMessage());
+          }
+  
+          @Override
+          public void onSuccess(List<CampaignShortInfo> campaignInfos) {
+            initApp(userInfo, campaignInfos);
+          }
+        });
       }
     });
   }
@@ -228,7 +244,8 @@ public class MainApp implements EntryPoint, HistoryListener {
     awDataService.fetchUserInfo(username, new AsyncCallback<UserInfo>() {
       @Override
       public void onFailure(Throwable caught) {
-        _logger.severe("Failed to fetch info for user " + username);
+        _logger.severe("Failed to fetch info for user " + username +
+                       "Error was: " + caught.getMessage());
       }
 
       @Override
@@ -237,6 +254,21 @@ public class MainApp implements EntryPoint, HistoryListener {
         userInfo = result; 
         // notify all subscribed presenters that userInfo has changed
         eventBus.fireEvent(new UserInfoUpdatedEvent(result));
+      }
+    });
+  }
+  
+  private void refreshCampaignList() {
+    awDataService.fetchCampaignListShort(new CampaignReadParams(), new AsyncCallback<List<CampaignShortInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        _logger.severe("Failed to refresh campaign list: " + caught.getMessage());
+      }
+
+      @Override
+      public void onSuccess(List<CampaignShortInfo> result) {
+        campaigns = result;
+        eventBus.fireEvent(new CampaignInfoUpdatedEvent(result));
       }
     });
   }
@@ -260,7 +292,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     dashboardPresenter = new DashboardPresenter(userInfo, awDataService, eventBus);
     campaignPresenter = new CampaignPresenter(userInfo, awDataService, eventBus);
     responsePresenter = new ResponsePresenter(userInfo, awDataService, eventBus);
-    exploreDataPresenter = new ExploreDataPresenter(userInfo, awDataService, eventBus);
+    exploreDataPresenter = new ExploreDataPresenter(userInfo, awDataService, eventBus, campaigns);
     documentPresenter = new DocumentPresenter(userInfo, awDataService, eventBus);
     classPresenter = new ClassPresenter(userInfo, awDataService, eventBus);
     accountPresenter = new AccountPresenter(userInfo, awDataService, eventBus);

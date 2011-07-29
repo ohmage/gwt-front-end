@@ -300,7 +300,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                           final String participantToSelect,
                                                           final boolean includeAllChoice) {
     if (campaignId == null) return;
-    dataService.fetchParticipantsWithResponses(campaignId, new AsyncCallback<List<String>>() {
+    dataService.fetchParticipantsWithResponses(campaignId, false, new AsyncCallback<List<String>>() {
       @Override
       public void onFailure(Throwable caught) {
         AwErrorUtils.logoutIfAuthException(caught);
@@ -329,7 +329,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                            final String participantToSelect,
                                                            final boolean includeAllChoice) {
     if (campaignId == null) return;
-    dataService.fetchParticipantsWithResponses(campaignId, new AsyncCallback<List<String>>() {
+    dataService.fetchParticipantsWithResponses(campaignId, true, new AsyncCallback<List<String>>() {
       @Override
       public void onFailure(Throwable caught) {
         AwErrorUtils.logoutIfAuthException(caught);

@@ -120,5 +120,13 @@ public class CampaignShortInfo {
     return this.privacy.equals(Privacy.SHARED);
   }
 
+  public boolean userIsSupervisorOrAdmin() {
+    return this.userRoles.supervisor || this.userRoles.admin;
+  }
+
+  public boolean userIsAnalyst() {
+    return this.userRoles.analyst;
+  }
+
 }
 

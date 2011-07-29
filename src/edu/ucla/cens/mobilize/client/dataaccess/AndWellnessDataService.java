@@ -712,6 +712,7 @@ public class AndWellnessDataService implements DataService {
   
   @Override
   public void fetchParticipantsWithResponses(String campaignId,
+                                             boolean onlySharedResponses,
                                              final AsyncCallback<List<String>> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     SurveyResponseReadParams params = new SurveyResponseReadParams();
@@ -723,6 +724,7 @@ public class AndWellnessDataService implements DataService {
     params.columnList_opt.add("urn:ohmage:user:id");
     params.collapse = true;
     params.returnId = false;
+    if (onlySharedResponses) params.privacyState_opt = Privacy.SHARED;
     String postParams = params.toString();
     _logger.fine("Fetching participant list with params: " + postParams);
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getSurveyResponseReadUrl());

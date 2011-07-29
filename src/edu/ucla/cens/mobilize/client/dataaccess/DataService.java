@@ -170,6 +170,7 @@ public interface DataService {
    * @param callback returns List\<String\> on success
    */
   void fetchParticipantsWithResponses(String campaignId,
+                                      boolean onlySharedResponses,
                                       final AsyncCallback<List<String>> callback);
   
   /**
