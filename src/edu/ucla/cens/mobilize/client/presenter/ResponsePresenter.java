@@ -607,21 +607,19 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   // Loops through responses, sending a data request to delete each one. 
   // Responses are removed from the display one at a time as their request returns.
   private void deleteSelectedResponses() {
-    List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
-    for (String responseKey : responseKeys) {
-      final int surveyKey = Integer.parseInt(responseKey);
-      String campaignUrn = getCampaignUrnForSurveyKey(surveyKey);
+    List<String> responseKeyStrings = this.view.getSelectedSurveyResponseKeys();
+    for (String responseKeyString : responseKeyStrings) {
+      final int responseKey = Integer.parseInt(responseKeyString);
+      String campaignUrn = getCampaignUrnForSurveyKey(responseKey);
       if (campaignUrn == null) {
         _logger.severe("Could not find campaign urn for survey key: " + 
-                        Integer.toString(surveyKey) + 
+                        responseKeyString + 
                         ". Response will not be deleted.");
         view.addErrorMessage("There was a problem deleting the response(s).",
-                             "Could not find campaign urn for survey key: " + Integer.toString(surveyKey));
+                             "Could not find campaign urn for survey key: " + responseKeyString);
         continue;
       }
-      dataService.deleteSurveyResponse(campaignUrn, 
-           surveyKey, 
-           new AsyncCallback<String>() {
+      dataService.deleteSurveyResponse(campaignUrn, responseKey, new AsyncCallback<String>() {
 
             @Override
             public void onFailure(Throwable caught) {
@@ -633,7 +631,17 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
             @Override
             public void onSuccess(String result) {
-              view.removeResponse(surveyKey);
+              // response was deleted. remove it from the display
+              view.removeResponse(responseKey);
+              // remove it from the internal data structure
+              for (SurveyResponse response : responses) {
+                if (response.getResponseKey() == responseKey) {
+                  responses.remove(response);
+                  break;
+                }
+              }
+              // update count
+              view.showResponseCountInSectionHeader(view.getSelectedParticipant(), responses.size());
             }
       });
     }
