@@ -78,6 +78,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   public void go(Map<String, String> params) {
     assert view != null : "ResponsePresenter.go() called before view was set";
     
+    // remove leftover error messages, if any
+    view.clearErrorMessages();
+    
     // get params from history tokens
     String selectedSubView = params.containsKey("v") ? params.get("v") : "browse";
     String selectedParticipant = params.containsKey("uid") ? params.get("uid") : null;

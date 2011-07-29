@@ -551,6 +551,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override 
   public void clearErrorMessages() {
     this.messageWidget.clearErrors();
+    this.messageWidget.hide();
   }
 
   @Override
