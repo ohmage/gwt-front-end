@@ -114,8 +114,8 @@
      <!-- filters -->
      <g:north size='25'>
        <g:HTMLPanel addStyleNames='{style.topNav}'>
+       <!--
 		     <g:InlineHyperlink ui:field='rWebLink'>R-Web</g:InlineHyperlink>
-		     <!--
 		     <span class='{style.menuSeparator}'>|</span>
 		     <g:InlineHyperlink ui:field='mobilityLink'>Mobility</g:InlineHyperlink>
 		     <span class='{style.menuSeparator}'>|</span>
@@ -169,6 +169,9 @@
            <g:Button ui:field='drawPlotButton'>Draw Plot</g:Button>
            <!--<g:Button ui:field='pdfButton'>PDF</g:Button>-->
            <g:Button ui:field='exportButton'>Export</g:Button>
+         </g:HTMLPanel>
+         <g:HTMLPanel ui:field='hiddenFormContainer' addStyleNames='hidden'>
+           <div id='innerHiddenFormContainer' />
          </g:HTMLPanel>
        </g:VerticalPanel>
        </g:HTMLPanel>

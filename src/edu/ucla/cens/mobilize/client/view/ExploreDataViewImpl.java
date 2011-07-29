@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -87,6 +88,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @UiField Button drawPlotButton;
   //@UiField Button pdfButton;
   @UiField Button exportButton;
+  @UiField HTMLPanel hiddenFormContainer;
   @UiField FlowPanel plotContainer;
   
   private List<ListBox> requiredFields = new ArrayList<ListBox>();
@@ -564,7 +566,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public void doExportCsvFormPost(String url, Map<String, String> params) {
-    FormPanel exportForm = new FormPanel(); // will post to hidden iframe
+    FormPanel exportForm = new FormPanel("_blank"); // must be _blank for firefox
     exportForm.setAction(url);
     exportForm.setMethod(FormPanel.METHOD_POST);
     FlowPanel innerContainer = new FlowPanel();    
@@ -575,7 +577,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
       innerContainer.add(field);
     }
     exportForm.add(innerContainer);
+    hiddenFormContainer.add(exportForm, "innerHiddenFormContainer");
     exportForm.submit();
+    exportForm.removeFromParent();
   }
 
 
