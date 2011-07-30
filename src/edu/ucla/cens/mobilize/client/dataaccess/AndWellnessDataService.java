@@ -1088,7 +1088,8 @@ public class AndWellnessDataService implements DataService {
                            String campaignId, 
                            String participantId, 
                            String promptX, 
-                           String promptY) {
+                           String promptY, 
+                           boolean sharedResponsesOnly) {
     assert plotType != null : "plotType is required";
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     Map<String, String> params = new HashMap<String, String>();
@@ -1106,6 +1107,7 @@ public class AndWellnessDataService implements DataService {
     if (promptY != null && !promptY.isEmpty()) {
       params.put("prompt2_id", promptY);
     }
+    if (sharedResponsesOnly) params.put("privacy", "shared");
     String baseUrl = AwConstants.getVisualizationUrl(plotType.toServerString()); 
     return baseUrl + "?" + MapUtils.translateToParameters(params);
   }
@@ -1113,6 +1115,7 @@ public class AndWellnessDataService implements DataService {
   // Call this function in image onError handler to find out the reason
   // for a broken image. Note that this means this function should almost
   // always end up calling callback.onFailure().
+  // Make sure the params stay in sync with fetchVisualizationUrl above.
   @Override
   public void fetchVisualizationError(final PlotType plotType, 
                                       final int width, 
@@ -1121,6 +1124,7 @@ public class AndWellnessDataService implements DataService {
                                       final String participantId, 
                                       final String promptX, 
                                       final String promptY,
+                                      final boolean sharedResponsesOnly,
                                       final AsyncCallback<String> callback) {
     assert plotType != null : "plotType is required";
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
@@ -1130,6 +1134,7 @@ public class AndWellnessDataService implements DataService {
     params.put("width", Integer.toString(width));
     params.put("height", Integer.toString(height));
     params.put("campaign_urn", campaignId);
+    if (sharedResponsesOnly) params.put("privacy", "shared");
     if (participantId != null && !participantId.isEmpty()) {
       params.put("user", participantId);
     }
@@ -1159,7 +1164,8 @@ public class AndWellnessDataService implements DataService {
                                  campaignId, 
                                  participantId, 
                                  promptX, 
-                                 promptY));
+                                 promptY,
+                                 sharedResponsesOnly));
             } else { 
               getResponseTextOrThrowException(requestBuilder, response);
               throw new RuntimeException("Mysterious visualization error."); // should never happen

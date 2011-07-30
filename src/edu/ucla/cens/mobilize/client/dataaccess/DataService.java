@@ -277,7 +277,8 @@ public interface DataService {
                              String campaignId, 
                              String participantId, 
                              String promptX, 
-                             String promptY);
+                             String promptY,
+                             boolean sharedResponsesOnly);
   
   /**
    * If a url returned from getVisualizationUrl gives a broken image, call 
@@ -298,6 +299,7 @@ public interface DataService {
                                String participantId, 
                                String promptX, 
                                String promptY,
+                               boolean sharedResponsesOnly,
                                AsyncCallback<String> callback); 
   
 }

@@ -375,6 +375,7 @@ public class ExploreDataPresenter implements Presenter {
     final int width = view.getPlotPanelWidth();
     final int height = view.getPlotPanelHeight();
     
+    final boolean sharedResponsesOnly = true; // TODO: get from app config
     
     String url = dataService.getVisualizationUrl(plotType,
                                                  width,
@@ -382,13 +383,15 @@ public class ExploreDataPresenter implements Presenter {
                                                  campaignId,
                                                  participantId,
                                                  promptX,
-                                                 promptY);
+                                                 promptY,
+                                                 sharedResponsesOnly);
     _logger.fine("Displaying plot url: " + url);
     view.setPlotUrl(url, new ErrorHandler() {
       @Override
       public void onError(ErrorEvent event) {
         // if the image doesn't load, make an ajax call with the same params to retrieve the error message
-        dataService.fetchVisualizationError(plotType, width, height, campaignId, participantId, promptX, promptY,
+        dataService.fetchVisualizationError(plotType, width, height, campaignId, 
+            participantId, promptX, promptY, sharedResponsesOnly,
           new AsyncCallback<String>() {
             @Override
             public void onFailure(Throwable caught) {
