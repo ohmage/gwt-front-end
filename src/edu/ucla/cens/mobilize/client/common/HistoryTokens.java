@@ -119,7 +119,7 @@ public class HistoryTokens {
     return "responses";
   }
   
-  public static String responseList(String view,
+  public static String responseList(String view, // "edit" or "browse"
                                     String participant,
                                     String campaign,
                                     String survey,

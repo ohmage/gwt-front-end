@@ -32,8 +32,6 @@ public class DashboardViewImpl extends Composite implements DashboardView {
   interface DashboardUiBinder extends UiBinder<Widget, DashboardViewImpl> {
   }
 
-  private DashboardView.Presenter presenter;
-  
   public DashboardViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
   }
@@ -62,7 +60,7 @@ public class DashboardViewImpl extends Composite implements DashboardView {
     this.quickLinkCreate.setVisible(this.canEdit);
     this.quickLinkEdit.setVisible(this.canEdit);
     this.quickLinkUpload.setVisible(this.canUpload);
-    this.privateResponsesLink.setTargetHistoryToken(HistoryTokens.responseList(null, null, null, null, Privacy.PRIVATE, false, null, null));
+    this.privateResponsesLink.setTargetHistoryToken(HistoryTokens.responseList("edit", null, null, null, Privacy.PRIVATE, false, null, null));
     this.authorCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.AUTHOR, null, null));
     this.participantCampaignsLink.setTargetHistoryToken(HistoryTokens.campaignList(RunningState.RUNNING, RoleCampaign.PARTICIPANT, null, null));
   }
@@ -87,11 +85,6 @@ public class DashboardViewImpl extends Composite implements DashboardView {
   @Override
   public void setNumActiveAuthorCampaigns(int num) {
     this.campaignAuthorRoleCount.setInnerText(Integer.toString(num));
-  }
-
-  @Override
-  public void setPresenter(Presenter p) {
-    this.presenter = p;    
   }
 
   @Override

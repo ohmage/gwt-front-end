@@ -67,7 +67,6 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
   @Override
   public void setView(DashboardView view) {
     this.view = view;
-    this.view.setPresenter(this);
   }
   
   private void fetchAndShowDashboardData() {
