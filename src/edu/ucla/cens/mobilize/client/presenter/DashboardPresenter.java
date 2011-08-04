@@ -1,4 +1,5 @@
 package edu.ucla.cens.mobilize.client.presenter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -12,6 +13,8 @@ import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEvent;
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEventHandler;
+import edu.ucla.cens.mobilize.client.event.ResponseDataChangedEvent;
+import edu.ucla.cens.mobilize.client.event.ResponseDataChangedEventHandler;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.view.DashboardView;
@@ -26,8 +29,10 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
   
   private int _authorRoleCount = 0;
   private int _participantRoleCount = 0;
-  private int _privateResponseCount = 0;
-
+  
+  // response counts are stored per-campaign because the data api query is done per-campaign 
+  private Map<String, Integer> _campaignIdToPrivateResponseCountMap = new HashMap<String, Integer>();
+  
   private boolean canEdit = false;
   private boolean canUpload = false;
   
@@ -59,7 +64,14 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
     eventBus.addHandler(CampaignDataChangedEvent.TYPE, new CampaignDataChangedEventHandler() {
       @Override
       public void onCampaignDataChanged(CampaignDataChangedEvent event) {
-        fetchAndShowDashboardData(); // updates counts
+        fetchAndShowCampaignCounts();
+      }
+    });
+    
+    eventBus.addHandler(ResponseDataChangedEvent.TYPE, new ResponseDataChangedEventHandler() {
+      @Override
+      public void onSurveyResponseDataChanged(ResponseDataChangedEvent event) {
+        fetchAndShowResponseCounts();
       }
     });
   }
@@ -107,7 +119,7 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
   }
   
   private void fetchAndShowResponseCounts() {
-    _privateResponseCount = 0;
+    _campaignIdToPrivateResponseCountMap.clear();
     
     SurveyResponseReadParams params = new SurveyResponseReadParams();
     params.privacyState_opt = Privacy.PRIVATE;
@@ -115,6 +127,7 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
     
     // back end only lets you query responses for one campaign at a time
     for (String campaignId : userInfo.getCampaignIds()) {
+      final String campaignIdKey = campaignId;
       params.campaignUrn = campaignId; // update campaign id and repeat query
       dataService.fetchSurveyResponseCount(userInfo.getUserName(), 
                                            campaignId, 
@@ -130,8 +143,15 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
         
         @Override
         public void onSuccess(Integer result) {
-          _privateResponseCount = _privateResponseCount + result;
-          if (_privateResponseCount > 0) view.showPrivateResponseCount(_privateResponseCount);
+          // NOTE: response counts are stored per campaign id and summed just before 
+          // display because storing a single sum and updating it could result in 
+          // double counting if two update events happened too close together
+          _campaignIdToPrivateResponseCountMap.put(campaignIdKey, result);
+          int privateResponseCount = 0;
+          for (String key : _campaignIdToPrivateResponseCountMap.keySet()) {
+            privateResponseCount += _campaignIdToPrivateResponseCountMap.get(key);
+          }
+          if (privateResponseCount > 0) view.showPrivateResponseCount(privateResponseCount);
           else view.hidePrivateResponseCount();
         }
       });

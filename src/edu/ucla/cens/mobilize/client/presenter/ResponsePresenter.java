@@ -21,6 +21,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
@@ -32,6 +33,7 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.event.ResponseDataChangedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.exceptions.ApiException;
@@ -570,14 +572,35 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
             @Override
             public void onSuccess(String result) {
-              // update the display
-              view.markShared(surveyKey);
-              // update internal data structure 
-              SurveyResponse response = getSurveyResponse(surveyKey);
-              response.setPrivacyState(Privacy.SHARED);
+              // update the display and internal data structure
+              
+              // if user is looking at only private responses, remove the newly shared response
+              // from the display and internal data structure and update the response count
+              if (view.getSelectedPrivacyState().equals(Privacy.PRIVATE)) { 
+                view.removeResponse(surveyKey);
+                SurveyResponse response = getSurveyResponse(surveyKey);
+                if (response != null) responses.remove(response);
+                view.showResponseCountInSectionHeader(view.getSelectedParticipant(), responses.size());
+                
+              } else { 
+                // user is looking at all responses or shared responses, change the 
+                // privacy icon and update privacy in the internal data struct
+                view.markShared(surveyKey);
+                SurveyResponse response = getSurveyResponse(surveyKey);
+                response.setPrivacyState(Privacy.SHARED);
+              }
+
             }
       });
     }
+    // wait a while for requests to complete, then report change
+    Timer t = new Timer() {
+      @Override
+      public void run() {
+        eventBus.fireEvent(new ResponseDataChangedEvent());
+      }
+    };
+    t.schedule(3000); // 3 seconds
   }
 
   // Loops through responses, sending a data request to update each one. 
@@ -614,14 +637,33 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
             @Override
             public void onSuccess(String result) {
-              // update display
-              view.markPrivate(surveyKey);
-              // update internal data structure
-              SurveyResponse response = getSurveyResponse(surveyKey);
-              response.setPrivacyState(Privacy.PRIVATE);
+              // update display and internal data struct
+              
+              // if user is looking at only shared responses, remove the newly private response
+              // from the display and internal data structure and update the response count
+              if (view.getSelectedPrivacyState().equals(Privacy.SHARED)) {
+                view.removeResponse(surveyKey);
+                SurveyResponse response = getSurveyResponse(surveyKey);
+                if (response != null) responses.remove(response);
+                view.showResponseCountInSectionHeader(view.getSelectedParticipant(), responses.size());
+              } else {
+                // user is looking at all responses or private responses, change the 
+                // privacy icon and update privacy in the internal data struct
+                view.markPrivate(surveyKey);
+                SurveyResponse response = getSurveyResponse(surveyKey);
+                response.setPrivacyState(Privacy.PRIVATE);
+              }
             }
       });
     }
+    // wait a while for requests to complete, then report change
+    Timer t = new Timer() {
+      @Override
+      public void run() {
+        eventBus.fireEvent(new ResponseDataChangedEvent());
+      }
+    };
+    t.schedule(3000); // 3 seconds
   }
   
   // Loops through responses, sending a data request to delete each one. 
@@ -665,6 +707,14 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             }
       });
     }
+    // wait a while for requests to complete, then report change
+    Timer t = new Timer() {
+      @Override
+      public void run() {
+        eventBus.fireEvent(new ResponseDataChangedEvent());
+      }
+    };
+    t.schedule(3000); // 3 seconds
   }
   
   private void fireHistoryTokenToMatchFilterValues() {
