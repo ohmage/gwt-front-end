@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -309,6 +310,7 @@ public class ExploreDataPresenter implements Presenter {
 
     @Override
     public void onSuccess(List<String> result) {
+      Collections.sort(result);
       view.setParticipantList(result);
       view.setSelectedParticipant(selectedParticipant);
       // class member var selectedParticipant should have been set just before fetch
