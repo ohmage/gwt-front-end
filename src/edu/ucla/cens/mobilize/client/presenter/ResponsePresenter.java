@@ -298,6 +298,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     });    
   }
 
+
   // Fetches a list of all participants in one campaign that have submitted at least
   // one response to the campaign, adds the participants to this.participants internal
   // data structure, and updates the view to match the data structure.
@@ -520,16 +521,20 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     }
   };
   
-  // GOTCHA: assumes the response you care about is in this.responses
-  private String getCampaignUrnForSurveyKey(int surveyKey) {
-    String campaignUrn = null;
+  private SurveyResponse getSurveyResponse(int surveyKey) {
+    SurveyResponse retval = null;
     for (SurveyResponse surveyResponse : this.responses) {
       if (surveyResponse.getResponseKey() == surveyKey) {
-        campaignUrn = surveyResponse.getCampaignId();
+        retval = surveyResponse;
         break;
       }
     }
-    return campaignUrn;
+    return retval;
+  }
+  
+  private String getCampaignUrnForSurveyKey(int surveyKey) {
+    SurveyResponse response = getSurveyResponse(surveyKey);
+    return response != null ? response.getCampaignId() : null;
   }
   
   // Loops through responses, sending a data request to update each one. 
@@ -538,15 +543,19 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
     for (String responseKey : responseKeys) {
       final int surveyKey = Integer.parseInt(responseKey);
-      String campaignUrn = getCampaignUrnForSurveyKey(surveyKey);
-      if (campaignUrn == null) {
-        _logger.severe("Could not find campaign urn for survey key: " + 
-                        Integer.toString(surveyKey) + 
-                        ". Response will not be shared.");
-        view.addErrorMessage("Response share failed.",
-                             "Could not find campaign urn for survey key: " + Integer.toString(surveyKey));
+      // get info about the selected response
+      SurveyResponse response = getSurveyResponse(surveyKey);
+      // if no info was loaded, skip it
+      if (response == null) {
+        view.addErrorMessage("There was a problem updating the response(s)",
+            "Could not find campaign urn for survey key: " + 
+            Integer.toString(surveyKey));
         continue;
       }
+      // if response is already shared, skip it
+      if (response.getPrivacyState().equals(Privacy.SHARED)) continue;
+      // otherwise, send data request 
+      String campaignUrn = response.getCampaignId();
       dataService.updateSurveyResponse(campaignUrn, 
            surveyKey, 
            Privacy.SHARED, 
@@ -561,7 +570,11 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
             @Override
             public void onSuccess(String result) {
+              // update the display
               view.markShared(surveyKey);
+              // update internal data structure 
+              SurveyResponse response = getSurveyResponse(surveyKey);
+              response.setPrivacyState(Privacy.SHARED);
             }
       });
     }
@@ -573,16 +586,19 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
     for (String responseKey : responseKeys) {
       final int surveyKey = Integer.parseInt(responseKey);
-      String campaignUrn = getCampaignUrnForSurveyKey(surveyKey);
-      if (campaignUrn == null) {
-        _logger.severe("Could not find campaign urn for survey key: " + 
-                        Integer.toString(surveyKey) + 
-                        ". Response will not be marked private.");
+      // get info about the selected response
+      SurveyResponse response = getSurveyResponse(surveyKey);
+      // if no info was loaded, skip it
+      if (response == null) {
         view.addErrorMessage("There was a problem updating the response(s)",
-                             "Could not find campaign urn for survey key: " + 
-                             Integer.toString(surveyKey));
+            "Could not find campaign urn for survey key: " + 
+            Integer.toString(surveyKey));
         continue;
       }
+      // if response is already private, skip it
+      if (response.getPrivacyState().equals(Privacy.PRIVATE)) continue;
+      // otherwise, send data request 
+      String campaignUrn = response.getCampaignId();
       dataService.updateSurveyResponse(campaignUrn, 
            surveyKey, 
            Privacy.PRIVATE, 
@@ -598,7 +614,11 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
             @Override
             public void onSuccess(String result) {
+              // update display
               view.markPrivate(surveyKey);
+              // update internal data structure
+              SurveyResponse response = getSurveyResponse(surveyKey);
+              response.setPrivacyState(Privacy.PRIVATE);
             }
       });
     }
