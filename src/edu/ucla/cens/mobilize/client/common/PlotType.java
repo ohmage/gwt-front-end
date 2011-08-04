@@ -1,7 +1,9 @@
 package edu.ucla.cens.mobilize.client.common;
 
 public enum PlotType {
-  SURVEY_RESPONSE_COUNT,
+  SURVEY_RESPONSE_COUNT, // total count
+  SURVEY_RESPONSES_PRIVACY_STATE, // responses by privacy
+  SURVEY_RESPONSES_PRIVACY_STATE_TIME, // responses timeseries
   USER_TIMESERIES,
   PROMPT_TIMESERIES,
   PROMPT_DISTRIBUTION,

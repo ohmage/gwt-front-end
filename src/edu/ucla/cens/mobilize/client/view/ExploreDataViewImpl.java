@@ -127,10 +127,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   }
   
   private void loadPlotTypeTree() {
-
+    // NOTE(8/4/2011): plotType enum is converted to all lowercase and becomes the plot type argument
+    // in the api call. So SURVEY_RESPONSE_COUNT becomes "/app/viz/survey_response_count/read..."
+    // (See AndWellnessDataService.getVisualizationUrl())
+    
     // response count 
-    TreeItem responseCount = getTreeItem("ResponseCount", style.treeItemCategory()); // category
-    TreeItem surveyResponseCount = getTreeItem("Survey Response Count", PlotType.SURVEY_RESPONSE_COUNT, style.treeItemPlotType());
+    TreeItem surveyResponseCounts = getTreeItem("Survey Response Counts", style.treeItemCategory()); // category
+    TreeItem totalResponses = getTreeItem("Shared Responses", PlotType.SURVEY_RESPONSE_COUNT, style.treeItemPlotType());
+    TreeItem responsesByPrivacy = getTreeItem("Responses By Privacy", PlotType.SURVEY_RESPONSES_PRIVACY_STATE, style.treeItemPlotType());
+    TreeItem responseTimeseries = getTreeItem("Response Timeseries", PlotType.SURVEY_RESPONSES_PRIVACY_STATE_TIME, style.treeItemPlotType());
     
     // univariate 
     TreeItem univariate = getTreeItem("Univariate", style.treeItemCategory());
@@ -148,11 +153,13 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     TreeItem googleMap = getTreeItem("Google Map", PlotType.MAP, style.treeItemMap());
     
     // build the tree
-    plotTypeTree.addItem(responseCount);
+    plotTypeTree.addItem(surveyResponseCounts);
     plotTypeTree.addItem(univariate);
     plotTypeTree.addItem(multivariate);
     plotTypeTree.addItem(geographic);
-    responseCount.addItem(surveyResponseCount);
+    surveyResponseCounts.addItem(totalResponses);
+    surveyResponseCounts.addItem(responsesByPrivacy);
+    surveyResponseCounts.addItem(responseTimeseries);
     univariate.addItem(userTimeseries);
     univariate.addItem(promptTimeseries);
     univariate.addItem(promptDistribution);

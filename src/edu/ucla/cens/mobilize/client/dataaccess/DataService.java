@@ -278,12 +278,13 @@ public interface DataService {
                              String participantId, 
                              String promptX, 
                              String promptY,
-                             boolean sharedResponsesOnly);
+                             boolean includePrivateResponses);
   
   /**
    * If a url returned from getVisualizationUrl gives a broken image, call 
    * this method with the same params to find out what the error was. 
    * (Can be done in the image's onError handler)
+   * GOTCHA: if you make any changes to getVisualizationUrl make sure to make them here too
    * @param plotType
    * @param width
    * @param height
@@ -299,7 +300,7 @@ public interface DataService {
                                String participantId, 
                                String promptX, 
                                String promptY,
-                               boolean sharedResponsesOnly,
+                               boolean includePrivateResponses,
                                AsyncCallback<String> callback); 
   
 }

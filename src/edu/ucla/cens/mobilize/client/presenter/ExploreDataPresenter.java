@@ -231,6 +231,8 @@ public class ExploreDataPresenter implements Presenter {
       view.setDataButtonsEnabled(true);
       switch (plotType) {
         case SURVEY_RESPONSE_COUNT:
+        case SURVEY_RESPONSES_PRIVACY_STATE:
+        case SURVEY_RESPONSES_PRIVACY_STATE_TIME:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(false);
@@ -377,7 +379,12 @@ public class ExploreDataPresenter implements Presenter {
     final int width = view.getPlotPanelWidth();
     final int height = view.getPlotPanelHeight();
     
-    final boolean sharedResponsesOnly = true; // TODO: get from app config
+    // mobilize only shows shared responses for most plots but some installations 
+    // may want to include private ones.
+    boolean includePrivateResponsesInAllPlots = false; // TODO: get from config
+    final boolean includePrivateResponses = includePrivateResponsesInAllPlots ||
+      plotType.equals(PlotType.SURVEY_RESPONSES_PRIVACY_STATE) || // always include private responses for this plot type 
+      plotType.equals(PlotType.SURVEY_RESPONSES_PRIVACY_STATE_TIME); // always include private responses for this plot type
     
     String url = dataService.getVisualizationUrl(plotType,
                                                  width,
@@ -386,14 +393,14 @@ public class ExploreDataPresenter implements Presenter {
                                                  participantId,
                                                  promptX,
                                                  promptY,
-                                                 sharedResponsesOnly);
+                                                 includePrivateResponses);
     _logger.fine("Displaying plot url: " + url);
     view.setPlotUrl(url, new ErrorHandler() {
       @Override
       public void onError(ErrorEvent event) {
         // if the image doesn't load, make an ajax call with the same params to retrieve the error message
         dataService.fetchVisualizationError(plotType, width, height, campaignId, 
-            participantId, promptX, promptY, sharedResponsesOnly,
+            participantId, promptX, promptY, includePrivateResponses,
           new AsyncCallback<String>() {
             @Override
             public void onFailure(Throwable caught) {

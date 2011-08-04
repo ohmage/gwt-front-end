@@ -1089,7 +1089,7 @@ public class AndWellnessDataService implements DataService {
                            String participantId, 
                            String promptX, 
                            String promptY, 
-                           boolean sharedResponsesOnly) {
+                           boolean includePrivateResponses) {
     assert plotType != null : "plotType is required";
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     // make sure any changes to params here are reflected in the fetchVizError function below
@@ -1108,7 +1108,7 @@ public class AndWellnessDataService implements DataService {
     if (promptY != null && !promptY.isEmpty()) {
       params.put("prompt2_id", promptY);
     }
-    if (sharedResponsesOnly) params.put("privacy_state", "shared");
+    if (!includePrivateResponses) params.put("privacy_state", "shared");
     String baseUrl = AwConstants.getVisualizationUrl(plotType.toServerString()); 
     return baseUrl + "?" + MapUtils.translateToParameters(params);
   }
@@ -1125,7 +1125,7 @@ public class AndWellnessDataService implements DataService {
                                       final String participantId, 
                                       final String promptX, 
                                       final String promptY,
-                                      final boolean sharedResponsesOnly,
+                                      final boolean includePrivateResponses,
                                       final AsyncCallback<String> callback) {
     assert plotType != null : "plotType is required";
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
@@ -1135,7 +1135,7 @@ public class AndWellnessDataService implements DataService {
     params.put("width", Integer.toString(width));
     params.put("height", Integer.toString(height));
     params.put("campaign_urn", campaignId);
-    if (sharedResponsesOnly) params.put("privacy_state", "shared");
+    if (!includePrivateResponses) params.put("privacy_state", "shared");
     if (participantId != null && !participantId.isEmpty()) {
       params.put("user", participantId);
     }
@@ -1166,7 +1166,7 @@ public class AndWellnessDataService implements DataService {
                                  participantId, 
                                  promptX, 
                                  promptY,
-                                 sharedResponsesOnly));
+                                 includePrivateResponses));
             } else { 
               getResponseTextOrThrowException(requestBuilder, response);
               throw new RuntimeException("Mysterious visualization error."); // should never happen
