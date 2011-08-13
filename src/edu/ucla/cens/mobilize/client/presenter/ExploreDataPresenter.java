@@ -49,15 +49,6 @@ public class ExploreDataPresenter implements Presenter {
   ExploreDataView view;
 
   private static Logger _logger = Logger.getLogger(ExploreDataPresenter.class.getName());
-  
-  private static List<PromptType> supportedUnivariate = Arrays.asList(PromptType.NUMBER, 
-                                                                      PromptType.TEXT, 
-                                                                      PromptType.SINGLE_CHOICE, 
-                                                                      PromptType.REMOTE_ACTIVITY, 
-                                                                      PromptType.MULTI_CHOICE);
-  private static List<PromptType> supportedBivariate = Arrays.asList(PromptType.NUMBER,
-                                                                      PromptType.SINGLE_CHOICE);
-  
 
   private String selectedParticipant;
   
@@ -354,14 +345,10 @@ public class ExploreDataPresenter implements Presenter {
     case USER_TIMESERIES:
     case PROMPT_DISTRIBUTION:
     case PROMPT_TIMESERIES:
-      isSupported = supportedUnivariate.contains(promptType);
-      break;
     case SCATTER_PLOT:
     case DENSITY_PLOT:
-      isSupported = supportedBivariate.contains(promptType);
-      break;
     case MAP:
-      isSupported = true; // all prompt types supported for geo
+      isSupported = true; // 08/13/2011: all prompt types are supported for all plots
       break;
     default:
       break;
