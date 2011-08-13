@@ -29,10 +29,12 @@ import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
+import edu.ucla.cens.mobilize.client.view.ResponseView.Subview;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.event.ResponseDataChangedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
@@ -41,6 +43,7 @@ import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 
 public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   
@@ -52,6 +55,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   List<String> campaignIds = new ArrayList<String>();
   List<String> surveys = new ArrayList<String>();
   List<SurveyResponse> responses = new ArrayList<SurveyResponse>();
+  List<UserParticipationInfo> participationInfo;
   
   UserInfo userInfo;
   List<CampaignShortInfo> campaigns;
@@ -87,7 +91,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     view.setSectionHeaderDetail("");
     
     // get params from history tokens
-    String selectedSubView = params.containsKey("v") ? params.get("v") : "browse";
+    String selectedSubViewString = params.containsKey("v") ? params.get("v") : null;
+    Subview selectedSubview = Subview.fromHistoryTokenString(selectedSubViewString);
     String selectedParticipant = params.containsKey("uid") ? params.get("uid") : null;
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
     String selectedSurvey = params.containsKey("sid") ? params.get("sid") : null;
@@ -109,12 +114,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     } 
     
     Privacy selectedPrivacy = Privacy.fromServerString(selectedPrivacyString);
-    // NOTE: If subview is browse, privacy should always be set to shared. If it's
-    // not (would happen if user tried to edit the url param by hand) back end
-    // should reject the request.
     
-    view.setSelectedSubView(selectedSubView);
-    selectedSubView = view.getSelectedSubView(); // in case string was unrecognized and changed to default
+    view.setSelectedSubview(selectedSubview);
+    selectedSubview = view.getSelectedSubview(); // in case string was unrecognized and changed to default
     
     // set up campaign filter
     view.setCampaignList(userInfo.getCampaigns()); 
@@ -137,10 +139,26 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     view.selectStartDate(startDate);
     view.selectEndDate(endDate);
     
-    if (selectedSubView.equals("edit")) {
+    switch (selectedSubview) {
+    case BROWSE:
+      view.setSectionHeaderDetail("Private responses are visible only to the participant and supervisors. " +
+      "Shared responses are visible to anyone in the campaign.");
+      view.setSectionHeaderDetail("Shared responses can be viewed by anyone in the campaign. " +
+        "Private responses are visible only to the responder and campaign supervisors.");
+      view.showAllFilters();
+      fetchAndDisplayDataForBrowseView(selectedParticipant,
+                                       selectedCampaign, 
+                                       selectedSurvey, 
+                                       selectedPrivacy,
+                                       onlyPhotoResponses,
+                                       startDate,
+                                       endDate);      
+      break;
+    case EDIT:
       view.setSectionHeaderDetail("Campaign participants may share or delete their responses " +
           "while the campaign is still running. Once a campaign has been stopped, only " +
           "supervisors may change responses.");
+      view.showAllFilters();
       fetchAndDisplayDataForEditView(selectedParticipant,
                                      selectedCampaign, 
                                      selectedSurvey, 
@@ -148,20 +166,17 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                      onlyPhotoResponses,
                                      startDate,
                                      endDate);
-      
-    } else {
-      view.setSectionHeaderDetail("Private responses are visible only to the participant and supervisors. " +
-        "Shared responses are visible to anyone in the campaign.");
-      view.setSectionHeaderDetail("Shared responses can be viewed by anyone in the campaign. " +
-          "Private responses are visible only to the responder and campaign supervisors.");
-      fetchAndDisplayDataForBrowseView(selectedParticipant,
-                                       selectedCampaign, 
-                                       selectedSurvey, 
-                                       selectedPrivacy,
-                                       onlyPhotoResponses,
-                                       startDate,
-                                       endDate);
-    }         
+      break;
+    case LEADERBOARD:
+      view.setSectionHeaderDetail("");
+      view.hideOptionalFilters();
+      if (selectedCampaign != null && !selectedCampaign.isEmpty()) { // campaign is required
+        fetchAndDisplayDataForLeaderboardView(selectedCampaign);
+      }
+      break;
+    default:
+      break;
+    }
 
   }
 
@@ -300,6 +315,43 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     });    
   }
 
+  void fetchAndDisplayDataForLeaderboardView(final String selectedCampaign) {
+    // fetch responses and use them to generate counts
+    SurveyResponseReadParams params = new SurveyResponseReadParams();
+    params.campaignUrn = selectedCampaign;
+    params.columnList_opt.add("urn:ohmage:user:id");
+    params.columnList_opt.add("urn:ohmage:survey:privacy_state");
+    params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
+    params.userList.add(AwConstants.specialAllValuesToken);
+        
+    dataService.fetchSurveyResponses(params, new AsyncCallback<List<SurveyResponse>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        AwErrorUtils.logoutIfAuthException(caught);
+        ErrorDialog.show("Could not load leaderboard data for campaign: " + selectedCampaign);         
+      }
+  
+      @Override
+      public void onSuccess(List<SurveyResponse> result) {
+        // map usernames to info about user participation (e.g., counts of shared, private, etc responses)
+        Map<String, UserParticipationInfo> usernameToParticipationInfoMap = new HashMap<String, UserParticipationInfo>();
+        for (SurveyResponse response : result) {
+          String username = response.getUserName();
+          // make sure user has an entry in the data struct
+          if (!usernameToParticipationInfoMap.containsKey(username)) {
+            usernameToParticipationInfoMap.put(username, new UserParticipationInfo(username));
+          }
+          // update counts
+          usernameToParticipationInfoMap.get(username).countResponse(response);
+        }
+        participationInfo = new ArrayList<UserParticipationInfo>(usernameToParticipationInfoMap.values());
+        Collections.sort(participationInfo, participationUsernameComparator);
+        view.renderLeaderboardView(participationInfo);
+        view.setSectionHeader("Showing participation info for " + getCampaignName(selectedCampaign));
+      }
+    });       
+  }
+  
 
   // Fetches a list of all participants in one campaign that have submitted at least
   // one response to the campaign, adds the participants to this.participants internal
@@ -412,7 +464,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     view.getViewLinkEdit().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        view.setSelectedSubView("edit");
+        view.setSelectedSubview(Subview.EDIT);
         view.selectPrivacyState(null); // so "All" will be selected when view changes
         fireHistoryTokenToMatchFilterValues();
       }
@@ -421,10 +473,18 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     view.getViewLinkBrowse().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        view.setSelectedSubView("browse");
+        view.setSelectedSubview(Subview.BROWSE);
         fireHistoryTokenToMatchFilterValues();
       }
     });
+    
+    view.getViewLinkLeaderboard().addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        view.setSelectedSubview(Subview.LEADERBOARD);
+        fireHistoryTokenToMatchFilterValues();
+      }
+    }); 
     
     // clicking a share buttons shares all selected responses
     for (HasClickHandlers shareButton : this.view.getShareButtons()) {
@@ -454,10 +514,10 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.view.getCampaignFilter().addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent event) {
-        String selectedSubView = view.getSelectedSubView();
-        if ("browse".equals(selectedSubView)) {
+        Subview selectedSubView = view.getSelectedSubview();
+        if (Subview.BROWSE.equals(selectedSubView)) {
           fetchAndFillFiltersForBrowseView();
-        } else if ("edit".equals(selectedSubView)) {
+        } else if (Subview.EDIT.equals(selectedSubView)) {
           fetchAndFillFiltersForEditView();
         } else { // default is browse
           fetchAndFillFiltersForBrowseView();
@@ -534,9 +594,25 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     return retval;
   }
   
+  // helper method
   private String getCampaignUrnForSurveyKey(int surveyKey) {
     SurveyResponse response = getSurveyResponse(surveyKey);
     return response != null ? response.getCampaignId() : null;
+  }
+  
+  // helper method
+  private String getCampaignName(String campaignId) {
+    String retval = null;
+    Map<String, String> campaignIdToNameMap = userInfo.getCampaigns();
+    if (campaignIdToNameMap.containsKey(campaignId)) {
+      retval = campaignIdToNameMap.get(campaignId);
+    } else {
+      // would happen if user queried for a campaign that's not in userInfo - 
+      // maybe he edited url params by hand or was using an old link for a campaign
+      // to which he no longer belongs
+      retval = "(unknown campaign)";
+    }
+    return retval;
   }
   
   // Loops through responses, sending a data request to update each one. 
@@ -718,7 +794,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   }
   
   private void fireHistoryTokenToMatchFilterValues() {
-    String selectedSubView = view.getSelectedSubView();
+    Subview selectedSubview = view.getSelectedSubview();
+    String selectedSubviewString = selectedSubview != null ? selectedSubview.toHistoryTokenString() : null;
     String participantName = view.getSelectedParticipant();
     String campaignId = view.getSelectedCampaign();
     String surveyName = view.getSelectedSurvey();
@@ -726,7 +803,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     boolean onlyPhotoResponses = view.getHasPhotoToggleValue();
     Date startDate = view.getSelectedStartDate();
     Date endDate = view.getSelectedEndDate();
-    History.newItem(HistoryTokens.responseList(selectedSubView,
+    History.newItem(HistoryTokens.responseList(selectedSubviewString,
                                                participantName, 
                                                campaignId, 
                                                surveyName, 
@@ -736,7 +813,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                endDate));
   }
   
-  // Fetches list of campaigns, then fetches responses for each. 
+  // Gets list of campaigns from userInfo and fetches responses for each. 
   // Args are values to filter by. Any arg set to null or "" is ignored.
   // If campaignIdOrNull is set to null, query is done against all user's campaigns.
   private void fetchAndShowResponses(final String userName,
@@ -857,11 +934,19 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
   }
   
-  // for sorting
+  // for sorting response by date
   private Comparator<SurveyResponse> responseDateComparator = new Comparator<SurveyResponse>() {
     @Override
     public int compare(SurveyResponse arg0, SurveyResponse arg1) {
       return arg1.getResponseDate().compareTo(arg0.getResponseDate()); // recent dates first
+    }
+  };
+  
+  // for sorting participation info by username
+  private Comparator<UserParticipationInfo> participationUsernameComparator = new Comparator<UserParticipationInfo>() {
+    @Override
+    public int compare(UserParticipationInfo arg0, UserParticipationInfo arg1) {
+      return arg0.getUsername().compareTo(arg1.getUsername());
     }
   };
   

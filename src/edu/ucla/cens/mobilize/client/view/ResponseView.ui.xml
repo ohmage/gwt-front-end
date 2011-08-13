@@ -43,6 +43,10 @@
     .expandCollapseLinkMenu {
     	padding-left: 5px;
     }
+    .leaderboardHeaderRow {
+    	background-color: #EEE;
+    	font-weight: bold;
+    }
     .leftSideBar {
     	background-color: #EEE;
     	border-right: solid 1px #CCC;
@@ -138,9 +142,11 @@
   
     <g:north size='25'>
       <g:HTMLPanel addStyleNames='{style.topNav}'>
-          <g:Anchor ui:field='viewLinkBrowse' addStyleNames="link">Browse Responses</g:Anchor>
+          <g:Anchor ui:field='viewLinkBrowse' addStyleNames='link'>Browse Responses</g:Anchor>
           <span class='{style.separator}'>|</span>
-          <g:Anchor ui:field='viewLinkEdit' addStyleNames="link">Edit Responses</g:Anchor>
+          <g:Anchor ui:field='viewLinkEdit' addStyleNames='link'>Edit Responses</g:Anchor>
+          <span class='{style.separator}'>|</span>
+          <g:Anchor ui:field='viewLinkLeaderboard' addStyleNames='link'>Leaderboard</g:Anchor>
       </g:HTMLPanel>
     </g:north>
     
@@ -150,25 +156,27 @@
         <g:ListBox ui:field='campaignFilter'
                    visibleItemCount='1'
                    addStyleNames='{style.filter}' />
-        <g:Label addStyleNames='{style.label}'>Survey:</g:Label>
-        <g:ListBox ui:field='surveyFilter'
-                   visibleItemCount='1' 
-                   addStyleNames='{style.filter}' />
-        <g:Label addStyleNames='{style.label}'>Participant:</g:Label>
-        <g:Label ui:field='singleParticipantLabel' />
-        <g:ListBox ui:field='participantFilter' 
-                   visibleItemCount='1'
-                   addStyleNames='{style.filter}' />
-        <g:Label addStyleNames='{style.label}'>Privacy:</g:Label>
-        <g:ListBox ui:field='privacyFilter'
-                   visibleItemCount='1' 
-                   addStyleNames='{style.filter}' />
-        <g:Label addStyleNames='{style.label}'>From date:</g:Label>
-        <dp:DateBox ui:field='fromDateBox' addStyleNames='{style.dateBox}' />
-        <g:Label addStyleNames='{style.label}'>To date:</g:Label>
-        <dp:DateBox ui:field='toDateBox' addStyleNames='{style.dateBox}' />
-        <g:HTMLPanel addStyleNames='{style.photoCheckBox}'>
-          <g:CheckBox ui:field='hasPhotoCheckBox'>Only photo responses</g:CheckBox>
+        <g:HTMLPanel ui:field='optionalFilters'>
+	        <g:Label addStyleNames='{style.label}'>Survey:</g:Label>
+	        <g:ListBox ui:field='surveyFilter'
+	                   visibleItemCount='1' 
+	                   addStyleNames='{style.filter}' />
+	        <g:Label addStyleNames='{style.label}'>Participant:</g:Label>
+	        <g:Label ui:field='singleParticipantLabel' />
+	        <g:ListBox ui:field='participantFilter' 
+	                   visibleItemCount='1'
+	                   addStyleNames='{style.filter}' />
+	        <g:Label addStyleNames='{style.label}'>Privacy:</g:Label>
+	        <g:ListBox ui:field='privacyFilter'
+	                   visibleItemCount='1' 
+	                   addStyleNames='{style.filter}' />
+	        <g:Label addStyleNames='{style.label}'>From date:</g:Label>
+	        <dp:DateBox ui:field='fromDateBox' addStyleNames='{style.dateBox}' />
+	        <g:Label addStyleNames='{style.label}'>To date:</g:Label>
+	        <dp:DateBox ui:field='toDateBox' addStyleNames='{style.dateBox}' />
+	        <g:HTMLPanel addStyleNames='{style.photoCheckBox}'>
+	          <g:CheckBox ui:field='hasPhotoCheckBox'>Only photo responses</g:CheckBox>
+	        </g:HTMLPanel>
         </g:HTMLPanel>
         <g:Button ui:field='applyFiltersButton'>Show Responses</g:Button>
       </g:HTMLPanel>

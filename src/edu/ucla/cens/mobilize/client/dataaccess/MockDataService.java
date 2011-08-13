@@ -22,6 +22,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationToken
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -479,6 +480,13 @@ public class MockDataService implements DataService {
   @Override
   public void fetchClassMembers(String classUrn,
       AsyncCallback<List<UserShortInfo>> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void fetchSurveyResponses(SurveyResponseReadParams params,
+      AsyncCallback<List<SurveyResponse>> callback) {
     // TODO Auto-generated method stub
     
   }

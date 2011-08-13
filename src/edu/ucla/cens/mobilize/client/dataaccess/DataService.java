@@ -10,12 +10,14 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationToken
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 
 
@@ -126,9 +128,9 @@ public interface DataService {
    */
   void deleteCampaign(final String campaignId,
                       final AsyncCallback<String> callback);
-    
+
+  // TODO: deprecate this and use fetchSurveyResponses(ResponseReadParams...) everywhere instead?
   /**
-   * 
    * @param userName
    * @param campaignId
    * @param surveyName
@@ -143,6 +145,14 @@ public interface DataService {
                             Privacy privacy,
                             Date startDate,
                             Date endDate,
+                            final AsyncCallback<List<SurveyResponse>> callback);
+  
+  /**
+   * Fetch survey response data to match the given parameter object
+   * @param params
+   * @param callback
+   */
+  void fetchSurveyResponses(SurveyResponseReadParams params,
                             final AsyncCallback<List<SurveyResponse>> callback);
   
   /**

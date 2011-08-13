@@ -40,6 +40,7 @@ import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
@@ -756,9 +757,12 @@ public class AndWellnessDataService implements DataService {
     } 
   }
   
-  private void fetchSurveyResponses(SurveyResponseReadParams params,
-                                    final AsyncCallback<List<SurveyResponse>> callback) {
+  @Override
+  public void fetchSurveyResponses(SurveyResponseReadParams params,
+                                   final AsyncCallback<List<SurveyResponse>> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.authToken = this.authToken;
+    params.client = this.client;
     String postParams = params.toString();
     _logger.fine("Fetching survey responses with params: " + postParams);
     final String campaignId = params.campaignUrn;

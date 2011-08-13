@@ -29,9 +29,12 @@ public interface ResponseView extends IsWidget {
   void showConfirmDelete(ClickHandler onConfirmDelete);
   
   // navigation
-  String getSelectedSubView();
-  void setSelectedSubView(String subView);
+  Subview getSelectedSubview();
+  void setSelectedSubview(Subview subview);
   
+  // enabled/disable filters
+  void showAllFilters();
+  void hideOptionalFilters();
   
   // load values in filters
   void setParticipantList(SortedSet<String> participantNames, boolean makeFirstItemAll);
@@ -65,6 +68,8 @@ public interface ResponseView extends IsWidget {
   
   // display
   void renderResponses(List<SurveyResponse> responses);
+  void renderLeaderboardView(List<UserParticipationInfo> participationInfo);
+  
   void clearResponseList();
   void markShared(int responseKey);
   void markPrivate(int responseKey);
@@ -78,6 +83,7 @@ public interface ResponseView extends IsWidget {
   // gui elements needed by presenter for event handling
   HasClickHandlers getViewLinkBrowse();
   HasClickHandlers getViewLinkEdit();
+  HasClickHandlers getViewLinkLeaderboard();
   List<HasClickHandlers> getShareButtons();
   List<HasClickHandlers> getMakePrivateButtons();
   List<HasClickHandlers> getDeleteButtons();
@@ -88,5 +94,16 @@ public interface ResponseView extends IsWidget {
   HasChangeHandlers getPrivacyFilter();
   HasValueChangeHandlers<Date> getStartDateFilter();
   HasValueChangeHandlers<Date> getEndDateFilter();
-  
+
+  public enum Subview { 
+    BROWSE, EDIT, LEADERBOARD;
+    public String toHistoryTokenString() {
+      return this.toString().toLowerCase(); 
+    }
+    public static Subview fromHistoryTokenString(String view) {
+      Subview retval = null;
+      try { retval = Subview.valueOf(view.toUpperCase()); } catch (Exception e) {}
+      return retval; // null if unrecognized
+    }
+  };
 }

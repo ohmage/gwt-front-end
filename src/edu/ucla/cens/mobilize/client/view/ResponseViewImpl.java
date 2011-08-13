@@ -1,7 +1,6 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +23,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -33,6 +33,7 @@ import com.google.gwt.user.datepicker.client.DateBox;
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisplayWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetBasic;
@@ -49,13 +50,16 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   public interface ResponseViewStyles extends CssResource {
     String selectedTopNav();
+    String leaderboardHeaderRow();
   }
 
   @UiField ResponseViewStyles style;
   @UiField Anchor viewLinkEdit;
   @UiField Anchor viewLinkBrowse;
+  @UiField Anchor viewLinkLeaderboard;
   @UiField Label singleParticipantLabel;
   @UiField ListBox participantFilter;
+  @UiField HTMLPanel optionalFilters;
   @UiField ListBox campaignFilter;
   @UiField ListBox surveyFilter;
   @UiField ListBox privacyFilter;
@@ -80,6 +84,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField HTMLPanel expandCollapseLinksTop;
   @UiField Anchor expandLinkTop;
   @UiField Anchor collapseLinkTop;
+  @UiField HTMLPanel expandCollapseLinksBottom;
   @UiField Anchor expandLinkBottom;
   @UiField Anchor collapseLinkBottom;
   @UiField HTMLPanel buttonPanelTop;
@@ -87,7 +92,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   ResponseView.Presenter presenter;
   Privacy selectedPrivacy = Privacy.UNDEFINED;
-  private String selectedSubView; // "browse" or "edit"
+  private Subview selectedSubview;
   private String emptyParticipantListString = "None visible.";
   
   public ResponseViewImpl() {
@@ -189,6 +194,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
         widget.collapse();
       }
     }    
+  }
+  
+  private void setExpandCollapseLinksVisible(boolean isVisible) {
+    this.expandCollapseLinksTop.setVisible(isVisible);
+    this.expandCollapseLinksBottom.setVisible(isVisible);
   }
   
   @Override
@@ -330,18 +340,18 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @Override
   public void renderResponses(List<SurveyResponse> responses) {
-    if ("edit".equals(selectedSubView)) {
+    if (Subview.EDIT.equals(selectedSubview)) {
       renderResponsesEditView(responses);
-    } else if ("browse".equals(selectedSubView)) {
+    } else if (Subview.BROWSE.equals(selectedSubview)) {
       renderResponsesBrowseView(responses);
     } else { // default to browse
       renderResponsesBrowseView(responses);
     }
   }
-
+  
   private void renderResponsesEditView(List<SurveyResponse> responses) {
     this.responseList.clear();
-    this.expandCollapseLinksTop.setVisible(true);
+    setExpandCollapseLinksVisible(true);
     setEditControlsVisible(true);
     for (SurveyResponse response : responses) {
       ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
@@ -353,7 +363,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   private void renderResponsesBrowseView(List<SurveyResponse> responses) {
     this.responseList.clear();
-    this.expandCollapseLinksTop.setVisible(true);
+    setExpandCollapseLinksVisible(true);
     setEditControlsVisible(false);
     for (SurveyResponse response : responses) {
       ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
@@ -361,6 +371,32 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       responseWidget.setResponse(response);
       this.responseList.add(responseWidget);
     }
+  }
+  
+  @Override
+  public void renderLeaderboardView(List<UserParticipationInfo> participationInfo) {
+    this.responseList.clear();
+    setExpandCollapseLinksVisible(false);
+    setEditControlsVisible(false);
+    
+    Grid leaderboard = new Grid();
+    int numRows = participationInfo.size() + 1; // +1 for the header row
+    int numCols = 4; // username, total, private, shared // FIXME: invisible?
+    leaderboard.resize(numRows, numCols);
+    leaderboard.setText(0, 0, "Username");
+    leaderboard.setText(0, 1, "Total Responses");
+    leaderboard.setText(0, 2, "Private Responses");
+    leaderboard.setText(0, 3, "Shared Responses");
+    leaderboard.getRowFormatter().addStyleName(0, style.leaderboardHeaderRow());
+    int row = 1; // first row is header
+    for (UserParticipationInfo info : participationInfo) {
+      leaderboard.setText(row, 0, info.getUsername());
+      leaderboard.setText(row, 1, Integer.toString(info.getTotalResponseCount()));
+      leaderboard.setText(row, 2, Integer.toString(info.getResponseCount(Privacy.PRIVATE)));
+      leaderboard.setText(row, 3, Integer.toString(info.getResponseCount(Privacy.SHARED)));
+      row++;
+    }
+    this.responseList.add(leaderboard);
   }
 
   private void setEditControlsVisible(boolean isVisible) {
@@ -624,30 +660,29 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
   
   @Override
-  public String getSelectedSubView() {
-    return selectedSubView != null ? selectedSubView : "full"; // default to full view
+  public Subview getSelectedSubview() {
+    return selectedSubview != null ? selectedSubview : Subview.BROWSE; // default to browse view
   }
   
 
   @Override
-  public void setSelectedSubView(String subView) {
+  public void setSelectedSubview(Subview subview) {
     clearSelectedView();
-    if (subView != null && Arrays.asList("edit","browse").contains(subView)) {
-      selectedSubView = subView;
-    } else {
-      selectedSubView = "browse"; // default to browse view
-    }
-    if ("browse".equals(selectedSubView)) {
+    selectedSubview = (subview != null) ? subview : Subview.BROWSE;
+    if (Subview.BROWSE.equals(selectedSubview)) {
       viewLinkBrowse.addStyleName(style.selectedTopNav());
-    } else if ("edit".equals(selectedSubView)) {
+    } else if (Subview.EDIT.equals(selectedSubview)) {
       viewLinkEdit.addStyleName(style.selectedTopNav());
-    } 
+    } else if (Subview.LEADERBOARD.equals(selectedSubview)) {
+      viewLinkLeaderboard.addStyleName(style.selectedTopNav());
+    }
   }  
 
   private void clearSelectedView() {
-    selectedSubView = null;
+    selectedSubview = null;
     viewLinkEdit.removeStyleName(style.selectedTopNav());
     viewLinkBrowse.removeStyleName(style.selectedTopNav());
+    viewLinkLeaderboard.removeStyleName(style.selectedTopNav());
   }
 
   @Override
@@ -660,4 +695,19 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     return this.viewLinkEdit;
   }
 
+  @Override
+  public HasClickHandlers getViewLinkLeaderboard() {
+    return this.viewLinkLeaderboard;
+  }
+
+  @Override
+  public void showAllFilters() {
+    this.optionalFilters.setVisible(true);
+  }
+  
+  @Override
+  public void hideOptionalFilters() {
+    this.optionalFilters.setVisible(false);
+  }
+  
 }

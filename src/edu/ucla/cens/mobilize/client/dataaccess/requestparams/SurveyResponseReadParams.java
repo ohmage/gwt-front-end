@@ -50,7 +50,7 @@ public class SurveyResponseReadParams extends RequestParams {
     assert this.campaignUrn != null : "campaignUrn is required";
     assert this.client != null : "client is required";
     assert this.outputFormat != null : "output format is required";
-    assert this.userList != null && !this.userList.isEmpty() : "at least one user must be given in user list";
+    assert this.userList != null && !this.userList.isEmpty() : "at least one user must be given in user list. (Can be AwConstants.specialAllValuesToken)";
     assert (this.startDate_opt == null && this.endDate_opt == null) || // both dates null is ok 
            (this.startDate_opt != null && this.endDate_opt != null) :  // both dates set is ok
            "startDate and endDate must both be set or both be null";
