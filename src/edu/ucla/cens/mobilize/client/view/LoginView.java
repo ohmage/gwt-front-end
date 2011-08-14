@@ -1,5 +1,8 @@
 package edu.ucla.cens.mobilize.client.view;
 
+import java.util.List;
+import java.util.Map;
+
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface LoginView extends IsWidget {
@@ -21,4 +24,10 @@ public interface LoginView extends IsWidget {
     void setPresenter(Presenter presenter);
     void disableLoginForm();
     void enableLoginForm();
+    
+    // app-specific display
+    void setAppName(String appName);
+    void setLogoUrl(String url);
+    void setLinks(List<String> linkTexts, List<String> linkUrls);
+    void setDescriptionHtml(String loginPageHtml);
 }

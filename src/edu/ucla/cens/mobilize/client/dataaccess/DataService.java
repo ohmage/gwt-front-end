@@ -11,6 +11,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
+import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -68,6 +69,14 @@ public interface DataService {
    */
   void fetchAuthorizationToken(String userName, String password, 
                                final AsyncCallback<AuthorizationTokenQueryAwData> callback);
+  
+  /**
+   * Fetches properties of this application installation from the db so they
+   * can be used to construct install-specific features of the app such as
+   * logo, description, privacy states, etc 
+   * @param callback
+   */
+  void fetchAppConfig(final AsyncCallback<AppConfig> callback);
   
   /**
    * @param userName

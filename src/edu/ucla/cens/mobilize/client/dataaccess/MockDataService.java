@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
+import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -489,6 +491,35 @@ public class MockDataService implements DataService {
       AsyncCallback<List<SurveyResponse>> callback) {
     // TODO Auto-generated method stub
     
+  }
+
+  @Override
+  public void fetchAppConfig(AsyncCallback<AppConfig> callback) {
+    String loginPageHtml = "<h2>Mobilize = Computational Thinking + Data for Social Awareness &amp; Civil Engagement</h2><p>Through Mobilize students use mobile phones and web services tosystematically collect and interpret data about issues important tothem and their communities. The goal of Mobilize is to strengthencomputer science instruction throughout our educational system and todevelop innovative methods for educating and engaging students incomputational thinking and data analysis.</p><p>The core lessons in the Mobilize units will be framed aroundprinciples of Computational Thinking.  Specifically, throughParticipatory Sensing campaigns, students will identify phenomena tostudy, consider \"design\" for how data are to be collected, and rallythe computational resources to execute their plans. Along the way theywill grapple with questions related to the nature of data (itsrepresentation, formats and protocols for sharing) and of algorithms(rules governing data collection, strategies for analysis). Studentswill learn about classical themes in Computer Science, from databasesto networking, as well as lessons in Statistics, from visualization tobasic inference.</p><p>For more information, visit Mobilize at <a href=\"http://www.mobilizingcs.org\">http://www.mobilizingcs.org</a></p>";
+    Map<String, String> links = new HashMap<String, String>();
+    links.put("The Mobilize Project", "http://www.exploringcs.org/about/related-grants/mobilize");
+    links.put("Exploring Computer Science Educational Initiative", "http://www.exploringcs.org");
+    links.put("UCLA: Center For Embedded Networked Sensing", "http://research.cens.ucla.edu");
+    links.put("How you can get involved", "http://www.exploringcs.org/about/ecs-now");
+    List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);
+    
+    // set member vars
+    AppConfig config = new AppConfig();
+    config.setLoginPageHtml(loginPageHtml);
+    config.setLoginPageLogoUrl("images/mobilize_logo_300x100.png");
+    
+    // links
+    config.addLink("The Mobilize Project", "http://www.exploringcs.org/about/related-grants/mobilize");
+    config.addLink("Exploring Computer Science Educational Initiative", "http://www.exploringcs.org");
+    config.addLink("UCLA: Center For Embedded Networked Sensing", "http://research.cens.ucla.edu");
+    config.addLink("How you can get involved", "http://www.exploringcs.org/about/ecs-now");
+    
+    // static member vars (needed across entire app)
+    AppConfig.setAppName("Mobilize");
+    AppConfig.setPrivacyStates(privacyStates);
+    AppConfig.setSharedResponsesOnly(true);
+    
+    callback.onSuccess(config);
   }
 
 }

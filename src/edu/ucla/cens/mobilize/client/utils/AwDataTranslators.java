@@ -25,6 +25,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.PromptResponseAwDa
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.SurveyResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
+import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -512,6 +513,11 @@ public class AwDataTranslators {
         }
       }
       return documentInfos;
+    }
+
+    public static AppConfig translateAppConfigReadQueryToAppConfig(String result) {
+      // TODO Auto-generated method stub
+      return null;
     }
 
     

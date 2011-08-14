@@ -59,10 +59,8 @@
     	width: 250px;
      }
      .logoPanel {
-     	 background-image: url('images/mobilize_logo_300x100.png');
-     	 background-repeat: no-repeat;
-     	 background-position: 40px 50%;
      	 display: inline-block;
+     	 padding: 30px 0px 0px 0px;
        width: 100%;
        height: 100%;
      }
@@ -109,7 +107,9 @@
   <g:HTMLPanel addStyleNames='{style.mainPanel}'>
 
     <g:HTMLPanel addStyleNames='{style.left}'>
-		  <g:HTMLPanel tag='span' ui:field='logoPanel' addStyleNames='{style.logoPanel}' />
+		  <g:HTMLPanel tag='span' ui:field='logoPanel' addStyleNames='{style.logoPanel}'>
+		    <g:Image ui:field='logo' />
+		  </g:HTMLPanel>
 	  </g:HTMLPanel>
 	  
 	  <g:HTMLPanel addStyleNames='{style.right}'>
@@ -131,7 +131,8 @@
 			
 			<g:HTMLPanel ui:field='linkListDiv' addStyleNames='{style.linkListDiv}'>
         Find out more about...
-        <ul class='{style.linkList}'>
+        <ul class='{style.linkList}' ui:field='linkList'>
+        <!--
           <li>
             <a href='http://www.exploringcs.org/about/related-grants/mobilize'>
               The Mobilize Project
@@ -152,15 +153,16 @@
               How you can get involved
             </a>
           </li>
+          -->
         </ul>
       </g:HTMLPanel>
-      
 		</g:HTMLPanel>
 		
 		<div class='floatstop' />
 	
 		<g:HTMLPanel addStyleNames='{style.leftBottom}'>
 	    <g:HTMLPanel ui:field='descriptionPanel' addStyleNames='{style.description}'>
+	    <!--
         <h2>Mobilize = Computational Thinking + Data for Social Awareness &amp; Civil Engagement</h2>
 
         <p>Through Mobilize students use mobile phones and web services to
@@ -182,12 +184,13 @@
 				to networking, as well as lessons in Statistics, from visualization to
 				basic inference.
 				</p>
-				<p>For more information, visit Mobilize at <a href="http://www.mobilizingcs.org">http://www.mobilizingcs.org</a></p> 
+				<p>For more information, visit Mobilize at <a href="http://www.mobilizingcs.org">http://www.mobilizingcs.org</a></p>
+				--> 
       </g:HTMLPanel>
     </g:HTMLPanel>
     
     <g:HTMLPanel addStyleNames='{style.footer}'>
-	    <span class='{style.footerCopyright}'>Copyright &#169; 2011 Mobilize</span>
+	    <span class='{style.footerCopyright}'>Copyright &#169; 2011 CENS</span>
       <span class='{style.footerSpan}'><a href='#'>Help</a></span>
       <span>|</span>
       <span class='{style.footerSpan}'><a href='#'>Contact Us</a></span>

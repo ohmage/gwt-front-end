@@ -34,6 +34,7 @@ import edu.ucla.cens.mobilize.client.exceptions.AuthenticationException;
 import edu.ucla.cens.mobilize.client.exceptions.NotLoggedInException;
 import edu.ucla.cens.mobilize.client.exceptions.ServerException;
 import edu.ucla.cens.mobilize.client.exceptions.ServerUnavailableException;
+import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -317,6 +318,38 @@ public class AndWellnessDataService implements DataService {
       
   }
 
+
+  @Override
+  public void fetchAppConfig(final AsyncCallback<AppConfig> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before making any api calls";
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getAppConfigReadUrl());
+    _logger.fine("Fetching app config.");
+    String postParams = ""; // no params for this call
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          try {
+            String result = getResponseTextOrThrowException(requestBuilder, response);
+            AppConfig appConfig = AwDataTranslators.translateAppConfigReadQueryToAppConfig(result);
+            callback.onSuccess(appConfig);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+        }
+
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+  }
 
   @Override
   public void changePassword(String username, 
@@ -1192,6 +1225,7 @@ public class AndWellnessDataService implements DataService {
     }
     
   }
+
 
 
 

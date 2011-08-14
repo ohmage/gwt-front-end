@@ -9,6 +9,7 @@ import com.google.gwt.core.client.GWT;
  * @note DeployStatus is set in the gwt module file
  * 
  * @author jhicks
+ * @author shlurbee
  *
  */
 public class AwConstants {
@@ -47,6 +48,7 @@ public class AwConstants {
     // API Endpoints
     // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/AndWellness_Read_API_2.2
     private final static String AUTHORIZATION   = "user/auth_token";
+    private final static String APP_CONFIG_READ = "config/read";
     private final static String USER_INFO_READ  = "user_info/read";
     private final static String USER_READ       = "user/read";
     private final static String USER_CHANGE_PASSWORD = "user/change_password";
@@ -85,6 +87,10 @@ public class AwConstants {
         serverLocation = releaseServerLocation;
       } 
       return serverLocation;
+    }
+    
+    public static String getAppConfigReadUrl() {
+      return getServerLocation() + APP_CONFIG_READ;
     }
     
     public static String getUserInfoReadUrl() {

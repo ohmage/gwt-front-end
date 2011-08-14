@@ -27,14 +27,13 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
-//import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
+import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
 import edu.ucla.cens.mobilize.client.dataaccess.AndWellnessDataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEvent;
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEventHandler;
 import edu.ucla.cens.mobilize.client.event.CampaignInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
-import edu.ucla.cens.mobilize.client.exceptions.AuthenticationException;
 import edu.ucla.cens.mobilize.client.presenter.AccountPresenter;
 import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ClassPresenter;
@@ -43,6 +42,7 @@ import edu.ucla.cens.mobilize.client.presenter.DocumentPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ExploreDataPresenter;
 import edu.ucla.cens.mobilize.client.presenter.LoginPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ResponsePresenter;
+import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.Header;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.view.AccountViewImpl;
@@ -61,6 +61,7 @@ import edu.ucla.cens.mobilize.client.view.LoginViewImpl;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.view.ResponseViewImpl;
 
+import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
@@ -77,7 +78,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   EventBus eventBus = new SimpleEventBus();
   
   // classes for accessing data store
-  //DataService mockDataService = new MockDataService(); // for testing new data methods
+  DataService mockDataService = new MockDataService(); // for testing new data methods
   DataService awDataService = new AndWellnessDataService();
   
   // login management
@@ -135,6 +136,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     
     if (loginManager.isCurrentlyLoggedIn()) {
       initDataService(loginManager.getLoggedInUserName(), loginManager.getAuthorizationToken());
+      loadAppConfig();
       loadDataAndInitApp();
       bind();
     } else {
@@ -173,6 +175,22 @@ public class MainApp implements EntryPoint, HistoryListener {
     this.awDataService.init(userName, authToken);
   }
   
+  private void loadAppConfig() {
+    //this.awDataService.fetchAppConfig();
+    this.mockDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        AwErrorUtils.logoutIfAuthException(caught);
+        ErrorDialog.show("There was a problem fetching application configuration data.");
+      }
+
+      @Override
+      public void onSuccess(AppConfig result) {
+        Window.setTitle(AppConfig.getAppName());
+      }
+    });
+  }
+  
   private void initApp(UserInfo userInfo, List<CampaignShortInfo> campaigns) {
     this.userInfo = userInfo;
     this.campaigns = campaigns;
@@ -190,10 +208,26 @@ public class MainApp implements EntryPoint, HistoryListener {
     History.fireCurrentHistoryState();
   }
   
+  // loads app config from db and uses it to construct login page 
   private void initLogin() {
-    loginView = new LoginViewImpl();
-    loginPresenter = new LoginPresenter(awDataService, eventBus, loginView, loginManager);
-    RootLayoutPanel.get().add(loginView);
+    this.mockDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        ErrorDialog.show("There was a problem fetching application configuration data.");
+      }
+
+      @Override
+      public void onSuccess(AppConfig appConfig) {
+        Window.setTitle(AppConfig.getAppName());
+        loginView = new LoginViewImpl();
+        loginPresenter = new LoginPresenter(awDataService, 
+                                            eventBus, 
+                                            loginView, 
+                                            loginManager, 
+                                            appConfig);
+        RootLayoutPanel.get().add(loginView);
+      }
+    });
   }
   
   // Loads UserInfo and list of CampaignShortInfos that are passed to presenters and

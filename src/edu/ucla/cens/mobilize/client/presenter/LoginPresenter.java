@@ -11,6 +11,7 @@ import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.exceptions.ServerUnavailableException;
+import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.view.LoginView;
 
 public class LoginPresenter implements Presenter,
@@ -22,16 +23,26 @@ public class LoginPresenter implements Presenter,
     private static Logger _logger = Logger.getLogger(LoginPresenter.class.getName());
     
     public LoginPresenter(DataService dataService, 
-            EventBus eventBus, LoginView view, TokenLoginManager loginManager) {
+                          EventBus eventBus, 
+                          LoginView view, 
+                          TokenLoginManager loginManager,
+                          AppConfig appConfig) {
         this.dataService = dataService;
         this.view = view;
         this.view.setPresenter(this);
         this.loginManager = loginManager;
+        initViewForAppInstallation(appConfig);
     } 
+    
+    private void initViewForAppInstallation(AppConfig config) {
+      this.view.setAppName(AppConfig.getAppName());
+      this.view.setLogoUrl(config.getLoginPageLogoUrl());
+      this.view.setLinks(config.getLoginPageLinkTexts(), config.getLoginPageLinkUrls());
+      this.view.setDescriptionHtml(config.getLoginPageHtml());      
+    }
 
     @Override
     public void go(Map<String, String> params) {
-      // TODO Auto-generated method stub
     }
 
     @Override
