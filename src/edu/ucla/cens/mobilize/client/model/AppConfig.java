@@ -7,20 +7,23 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 
 public class AppConfig {
   private String logoUrl;
-  private static String appName;
   private String loginPageHtml;
   // for each i, linkTexts[i] is the user-facing text for linkUrls[i]
   private List<String> linkTexts = new ArrayList<String>(); 
-  private List<String> linkUrls = new ArrayList<String>();  
+  private List<String> linkUrls = new ArrayList<String>();
+  private static String appName;
   private static boolean sharedResponsesOnly;
   private static List<Privacy> privacyStates;
   
-
+  public static boolean isLoaded() {
+    return appName != null && privacyStates != null;
+  }
   
   /**
    * @return Name of app to be used in page title, etc
    */
   public static String getAppName() {
+    assert appName != null : "App config must be loaded before calling getAppName";
     return appName;
   }
   public static void setAppName(String appName) {

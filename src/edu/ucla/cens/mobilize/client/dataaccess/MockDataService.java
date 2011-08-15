@@ -277,7 +277,6 @@ public class MockDataService implements DataService {
     campaignIdToNameMap.put("urn:campaign:ca:lausd:BoyleHeights_HS:CS102:Spring:2011:Snack", "Snack");
     campaignIdToNameMap.put("urn:campaign:ca:lausd:Addams_HS:CS101:Fall:2011:Advertisement", "Advertisement");
     
-    List<CampaignDetailedInfo> infos = new ArrayList<CampaignDetailedInfo>(this.campaigns.values());
     List<RoleCampaign> roles = new ArrayList<RoleCampaign>();
     for (CampaignDetailedInfo campaign : this.campaigns.values()) {
       for (RoleCampaign role : campaign.getUserRoles()) {
@@ -495,12 +494,12 @@ public class MockDataService implements DataService {
 
   @Override
   public void fetchAppConfig(AsyncCallback<AppConfig> callback) {
-    String loginPageHtml = "<h2>Mobilize = Computational Thinking + Data for Social Awareness &amp; Civil Engagement</h2><p>Through Mobilize students use mobile phones and web services tosystematically collect and interpret data about issues important tothem and their communities. The goal of Mobilize is to strengthencomputer science instruction throughout our educational system and todevelop innovative methods for educating and engaging students incomputational thinking and data analysis.</p><p>The core lessons in the Mobilize units will be framed aroundprinciples of Computational Thinking.  Specifically, throughParticipatory Sensing campaigns, students will identify phenomena tostudy, consider \"design\" for how data are to be collected, and rallythe computational resources to execute their plans. Along the way theywill grapple with questions related to the nature of data (itsrepresentation, formats and protocols for sharing) and of algorithms(rules governing data collection, strategies for analysis). Studentswill learn about classical themes in Computer Science, from databasesto networking, as well as lessons in Statistics, from visualization tobasic inference.</p><p>For more information, visit Mobilize at <a href=\"http://www.mobilizingcs.org\">http://www.mobilizingcs.org</a></p>";
-    Map<String, String> links = new HashMap<String, String>();
-    links.put("The Mobilize Project", "http://www.exploringcs.org/about/related-grants/mobilize");
-    links.put("Exploring Computer Science Educational Initiative", "http://www.exploringcs.org");
-    links.put("UCLA: Center For Embedded Networked Sensing", "http://research.cens.ucla.edu");
-    links.put("How you can get involved", "http://www.exploringcs.org/about/ecs-now");
+    AppConfig config = getAndWellnessAppConfig();
+    callback.onSuccess(config);
+  }
+  
+  private AppConfig getMobilizeAppConfig() {
+    String loginPageHtml = "<h2>Mobilize = Computational Thinking + Data for Social Awareness &amp; Civil Engagement</h2><p>Through Mobilize students use mobile phones and web services tosystematically collect and interpret data about issues important tothem and their communities. The goal of Mobilize is to strengthencomputer science instruction throughout our educational system and todevelop innovative methods for educating and engaging students incomputational thinking and data analysis.</p><p>The core lessons in the Mobilize units will be framed aroundprinciples of Computational Thinking.  Specifically, throughParticipatory Sensing campaigns, students will identify phenomena tostudy, consider \"design\" for how data are to be collected, and rally the computational resources to execute their plans. Along the way they will grapple with questions related to the nature of data (its representation, formats and protocols for sharing) and of algorithms (rules governing data collection, strategies for analysis). Students will learn about classical themes in Computer Science, from databases to networking, as well as lessons in Statistics, from visualization to basic inference.</p><p>For more information, visit Mobilize at <a href=\"http://www.mobilizingcs.org\">http://www.mobilizingcs.org</a></p>";
     List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);
     
     // set member vars
@@ -519,7 +518,30 @@ public class MockDataService implements DataService {
     AppConfig.setPrivacyStates(privacyStates);
     AppConfig.setSharedResponsesOnly(true);
     
-    callback.onSuccess(config);
+    return config;
+  }
+  
+  private AppConfig getAndWellnessAppConfig() {
+    String loginPageHtml = "<h2>What is AndWellness?</h2> <p>AndWellness is an open source web based application with a companion Android mobile phone application to collect, manage, and visualize personal data.  Users can participate by downloading our free Android application and logging into any campaign of which they are a member. The mobile application will automatically download relevant campaign configuration information to seamlessly begin querying the user and uploading data wirelessly and securely. The server exposes the data in our defined generic data format which can be pushed into pre-existing visualization software, or used with a few example visualizations that are a part of AndWellness.</p> </div><div><span style='font-size:0.9em;font-style:italic;'>Question? Comment? Email us at andwellness-info@cens.ucla.edu</span> <a href=\"http://research.cens.ucla.edu/\"><span class='float-right'><img src=\"../images/cens_logo.gif\" height=\"20\" alt=\"CENS\" /></span></a> </div><div class='floatstop' />";
+    List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);
+    
+    // set member vars
+    AppConfig config = new AppConfig();
+    config.setLoginPageHtml(loginPageHtml);
+    config.setLoginPageLogoUrl("images/apple_andwellness.png");
+    
+    // links
+    config.addLink("UCLA: Center For Embedded Networked Sensing", "http://research.cens.ucla.edu");
+    config.addLink("Participatory Sensing", "http://research.cens.ucla.edu/urban/");
+    config.addLink("Mobile Health Apps", "http://www.technologyreview.com/biomedicine/37870/");
+    config.addLink("Open mHealth", "http://openmhealth.org/");
+    
+    // static member vars (needed across entire app)
+    AppConfig.setAppName("AndWellness");
+    AppConfig.setPrivacyStates(privacyStates);
+    AppConfig.setSharedResponsesOnly(true);
+    
+    return config;
   }
 
 }

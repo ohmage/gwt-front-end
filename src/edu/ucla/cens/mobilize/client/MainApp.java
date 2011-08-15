@@ -136,8 +136,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     
     if (loginManager.isCurrentlyLoggedIn()) {
       initDataService(loginManager.getLoggedInUserName(), loginManager.getAuthorizationToken());
-      loadAppConfig();
-      loadDataAndInitApp();
+      loadAppConfigAndInitApp();
       bind();
     } else {
       initLogin();
@@ -175,7 +174,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     this.awDataService.init(userName, authToken);
   }
   
-  private void loadAppConfig() {
+  private void loadAppConfigAndInitApp() {
     //this.awDataService.fetchAppConfig();
     this.mockDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
       @Override
@@ -187,6 +186,7 @@ public class MainApp implements EntryPoint, HistoryListener {
       @Override
       public void onSuccess(AppConfig result) {
         Window.setTitle(AppConfig.getAppName());
+        loadUserInfoAndInitApp(result);
       }
     });
   }
@@ -194,6 +194,8 @@ public class MainApp implements EntryPoint, HistoryListener {
   private void initApp(UserInfo userInfo, List<CampaignShortInfo> campaigns) {
     this.userInfo = userInfo;
     this.campaigns = campaigns;
+    Window.setTitle(AppConfig.getAppName());
+    
     initComponents(userInfo);
     initLayoutAndNavigation();
     initHistory();
@@ -208,7 +210,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     History.fireCurrentHistoryState();
   }
   
-  // loads app config from db and uses it to construct login page 
+  // Loads app config from db and uses it to construct login page 
   private void initLogin() {
     this.mockDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
       @Override
@@ -232,7 +234,8 @@ public class MainApp implements EntryPoint, HistoryListener {
   
   // Loads UserInfo and list of CampaignShortInfos that are passed to presenters and
   // used throughout the app. Updated when a data change event is detected on the event bus.
-  private void loadDataAndInitApp() {
+  // AppConfig should already be loaded.
+  private void loadUserInfoAndInitApp(final AppConfig config) {
     if (!loginManager.isCurrentlyLoggedIn()) {
       _logger.warning("Cannot fetch user info if not logged in.");
     }
@@ -253,23 +256,27 @@ public class MainApp implements EntryPoint, HistoryListener {
 
       @Override
       public void onSuccess(UserInfo result) {
-        final UserInfo userInfo = result;
-        awDataService.fetchCampaignListShort(new CampaignReadParams(), 
-                                             new AsyncCallback<List<CampaignShortInfo>>() {
+        loadCampaignDataAndInitApp(config, result);
+      }
+    });
+  }
+  
+  // Depends on userInfo and appConfig.
+  private void loadCampaignDataAndInitApp(final AppConfig config, final UserInfo userInfo) {
+    awDataService.fetchCampaignListShort(new CampaignReadParams(), 
+        new AsyncCallback<List<CampaignShortInfo>>() {
 
           @Override
           public void onFailure(Throwable caught) {
             AwErrorUtils.logoutIfAuthException(caught);
             _logger.severe("Failed to fetch campaign short infos: " + caught.getMessage());
           }
-  
+          
           @Override
           public void onSuccess(List<CampaignShortInfo> campaignInfos) {
             initApp(userInfo, campaignInfos);
           }
         });
-      }
-    });
   }
 
   // useful for responding to an event that might have changed userinfo data
@@ -312,6 +319,10 @@ public class MainApp implements EntryPoint, HistoryListener {
     tabPanel = new TabPanel();
     tabHistoryTokens = new ArrayList<String>();
     
+    // header
+    header.setAppName(AppConfig.getAppName()); 
+    header.setUserName(loginManager.getLoggedInUserName());
+    
     // views
     dashboardView = new DashboardViewImpl();
     campaignView = new CampaignViewImpl();
@@ -342,9 +353,6 @@ public class MainApp implements EntryPoint, HistoryListener {
   }
   
   private void initLayoutAndNavigation() {
-    header.setAppName("MOBILIZE"); // FIXME: dynamic based on config
-    header.setUserName(loginManager.getLoggedInUserName());
-    
     // create tabs (use class to keep track of tab index b/c it may change for different users)
     int index = 0;
     tabPanel.add(dashboardView, "Dashboard");
