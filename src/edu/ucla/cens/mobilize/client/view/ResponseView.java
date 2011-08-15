@@ -31,6 +31,7 @@ public interface ResponseView extends IsWidget {
   // navigation
   Subview getSelectedSubview();
   void setSelectedSubview(Subview subview);
+  void setEditMenuItemVisible(boolean isVisible);
   
   // enabled/disable filters
   void showAllFilters();

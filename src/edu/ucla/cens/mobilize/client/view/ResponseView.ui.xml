@@ -136,6 +136,9 @@
       margin: 0px;
       padding: 5px 5px 10px 15px;
     }
+    .visibilityWrapper {
+    	padding: 0px;
+    }
   </ui:style>
   
   <g:DockLayoutPanel unit='PX' ui:field='mainLayout'>
@@ -143,8 +146,10 @@
     <g:north size='25'>
       <g:HTMLPanel addStyleNames='{style.topNav}'>
           <g:Anchor ui:field='viewLinkBrowse' addStyleNames='link'>Browse Responses</g:Anchor>
-          <span class='{style.separator}'>|</span>
-          <g:Anchor ui:field='viewLinkEdit' addStyleNames='link'>Edit Responses</g:Anchor>
+          <g:HTMLPanel ui:field='editResponsesMenuItem' addStyleNames='{style.visibilityWrapper}'>
+	          <span class='{style.separator}'>|</span>
+	          <g:Anchor ui:field='viewLinkEdit' addStyleNames='link'>Edit Responses</g:Anchor>
+          </g:HTMLPanel>
           <span class='{style.separator}'>|</span>
           <g:Anchor ui:field='viewLinkLeaderboard' addStyleNames='link'>Leaderboard</g:Anchor>
       </g:HTMLPanel>

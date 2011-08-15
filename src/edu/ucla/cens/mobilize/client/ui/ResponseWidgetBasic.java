@@ -30,6 +30,7 @@ public class ResponseWidgetBasic extends Composite implements ResponseDisplayWid
   public interface ResponseWidgetStyle extends CssResource {
     String privacyPrivate();
     String privacyShared();
+    String privacyInvisible();
     String prompt();
     String promptQuestion();
     String promptResponse();
@@ -112,6 +113,9 @@ public class ResponseWidgetBasic extends Composite implements ResponseDisplayWid
       break;
     case SHARED:
       privacyLabel.setStyleName(style.privacyShared());
+      break;
+    case INVISIBLE:
+      privacyLabel.setStyleName(style.privacyInvisible());
       break;
     default:
       privacyLabel.setStyleName("");

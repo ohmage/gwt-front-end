@@ -13,6 +13,7 @@ public class AppConfig {
   private List<String> linkUrls = new ArrayList<String>();
   private static String appName;
   private static boolean sharedResponsesOnly;
+  private static boolean responsePrivacyIsEditable;
   private static List<Privacy> privacyStates;
   
   public static boolean isLoaded() {
@@ -80,6 +81,18 @@ public class AppConfig {
   }
   public static void setSharedResponsesOnly(boolean sharedResponsesOnly) {
     AppConfig.sharedResponsesOnly = sharedResponsesOnly;
+  }
+  
+  /**
+   * @return True if supervisors and owners of responses should be able to 
+   * update the response privacy state (e.g., share it or make it private)
+   * and/or delete a response
+   */
+  public static boolean responsePrivacyIsEditable() {
+    return responsePrivacyIsEditable;
+  }
+  public static void setResponsePrivacyIsEditable(boolean isEditable) {
+    AppConfig.responsePrivacyIsEditable = isEditable;
   }
   
   /**

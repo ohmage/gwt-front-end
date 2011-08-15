@@ -523,7 +523,7 @@ public class MockDataService implements DataService {
   
   private AppConfig getAndWellnessAppConfig() {
     String loginPageHtml = "<h2>What is AndWellness?</h2> <p>AndWellness is an open source web based application with a companion Android mobile phone application to collect, manage, and visualize personal data.  Users can participate by downloading our free Android application and logging into any campaign of which they are a member. The mobile application will automatically download relevant campaign configuration information to seamlessly begin querying the user and uploading data wirelessly and securely. The server exposes the data in our defined generic data format which can be pushed into pre-existing visualization software, or used with a few example visualizations that are a part of AndWellness.</p> </div><div><span style='font-size:0.9em;font-style:italic;'>Question? Comment? Email us at andwellness-info@cens.ucla.edu</span> <a href=\"http://research.cens.ucla.edu/\"><span class='float-right'><img src=\"../images/cens_logo.gif\" height=\"20\" alt=\"CENS\" /></span></a> </div><div class='floatstop' />";
-    List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);
+    List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED, Privacy.INVISIBLE);
     
     // set member vars
     AppConfig config = new AppConfig();
@@ -539,7 +539,7 @@ public class MockDataService implements DataService {
     // static member vars (needed across entire app)
     AppConfig.setAppName("AndWellness");
     AppConfig.setPrivacyStates(privacyStates);
-    AppConfig.setSharedResponsesOnly(true);
+    AppConfig.setSharedResponsesOnly(false); // show everything
     
     return config;
   }

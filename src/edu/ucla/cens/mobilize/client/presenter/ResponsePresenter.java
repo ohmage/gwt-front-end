@@ -39,6 +39,7 @@ import edu.ucla.cens.mobilize.client.event.ResponseDataChangedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.exceptions.ApiException;
+import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
@@ -89,6 +90,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     // set default section header
     view.setSectionHeader("Please make a selection from the filters on the left.");
     view.setSectionHeaderDetail("");
+
+    // some app installations do not allow editing responses
+    view.setEditMenuItemVisible(AppConfig.responsePrivacyIsEditable());
     
     // get params from history tokens
     String selectedSubViewString = params.containsKey("v") ? params.get("v") : null;
@@ -125,9 +129,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     
     // set up privacy filters
     List<Privacy> privacyChoices = new ArrayList<Privacy>();
-    privacyChoices.add(Privacy.PRIVATE);
-    privacyChoices.add(Privacy.SHARED);
-    // TODO: check to see if INVISIBLE is allowed in this installation and add it too
+    privacyChoices = AppConfig.getPrivacyStates();
     view.setPrivacyStates(privacyChoices);
     view.selectPrivacyState(selectedPrivacy);
     
@@ -155,6 +157,13 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                        endDate);      
       break;
     case EDIT:
+      // if editing isn't allowed for this installation, redirect to browse
+      if (!AppConfig.responsePrivacyIsEditable()) { // user edited url by hand?
+        view.setSelectedSubview(Subview.BROWSE);
+        fireHistoryTokenToMatchFilterValues();
+        break;
+      }
+      // editing is allowed. set up edit view.
       view.setSectionHeaderDetail("Campaign participants may share or delete their responses " +
           "while the campaign is still running. Once a campaign has been stopped, only " +
           "supervisors may change responses.");
@@ -174,7 +183,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         fetchAndDisplayDataForLeaderboardView(selectedCampaign);
       }
       break;
-    default:
+    default: // unrecognized view: redirect to browse
+      view.setSelectedSubview(Subview.BROWSE);
+      fireHistoryTokenToMatchFilterValues();
       break;
     }
 

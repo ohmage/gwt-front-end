@@ -54,6 +54,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
 
   @UiField ResponseViewStyles style;
+  @UiField HTMLPanel editResponsesMenuItem; // used for showing/hiding
   @UiField Anchor viewLinkEdit;
   @UiField Anchor viewLinkBrowse;
   @UiField Anchor viewLinkLeaderboard;
@@ -677,6 +678,11 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       viewLinkLeaderboard.addStyleName(style.selectedTopNav());
     }
   }  
+  
+  @Override
+  public void setEditMenuItemVisible(boolean isVisible) {
+    this.editResponsesMenuItem.setVisible(isVisible);
+  }
 
   private void clearSelectedView() {
     selectedSubview = null;

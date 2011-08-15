@@ -16,7 +16,7 @@
     .headerField {
     	padding: 3px 20px 3px 5px;
     }
-		.privacyPrivate, .privacyShared {
+		.privacyPrivate, .privacyShared, .privacyInvisible {
 			padding-left: 25px;
 	  }
 		.privacyPrivate {
@@ -25,6 +25,9 @@
 		.privacyShared {
 			background: 10px 50% no-repeat url('images/group_small.png');
 		}
+		.privacyInvisible {
+			background: 10px 50% no-repeat url('images/eye_bw_small.png');
+	  }
 		.prompt {
 			display: block;
 			float: left;
