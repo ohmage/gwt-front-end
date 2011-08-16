@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.presenter;
 
 import java.util.ArrayList;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -127,12 +128,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     if (selectedCampaign != null) view.selectCampaign(selectedCampaign);
     selectedCampaign = view.getSelectedCampaign();
     
-    // set up privacy filters
-    List<Privacy> privacyChoices = new ArrayList<Privacy>();
-    privacyChoices = AppConfig.getPrivacyStates();
-    view.setPrivacyStates(privacyChoices);
-    view.selectPrivacyState(selectedPrivacy);
-    
     // set up date filters
     if (startDateString != null && endDateString != null) {
       startDate = DateUtils.translateFromHistoryTokenFormat(startDateString);
@@ -230,6 +225,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           // set up survey filter with survey ids from campaign info (comes from xml config)
           view.enableSurveyFilter();
           view.setSurveyList(campaignInfo.getSurveyIds());
+          fillPrivacyFilter(selectedPrivacy, campaignInfo.userIsSupervisorOrAdmin());
           if (selectedSurvey != null) view.selectSurvey(selectedSurvey);
           
           if (campaignInfo.userIsSupervisorOrAdmin()) { 
@@ -245,6 +241,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                   onlyPhotoResponses,
                                   startDate,
                                   endDate);
+            
           } else if (campaignInfo.userIsParticipant()) {
             if (campaignInfo.isRunning()) {
               // participants can edit their own responses if the campaign is running
@@ -322,8 +319,19 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           view.enableSurveyFilter();
           view.setSurveyList(campaignInfo.getSurveyIds()); 
           if (selectedSurvey != null) view.selectSurvey(selectedSurvey);
+          // privacy states may be different depending on user's role in campaign
+          fillPrivacyFilter(selectedPrivacy, campaignInfo.userIsSupervisorOrAdmin());
         }
     });    
+  }
+  
+  private void fillPrivacyFilter(Privacy selectedPrivacy, boolean userIsSuper) {
+    if (userIsSuper) {
+      view.setPrivacyStates(AppConfig.getResponsePrivacyStates());
+    } else {
+      view.setPrivacyStates(Arrays.asList(Privacy.PRIVATE, Privacy.SHARED));
+    }
+    view.selectPrivacyState(selectedPrivacy);
   }
 
   void fetchAndDisplayDataForLeaderboardView(final String selectedCampaign) {
@@ -401,6 +409,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.surveys.clear();
     this.view.clearSurveyList();
     final String selectedCampaign = view.getSelectedCampaign();
+    final Privacy selectedPrivacy = view.getSelectedPrivacyState();
     dataService.fetchCampaignDetail(selectedCampaign, new AsyncCallback<CampaignDetailedInfo>() {
       @Override
       public void onFailure(Throwable caught) {
@@ -413,6 +422,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       public void onSuccess(CampaignDetailedInfo campaignInfo) {
         view.enableSurveyFilter();
         view.setSurveyList(campaignInfo.getSurveyIds());
+        fillPrivacyFilter(selectedPrivacy, campaignInfo.userIsSupervisorOrAdmin());
         if (campaignInfo.userIsSupervisorOrAdmin()) { 
           // supervisors can edit responses from any participant for any campaign
           boolean includeAllChoice = true; 
@@ -439,6 +449,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.surveys.clear();
     this.view.clearSurveyList();
     final String selectedCampaign = view.getSelectedCampaign();
+    final Privacy selectedPrivacy = view.getSelectedPrivacyState();
     dataService.fetchCampaignDetail(selectedCampaign, new AsyncCallback<CampaignDetailedInfo>() {
       @Override
       public void onFailure(Throwable caught) {
@@ -456,6 +467,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                      includeAllChoice);
           view.enableSurveyFilter();
           view.setSurveyList(campaignInfo.getSurveyIds());
+          fillPrivacyFilter(selectedPrivacy, campaignInfo.userIsSupervisorOrAdmin());
         } 
     });
   }

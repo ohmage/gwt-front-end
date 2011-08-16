@@ -1,9 +1,11 @@
 package edu.ucla.cens.mobilize.client.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 
 public class AppConfig {
   private String logoUrl;
@@ -95,11 +97,8 @@ public class AppConfig {
     AppConfig.responsePrivacyIsEditable = isEditable;
   }
   
-  /**
-   * @return List of privacy states recognized by this app
-   */
-  public static List<Privacy> getPrivacyStates() {
-    return privacyStates;
+  public static List<Privacy> getResponsePrivacyStates() {
+    return AppConfig.privacyStates;
   }
   public static void setPrivacyStates(List<Privacy> privacyStates) {
     AppConfig.privacyStates = privacyStates;

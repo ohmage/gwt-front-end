@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -59,17 +60,6 @@ public class CampaignDetailedInfo {
     return (this.userRoles.contains(RoleCampaign.ANALYST) && this.privacy.equals(Privacy.SHARED)) ||
            this.userRoles.contains(RoleCampaign.SUPERVISOR) || 
            this.userRoles.contains(RoleCampaign.AUTHOR);
-  }
-  
-  public boolean userCanSeeSharedResponses() {
-    // user can see other users' shared responses if:
-    // 1. he is admin or supervisor
-    // 2. he is author of the campaign
-    // 3. he is an analyst and the campaign is shared
-    return this.userRoles.contains(RoleCampaign.SUPERVISOR) ||
-           this.userRoles.contains(RoleCampaign.ADMIN) ||
-           this.userRoles.contains(RoleCampaign.AUTHOR) ||
-           (this.userRoles.contains(RoleCampaign.ANALYST) && this.isShared());
   }
   
   /************ CONVENIENCE METHODS **************/
