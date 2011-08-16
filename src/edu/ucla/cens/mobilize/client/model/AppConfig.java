@@ -8,11 +8,6 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 
 public class AppConfig {
-  private String logoUrl;
-  private String loginPageHtml;
-  // for each i, linkTexts[i] is the user-facing text for linkUrls[i]
-  private List<String> linkTexts = new ArrayList<String>(); 
-  private List<String> linkUrls = new ArrayList<String>();
   private static String appName;
   private static boolean sharedResponsesOnly;
   private static boolean responsePrivacyIsEditable;
@@ -31,47 +26,6 @@ public class AppConfig {
   }
   public static void setAppName(String appName) {
     AppConfig.appName = appName;
-  }
-
-  /**
-   * @return Url to use in image src field for app-specific logo
-   */
-  public String getLoginPageLogoUrl() {
-    return logoUrl;
-  }
-  
-  public void setLoginPageLogoUrl(String logoUrl) {
-    this.logoUrl = logoUrl;
-  }
-  
-  /**
-   * @return Text/html describing the app that will be displayed on the login page.
-   */
-  public String getLoginPageHtml() {
-    return loginPageHtml;
-  }
-  public void setLoginPageHtml(String loginPageHtml) {
-    this.loginPageHtml = loginPageHtml;
-  }
-  
-  /**
-   * @return List of strings user will see (as links) in the lower right corner of login page
-   */
-  public List<String> getLoginPageLinkTexts() {
-    return this.linkTexts;
-  }
-  
-  /**
-   * List of urls for the links in the lower right corner of the login page
-   * @return
-   */
-  public List<String> getLoginPageLinkUrls() {
-    return this.linkUrls;
-  }
-  
-  public void addLink(String text, String url) {
-    this.linkTexts.add(text);
-    this.linkUrls.add(url);
   }
   
   /**

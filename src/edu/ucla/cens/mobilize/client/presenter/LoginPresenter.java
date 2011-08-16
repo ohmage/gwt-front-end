@@ -31,15 +31,7 @@ public class LoginPresenter implements Presenter,
         this.view = view;
         this.view.setPresenter(this);
         this.loginManager = loginManager;
-        initViewForAppInstallation(appConfig);
     } 
-    
-    private void initViewForAppInstallation(AppConfig config) {
-      this.view.setAppName(AppConfig.getAppName());
-      this.view.setLogoUrl(config.getLoginPageLogoUrl());
-      this.view.setLinks(config.getLoginPageLinkTexts(), config.getLoginPageLinkUrls());
-      this.view.setDescriptionHtml(config.getLoginPageHtml());      
-    }
 
     @Override
     public void go(Map<String, String> params) {

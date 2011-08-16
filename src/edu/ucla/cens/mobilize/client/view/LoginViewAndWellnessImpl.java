@@ -1,12 +1,6 @@
 package edu.ucla.cens.mobilize.client.view;
 
-import java.util.List;
-import java.util.Map;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -16,11 +10,8 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PasswordTextBox;
@@ -31,9 +22,9 @@ import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 
 
-public class LoginViewImpl extends Composite implements LoginView {
-    @UiTemplate("LoginView.ui.xml")
-    interface LoginBoxViewUiBinder extends UiBinder<Widget, LoginViewImpl> {}
+public class LoginViewAndWellnessImpl extends Composite implements LoginView {
+    @UiTemplate("LoginViewAndWellness.ui.xml")
+    interface LoginBoxViewUiBinder extends UiBinder<Widget, LoginViewAndWellnessImpl> {}
     private static LoginBoxViewUiBinder uiBinder =
       GWT.create(LoginBoxViewUiBinder.class);
     
@@ -41,15 +32,10 @@ public class LoginViewImpl extends Composite implements LoginView {
     @UiField TextBox userNameTextBox;
     @UiField PasswordTextBox passwordTextBox;
     @UiField Button loginButton;
-    // dynamically fill html here depending on the installation
-    @UiField Image logo;
-    @UiField UListElement linkList;
-    @UiField HTMLPanel linkListDiv;
-    @UiField HTMLPanel descriptionPanel;
     
     private Presenter presenter;
     
-    public LoginViewImpl() {
+    public LoginViewAndWellnessImpl() {
         initWidget(uiBinder.createAndBindUi(this)); 
         initEventHandlers();
     }
@@ -134,38 +120,4 @@ public class LoginViewImpl extends Composite implements LoginView {
     public void showError(String errorMsg) {
       ErrorDialog.show(errorMsg);
     }
-
-    @Override
-    public void setAppName(String appName) {
-      Window.setTitle(appName);
-    }
-
-    @Override
-    public void setLogoUrl(String url) {
-      logo.setUrl(url);
-    }
-
-    @Override
-    public void setLinks(List<String> linkTexts, List<String> linkUrls) {
-      assert linkTexts.size() == linkUrls.size() : "Number of link text strings must match number of urls";
-      this.linkList.setInnerHTML(""); // clear existing links, if any
-      for (int i = 0; i < linkTexts.size(); i++) {
-        // create the link
-        AnchorElement link = Document.get().createAnchorElement();
-        link.setInnerText(linkTexts.get(i));
-        link.setHref(linkUrls.get(i));
-        // add link to a list element (<li>)
-        LIElement listElement = Document.get().createLIElement();
-        listElement.appendChild(link);
-        // add list element to the list (<ul>)
-        this.linkList.appendChild(listElement);
-      }
-    }
-
-    @Override
-    public void setDescriptionHtml(String loginPageHtml) {
-      this.descriptionPanel.getElement().setInnerHTML(""); // clear existing content, if any
-      this.descriptionPanel.add(new HTML(loginPageHtml));
-    }
-
 }
