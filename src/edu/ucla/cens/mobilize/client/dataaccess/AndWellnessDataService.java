@@ -331,7 +331,28 @@ public class AndWellnessDataService implements DataService {
           try {
             String result = getResponseTextOrThrowException(requestBuilder, response);
             AppConfig appConfig = AwDataTranslators.translateAppConfigReadQueryToAppConfig(result);
-            callback.onSuccess(appConfig);
+            String appName = AppConfig.getAppName().toLowerCase();
+            // FIXME: get these from db instead of hard-coding them
+            if ("mobilize".equals(appName)) {
+              List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);
+              AppConfig.setAppName("Mobilize");
+              AppConfig.setPrivacyStates(privacyStates);
+              AppConfig.setSharedResponsesOnly(true);
+              AppConfig.setResponsePrivacyIsEditable(true);
+            } else if ("andwellness".equals(appName)) {
+              List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED, Privacy.INVISIBLE);    
+              AppConfig.setAppName("AndWellness");
+              AppConfig.setPrivacyStates(privacyStates);
+              AppConfig.setSharedResponsesOnly(false); // show everything
+              AppConfig.setResponsePrivacyIsEditable(false);
+            } else { // default settings
+              List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);    
+              //AppConfig.setAppName("Ohmage");
+              AppConfig.setPrivacyStates(privacyStates);
+              AppConfig.setSharedResponsesOnly(false); // show everything
+              AppConfig.setResponsePrivacyIsEditable(false);
+            }
+            callback.onSuccess(appConfig); // FIXME: all fields in obj are static - returning it is pointless
           } catch (Exception exception) {
             _logger.severe(exception.getMessage());
             callback.onFailure(exception);
