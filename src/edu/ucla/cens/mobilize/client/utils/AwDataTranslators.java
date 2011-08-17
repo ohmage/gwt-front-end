@@ -18,6 +18,7 @@ import edu.ucla.cens.mobilize.client.common.RoleDocument;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AppConfigAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DocumentAwData;
@@ -515,9 +516,12 @@ public class AwDataTranslators {
       return documentInfos;
     }
 
+    // {"result":"success","data":{"application_build":"55e80e9","application_name":"ohmage","application_version":"2.5","default_survey_response_sharing_state":"private"}}
     public static AppConfig translateAppConfigReadQueryToAppConfig(String result) {
-      // TODO Auto-generated method stub
-      return null;
+      AppConfig appConfig = new AppConfig();
+      AppConfigAwData awData = AppConfigAwData.fromJsonString(result);
+      AppConfig.setAppName(awData.getApplicationName());
+      return appConfig;
     }
 
     

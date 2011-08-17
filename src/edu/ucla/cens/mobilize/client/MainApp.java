@@ -58,7 +58,6 @@ import edu.ucla.cens.mobilize.client.view.ExploreDataViewImpl;
 import edu.ucla.cens.mobilize.client.view.HelpView;
 import edu.ucla.cens.mobilize.client.view.LoginView;
 import edu.ucla.cens.mobilize.client.view.LoginViewAndWellnessImpl;
-import edu.ucla.cens.mobilize.client.view.LoginViewImpl;
 import edu.ucla.cens.mobilize.client.view.LoginViewMobilizeImpl;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.view.ResponseViewImpl;
@@ -80,7 +79,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   EventBus eventBus = new SimpleEventBus();
   
   // classes for accessing data store
-  DataService mockDataService = new MockDataService(); // for testing new data methods
+  //DataService mockDataService = new MockDataService(); // for testing new data methods
   DataService awDataService = new AndWellnessDataService();
   
   // login management
@@ -177,8 +176,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   }
   
   private void loadAppConfigAndInitApp() {
-    //this.awDataService.fetchAppConfig();
-    this.mockDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
+    this.awDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
       @Override
       public void onFailure(Throwable caught) {
         AwErrorUtils.logoutIfAuthException(caught);
@@ -214,7 +212,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   
   // Loads app config from db and uses it to construct login page 
   private void initLogin() {
-    this.mockDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
+    this.awDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
       @Override
       public void onFailure(Throwable caught) {
         ErrorDialog.show("There was a problem fetching application configuration data.");
@@ -227,6 +225,9 @@ public class MainApp implements EntryPoint, HistoryListener {
         if (appName.equalsIgnoreCase("mobilize")) {
           loginView = new LoginViewMobilizeImpl();
         } else if (appName.equalsIgnoreCase("andwellness")) {
+          loginView = new LoginViewAndWellnessImpl();
+        } else {
+          _logger.fine("Unrecognized app config name: " + appName + ". Defaulting to AndWellness.");
           loginView = new LoginViewAndWellnessImpl();
         }
         loginPresenter = new LoginPresenter(awDataService, 

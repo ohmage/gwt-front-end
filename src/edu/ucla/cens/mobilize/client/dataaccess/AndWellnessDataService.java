@@ -320,7 +320,7 @@ public class AndWellnessDataService implements DataService {
 
   @Override
   public void fetchAppConfig(final AsyncCallback<AppConfig> callback) {
-    assert this.isInitialized : "You must call init(username, auth_token) before making any api calls";
+    // NOTE: this api call doesn't need auth token so it's ok to call before initializing data service
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getAppConfigReadUrl());
     _logger.fine("Fetching app config.");
     String postParams = ""; // no params for this call

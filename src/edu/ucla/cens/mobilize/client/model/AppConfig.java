@@ -1,11 +1,8 @@
 package edu.ucla.cens.mobilize.client.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
-import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 
 public class AppConfig {
   private static String appName;
