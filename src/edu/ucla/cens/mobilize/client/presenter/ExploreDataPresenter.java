@@ -344,14 +344,20 @@ public class ExploreDataPresenter implements Presenter {
   private boolean promptTypeIsSupported(PlotType plotType, PromptType promptType) {
     boolean isSupported = false;
     switch (plotType) {
-    case SURVEY_RESPONSE_COUNT:
     case USER_TIMESERIES:
     case PROMPT_DISTRIBUTION:
     case PROMPT_TIMESERIES:
     case SCATTER_PLOT:
     case DENSITY_PLOT:
+      // 08/17/2011: RWeb plots that require prompt labels work for everything except photos
+      isSupported = !promptType.equals(PromptType.PHOTO); 
+      break;
+    case SURVEY_RESPONSE_COUNT: // might be shared only for some installations
+    case SURVEY_RESPONSES_PRIVACY_STATE:
+    case SURVEY_RESPONSES_PRIVACY_STATE_TIME:
     case MAP:
-      isSupported = true; // 08/13/2011: all prompt types are supported for all plots
+      // 08/17/2011: all prompt types are supported for counts plots and map viz
+      isSupported = true;
       break;
     default:
       break;
