@@ -29,7 +29,7 @@ public class AppConfig {
    * @return True if viz and export should include only shared responses (with
    * the exception of privacy-based visualizations)
    */
-  public static boolean isSharedResponsesOnly() {
+  public static boolean exportAndVisualizeSharedResponsesOnly() {
     return sharedResponsesOnly;
   }
   public static void setSharedResponsesOnly(boolean sharedResponsesOnly) {

@@ -22,12 +22,14 @@ import com.google.gwt.user.client.ui.TreeListener;
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.PlotType;
+import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.event.CampaignInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.CampaignInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
+import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
@@ -133,10 +135,11 @@ public class ExploreDataPresenter implements Presenter {
     
   private void fetchResponseDataAndShowOnMap(String campaignId, String participantUsername) {
     final String campaignName = userInfo.getCampaigns().get(campaignId);
+    Privacy privacy = AppConfig.exportAndVisualizeSharedResponsesOnly() ? Privacy.SHARED : null; // null shows everything
     view.showWaitIndicator();
     dataService.fetchSurveyResponses(participantUsername, campaignId, 
        null, //surveyName 
-       null, //privacy
+       privacy, 
        null, //startDate 
        null, //endDate 
        new AsyncCallback<List<SurveyResponse>>() {
@@ -284,7 +287,7 @@ public class ExploreDataPresenter implements Presenter {
       // supers can see everyone's responses
       dataService.fetchParticipantsWithResponses(campaignId, false, this.participantFetchCallback);
     } else if (campaign.userIsAuthor()) {
-      // campaign author can only see shared responses
+      // campaign author can only see shared responses // FIXME: true for all installations?
       dataService.fetchParticipantsWithResponses(campaignId, true, this.participantFetchCallback);
     } else {
       // participants can only see themselves.
@@ -368,7 +371,7 @@ public class ExploreDataPresenter implements Presenter {
     
     // mobilize only shows shared responses for most plots but some installations 
     // may want to include private ones.
-    boolean includePrivateResponsesInAllPlots = false; // TODO: get from config
+    boolean includePrivateResponsesInAllPlots = !AppConfig.exportAndVisualizeSharedResponsesOnly();
     final boolean includePrivateResponses = includePrivateResponsesInAllPlots ||
       plotType.equals(PlotType.SURVEY_RESPONSES_PRIVACY_STATE) || // always include private responses for this plot type 
       plotType.equals(PlotType.SURVEY_RESPONSES_PRIVACY_STATE_TIME); // always include private responses for this plot type
