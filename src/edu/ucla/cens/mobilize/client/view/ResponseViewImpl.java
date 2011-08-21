@@ -352,8 +352,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   private void renderResponsesEditView(List<SurveyResponse> responses) {
     this.responseList.clear();
-    setExpandCollapseLinksVisible(true);
-    setEditControlsVisible(true);
     for (SurveyResponse response : responses) {
       ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
       responseWidget.setSelectable(true);
@@ -364,8 +362,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   private void renderResponsesBrowseView(List<SurveyResponse> responses) {
     this.responseList.clear();
-    setExpandCollapseLinksVisible(true);
-    setEditControlsVisible(false);
     for (SurveyResponse response : responses) {
       ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
       responseWidget.setSelectable(false);
@@ -377,9 +373,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void renderLeaderboardView(List<UserParticipationInfo> participationInfo) {
     this.responseList.clear();
-    setExpandCollapseLinksVisible(false);
-    setEditControlsVisible(false);
-    
     Grid leaderboard = new Grid();
     int numRows = participationInfo.size() + 1; // +1 for the header row
     int numCols = 4; // username, total, private, shared // FIXME: invisible?
@@ -672,10 +665,16 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     selectedSubview = (subview != null) ? subview : Subview.BROWSE;
     if (Subview.BROWSE.equals(selectedSubview)) {
       viewLinkBrowse.addStyleName(style.selectedTopNav());
+      setEditControlsVisible(false);
+      setExpandCollapseLinksVisible(true);
     } else if (Subview.EDIT.equals(selectedSubview)) {
       viewLinkEdit.addStyleName(style.selectedTopNav());
+      setEditControlsVisible(true);
+      setExpandCollapseLinksVisible(true);
     } else if (Subview.LEADERBOARD.equals(selectedSubview)) {
       viewLinkLeaderboard.addStyleName(style.selectedTopNav());
+      setEditControlsVisible(false);
+      setExpandCollapseLinksVisible(false);
     }
   }  
   
