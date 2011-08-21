@@ -335,22 +335,28 @@ public class AndWellnessDataService implements DataService {
             // FIXME: get these from db instead of hard-coding them
             if ("mobilize".equals(appName)) {
               List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);
-              AppConfig.setAppName("Mobilize");
+              AppConfig.setAppDisplayName("Mobilize");
               AppConfig.setPrivacyStates(privacyStates);
               AppConfig.setSharedResponsesOnly(true);
               AppConfig.setResponsePrivacyIsEditable(true);
-            } else if ("andwellness".equals(appName)) {
-              List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED, Privacy.INVISIBLE);    
-              AppConfig.setAppName("AndWellness");
+            } else if ("chipts".equals(appName)) {
+              List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED, Privacy.INVISIBLE);
+              AppConfig.setAppDisplayName("AndWellness");
+              AppConfig.setPrivacyStates(privacyStates);
+              AppConfig.setSharedResponsesOnly(false);
+              AppConfig.setResponsePrivacyIsEditable(false);
+            } else if ("andwellness".equals(appName)) { 
+              List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);    
+              AppConfig.setAppDisplayName("AndWellness");
               AppConfig.setPrivacyStates(privacyStates);
               AppConfig.setSharedResponsesOnly(false); // show everything
-              AppConfig.setResponsePrivacyIsEditable(false);
+              AppConfig.setResponsePrivacyIsEditable(true);
             } else { // default settings
               List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);    
-              //AppConfig.setAppName("Ohmage");
+              AppConfig.setAppDisplayName("AndWellness");
               AppConfig.setPrivacyStates(privacyStates);
               AppConfig.setSharedResponsesOnly(false); // show everything
-              AppConfig.setResponsePrivacyIsEditable(false);
+              AppConfig.setResponsePrivacyIsEditable(true);
             }
             callback.onSuccess(appConfig); // FIXME: all fields in obj are static - returning it is pointless
           } catch (Exception exception) {

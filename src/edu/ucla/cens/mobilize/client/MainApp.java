@@ -185,7 +185,7 @@ public class MainApp implements EntryPoint, HistoryListener {
 
       @Override
       public void onSuccess(AppConfig result) {
-        Window.setTitle(AppConfig.getAppName());
+        Window.setTitle(AppConfig.getAppDisplayName());
         loadUserInfoAndInitApp(result);
       }
     });
@@ -194,7 +194,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   private void initApp(UserInfo userInfo, List<CampaignShortInfo> campaigns) {
     this.userInfo = userInfo;
     this.campaigns = campaigns;
-    Window.setTitle(AppConfig.getAppName());
+    Window.setTitle(AppConfig.getAppDisplayName());
     
     initComponents(userInfo);
     initLayoutAndNavigation();
@@ -220,16 +220,13 @@ public class MainApp implements EntryPoint, HistoryListener {
 
       @Override
       public void onSuccess(AppConfig appConfig) {
+        Window.setTitle(AppConfig.getAppDisplayName());
         String appName = AppConfig.getAppName();
-        Window.setTitle(appName);
-        if (appName.equalsIgnoreCase("mobilize")) {
+        if (appName.equalsIgnoreCase("mobilize")) { // mobilize has it's own login page
           loginView = new LoginViewMobilizeImpl();
-        } else if (appName.equalsIgnoreCase("andwellness")) {
+        } else  { // anything other than mobilize uses andwellness login page
           loginView = new LoginViewAndWellnessImpl();
-        } else {
-          _logger.fine("Unrecognized app config name: " + appName + ". Defaulting to AndWellness.");
-          loginView = new LoginViewAndWellnessImpl();
-        }
+        } 
         loginPresenter = new LoginPresenter(awDataService, 
                                             eventBus, 
                                             loginView, 
@@ -328,7 +325,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     tabHistoryTokens = new ArrayList<String>();
     
     // header
-    header.setAppName(AppConfig.getAppName()); 
+    header.setAppName(AppConfig.getAppDisplayName()); 
     header.setUserName(loginManager.getLoggedInUserName());
     
     // views

@@ -500,15 +500,17 @@ public class MockDataService implements DataService {
   
   private void loadMobilizeAppConfig() {
     List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);
-    AppConfig.setAppName("Mobilize");
+    AppConfig.setAppName("mobilize");
+    AppConfig.setAppDisplayName("Mobilize");
     AppConfig.setPrivacyStates(privacyStates);
     AppConfig.setSharedResponsesOnly(true);
     AppConfig.setResponsePrivacyIsEditable(true);
   }
   
   private void loadAndWellnessAppConfig() {
-    List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED, Privacy.INVISIBLE);    
-    AppConfig.setAppName("AndWellness");
+    List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED, Privacy.INVISIBLE);
+    AppConfig.setAppName("andwellness");
+    AppConfig.setAppDisplayName("AndWellness");
     AppConfig.setPrivacyStates(privacyStates);
     AppConfig.setSharedResponsesOnly(false); // show everything
     AppConfig.setResponsePrivacyIsEditable(false);

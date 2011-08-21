@@ -6,6 +6,7 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 
 public class AppConfig {
   private static String appName;
+  private static String appDisplayName;
   private static boolean sharedResponsesOnly;
   private static boolean responsePrivacyIsEditable;
   private static List<Privacy> privacyStates;
@@ -23,6 +24,13 @@ public class AppConfig {
   }
   public static void setAppName(String appName) {
     AppConfig.appName = appName;
+  }
+  
+  public static String getAppDisplayName() {
+    return appDisplayName;
+  }
+  public static void setAppDisplayName(String appDisplayName) {
+    AppConfig.appDisplayName = appDisplayName;
   }
   
   /**
