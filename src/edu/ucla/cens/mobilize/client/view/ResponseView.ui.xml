@@ -146,7 +146,7 @@
     <g:north size='25'>
       <g:HTMLPanel addStyleNames='{style.topNav}'>
           <g:Anchor ui:field='viewLinkBrowse' addStyleNames='link'>Browse Responses</g:Anchor>
-          <g:HTMLPanel ui:field='editResponsesMenuItem' addStyleNames='{style.visibilityWrapper}'>
+          <g:HTMLPanel tag='span' ui:field='editResponsesMenuItem' addStyleNames='{style.visibilityWrapper}'>
 	          <span class='{style.separator}'>|</span>
 	          <g:Anchor ui:field='viewLinkEdit' addStyleNames='link'>Edit Responses</g:Anchor>
           </g:HTMLPanel>
