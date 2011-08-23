@@ -174,6 +174,7 @@ public class CampaignPresenter implements Presenter {
           @Override
           public void onFailure(Throwable caught) {
             _logger.fine(caught.getMessage());
+            History.newItem(HistoryTokens.campaignList()); // redirect to list of campaigns
             view.showError("There was a problem loading the campaign.", caught);
             AwErrorUtils.logoutIfAuthException(caught);
           }

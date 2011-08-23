@@ -416,12 +416,16 @@ public class AwDataTranslators {
             campaign.addUserRole(RoleCampaign.fromServerString(rolesOfCurrentUser.get(i)));
           }
           JsArrayString supervisors = campaignAwData.getSupervisors();
-          for (int i = 0; i < supervisors.length(); i++) {
-            campaign.addSupervisor(supervisors.get(i));
+          if (supervisors != null) { // user might not have permission to see supervisors
+            for (int i = 0; i < supervisors.length(); i++) {
+              campaign.addSupervisor(supervisors.get(i));
+            }
           }
           JsArrayString authors = campaignAwData.getAuthors();
-          for (int i = 0; i < authors.length(); i++) {
-            campaign.addAuthor(authors.get(i));
+          if (authors != null) {
+            for (int i = 0; i < authors.length(); i++) {
+              campaign.addAuthor(authors.get(i));
+            }
           }
           JsArrayString classes = campaignAwData.getClasses();
           for (int i = 0; i < classes.length(); i++) {

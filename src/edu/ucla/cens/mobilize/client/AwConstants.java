@@ -27,7 +27,7 @@ public class AwConstants {
     // that don't default to all when omitted
     public final static String specialAllValuesToken = "urn:ohmage:special:all";
     
-    //private final static String debugServerLocation = "http://dev1.andwellness.org/app/";
+    //private final static String debugServerLocation = "https://dev1.andwellness.org/app/";
     private final static String debugServerLocation = "http://localhost:8080/app/";
     //private final static String debugServerLocation = "https://dev.mobilizingcs.org/app/";
     private final static String releaseServerLocation = "../app/"; // same as web server
