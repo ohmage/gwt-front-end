@@ -387,7 +387,7 @@ public class AndWellnessDataService implements DataService {
     Map<String, String> params = new HashMap<String, String>();
     params.put("auth_token", this.authToken);
     params.put("client", this.client);
-    params.put("username", username);
+    params.put("user", username);
     params.put("password", oldPassword);
     params.put("new_password", newPassword);
     String postParams = MapUtils.translateToParameters(params);
