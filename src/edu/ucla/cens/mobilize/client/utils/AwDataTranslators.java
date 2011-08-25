@@ -42,6 +42,7 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.regexp.shared.RegExp;
 
 /**
  * A collection of translators to translate data from the AndWellness server to local
@@ -74,6 +75,33 @@ public class AwDataTranslators {
                        ".  Response JSON was: " + errorResponseJSON);
       }
       return errorCodeToDescriptionMap;
+    }
+    
+    /**
+     * Response from a formPanel post that has a content type other than text/html gets
+     * wrapped in html pre tags. Ideally, have the responses returned as text/html but
+     * if not, strip the pre tags. Note the tags are slightly different on diff browsers.
+     * Assumptions: if there is a pre start tag then there is also a pre close tag, they
+     * are the outermost tags, the content would never be wrapped in another tag that
+     * has "pre" as a prefix in the tag name. 
+     * Note: Firefox will try to make  you download the formpanel result if it's anything other than text/html
+     * @return The innerHtml within the outermost pre tag, or the original string with 
+     * leading and trailing whitespace removed if no pre tags were found
+     */
+    public static String stripPreTags(String jsonPossiblyWrappedInPreTags) {
+      String str = jsonPossiblyWrappedInPreTags.trim();
+      // different browsers render this differently. could be "<pre>", "<PRE>", "<pre style=...>"
+      if (str.startsWith("<pre") || str.startsWith("<PRE")) { // assumes no other tags with "pre" as prefix
+        int indexOfFirstInnerHtmlChar = str.indexOf('>') + 1;
+        if (indexOfFirstInnerHtmlChar < str.length()) {
+          str = str.substring(indexOfFirstInnerHtmlChar);
+          int indexOfPreCloseTag = str.lastIndexOf('<');
+          if (indexOfPreCloseTag > -1) {
+            str = str.substring(0, indexOfPreCloseTag);
+          }
+        }
+      }
+      return str;
     }
     
     public static Integer translateSurveyResponseReadQueryJSONToSurveyCount(String surveyResponseReadQueryJSON) {

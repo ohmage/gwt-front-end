@@ -25,6 +25,7 @@ import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
+import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 
 public class CampaignEditFormPresenter {
   private UserInfo userInfo;
@@ -101,9 +102,8 @@ public class CampaignEditFormPresenter {
           new AsyncCallback<String>() {
             @Override
             public void onFailure(Throwable caught) {
-              String msg = caught.getMessage();
-              if (msg == null || msg.isEmpty()) msg = "There was a problem completing the operation.";
-              _logger.severe("Could not delete campaign: " + caught.getMessage());
+              ErrorDialog.show("There was a problem deleting the campaign: " + caught.getMessage());
+              AwErrorUtils.logoutIfAuthException(caught);
             }
             @Override
             public void onSuccess(String result) {
@@ -155,7 +155,7 @@ public class CampaignEditFormPresenter {
       @Override
       public void onClick(ClickEvent event) {
         view.clearFormFields();
-        History.back();
+        History.newItem(HistoryTokens.campaignList()); 
       }
     });
   
@@ -190,7 +190,8 @@ public class CampaignEditFormPresenter {
   private SubmitCompleteHandler formSubmitCompleteHandler = new SubmitCompleteHandler() {
     @Override
     public void onSubmitComplete(SubmitCompleteEvent event) {
-      //String result = "{\"result\":\"failure\",\"errors\":[{\"text\":\"Campaign already exists.\",\"code\":\"0804\"}]}"; // sample error response
+      //String result = "{\"result\":\"failure\",\"errors\":[{\"text\":\"Campaign already exists.\",\"code\":\"0804    \"}]}"; // sample error response
+      //String result = "<pre style=\"word-wrap: break-word; white-space: pre-wrap;\">{\"result\":\"failure\",\"errors\":[{\"text\":\"The campaign already exists: urn:campaign:ca:lausd:Carson_HS:CS104:Fall:2011:Advertisement\",\"code\":\"0702\"}]}</pre>"; // Safari, with content-type == application/json
       String result = event.getResults();
       String status = null;
       Map<String, String> errorCodeToDescriptionMap = null;
@@ -198,6 +199,7 @@ public class CampaignEditFormPresenter {
       // so you must deploy a compiled version to test this error handling
       if (result != null) {
         try {
+          result = AwDataTranslators.stripPreTags(result); // in case content-type is not text/html  
           status = JSONParser.parseStrict(result).isObject().get("result").isString().stringValue();
           if (!"success".equals(status)) {
             errorCodeToDescriptionMap = AwDataTranslators.translateErrorResponse(result);
@@ -218,8 +220,8 @@ public class CampaignEditFormPresenter {
       } else {
         String msg = isCreate ? "There was a problem creating the campaign." :
                                 "There was a problem editing the campaign.";
-        ErrorDialog.showErrorsByCode(msg, errorCodeToDescriptionMap);
         _logger.severe(msg + " Response was: " + result);
+        ErrorDialog.showErrorsByCode(msg, errorCodeToDescriptionMap);
       }
     }
   };

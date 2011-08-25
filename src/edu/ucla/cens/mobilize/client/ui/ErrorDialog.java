@@ -60,15 +60,19 @@ public class ErrorDialog {
   }
   
   public static void showErrorsByCode(String msg, Map<String, String> errorCodeToDescriptionMap) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<ul class='errorList'>");
-    for (String errorCode : errorCodeToDescriptionMap.keySet()) {
-      sb.append("<li class='errorListItem'>");
-      sb.append(errorCode).append(": ").append(errorCodeToDescriptionMap.get(errorCode));
-      sb.append("</li>");
+    if (errorCodeToDescriptionMap != null) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("<ul class='errorList'>");
+      for (String errorCode : errorCodeToDescriptionMap.keySet()) {
+        sb.append("<li class='errorListItem'>");
+        sb.append(errorCode).append(": ").append(errorCodeToDescriptionMap.get(errorCode));
+        sb.append("</li>");
+      }
+      sb.append("</ul>");
+      ErrorDialog.show(msg, sb.toString());
+    } else { // if errorCodeToDescriptionMap == null fall back to just showing message
+      ErrorDialog.show(msg);
     }
-    sb.append("</ul>");
-    ErrorDialog.show(msg, sb.toString());
   }
   
   public static void showErrorList(String msg, List<String> errorMessages) {
