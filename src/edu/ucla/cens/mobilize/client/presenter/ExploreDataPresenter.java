@@ -54,6 +54,20 @@ public class ExploreDataPresenter implements Presenter {
 
   private String selectedParticipant;
   
+  private static List<PromptType> supportedUnivariate = Arrays.asList( 
+      PromptType.HOURS_BEFORE_NOW,
+      PromptType.MULTI_CHOICE,
+      PromptType.MULTI_CHOICE_CUSTOM,
+      PromptType.NUMBER, 
+      PromptType.REMOTE_ACTIVITY,
+      PromptType.SINGLE_CHOICE, 
+      PromptType.SINGLE_CHOICE_CUSTOM,
+      PromptType.TEXT, 
+      PromptType.TIMESTAMP);
+  private static List<PromptType> supportedBivariate = Arrays.asList(
+      PromptType.NUMBER,
+      PromptType.SINGLE_CHOICE);
+  
   public ExploreDataPresenter(UserInfo userInfo, 
                               DataService dataService, 
                               EventBus eventBus,
@@ -344,26 +358,27 @@ public class ExploreDataPresenter implements Presenter {
   private boolean promptTypeIsSupported(PlotType plotType, PromptType promptType) {
     boolean isSupported = false;
     switch (plotType) {
+    case SURVEY_RESPONSE_COUNT:
+    case SURVEY_RESPONSES_PRIVACY_STATE:
+    case SURVEY_RESPONSES_PRIVACY_STATE_TIME:
     case USER_TIMESERIES:
     case PROMPT_DISTRIBUTION:
     case PROMPT_TIMESERIES:
+      isSupported = supportedUnivariate.contains(promptType);
+      break;
     case SCATTER_PLOT:
     case DENSITY_PLOT:
-      // 08/17/2011: RWeb plots that require prompt labels work for everything except photos
-      isSupported = !promptType.equals(PromptType.PHOTO); 
+      isSupported = supportedBivariate.contains(promptType);
       break;
-    case SURVEY_RESPONSE_COUNT: // might be shared only for some installations
-    case SURVEY_RESPONSES_PRIVACY_STATE:
-    case SURVEY_RESPONSES_PRIVACY_STATE_TIME:
     case MAP:
-      // 08/17/2011: all prompt types are supported for counts plots and map viz
-      isSupported = true;
+      isSupported = true; // all prompt types supported for geo
       break;
     default:
       break;
     }
     return isSupported;
   }
+  
   
   private void showPlot() {
     final PlotType plotType = view.getSelectedPlotType();
