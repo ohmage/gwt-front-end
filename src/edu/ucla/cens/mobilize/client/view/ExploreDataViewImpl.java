@@ -52,6 +52,7 @@ import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup;
+import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 @SuppressWarnings("deprecation")
 public class ExploreDataViewImpl extends Composite implements ExploreDataView {
@@ -175,7 +176,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   public void setCampaignList(Map<String, String> campaignIdToNameMap) {
     if (campaignIdToNameMap == null) return;
     campaignListBox.clear();
-    for (String campaignId : campaignIdToNameMap.keySet()) {
+    List<String> idsSortedByName = MapUtils.getKeysSortedByValues(campaignIdToNameMap);
+    for (String campaignId : idsSortedByName) {
       campaignListBox.addItem(campaignIdToNameMap.get(campaignId), campaignId);
     }
   }

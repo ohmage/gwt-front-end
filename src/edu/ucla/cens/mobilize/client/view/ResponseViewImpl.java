@@ -1,7 +1,6 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +37,7 @@ import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisplayWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetBasic;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
+import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 public class ResponseViewImpl extends Composite implements ResponseView {
   
@@ -234,19 +234,10 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   public void setCampaignList(Map<String, String> campaignIdToNameMap) {
     campaignFilter.clear();
     if (campaignIdToNameMap == null) return;
-    
-    // sort campaigns by name then by id
-    List<String> nameKeyPairs = new ArrayList<String>();
-    for (String campaignId : campaignIdToNameMap.keySet()) {
-      String name = campaignIdToNameMap.get(campaignId);
-      nameKeyPairs.add(name + "###" + campaignId);
+    List<String> campaignIdsSortedByCampaignNames = MapUtils.getKeysSortedByValues(campaignIdToNameMap);
+    for (String campaignId : campaignIdsSortedByCampaignNames) {
+      campaignFilter.addItem(campaignIdToNameMap.get(campaignId), campaignId);
     }
-    Collections.sort(nameKeyPairs);
-    for (String nameKeyPair : nameKeyPairs) {
-      String[] arr = nameKeyPair.split("###"); // 0 = name, 1 = id
-      campaignFilter.addItem(arr[0], arr[1]); // name is visible text, id is value
-    }
-    
     campaignFilter.setSelectedIndex(-1);
   }
 
