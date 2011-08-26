@@ -402,6 +402,7 @@ public class CampaignEditFormView extends Composite {
     this.formPanel.setAction(serverLocation);
     this.formPanel.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
     this.formPanel.setMethod(FormPanel.METHOD_POST);
+    this.saveButton.setEnabled(true);
     this.formIsInitialized = true;    
   }
 
@@ -469,6 +470,14 @@ public class CampaignEditFormView extends Composite {
   
   public void clearValidationErrors() {
     this.messageWidget.hide();
+  }
+  
+  public void disableSubmitButton() {
+    this.saveButton.setEnabled(false);
+  }
+  
+  public void enableSubmitButton() {
+    this.saveButton.setEnabled(true);
   }
   
 

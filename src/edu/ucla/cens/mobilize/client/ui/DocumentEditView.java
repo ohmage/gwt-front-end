@@ -131,6 +131,7 @@ public class DocumentEditView extends Composite {
     this.formPanel.setAction(serverLocation);
     this.formPanel.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
     this.formPanel.setMethod(FormPanel.METHOD_POST);
+    this.saveButton.setEnabled(true);
     this.formIsInitialized = true;    
   }
   
@@ -326,6 +327,22 @@ public class DocumentEditView extends Composite {
     });
     errorDialog.add(dismissButton);
     errorDialog.center();
+  }
+
+  public void disableSaveButton() {
+    this.saveButton.setEnabled(false);
+  }
+  
+  public void enableSaveButton() {
+    this.saveButton.setEnabled(true);
+  }
+  
+  public void showWaitIndicator() {
+    WaitIndicator.show();
+  }
+  
+  public void hideWaitIndicator() {
+    WaitIndicator.hide();
   }
   
   /******* METHODS THAT RETURN GUI ELEMENTS FOR EVENT HANDLING *****/

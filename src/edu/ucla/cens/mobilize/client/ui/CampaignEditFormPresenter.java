@@ -178,6 +178,7 @@ public class CampaignEditFormPresenter {
       public void onClick(ClickEvent event) {
         assert view.formIsInitialized() : "You must call view.initializeForm(authToken, serverLocation) before submitting";;
         if (validateForm()) {
+          view.disableSubmitButton(); // don't allow double save
           view.prepareFormForSubmit(); // copies some values into hidden fields
           view.submitForm();
         } // else do nothing (validateForm will have marked errors)
@@ -190,6 +191,9 @@ public class CampaignEditFormPresenter {
   private SubmitCompleteHandler formSubmitCompleteHandler = new SubmitCompleteHandler() {
     @Override
     public void onSubmitComplete(SubmitCompleteEvent event) {
+      // make sure submit button gets re-enabled even if there's an error
+      view.enableSubmitButton();
+      
       //String result = "{\"result\":\"failure\",\"errors\":[{\"text\":\"Campaign already exists.\",\"code\":\"0804    \"}]}"; // sample error response
       //String result = "<pre style=\"word-wrap: break-word; white-space: pre-wrap;\">{\"result\":\"failure\",\"errors\":[{\"text\":\"The campaign already exists: urn:campaign:ca:lausd:Carson_HS:CS104:Fall:2011:Advertisement\",\"code\":\"0702\"}]}</pre>"; // Safari, with content-type == application/json
       String result = event.getResults();

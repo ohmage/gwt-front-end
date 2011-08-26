@@ -69,13 +69,14 @@ public class DocumentEditPresenter {
       }
     });
 
-    
     this.view.getSaveButton().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         assert view.formIsInitialized() : "You must call view.initializeForm(authToken, serverLocation) before submitting";;
         if (validateForm()) {
+          view.disableSaveButton();
           view.submitForm();
+          view.showWaitIndicator();
         } // else do nothing (validateForm will have marked errors)
       }
     });
@@ -117,6 +118,10 @@ public class DocumentEditPresenter {
   private SubmitCompleteHandler formSubmitCompleteHandler = new SubmitCompleteHandler() {
     @Override
     public void onSubmitComplete(SubmitCompleteEvent event) {
+      // re-enable gui elements
+      view.hideWaitIndicator();
+      view.enableSaveButton();
+      
       String result = event.getResults();
       //result = "{\"result\":\"failure\",\"errors\":[{\"text\":\"Some document error message.\",\"code\":\"1234\"}]}"; // sample error response
       String status = null;
