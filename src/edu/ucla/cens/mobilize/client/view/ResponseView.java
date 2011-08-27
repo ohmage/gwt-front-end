@@ -69,7 +69,6 @@ public interface ResponseView extends IsWidget {
   
   // display
   void renderResponses(List<SurveyResponse> responses);
-  void renderLeaderboardView(List<UserParticipationInfo> participationInfo);
   
   void clearResponseList();
   void markShared(int responseKey);
@@ -84,7 +83,6 @@ public interface ResponseView extends IsWidget {
   // gui elements needed by presenter for event handling
   HasClickHandlers getViewLinkBrowse();
   HasClickHandlers getViewLinkEdit();
-  HasClickHandlers getViewLinkLeaderboard();
   List<HasClickHandlers> getShareButtons();
   List<HasClickHandlers> getMakePrivateButtons();
   List<HasClickHandlers> getDeleteButtons();
@@ -97,7 +95,7 @@ public interface ResponseView extends IsWidget {
   HasValueChangeHandlers<Date> getEndDateFilter();
 
   public enum Subview { 
-    BROWSE, EDIT, LEADERBOARD;
+    BROWSE, EDIT;
     public String toHistoryTokenString() {
       return this.toString().toLowerCase(); 
     }

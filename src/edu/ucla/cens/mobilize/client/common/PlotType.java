@@ -4,6 +4,7 @@ public enum PlotType {
   SURVEY_RESPONSE_COUNT, // total count
   SURVEY_RESPONSES_PRIVACY_STATE, // responses by privacy
   SURVEY_RESPONSES_PRIVACY_STATE_TIME, // responses timeseries
+  LEADER_BOARD,
   USER_TIMESERIES,
   PROMPT_TIMESERIES,
   PROMPT_DISTRIBUTION,

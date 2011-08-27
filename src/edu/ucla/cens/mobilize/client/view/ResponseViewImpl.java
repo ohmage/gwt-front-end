@@ -22,7 +22,6 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -32,7 +31,6 @@ import com.google.gwt.user.datepicker.client.DateBox;
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
-import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisplayWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetBasic;
@@ -50,14 +48,12 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   public interface ResponseViewStyles extends CssResource {
     String selectedTopNav();
-    String leaderboardHeaderRow();
   }
 
   @UiField ResponseViewStyles style;
   @UiField HTMLPanel editResponsesMenuItem; // used for showing/hiding
   @UiField Anchor viewLinkEdit;
   @UiField Anchor viewLinkBrowse;
-  @UiField Anchor viewLinkLeaderboard;
   @UiField Label singleParticipantLabel;
   @UiField ListBox participantFilter;
   @UiField HTMLPanel optionalFilters;
@@ -360,29 +356,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       this.responseList.add(responseWidget);
     }
   }
-  
-  @Override
-  public void renderLeaderboardView(List<UserParticipationInfo> participationInfo) {
-    this.responseList.clear();
-    Grid leaderboard = new Grid();
-    int numRows = participationInfo.size() + 1; // +1 for the header row
-    int numCols = 4; // username, total, private, shared // FIXME: invisible?
-    leaderboard.resize(numRows, numCols);
-    leaderboard.setText(0, 0, "Username");
-    leaderboard.setText(0, 1, "Total Responses");
-    leaderboard.setText(0, 2, "Private Responses");
-    leaderboard.setText(0, 3, "Shared Responses");
-    leaderboard.getRowFormatter().addStyleName(0, style.leaderboardHeaderRow());
-    int row = 1; // first row is header
-    for (UserParticipationInfo info : participationInfo) {
-      leaderboard.setText(row, 0, info.getUsername());
-      leaderboard.setText(row, 1, Integer.toString(info.getTotalResponseCount()));
-      leaderboard.setText(row, 2, Integer.toString(info.getResponseCount(Privacy.PRIVATE)));
-      leaderboard.setText(row, 3, Integer.toString(info.getResponseCount(Privacy.SHARED)));
-      row++;
-    }
-    this.responseList.add(leaderboard);
-  }
 
   private void setEditControlsVisible(boolean isVisible) {
     this.buttonPanelTop.setVisible(isVisible);
@@ -662,11 +635,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       viewLinkEdit.addStyleName(style.selectedTopNav());
       setEditControlsVisible(true);
       setExpandCollapseLinksVisible(true);
-    } else if (Subview.LEADERBOARD.equals(selectedSubview)) {
-      viewLinkLeaderboard.addStyleName(style.selectedTopNav());
-      setEditControlsVisible(false);
-      setExpandCollapseLinksVisible(false);
-    }
+    } 
   }  
   
   @Override
@@ -678,7 +647,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     selectedSubview = null;
     viewLinkEdit.removeStyleName(style.selectedTopNav());
     viewLinkBrowse.removeStyleName(style.selectedTopNav());
-    viewLinkLeaderboard.removeStyleName(style.selectedTopNav());
   }
 
   @Override
@@ -689,11 +657,6 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public HasClickHandlers getViewLinkEdit() {
     return this.viewLinkEdit;
-  }
-
-  @Override
-  public HasClickHandlers getViewLinkLeaderboard() {
-    return this.viewLinkLeaderboard;
   }
 
   @Override

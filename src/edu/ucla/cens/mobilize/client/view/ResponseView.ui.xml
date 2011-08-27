@@ -43,10 +43,6 @@
     .expandCollapseLinkMenu {
     	padding-left: 5px;
     }
-    .leaderboardHeaderRow {
-    	background-color: #EEE;
-    	font-weight: bold;
-    }
     .leftSideBar {
     	background-color: #EEE;
     	border-right: solid 1px #CCC;
@@ -150,8 +146,6 @@
 	          <span class='{style.separator}'>|</span>
 	          <g:Anchor ui:field='viewLinkEdit' addStyleNames='link'>Edit Responses</g:Anchor>
           </g:HTMLPanel>
-          <span class='{style.separator}'>|</span>
-          <g:Anchor ui:field='viewLinkLeaderboard' addStyleNames='link'>Leaderboard</g:Anchor>
       </g:HTMLPanel>
     </g:north>
     

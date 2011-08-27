@@ -1,7 +1,9 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.event.CampaignInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.CampaignInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
@@ -35,6 +38,7 @@ import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.view.ExploreDataView;
@@ -127,6 +131,8 @@ public class ExploreDataPresenter implements Presenter {
     if (PlotType.MAP.equals(selectedPlotType)) {
       // fetch points to match data filters
       fetchResponseDataAndShowOnMap(selectedCampaign, selectedParticipant); // participant can be null
+    } else if (PlotType.LEADER_BOARD.equals(selectedPlotType)) {
+      fetchAndShowLeaderBoard(selectedCampaign);
     } else {
       showPlot();
     }
@@ -175,6 +181,44 @@ public class ExploreDataPresenter implements Presenter {
             view.hideWaitIndicator();
           }
     });     
+  }
+  
+
+  void fetchAndShowLeaderBoard(final String campaignId) {
+    // fetch responses and use them to generate counts
+    SurveyResponseReadParams params = new SurveyResponseReadParams();
+    params.campaignUrn = campaignId;
+    params.columnList_opt.add("urn:ohmage:user:id");
+    params.columnList_opt.add("urn:ohmage:survey:privacy_state");
+    params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
+    params.userList.add(AwConstants.specialAllValuesToken);
+        
+    dataService.fetchSurveyResponses(params, new AsyncCallback<List<SurveyResponse>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        AwErrorUtils.logoutIfAuthException(caught);
+        ErrorDialog.show("Could not load leaderboard data for campaign: " + campaignId);         
+      }
+  
+      @Override
+      public void onSuccess(List<SurveyResponse> result) {
+        // map usernames to info about user participation (e.g., counts of shared, private, etc responses)
+        Map<String, UserParticipationInfo> usernameToParticipationInfoMap = new HashMap<String, UserParticipationInfo>();
+        for (SurveyResponse response : result) {
+          String username = response.getUserName();
+          // make sure user has an entry in the data struct
+          if (!usernameToParticipationInfoMap.containsKey(username)) {
+            usernameToParticipationInfoMap.put(username, new UserParticipationInfo(username));
+          }
+          // update counts
+          usernameToParticipationInfoMap.get(username).countResponse(response);
+        }
+        List<UserParticipationInfo> participationInfo = new ArrayList<UserParticipationInfo>(usernameToParticipationInfoMap.values());
+        Collections.sort(participationInfo, participationUsernameComparator);
+        view.renderLeaderBoard(participationInfo);
+        view.setInfoText("Showing participation info for " + getCampaignName(campaignId));
+      }
+    });       
   }
   
   public void setView(ExploreDataView view) {
@@ -241,6 +285,7 @@ public class ExploreDataPresenter implements Presenter {
         case SURVEY_RESPONSE_COUNT:
         case SURVEY_RESPONSES_PRIVACY_STATE:
         case SURVEY_RESPONSES_PRIVACY_STATE_TIME:
+        case LEADER_BOARD:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(false);
@@ -454,6 +499,28 @@ public class ExploreDataPresenter implements Presenter {
                                dataService.getSurveyResponseExportParams(campaignId));
     }
   }
-  
 
+  // helper method
+  private String getCampaignName(String campaignId) {
+    String retval = null;
+    Map<String, String> campaignIdToNameMap = userInfo.getCampaigns();
+    if (campaignIdToNameMap.containsKey(campaignId)) {
+      retval = campaignIdToNameMap.get(campaignId);
+    } else {
+      // would happen if user queried for a campaign that's not in userInfo - 
+      // maybe he edited url params by hand or was using an old link for a campaign
+      // to which he no longer belongs
+      retval = "(unknown campaign)";
+    }
+    return retval;
+  }
+  
+  // for sorting participation info by username (in leader board)
+  private Comparator<UserParticipationInfo> participationUsernameComparator = new Comparator<UserParticipationInfo>() {
+    @Override
+    public int compare(UserParticipationInfo arg0, UserParticipationInfo arg1) {
+      return arg0.getUsername().compareTo(arg1.getUsername());
+    }
+  };
+  
 }

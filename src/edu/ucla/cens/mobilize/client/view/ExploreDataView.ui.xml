@@ -14,6 +14,12 @@
     .layout {
       display: block;
     }
+    .leaderBoard {
+    }
+    .leaderBoardHeaderRow {
+    	background-color: #EEE;
+      font-weight: bold;
+    }
     .leftSideBarInnerContainer {
     	/* adds scrollbar to control panel when window is too short */
     	height: 100%;

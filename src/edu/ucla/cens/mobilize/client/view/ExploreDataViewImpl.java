@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
@@ -49,8 +50,10 @@ import com.google.gwt.maps.client.overlay.Marker;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.PlotType;
+import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
@@ -66,6 +69,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   public interface ExploreDataStyles extends CssResource {
     String disabled();
+    String leaderBoardHeaderRow();
     String requiredField();
     String requiredFieldMissing();
     String treeItemCategory();
@@ -132,6 +136,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     // NOTE(8/4/2011): plotType enum is converted to all lowercase and becomes the plot type argument
     // in the api call. So SURVEY_RESPONSE_COUNT becomes "/app/viz/survey_response_count/read..."
     // (See AndWellnessDataService.getVisualizationUrl())
+    // NOTE(8/27/2011): LEADER_BOARD is a special case that does not query the api
     
     // response count 
     TreeItem surveyResponseCounts = getTreeItem("Survey Response Counts", style.treeItemCategory()); // category
@@ -140,6 +145,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
       getTreeItem("Total Responses", PlotType.SURVEY_RESPONSE_COUNT, style.treeItemPlotType());
     TreeItem responsesByPrivacy = getTreeItem("Responses By Privacy", PlotType.SURVEY_RESPONSES_PRIVACY_STATE, style.treeItemPlotType());
     TreeItem responseTimeseries = getTreeItem("Response Timeseries", PlotType.SURVEY_RESPONSES_PRIVACY_STATE_TIME, style.treeItemPlotType());
+    TreeItem leaderBoard = getTreeItem("Leader Board", PlotType.LEADER_BOARD, style.treeItemPlotType());
     
     // univariate 
     TreeItem univariate = getTreeItem("Univariate", style.treeItemCategory());
@@ -164,6 +170,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     surveyResponseCounts.addItem(totalResponses);
     surveyResponseCounts.addItem(responsesByPrivacy);
     surveyResponseCounts.addItem(responseTimeseries);
+    surveyResponseCounts.addItem(leaderBoard);
     univariate.addItem(userTimeseries);
     univariate.addItem(promptTimeseries);
     univariate.addItem(promptDistribution);
@@ -508,6 +515,55 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     } else { // map already initialized
       setResponsesOnMap(responses); 
     }
+  }
+  
+  @Override
+  public void renderLeaderBoard(List<UserParticipationInfo> participationInfo) {
+    clearPlot();
+    Grid leaderBoard = new Grid();
+    int numRows = participationInfo.size() + 2; // + 2 for header row at top + totals row at bottom
+    int numCols = 4; // username, total, private, shared // FIXME: invisible?
+    leaderBoard.resize(numRows, numCols);
+    leaderBoard.setText(0, 0, "Username");
+    leaderBoard.setText(0, 1, "Total Responses");
+    leaderBoard.setText(0, 2, "Private Responses");
+    leaderBoard.setText(0, 3, "Shared Responses");
+    leaderBoard.getRowFormatter().addStyleName(0, style.leaderBoardHeaderRow());
+    int row = 1; // first row is header
+    int totalResponsesFromAllUsers = 0;
+    int totalPrivateResponsesFromAllUsers = 0;
+    int totalSharedResponsesFromAllUsers = 0;
+    for (UserParticipationInfo info : participationInfo) {
+      // get response counts for this user
+      int totalResponseCount = info.getTotalResponseCount();
+      int privateResponseCount = info.getResponseCount(Privacy.PRIVATE);
+      int sharedResponseCount = info.getResponseCount(Privacy.SHARED);
+      // fill in user info row in leader board
+      leaderBoard.setText(row, 0, info.getUsername());
+      leaderBoard.setText(row, 1, Integer.toString(totalResponseCount));
+      leaderBoard.setText(row, 2, Integer.toString(privateResponseCount));
+      leaderBoard.setText(row, 3, Integer.toString(sharedResponseCount));
+      // add this user's counts to running totals
+      totalResponsesFromAllUsers += totalResponseCount;
+      totalPrivateResponsesFromAllUsers += privateResponseCount;
+      totalSharedResponsesFromAllUsers += sharedResponseCount;
+      // increment row
+      row++;
+    }
+    // insert row of totals at the end
+    leaderBoard.setText(row, 0, "Total (All Users)");
+    leaderBoard.setText(row, 1, Integer.toString(totalResponsesFromAllUsers));
+    leaderBoard.setText(row, 2, Integer.toString(totalPrivateResponsesFromAllUsers));
+    leaderBoard.setText(row, 3, Integer.toString(totalSharedResponsesFromAllUsers));
+    // TODO: add style to totals row
+    
+    // add widget to the display
+    plotContainer.add(leaderBoard);
+  }
+  
+  @Override
+  public void setInfoText(String text) {
+    // TODO: display info about current plot
   }
   
   private void setResponsesOnMap(List<SurveyResponse> responses) {

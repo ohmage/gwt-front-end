@@ -171,13 +171,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                      startDate,
                                      endDate);
       break;
-    case LEADERBOARD:
-      view.setSectionHeaderDetail("");
-      view.hideOptionalFilters();
-      if (selectedCampaign != null && !selectedCampaign.isEmpty()) { // campaign is required
-        fetchAndDisplayDataForLeaderboardView(selectedCampaign);
-      }
-      break;
     default: // unrecognized view: redirect to browse
       view.setSelectedSubview(Subview.BROWSE);
       fireHistoryTokenToMatchFilterValues();
@@ -334,44 +327,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     view.selectPrivacyState(selectedPrivacy);
   }
 
-  void fetchAndDisplayDataForLeaderboardView(final String selectedCampaign) {
-    // fetch responses and use them to generate counts
-    SurveyResponseReadParams params = new SurveyResponseReadParams();
-    params.campaignUrn = selectedCampaign;
-    params.columnList_opt.add("urn:ohmage:user:id");
-    params.columnList_opt.add("urn:ohmage:survey:privacy_state");
-    params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
-    params.userList.add(AwConstants.specialAllValuesToken);
-        
-    dataService.fetchSurveyResponses(params, new AsyncCallback<List<SurveyResponse>>() {
-      @Override
-      public void onFailure(Throwable caught) {
-        AwErrorUtils.logoutIfAuthException(caught);
-        ErrorDialog.show("Could not load leaderboard data for campaign: " + selectedCampaign);         
-      }
-  
-      @Override
-      public void onSuccess(List<SurveyResponse> result) {
-        // map usernames to info about user participation (e.g., counts of shared, private, etc responses)
-        Map<String, UserParticipationInfo> usernameToParticipationInfoMap = new HashMap<String, UserParticipationInfo>();
-        for (SurveyResponse response : result) {
-          String username = response.getUserName();
-          // make sure user has an entry in the data struct
-          if (!usernameToParticipationInfoMap.containsKey(username)) {
-            usernameToParticipationInfoMap.put(username, new UserParticipationInfo(username));
-          }
-          // update counts
-          usernameToParticipationInfoMap.get(username).countResponse(response);
-        }
-        participationInfo = new ArrayList<UserParticipationInfo>(usernameToParticipationInfoMap.values());
-        Collections.sort(participationInfo, participationUsernameComparator);
-        view.renderLeaderboardView(participationInfo);
-        view.setSectionHeader("Showing participation info for " + getCampaignName(selectedCampaign));
-      }
-    });       
-  }
-  
-
   // Fetches a list of all participants in one campaign that have submitted at least
   // one response to the campaign, adds the participants to this.participants internal
   // data structure, and updates the view to match the data structure.
@@ -501,14 +456,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       }
     });
     
-    view.getViewLinkLeaderboard().addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        view.setSelectedSubview(Subview.LEADERBOARD);
-        fireHistoryTokenToMatchFilterValues();
-      }
-    }); 
-    
     // clicking a share buttons shares all selected responses
     for (HasClickHandlers shareButton : this.view.getShareButtons()) {
       shareButton.addClickHandler(shareClickHandler);
@@ -621,21 +568,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   private String getCampaignUrnForSurveyKey(int surveyKey) {
     SurveyResponse response = getSurveyResponse(surveyKey);
     return response != null ? response.getCampaignId() : null;
-  }
-  
-  // helper method
-  private String getCampaignName(String campaignId) {
-    String retval = null;
-    Map<String, String> campaignIdToNameMap = userInfo.getCampaigns();
-    if (campaignIdToNameMap.containsKey(campaignId)) {
-      retval = campaignIdToNameMap.get(campaignId);
-    } else {
-      // would happen if user queried for a campaign that's not in userInfo - 
-      // maybe he edited url params by hand or was using an old link for a campaign
-      // to which he no longer belongs
-      retval = "(unknown campaign)";
-    }
-    return retval;
   }
   
   // Loops through responses, sending a data request to update each one. 
@@ -962,14 +894,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     @Override
     public int compare(SurveyResponse arg0, SurveyResponse arg1) {
       return arg1.getResponseDate().compareTo(arg0.getResponseDate()); // recent dates first
-    }
-  };
-  
-  // for sorting participation info by username
-  private Comparator<UserParticipationInfo> participationUsernameComparator = new Comparator<UserParticipationInfo>() {
-    @Override
-    public int compare(UserParticipationInfo arg0, UserParticipationInfo arg1) {
-      return arg0.getUsername().compareTo(arg1.getUsername());
     }
   };
   

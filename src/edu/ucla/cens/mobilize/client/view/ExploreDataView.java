@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.SourcesTreeEvents;
 
 import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 
 public interface ExploreDataView extends IsWidget {
   
@@ -53,7 +54,9 @@ public interface ExploreDataView extends IsWidget {
   // FIXME: what if there are multiple responses from the same location?
   void showResponsesOnMap(List<SurveyResponse> responses);
   void showResponseDetail(LatLng location);
-
+  void renderLeaderBoard(List<UserParticipationInfo> participationInfo);
+  void setInfoText(String string);
+  
   // methods for enabling/disabling form fields
   void setCampaignDropDownEnabled(boolean isEnabled);
   void setParticipantDropDownEnabled(boolean isEnabled);
@@ -79,4 +82,5 @@ public interface ExploreDataView extends IsWidget {
   void clearMissingFieldMarkers();
   
   void doExportCsvFormPost(String url, Map<String, String> params);
+
 }
