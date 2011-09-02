@@ -236,7 +236,15 @@ public class AwDataTranslators {
       try {
         JSONValue value = JSONParser.parseStrict(queryJSON);
         JSONObject responseObj = value.isObject();
-        if (responseObj == null || !responseObj.containsKey("data")) return null; // null for error
+
+        // return empty list if there are zero participants
+        JSONNumber numberOfSurveys = responseObj.get("metadata").isObject().get("number_of_surveys").isNumber();
+        if (numberOfSurveys.doubleValue() < 1) return new ArrayList<String>(); 
+        
+        // if metadata didn't show zero participants and there's no data field, return null to indicate error
+        if (responseObj == null || !responseObj.containsKey("data")) return null;
+        
+        // get the list 
         JSONArray objArray = responseObj.get("data").isArray();
         for (int i = 0; i < objArray.size(); i++) {
           usernames.add(objArray.get(i).isObject().get("user").isString().stringValue());
