@@ -16,7 +16,7 @@
     }
     .leaderBoard {
     }
-    .leaderBoardHeaderRow {
+    .leaderBoardHeaderRow, .leaderBoardTotalsRow {
     	background-color: #EEE;
       font-weight: bold;
     }
@@ -30,6 +30,7 @@
     }
     .plotPanelInnerContainer {
     	height: 100%;
+    	overflow-y: auto;
     	width: 100%;
     }
     .plotTypeHeader {

@@ -70,6 +70,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   public interface ExploreDataStyles extends CssResource {
     String disabled();
     String leaderBoardHeaderRow();
+    String leaderBoardTotalsRow();
     String requiredField();
     String requiredFieldMissing();
     String treeItemCategory();
@@ -555,7 +556,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     leaderBoard.setText(row, 1, Integer.toString(totalResponsesFromAllUsers));
     leaderBoard.setText(row, 2, Integer.toString(totalPrivateResponsesFromAllUsers));
     leaderBoard.setText(row, 3, Integer.toString(totalSharedResponsesFromAllUsers));
-    // TODO: add style to totals row
+    leaderBoard.getRowFormatter().addStyleName(row, style.leaderBoardTotalsRow());
     
     // add widget to the display
     plotContainer.add(leaderBoard);
