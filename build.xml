@@ -2,6 +2,8 @@
 <project name="MobilizeWeb" default="build" basedir=".">
   <!-- Arguments to gwtc and devmode targets -->
   <property name="gwt.args" value="" />
+  <property name="gwt.sdk" value="lib" />
+  <property name="libdir" value="lib" />
 
   <!-- Configure path to GWT SDK -->
   <property name="gwt.sdk" location="/Applications/eclipse/plugins/com.google.gwt.eclipse.sdkbundle.2.1.1_2.1.1.v201012170127/gwt-2.1.1" />
@@ -19,6 +21,10 @@
     <copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
     <copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
     <!-- Add any additional server libs that need to be copied -->
+    <copy todir="war/WEB-INF/lib" file="${libdir}/gwt-maps.jar" />
+    <!-- FIXME: ant gwtc doesn't work without both old and new maps jar -->
+    <copy todir="war/WEB-INF/lib" file="${libdir}/gwt-maps-old.jar" /> 
+    <copy todir="war/WEB-INF/lib" file="${libdir}/totoe-0.2.2.jar" />
   </target>
 
   <target name="javac" depends="libs" description="Compile java source to bytecode">
