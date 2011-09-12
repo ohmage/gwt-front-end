@@ -36,7 +36,7 @@ public class AwConstants {
     // Google maps api keys
     private final static String googleMapsApiKeyDebug = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxRi_j0U6kJrkFvY4-OX2XYmEAa76BQ2ZkOydhEh44vXPVI_djTFw81U0w";
     private final static String googleMapsApiKeyAndWellness = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxSaGzzTMV7IrE3zhGi4xAUyZKf_rhQSdRF4uQQEE-RzoBWBBPLzb1MWNg";
-    private final static String googleMapsApiKeyMobilize = "ABQIAAAASbOpvLjXXrhjL_IjUrQxZBRrlWjKypHnV7j_g_2XHpZ5U4RhHxTX5m4SqdqSBEwQpCO1KDw0JqIrZQ";
+    private final static String googleMapsApiKeyMobilize = "ABQIAAAAuW5FjAQ4yOgXZxZnccHb0xRrlWjKypHnV7j_g_2XHpZ5U4RhHxQsu2s4JZIe_w1H8gAyFWFymdGwKw";
     public static String getGoogleMapsApiKey() {
       String mapKey = null;
       if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
