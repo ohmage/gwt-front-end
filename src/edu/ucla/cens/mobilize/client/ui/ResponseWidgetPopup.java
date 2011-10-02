@@ -1,7 +1,13 @@
 package edu.ucla.cens.mobilize.client.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.maps.client.event.Event;
+import com.google.gwt.maps.client.event.EventCallback;
+import com.google.gwt.maps.client.event.HasMapsEventListener;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -52,7 +58,11 @@ public class ResponseWidgetPopup extends Composite {
   
   @UiField ResponseWidgetPopupStyle style;
   
+  // Keep track of the click event handlers to remove later
+  private List<HasMapsEventListener> clickHandlers;
+  
   public ResponseWidgetPopup() {
+	clickHandlers = new ArrayList<HasMapsEventListener>(); 
     initWidget(uiBinder.createAndBindUi(this));
   }
 
