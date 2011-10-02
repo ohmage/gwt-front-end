@@ -1,7 +1,6 @@
 package edu.ucla.cens.mobilize.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 
 /**
  * Holds program wide constants.  Use DeployStatus to return different
@@ -27,34 +26,15 @@ public class AwConstants {
     // special token that tells api to return all values, useful for api params
     // that don't default to all when omitted
     public final static String specialAllValuesToken = "urn:ohmage:special:all";
+
+    // Google maps thumbnail size in pixels
+    public final static int MAPS_THUMBNAIL_WIDTH = 50;
+    public final static int MAPS_THUMBNAIL_HEIGHT = 50;
     
     //private final static String debugServerLocation = "https://dev1.andwellness.org/app/";
     private final static String debugServerLocation = "http://localhost:8080/app/";
     //private final static String debugServerLocation = "https://dev.mobilizingcs.org/app/";
     private final static String releaseServerLocation = "../app/"; // same as web server
-    
-    // Google maps api keys
-    private final static String googleMapsApiKeyDebug = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxRi_j0U6kJrkFvY4-OX2XYmEAa76BQ2ZkOydhEh44vXPVI_djTFw81U0w";
-    private final static String googleMapsApiKeyAndWellness = "ABQIAAAA5ZXjE5Rq-KGomi3qK8oshxSaGzzTMV7IrE3zhGi4xAUyZKf_rhQSdRF4uQQEE-RzoBWBBPLzb1MWNg";
-    private final static String googleMapsApiKeyMobilize = "ABQIAAAAuW5FjAQ4yOgXZxZnccHb0xRrlWjKypHnV7j_g_2XHpZ5U4RhHxQsu2s4JZIe_w1H8gAyFWFymdGwKw";
-    public static String getGoogleMapsApiKey() {
-      String mapKey = null;
-      if (status.getStatus().equals(DeployStatus.Status.DEBUG)) {
-        mapKey = googleMapsApiKeyDebug;
-      } else if (status.getStatus().equals(DeployStatus.Status.RELEASE)) {
-        String hostName = Window.Location.getHostName();
-        if (hostName.contains("andwellness")) {
-          mapKey = googleMapsApiKeyAndWellness; // registered to http://andwellness.org
-        } else if (hostName.contains("mobilizingcs")) {
-          mapKey = googleMapsApiKeyMobilize; // registered to http://mobilizingcs.org
-        } else {
-          // google map api keys are linked to domains. if you need to host on a domain
-          // other that andwellness.org or mobilizingcs.org, you must create a new api key
-          throw new RuntimeException("No Google Maps API key available for " + hostName);
-        }
-      } 
-      return mapKey;
-    }
     
     // API Endpoints
     // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/AndWellness_Read_API_2.2
