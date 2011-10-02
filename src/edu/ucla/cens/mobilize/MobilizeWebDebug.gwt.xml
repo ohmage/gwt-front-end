@@ -2,7 +2,7 @@
 <module rename-to='mobilizeweb'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
-  <inherits name="com.google.gwt.maps.GoogleMaps"/>
+  <inherits name='com.google.gwt.maps.Maps' />
 
   <!-- GWT logging -->
   <inherits name='com.google.gwt.logging.Logging' />    
@@ -28,6 +28,8 @@
     <when-type-is class='edu.ucla.cens.mobilize.client.DeployStatus' />
     <when-property-is name='deployStatus' value='DEBUG' />
   </replace-with>
+
+  <script src="http://maps.google.com/maps/api/js?sensor=false" />
 
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->

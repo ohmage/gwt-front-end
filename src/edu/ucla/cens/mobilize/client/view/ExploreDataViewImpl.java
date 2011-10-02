@@ -20,6 +20,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Composite;
@@ -39,16 +40,18 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import com.google.gwt.maps.client.InfoWindowContent;
+
+import com.google.gwt.maps.client.MapOptions;
+import com.google.gwt.maps.client.MapTypeId;
 import com.google.gwt.maps.client.MapWidget;
-import com.google.gwt.maps.client.Maps;
-import com.google.gwt.maps.client.control.LargeMapControl;
-import com.google.gwt.maps.client.event.MapClickHandler;
-import com.google.gwt.maps.client.geom.LatLng;
-import com.google.gwt.maps.client.geom.LatLngBounds;
+import com.google.gwt.maps.client.base.InfoWindow;
+import com.google.gwt.maps.client.base.LatLng;
+import com.google.gwt.maps.client.base.LatLngBounds;
+import com.google.gwt.maps.client.event.Event;
+import com.google.gwt.maps.client.event.EventCallback;
+import com.google.gwt.maps.client.event.HasMapsEventListener;
 import com.google.gwt.maps.client.overlay.Marker;
 
-import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
@@ -100,7 +103,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   
   private List<ListBox> requiredFields = new ArrayList<ListBox>();
   private MapWidget mapWidget;
-  private Map<LatLng, SurveyResponse> locationToResponseMap = new HashMap<LatLng,SurveyResponse>();
+  private final InfoWindow infoWindow;
+  private List<HasMapsEventListener> clickHandlers;
+  private Map<Marker, SurveyResponse> markerToResponseMap = new HashMap<Marker, SurveyResponse>();
   private Image spinner; 
   
   public ExploreDataViewImpl() {
@@ -116,6 +121,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     // set up image to use as wait indicator
     spinner = new Image();
     spinner.setStyleName(style.waiting());
+    
+    // Single info window instance used by all markers
+    infoWindow = InfoWindow.newInstance();
+    clickHandlers = new ArrayList<HasMapsEventListener>();
   }
 
   
@@ -569,21 +578,28 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   
   private void setResponsesOnMap(List<SurveyResponse> responses) {
     
-    // Clear any previous data points
-    mapWidget.clearOverlays();
-    locationToResponseMap.clear();
+    // Clear any previous data points    
+    clearOverlays();
     
     if (responses == null || responses.isEmpty()) return;
     
-    LatLngBounds bounds = LatLngBounds.newInstance();
-    
+    LatLngBounds bounds = LatLngBounds.newInstance();    
     // Add new data points 
     for (SurveyResponse response : responses) {
       if (response.hasLocation()) {
-        LatLng location = LatLng.newInstance(response.getLatitude(), response.getLongitude());
-        locationToResponseMap.put(location, response);
-        mapWidget.addOverlay(new Marker(location));
+        final LatLng location = LatLng.newInstance(response.getLatitude(), response.getLongitude());
         bounds.extend(location);
+        final Marker marker = Marker.newInstance();
+        marker.setPosition(location);
+        marker.setMap(mapWidget.getMap());
+        markerToResponseMap.put(marker, response);
+        
+        Event.addListener(marker, "click", new EventCallback() {
+          @Override
+          public void callback() {
+            showResponseDetail(marker);
+          }
+        });
       }
     }    
 
@@ -591,47 +607,91 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     if (!mapWidget.isAttached()) plotContainer.add(mapWidget);
     
     // Zoom and center the map to the new bounds
-    mapWidget.setCenter(bounds.getCenter());
-    mapWidget.setZoomLevel(mapWidget.getBoundsZoomLevel(bounds));
-    
+    mapWidget.getMap().fitBounds(bounds); 
   }
   
+  /**
+   * Clears the markers one by one from the map.
+   */
+  private void clearOverlays() {
+    for (final Marker marker: markerToResponseMap.keySet()) {
+      // Remove from map
+      marker.setMap(null);
+      // Remove the event listener
+      Event.clearInstanceListeners(marker);
+    }
+    markerToResponseMap.clear();
+  }
   
   private void initMap(final Runnable actionToTakeWhenDone) {
-    Maps.loadMapsApi(AwConstants.getGoogleMapsApiKey(), "2", false, new Runnable() {
-      public void run() {
-        mapWidget = new MapWidget();
-        mapWidget.setSize("100%", "100%");
-        mapWidget.addControl(new LargeMapControl());
-        mapWidget.setScrollWheelZoomEnabled(true);
-        
-        // if user clicks on a marker, show details for the response at that location
-        mapWidget.addMapClickHandler(new MapClickHandler() {
-          @Override
-          public void onClick(MapClickEvent event) {
-            if (event.getOverlay() != null && !event.getOverlay().equals(mapWidget.getInfoWindow())) {
-              showResponseDetail(event.getOverlayLatLng());
-            }
-          } 
-        }); 
-        
-        // map is initialized. now run the code
-        if (actionToTakeWhenDone != null) actionToTakeWhenDone.run();
-      } // end public void run()
-    }); // end Maps.loadMapsApi
+    final MapOptions options = new MapOptions();
+    options.setMapTypeControl(true);
+    options.setZoom(8);
+    options.setCenter(LatLng.newInstance(39.509, -98.434));
+    options.setMapTypeId(new MapTypeId().getRoadmap());
+    options.setDraggable(true);
+    options.setScaleControl(true);
+    options.setNavigationControl(true);
+    options.setScrollwheel(true);
+    mapWidget = new MapWidget(options);
+    mapWidget.setSize("100%", "100%");
+    
+    // Close the info window when clicking anywhere
+    Event.addListener(mapWidget.getMap(), "click", new EventCallback() {
+      @Override
+      public void callback() {
+        closeInfoWindow();
+      }
+    });
+    
+    // Close the info window when clicking close
+    Event.addListener(infoWindow, "closeclick", new EventCallback() {
+      @Override
+      public void callback() {
+        closeInfoWindow();
+      }
+    });
+      
+    if (actionToTakeWhenDone != null) actionToTakeWhenDone.run();
   }
   
   @Override
-  public void showResponseDetail(LatLng location) {
-    if (locationToResponseMap.containsKey(location)) {
-      SurveyResponse response = locationToResponseMap.get(location);
-      ResponseWidgetPopup displayWidget = new ResponseWidgetPopup();
-      displayWidget.setResponse(response);
-      InfoWindowContent content = new InfoWindowContent(displayWidget);
-      mapWidget.getInfoWindow().open(location, content);
+  public void showResponseDetail(Marker location) {
+    if (markerToResponseMap.containsKey(location)) {
+      SurveyResponse response = markerToResponseMap.get(location);
+      final ResponseWidgetPopup displayWidget = new ResponseWidgetPopup();
+      displayWidget.setResponse(response, new ResponseWidgetPopup.ElementHandlerCallback() {
+        @Override
+        public void addingElement(com.google.gwt.user.client.Element element,
+            final String url) {
+          // Save the event listener for later removal
+          clickHandlers.add(
+            Event.addDomListener(element, "click", new EventCallback() {
+              // Pop open a new window when an element is clicked
+              @Override
+              public void callback() {
+                Window.open(url, "_blank", "");
+              }
+            })
+          );
+        }
+      });
+      
+      infoWindow.setContent(displayWidget.getElement());
+      infoWindow.open(mapWidget.getMap(), location);
     }
   }
-
+  
+  /**
+   * Cleans up all the event listeners and closes the info window.
+   */
+  private void closeInfoWindow() {
+    for (final HasMapsEventListener event : clickHandlers) {
+      Event.removeListener(event);
+    }
+    clickHandlers.clear();
+    infoWindow.close();
+  } 
 
   @Override
   public void doExportCsvFormPost(String url, Map<String, String> params) {

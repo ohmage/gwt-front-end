@@ -7,7 +7,8 @@ import java.util.Map;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.maps.client.geom.LatLng;
+import com.google.gwt.maps.client.base.LatLng;
+import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SourcesTreeEvents;
 
@@ -53,7 +54,7 @@ public interface ExploreDataView extends IsWidget {
   void clearPlot();
   // FIXME: what if there are multiple responses from the same location?
   void showResponsesOnMap(List<SurveyResponse> responses);
-  void showResponseDetail(LatLng location);
+  void showResponseDetail(Marker location);
   void renderLeaderBoard(List<UserParticipationInfo> participationInfo);
   void setInfoText(String string);
   

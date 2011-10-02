@@ -1,21 +1,26 @@
 package edu.ucla.cens.mobilize.client.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.maps.client.event.Event;
+import com.google.gwt.maps.client.event.EventCallback;
+import com.google.gwt.maps.client.event.HasMapsEventListener;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
@@ -36,6 +41,14 @@ public class ResponseWidgetPopup extends Composite {
   interface ResponseWidgetPopupUiBinder extends
       UiBinder<Widget, ResponseWidgetPopup> {
   }
+  
+  /**
+   * Allows the calling code to install events on an elemnt, necessary to
+   * add DOM event handlers.
+   */
+  public interface ElementHandlerCallback {
+	  public void addingElement(Element element, String url);
+  }
 
   @UiField InlineLabel date;
   @UiField InlineLabel campaign;
@@ -46,11 +59,15 @@ public class ResponseWidgetPopup extends Composite {
   
   @UiField ResponseWidgetPopupStyle style;
   
+  // Keep track of the click event handlers to remove later
+  private List<HasMapsEventListener> clickHandlers;
+  
   public ResponseWidgetPopup() {
+	clickHandlers = new ArrayList<HasMapsEventListener>(); 
     initWidget(uiBinder.createAndBindUi(this));
   }
 
-  public void setResponse(SurveyResponse surveyResponse) {
+  public void setResponse(SurveyResponse surveyResponse, ElementHandlerCallback callback) {
     date.setText(surveyResponse.getResponseDate().toString());
     campaign.setText(surveyResponse.getCampaignName());
     survey.setText(surveyResponse.getSurveyName());
@@ -79,12 +96,17 @@ public class ResponseWidgetPopup extends Composite {
               AwUrlBasedResourceUtils.ImageSize.ORIGINAL);
           Image img = new Image(thumbUrl);
           img.setStyleName(style.promptImage());
-          img.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              Window.open(fullSizedImageUrl, "_blank", "");
-            }
-          });
+          
+          // Locking in the width and height here stops the Image from resizing on image
+          // load which causes the InfoWindow to refresh and flicker
+          img.setPixelSize(AwConstants.MAPS_THUMBNAIL_WIDTH, AwConstants.MAPS_THUMBNAIL_HEIGHT);
+          
+          // Let's the calling code do whatever with the image, specfically used to avoid dependencies
+          // on the google maps API
+          if (callback != null) {
+        	  callback.addingElement(img.getElement(), fullSizedImageUrl);
+          }
+          
           FlowPanel panel = new FlowPanel();
           panel.add(img);
           responseDisplayWidget = panel;
@@ -115,6 +137,5 @@ public class ResponseWidgetPopup extends Composite {
       
     }
   }
-  
   
 }
