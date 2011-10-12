@@ -4,6 +4,12 @@
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
 	
   <ui:style type="edu.ucla.cens.mobilize.client.view.ExploreDataViewImpl.ExploreDataStyles">
+    .hidden {
+	  /* use for hiding debug features */
+	  height: 0px;
+	  width: 0px;
+	  visibility:hidden;
+	}
     .buttonDiv {
     	padding: 5px 0px;
     	text-align: right;
@@ -57,8 +63,13 @@
     	padding-top: 3px;
     }
     .dataControlLabel {
+		width: 180px;
+
     }
     .dataControlListBox { /* (select) */
+    	width: 180px;
+    }
+    .dateBox {
     	width: 180px;
     }
     .menuSeparator {
@@ -170,6 +181,15 @@
 	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>PromptY:</g:InlineLabel>
 	             <g:ListBox ui:field='promptYListBox' addStyleNames='{style.dataControlListBox}' />
 	           </g:HTMLPanel>
+	           <!-- TODO: range selection not finished yet OCT.12.2011 - ewang -->
+	           <g:HTMLPanel addStyleNames='{style.hidden}'>
+	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Start Date:</g:InlineLabel>
+		         <dp:DateBox ui:field='fromDateBox' addStyleNames='{style.dateBox}' />
+		       </g:HTMLPanel>
+	           <g:HTMLPanel addStyleNames='{style.hidden}'>
+		         <g:InlineLabel addStyleNames='{style.dataControlLabel}'>End Date:</g:InlineLabel>
+		         <dp:DateBox ui:field='toDateBox' addStyleNames='{style.dateBox}' />
+		       </g:HTMLPanel>
 	         </g:HTMLPanel>
          </g:CaptionPanel>
          <g:HTMLPanel addStyleNames='{style.buttonDiv}'>

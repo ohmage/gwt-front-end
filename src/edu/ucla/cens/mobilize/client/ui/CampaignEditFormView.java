@@ -140,6 +140,17 @@ public class CampaignEditFormView extends Composite {
     // 1 = "x" button that deletes the row when clicked,
     // 2 = invisible class urn (this is what gets serialized and submitted)
     if (!isAlreadyInTable) {
+		//first, disable all current delete "X" buttons, b/c rows are LIFO
+	    for (int i = 0; i < this.classesFlexTable.getRowCount(); i++) {
+	      try {
+	        Button b = (Button) this.classesFlexTable.getWidget(i, CLASS_DELETE_COL);
+	        b.setVisible(false);
+	        b.setEnabled(false);
+	      } catch (IndexOutOfBoundsException e) {
+	        //TODO: Handle error
+	      }
+	    }
+      
       final int thisRow = firstEmptyRowIndex;
       classesFlexTable.setText(thisRow, CLASS_NAME_COL, className);
       Button deleteButton = new Button("X");
@@ -147,13 +158,22 @@ public class CampaignEditFormView extends Composite {
         @Override
         public void onClick(ClickEvent event) {
           classesFlexTable.removeRow(thisRow);
+          
+          //enable only last delete button
+          try {
+            Button b = (Button) classesFlexTable.getWidget(classesFlexTable.getRowCount()-1, CLASS_DELETE_COL);
+            b.setVisible(true);
+            b.setEnabled(true);
+          } catch (IndexOutOfBoundsException e) {
+            //TODO: Handle error
+          }
+          
           classesFlexTable.setVisible(classesFlexTable.getRowCount() > 0);
         }
       });
       classesFlexTable.setWidget(thisRow, CLASS_DELETE_COL, deleteButton);
       classesFlexTable.setText(thisRow, CLASS_URN_COL, classUrn);
       classesFlexTable.getCellFormatter().setVisible(thisRow, CLASS_URN_COL, false);
-      
     }
   }
 
@@ -169,7 +189,7 @@ public class CampaignEditFormView extends Composite {
     return CollectionUtils.join(getClassUrns(), ",");
   }
   
-  private void addAuthor(String authorLogin) {
+  public void addAuthor(String authorLogin) {
     if (authorLogin == null) return;
     else this.authorsFlexTable.setVisible(true);
     
@@ -186,6 +206,17 @@ public class CampaignEditFormView extends Composite {
     // if author is not already in table, add new row with two columns 
     // 0 = author identifier, 1 = "x" button that deletes the row when clicked
     if (!isAlreadyInTable) {
+      //first, disable all current delete "X" buttons, b/c rows are LIFO
+      for (int i = 0; i < this.authorsFlexTable.getRowCount(); i++) {
+        try {
+          Button b = (Button) this.authorsFlexTable.getWidget(i, AUTHOR_DELETE_COL);
+          b.setVisible(false);
+          b.setEnabled(false);
+        } catch (IndexOutOfBoundsException e) {
+          //TODO: Handle error
+        }
+      }
+    
       final int thisRow = firstEmptyRowIndex;
       authorsFlexTable.setText(thisRow, AUTHOR_LOGIN_COL, authorLogin);
       Button deleteButton = new Button("X");
@@ -193,6 +224,16 @@ public class CampaignEditFormView extends Composite {
         @Override
         public void onClick(ClickEvent event) {
           authorsFlexTable.removeRow(thisRow);
+          
+          //enable only last delete button
+          try {
+            Button b = (Button) authorsFlexTable.getWidget(authorsFlexTable.getRowCount()-1, AUTHOR_DELETE_COL);
+            b.setVisible(true);
+            b.setEnabled(true);
+          } catch (IndexOutOfBoundsException e) {
+            //TODO: Handle error
+          }
+          
           authorsFlexTable.setVisible(authorsFlexTable.getRowCount() > 0);
         }
       });

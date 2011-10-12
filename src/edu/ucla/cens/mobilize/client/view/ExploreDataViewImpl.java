@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +40,7 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
+import com.google.gwt.user.datepicker.client.DateBox;
 
 import com.google.gwt.maps.client.MapOptions;
 import com.google.gwt.maps.client.MapTypeId;
@@ -58,6 +59,7 @@ import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 @SuppressWarnings("deprecation")
@@ -95,6 +97,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @UiField ListBox participantListBox;
   @UiField ListBox promptXListBox;
   @UiField ListBox promptYListBox;
+  @UiField DateBox fromDateBox;
+  @UiField DateBox toDateBox;
   @UiField Button drawPlotButton;
   //@UiField Button pdfButton;
   @UiField Button exportButton;
@@ -117,6 +121,11 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
     // these are required when enabled
     requiredFields = Arrays.asList(campaignListBox, participantListBox, promptXListBox, promptYListBox);
+    
+    // set up date pickers
+    DateBox.Format fmt = new DateBox.DefaultFormat(DateUtils.getDateBoxDisplayFormat());
+    fromDateBox.setFormat(fmt);
+    toDateBox.setFormat(fmt);
     
     // set up image to use as wait indicator
     spinner = new Image();
@@ -745,5 +754,24 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
       items.getItem(itemIndex).setAttribute("disabled", "disabled");
     }    
   }
-    
+	
+	@Override
+	public void selectFromDate(Date fromDate) {
+		fromDateBox.setValue(fromDate);
+	}
+	
+	@Override
+	public Date getFromDate() {
+		return this.fromDateBox.getValue();
+	}
+	
+	@Override
+	public void selectToDate(Date toDate) {
+		toDateBox.setValue(toDate);
+	}
+	
+	@Override
+	public Date getToDate() {
+		return this.toDateBox.getValue();
+	}
 }

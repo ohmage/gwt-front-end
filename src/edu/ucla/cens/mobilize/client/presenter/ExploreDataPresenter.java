@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.view.ExploreDataView;
 
 @SuppressWarnings("deprecation")
@@ -113,6 +115,9 @@ public class ExploreDataPresenter implements Presenter {
     String selectedX = params.containsKey("x") ? params.get("x") : null;
     String selectedY = params.containsKey("y") ? params.get("y") : null;
     
+    Date startDate = view.getFromDate();
+    Date endDate = view.getToDate();
+    
     // fill campaign choices based on user's role and campaign privacy
     fillCampaignChoices(this.campaigns);
     // enable/disable filters based on plot selection
@@ -120,7 +125,7 @@ public class ExploreDataPresenter implements Presenter {
     // fetch and fill participant choices based on selected campaign (if appropriate for plot)
     fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
     // fill prompt choices based on selected campaign (if appropriate for plot)
-    fetchAndFillPromptChoices(selectedCampaign, selectedPlotType, selectedX, selectedY);
+    fetchAndFillPromptChoices(selectedCampaign, selectedPlotType, selectedX, selectedY, startDate, endDate);
     
     view.setSelectedCampaign(selectedCampaign);
     view.setSelectedParticipant(selectedParticipant);
@@ -130,7 +135,7 @@ public class ExploreDataPresenter implements Presenter {
     
     if (PlotType.MAP.equals(selectedPlotType)) {
       // fetch points to match data filters
-      fetchResponseDataAndShowOnMap(selectedCampaign, selectedParticipant); // participant can be null
+      fetchResponseDataAndShowOnMap(selectedCampaign, selectedParticipant, startDate, endDate); // participant, startDate, endDate can be null
     } else if (PlotType.LEADER_BOARD.equals(selectedPlotType)) {
       fetchAndShowLeaderBoard(selectedCampaign);
     } else {
@@ -153,15 +158,15 @@ public class ExploreDataPresenter implements Presenter {
   }
   
     
-  private void fetchResponseDataAndShowOnMap(String campaignId, String participantUsername) {
+  private void fetchResponseDataAndShowOnMap(String campaignId, String participantUsername, Date startDate, Date endDate) {
     final String campaignName = userInfo.getCampaigns().get(campaignId);
     Privacy privacy = AppConfig.exportAndVisualizeSharedResponsesOnly() ? Privacy.SHARED : null; // null shows everything
     view.showWaitIndicator();
     dataService.fetchSurveyResponses(participantUsername, campaignId, 
        null, //surveyName 
        privacy, 
-       null, //startDate 
-       null, //endDate 
+       startDate,
+       endDate,
        new AsyncCallback<List<SurveyResponse>>() {
           @Override
           public void onFailure(Throwable caught) {
@@ -247,7 +252,7 @@ public class ExploreDataPresenter implements Presenter {
       public void onChange(ChangeEvent event) {
         String campaignId = view.getSelectedCampaign();
         PlotType plotType = view.getSelectedPlotType();
-        fetchAndFillPromptChoices(campaignId, plotType, null, null);
+        fetchAndFillPromptChoices(campaignId, plotType, null, null, null, null);
         fetchAndFillParticipantChoices(campaignId, null);
       }
     });
@@ -258,8 +263,13 @@ public class ExploreDataPresenter implements Presenter {
         view.clearPlot(); // prev plot is cleared even if inputs are invalid
         String promptX = view.getSelectedPromptX();
         String promptY = view.getSelectedPromptY();
+        Date fromDate = view.getFromDate();
+        Date toDate = view.getToDate();
+        
         if (promptX != null && promptX.equals(promptY)) {
           ErrorDialog.show("Invalid prompt choice", "X and Y prompts must be different.");
+        } else if (fromDate != null && toDate != null && fromDate.after(toDate)) {	//make sure date range is valid
+          ErrorDialog.show("Invalid date range", "Starting date must be older or equal to the end date");
         } else if (!view.isMissingRequiredField()) { // view marks missing fields, if any
           fireHistoryTokenToMatchSelectedSettings();
         }
@@ -375,7 +385,9 @@ public class ExploreDataPresenter implements Presenter {
   private void fetchAndFillPromptChoices(String campaignId, 
                                          final PlotType plotType,
                                          final String promptToSelectX, 
-                                         final String promptToSelectY) {
+                                         final String promptToSelectY,
+                                         final Date startDate,
+                                         final Date endDate) {
     if (campaignId == null || plotType == null) return;
     dataService.fetchCampaignDetail(campaignId, new AsyncCallback<CampaignDetailedInfo>() {
       @Override
@@ -384,7 +396,7 @@ public class ExploreDataPresenter implements Presenter {
       }
 
       @Override
-      public void onSuccess(CampaignDetailedInfo result) {
+      public void onSuccess(CampaignDetailedInfo result) {	//TODO: filter by date
         view.clearPromptXList();
         view.clearPromptYList();
         List<PromptInfo> prompts = result.getPrompts();

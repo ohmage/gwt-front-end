@@ -1,6 +1,5 @@
 package edu.ucla.cens.mobilize.client.ui;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,7 +54,8 @@ public class CampaignEditFormPresenter {
     view.setHeader("Creating New Campaign");
     view.initializeForm(dataService.authToken(), AwConstants.getCampaignCreateUrl());
     view.setDeletePanelVisible(false);
-    view.setAuthorsPanelVisible(false);
+    view.addAuthor(userInfo.getUserName());
+    view.setAuthorsPanelVisible(true);
   }
   
   public void fetchCampaignAndInitFormForEdit(String campaignUrn) {
@@ -124,6 +124,13 @@ public class CampaignEditFormPresenter {
       @Override
       public void onClick(ClickEvent event) {
         List<String> campaignClasses = view.getClassUrns();
+        
+        // if no classes have been selected, display error msg
+        if (campaignClasses.isEmpty()) {
+          ErrorDialog.show("Please first select class(es) to see users list.");
+          return;
+        }
+        
         // TODO: only reload data if class list has changed?
         dataService.fetchClassList(campaignClasses, new AsyncCallback<List<ClassInfo>>() {
           @Override
