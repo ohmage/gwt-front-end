@@ -1,5 +1,10 @@
-.classpath
-.project
-.settings
+*.class
 *.war
+*.diff
+.git/
+.gitignore
+**/mobilizeweb
+war/WEB-INF/**/*
+deploy-local.sh
 bin
+*.DS_Store

@@ -1,0 +1,93 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
+	<ui:style>
+	  .buttonPanel {
+	  	padding: 10px;
+	  	text-align: right;
+	  	width: 70%;
+	  }
+	  .classLabel {
+	  	vertical-align: top;
+	  }
+	  .classList {
+	  	display: inline-block;
+	  }
+	  .container {
+	  	margin: auto;
+	  	padding-top: 15px;
+	  	width: 80%;
+	  }
+		.detailRow {
+			padding: 5px;
+	  }
+	  .detailLabel {
+	  	display: inline-block;
+	  	font-weight: bold;
+	  	padding-right: 40px;
+	  	text-align: right;
+	  	width: 40%;
+	  }
+	  .errorMsg {
+	  	color: red;
+	  	font-weight: bold;
+	  }
+	  .leftSideBar {
+	  }
+	  .msg {
+      background-color: #FFF7D7;
+      border: solid thin #DDD6A4;
+      display: block;
+      font-size: 0.9em;
+      margin: 10px auto;
+      padding: 5px;
+      text-align: center;
+      width: 80%;
+    }
+	  .topNav {
+	  }
+	</ui:style>
+	
+<g:HTMLPanel addStyleNames='{style.container}'>
+	<w:MessageWidget ui:field='messageWidget' />
+	<g:HTMLPanel addStyleNames='{style.detailRow}'>
+	  <g:InlineLabel addStyleNames='{style.detailLabel}'>User Login:</g:InlineLabel>
+	  <g:InlineLabel ui:field='loginLabel'></g:InlineLabel>
+	</g:HTMLPanel>
+	<g:HTMLPanel addStyleNames='{style.detailRow}'>
+	  <g:InlineLabel addStyleNames='{style.detailLabel}'>Can create campaigns:</g:InlineLabel>
+	  <g:InlineLabel ui:field='canCreateLabel'></g:InlineLabel>
+	</g:HTMLPanel>
+	<g:HTMLPanel addStyleNames='{style.detailRow}'>
+	  <g:InlineLabel addStyleNames='{style.detailLabel} {style.classLabel}'>Classes:</g:InlineLabel>
+	  <g:VerticalPanel ui:field='classesVerticalPanel' addStyleNames='{style.classList}' />
+	</g:HTMLPanel>
+	<g:HTMLPanel addStyleNames='{style.buttonPanel}'>
+	  <g:Button ui:field='passwordChangeButton'>Change Password</g:Button>
+	</g:HTMLPanel>
+	
+	<g:FormPanel ui:field='passwordChangeForm'>
+		<g:HTMLPanel ui:field='passwordChangePanel'>
+		  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+		    <g:InlineLabel addStyleNames='{style.detailLabel}'>Old Password:</g:InlineLabel>
+		    <g:PasswordTextBox ui:field='oldPasswordTextBox' />
+		  </g:HTMLPanel>
+		  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+		    <g:InlineLabel addStyleNames='{style.detailLabel}'>New Password:</g:InlineLabel>
+		    <g:PasswordTextBox ui:field='newPasswordTextBox' />
+		  </g:HTMLPanel>
+		  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+		    <g:InlineLabel addStyleNames='{style.detailLabel}'>Confirm New Password:</g:InlineLabel>
+		    <g:PasswordTextBox ui:field='newPasswordConfirmTextBox' />
+		  </g:HTMLPanel>
+		  <g:HTMLPanel addStyleNames='{style.buttonPanel}'>
+		    <g:SubmitButton ui:field='passwordChangeSubmitButton'>Submit</g:SubmitButton>
+			  <g:Button ui:field='passwordChangeCancelButton'>Cancel</g:Button>
+		  </g:HTMLPanel>
+		</g:HTMLPanel>
+	</g:FormPanel>
+</g:HTMLPanel>
+
+
+</ui:UiBinder> 

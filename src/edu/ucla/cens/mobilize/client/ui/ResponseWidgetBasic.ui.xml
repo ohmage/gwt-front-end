@@ -1,0 +1,77 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.ResponseWidgetBasic.ResponseWidgetStyle">
+	  .container {
+	  	border-bottom: solid 1px #CCC;
+	  	padding: 0px 0px 5px 0px;
+	  }
+		.date {
+		}
+		.header {
+			background-color:#EEE;
+      padding: 1px 8px;
+      white-space: nowrap;
+    }
+    .headerField {
+    	padding: 3px 20px 3px 5px;
+    }
+		.privacyPrivate, .privacyShared, .privacyInvisible {
+			padding-left: 25px;
+	  }
+		.privacyPrivate {
+	    background: 10px 50% no-repeat url('images/lock_small.png');
+		}
+		.privacyShared {
+			background: 10px 50% no-repeat url('images/group_small.png');
+		}
+		.privacyInvisible {
+			background: 10px 50% no-repeat url('images/eye_bw_small.png');
+	  }
+		.prompt {
+			display: block;
+			float: left;
+			font-size: 0.9em;
+			min-height: 40px;
+      padding: 4px 6px;
+			width: 30%;
+    }
+    .promptContainerWrapper { /* holds list of prompts */
+      overflow-x: hidden;
+      padding: 5px 10px 10px 25px;
+    }
+		.promptQuestion {
+		}
+		.promptResponse {
+			font-style: italic;
+			padding-left: 8px;
+		}
+		.promptImage {
+			cursor: pointer;
+		}
+		.selected {
+			border-left: solid 2px #A5CD3A;
+		}
+		.selected .header {
+			background-color: #D7E8AB;
+			border-top: solid 1px #A5CD3A;
+			border-bottom: solid 1px #A5CD3A;
+	  }
+	</ui:style>
+	<g:HTMLPanel ui:field='container' addStyleNames='{style.container}'>
+	  <g:FlowPanel addStyleNames='{style.header}'>
+		  <g:Hidden ui:field='responseKeyHiddenField'></g:Hidden>
+		  <g:CheckBox ui:field='checkBox' />
+		  <g:InlineLabel ui:field='dateLabel' addStyleNames='{style.headerField}' />
+		  <g:InlineLabel ui:field='userLabel' addStyleNames='{style.headerField}' />
+		  <g:InlineLabel ui:field='campaignLabel' addStyleNames='{style.headerField}' />
+		  <g:InlineLabel ui:field='surveyLabel' addStyleNames='{style.headerField}' />
+		  <g:InlineLabel ui:field='privacyLabel' addStyleNames='{style.headerField}' />
+	  </g:FlowPanel>
+	  <g:HTMLPanel ui:field='promptContainerWrapper' addStyleNames='{style.promptContainerWrapper}'>
+	    <g:FlowPanel ui:field='promptContainer' />
+	    <div class='floatstop'/>
+	  </g:HTMLPanel>
+	  <div class="floatstop" />
+	</g:HTMLPanel>
+</ui:UiBinder> 

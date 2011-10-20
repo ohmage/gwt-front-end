@@ -1,0 +1,110 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.CampaignList.CampaignListStyle">
+	  .campaignGrid {
+      width: 100%;
+    }
+    .campaignGridNameColumn {
+    	padding-left: 20px;
+    }
+    .campaignGridHeader {
+    	background-color: #CCC;
+      font-weight: bold;
+    }
+    .campaignGridHeader td {
+    	border-bottom: solid 1px #AAA;
+    }
+    .campaignGridRunningStateHeader, .campaignGridPrivacyHeader {
+    	padding-left: 5px;
+    }
+		.filterContainer {
+			background-color: white;
+			border-bottom: solid thin #AAA;
+			margin: 0px;
+			padding: 5px;
+			width: 100%;
+		}
+		.filterContainer div {
+			display: inline-block;
+			float: left;
+		}
+		.filterContainer label {
+			font-size: 0.9em;
+			font-weight: bold;
+			padding: 0px 2px;
+		}
+		.listContainer {
+		}
+		.listContainer td {
+			/* don't wrap text when window is small - it changes row height, makes it hard to read */
+			white-space: nowrap;
+		}
+		.listContainer th {
+			background-color: #DDD;
+			border-bottom-color: #AAA;
+			border-bottom-width: 1px;
+		}
+		.oddRow { /* stripe odd rows for easier viewing */
+			background-color: #EEE;
+		}
+		.privacyPrivate {
+      background-image: url('images/lock_small.png');
+    }
+    .privacyShared {
+      background-image: url('images/group_small.png');
+    }
+    .running, .stopped, .other, .privacyShared, .privacyPrivate {
+      background-repeat: no-repeat;
+      background-position: 2px 50%;
+      font-size: 0.8em;
+      padding: 3px 18px;
+    }
+    .privacyShared, .privacyPrivate {
+    	padding-left: 20px;
+    }
+    .running {
+      background-image: url('images/bullet_green.png');
+    }
+    .stopped {
+      background-image: url('images/bullet_red.png');
+    }
+    /* action links are all small text with icons */
+    .analyzeLink, .detailsLink, .editLink, .exportLink {
+    	background-repeat: no-repeat;
+      background-position: 2px 50%;
+      font-size: 0.8em;
+      padding: 2px 5px 2px 18px;
+    } 
+    .analyzeLink {
+      background-image: url('images/chart_bar_small.png');
+    }
+    .detailsLink {
+      background-image: url('images/page_white_magnify_small.png'); 
+    }
+    .editLink {
+      background-image: url('images/page_white_edit_small.png');
+    }
+    .exportLink {
+    	background-image: url('images/page_white_go_small.png');
+    }
+	</ui:style>
+	<g:HTMLPanel ui:field='mainPanel'>
+	 <div class="{style.filterContainer}">
+	   <label>State:</label>
+	   <g:ListBox ui:field="stateListBox" visibleItemCount="1" />
+	   <label>My Role:</label>
+	   <g:ListBox ui:field="userRoleListBox" visibleItemCount="1" />
+	   <label>From:</label>
+	   <dp:DateBox ui:field="fromDateBox" />
+	   <label>To:</label>
+	   <dp:DateBox ui:field="toDateBox" />
+	   <g:Button ui:field="goButton">Go</g:Button>
+	 </div>
+	 <div class="{style.listContainer}">
+    <g:Grid ui:field='campaignGrid'></g:Grid>
+	 </div>
+	 <div id="formContainer" class="hidden" />
+	</g:HTMLPanel>
+</ui:UiBinder> 

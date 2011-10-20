@@ -1,0 +1,80 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup.ResponseWidgetPopupStyle">
+	  .campaign {
+	  	font-weight: bold;
+    }
+    .container {
+    	display: block;
+    	font-size: 10px;
+    	overflow-y: auto;
+    	width: 300px;
+    }
+		.date {
+			background: #FFF no-repeat 0px 50% url("images/phone.png");
+			display: inline-block;
+			font-style: italic;
+			height: 15px;
+			padding-left: 15px;
+	  }
+	  .header {
+	  	background-color: #FFC288;
+	  	border: solid 1px #F58F3E;
+	  	margin: 5px 0px;
+	  	padding: 3px;
+	  }
+	  .infobar {
+	  	background-color: #DDD;
+	  	border: solid thin #CCC;
+	  	font-style: italic;
+	  	padding: 3px;
+	  }
+	  .location {
+	  }
+    .promptContainer {
+    	border: solid thin 1px;
+    }
+    .prompt {
+    	float: left;
+    	min-height: 35px; 
+    	padding: 3px;
+    	width: 45%;
+    }
+    .promptImage {
+    	cursor: pointer;
+    	height: 50px;
+    	width: auto;
+    }
+    .promptQuestion {
+    }
+    .promptResponse {
+    	font-style: italic;
+    	padding-left: 10px;
+    }
+    .survey {
+    }
+    .username {
+    	font-style: italic;
+    	font-weight: bold;
+    }
+	</ui:style>
+	<g:HTMLPanel addStyleNames='{style.container}'>
+	  <g:InlineLabel ui:field='date' addStyleNames='{style.date}' />
+	  <span>-</span>
+	  <g:InlineLabel ui:field='username' addStyleNames='{style.username}' />
+	  <g:HTMLPanel addStyleNames='{style.header}'>
+		  <g:InlineLabel ui:field='campaign' addStyleNames='{style.campaign}' />:&nbsp;
+		  <g:InlineLabel ui:field='survey' addStyleNames='{style.survey}' />
+	  </g:HTMLPanel>
+	  <!--<g:InlineLabel ui:field='user' addStyleNames='{style.user} {style.info}' />-->
+	  <g:FlowPanel ui:field='prompts' addStyleNames='{style.promptContainer}' />
+	  <div class='floatstop' />
+	  <g:HTMLPanel addStyleNames='{style.infobar}'>
+	    <g:HTMLPanel tag='span' addStyleNames='{style.location}'>
+		    <g:InlineLabel>Location:</g:InlineLabel>
+		    <g:InlineLabel ui:field='location' />
+	    </g:HTMLPanel>
+	  </g:HTMLPanel>
+	</g:HTMLPanel>
+</ui:UiBinder> 

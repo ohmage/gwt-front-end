@@ -1,0 +1,7 @@
+Classes for managing request parameters.
+ 
+Responsible for any client side validation, setting defaults, and serializing
+to the post param string.
+
+"_opt" is appended to member variable names when params are optional.
+

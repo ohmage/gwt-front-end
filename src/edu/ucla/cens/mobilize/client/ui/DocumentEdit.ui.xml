@@ -1,0 +1,184 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
+  <ui:style>
+    .addButton {
+    	display: inline-block;
+    }
+    .buttonPanel {
+    	margin: auto;
+    	text-align: right;
+    	width: 440px; /* same as delete div */
+    }
+    .container {
+    }
+    .creationPropertiesPanel {
+      margin: auto;
+      width: 90%;
+    }
+    .deleteDiv {
+      background-color: #EEE;
+      border: solid 1px #CCC;
+      font-size: 0.9em;
+      margin: 20px auto;
+      padding: 5px 20px;
+      width: 440px;
+    }
+    .deleteInstructions {
+      float: left;
+      margin-top: 5px;
+    }
+    
+    .detailRow {
+      padding: 5px;
+    }
+    .detailLabel {
+      display: inline-block;
+      font-weight: bold;
+      padding-right: 40px;
+      text-align: right;
+      width: 40%;
+    }
+    .documentDescriptionTextArea {
+      height: 40px;
+      width: 280px;
+    }
+    .labelForMultilineDetail {
+    	vertical-align: top;
+    }
+    .listWidget {
+    }
+    .listWidgetContainer {
+    	display: inline-block;
+    }
+    .listWidget button {
+      background-color: #DDD;
+      border: solid 1px #AAA;
+      color: #888;
+      cursor: pointer;
+      font-size: 0.8em;
+      height: 13px;
+      padding: 0px;
+      width: 13px;
+    }
+    .listWidget td {
+      border-bottom: solid thin #CCC;
+      color: #444;
+      font-size: 0.9em;
+      padding-right: 5px;
+      vertical-align: middle;
+    }
+    .sectionHeader {
+      background: #FFFFE0 repeat-x url("images/bg_white_transparent_50.png");
+      border-bottom: solid 1px #CCC;
+      margin-bottom: 10px;
+      padding: 0px;
+      margin: 0px 0px 10px;
+      padding: 10px 70px;
+    }
+    .sectionHeaderInstructions {
+      font-size: 0.8em;
+    }
+    .sectionHeaderTitle {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    /* button styles */
+    .cancelButton {
+    }
+    .deleteButton {
+      margin-left: 10px;
+      color: #600;
+      float: right;
+    }
+    .saveButton {
+    }
+    .uploadButton {
+    }
+  </ui:style> 
+    <g:HTMLPanel addStyleNames='{style.container}'>
+       <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
+          <!-- title changes depending on whether you are editing or creating -->
+          <g:Label ui:field='headerLabel' addStyleNames='{style.sectionHeaderTitle}' />
+					<g:HorizontalPanel addStyleNames='{style.creationPropertiesPanel}'>
+					  <g:InlineLabel ui:field='creatorLabel'/>
+					  <g:InlineLabel ui:field ='creationDateLabel'/>
+					  <g:InlineLabel ui:field='sizeLabel'/>
+					</g:HorizontalPanel>
+          <g:HTMLPanel addStyleNames='{style.sectionHeaderInstructions}'>
+            Changes will not be stored until you click Save.
+          </g:HTMLPanel>
+       </g:HTMLPanel>
+
+      <g:FormPanel ui:field='formPanel'>
+			  <g:HTMLPanel addStyleNames='{style.container}'>
+				  <w:MessageWidget ui:field='messageWidget' />
+				  <g:Hidden ui:field='authTokenHiddenField' name='auth_token' />
+				  <g:Hidden ui:field='clientHiddenField' name='client' />
+				  <g:Hidden ui:field='documentIdHiddenField' name='document_id' />
+				  <g:HTMLPanel ui:field='fileUploadPanel' addStyleNames='{style.detailRow}'>
+	          <g:InlineLabel addStyleNames='{style.detailLabel}'>Choose File:</g:InlineLabel>
+	          <g:FileUpload ui:field='fileUploadInput' name='document' />
+	        </g:HTMLPanel>
+				  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+				    <g:InlineLabel addStyleNames='{style.detailLabel}'>Document Name:</g:InlineLabel>
+				    <g:TextBox ui:field='documentNameTextBox' name='document_name' />
+				  </g:HTMLPanel>
+				  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+				    <g:InlineLabel addStyleNames='{style.detailLabel} {style.labelForMultilineDetail}'>
+				      Description:
+				    </g:InlineLabel>
+				    <g:TextArea ui:field='descriptionTextArea' name='description' />
+				  </g:HTMLPanel>
+				  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+	          <g:InlineLabel addStyleNames='{style.detailLabel}'>Privacy Setting:</g:InlineLabel>
+	          <g:ListBox ui:field='privacyListBox' name='privacy_state' />
+	        </g:HTMLPanel>
+				  <g:HTMLPanel addStyleNames='{style.detailRow}'>
+	          <g:InlineLabel addStyleNames='{style.detailLabel} {style.labelForMultilineDetail}'>
+	            Linked Campaigns:
+	          </g:InlineLabel>
+	          <g:HTMLPanel addStyleNames='{style.listWidgetContainer}'>
+		          <w:ListWidget ui:field='campaignsListWidget' addStyleNames='{style.listWidget}' />
+		          <g:Button ui:field='campaignsAddButton' addStyleNames='{style.addButton}'>Add Campaigns</g:Button>
+		          <!-- names of hidden fields are set dynamically b/c they're different for create vs edit -->
+		          <g:Hidden ui:field='campaignsToAddHiddenField' />
+		          <g:Hidden ui:field='campaignsToRemoveHiddenField' /> 
+	          </g:HTMLPanel>
+	        </g:HTMLPanel>
+	        <g:HTMLPanel addStyleNames='{style.detailRow}'>
+	          <g:InlineLabel addStyleNames='{style.detailLabel} {style.labelForMultilineDetail}'>
+	            Linked Classes:
+	          </g:InlineLabel>
+	          <g:HTMLPanel addStyleNames='{style.listWidgetContainer}'>
+		          <w:ListWidget ui:field='classesListWidget' addStyleNames='{style.listWidget}' />
+		          <g:Button ui:field='classesAddButton' addStyleNames='{style.addButton}' >Add Classes</g:Button>
+		          <!-- names of hidden fields are set dynamically b/c they're different for create vs edit -->
+		          <g:Hidden ui:field='classesToAddHiddenField' />
+		          <g:Hidden ui:field='classesToRemoveHiddenField' />
+	          </g:HTMLPanel>
+	        </g:HTMLPanel>
+	        <g:HTMLPanel addStyleNames='{style.buttonPanel}'>
+		        <g:Button ui:field='saveButton' addStyleNames='{style.saveButton}'>
+		          Save
+		        </g:Button>
+		        <g:Button ui:field='cancelButton' addStyleNames='{style.cancelButton}'>
+		          Cancel
+		        </g:Button>
+	        </g:HTMLPanel>
+        </g:HTMLPanel>
+      </g:FormPanel>
+
+      <g:HTMLPanel addStyleNames='{style.deleteDiv}' ui:field='deletePanel'>
+        <div class='{style.deleteInstructions}'>
+          Deleting a document can not be undone.
+        </div>
+        <g:Button ui:field='deleteButton' addStyleNames='{style.deleteButton}'>
+          Delete&nbsp;Document
+        </g:Button>
+        <div class='floatstop'/>
+      </g:HTMLPanel>
+    </g:HTMLPanel>
+
+</ui:UiBinder> 

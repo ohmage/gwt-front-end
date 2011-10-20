@@ -1,0 +1,50 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.MessageWidget.MessageWidgetStyles">
+	  .error {
+	  	background-color: #EEE;
+	  	color: maroon;
+	  	border: solid thin maroon;
+	  }
+	  .errorList {
+	  	margin: auto;
+	  	text-align: left;
+	  	width: 80%;
+	  }
+	  .hideLink {
+	  	color: purple;
+	  	cursor: pointer;
+	  	float: right;
+	  	font-size: 0.9em;
+	  	padding-right: 5px;
+	  	text-decoration: underline;
+	  }	  
+	  .info {
+      background-color: #FFF7D7;
+      border: solid thin #DDD6A4;
+    }
+    .msgBox { /* applies to both info and error */
+      font-size: 0.9em;
+      margin: 10px auto;
+      padding: 5px;
+      text-align: center;
+      width: 80%;
+    }
+    .msg {
+    	font-weight: bold;
+    }
+
+	</ui:style>
+	<g:HTMLPanel ui:field='msgBox' addStyleNames='{style.msgBox}'>
+    <g:InlineLabel ui:field='msg' addStyleNames='{style.msg}' />
+    <g:Anchor ui:field='hideLink' addStyleNames='{style.hideLink}'>
+      &raquo;hide
+    </g:Anchor>
+    <div class='floatstop'/>
+    <div class='{style.errorList}'>
+      <ul ui:field='errorListElement' />
+    </div>
+  </g:HTMLPanel>
+	
+</ui:UiBinder> 

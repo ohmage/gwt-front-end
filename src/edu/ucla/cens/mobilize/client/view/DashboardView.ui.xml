@@ -1,0 +1,169 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  <ui:style>
+    .dashboard {
+      height: 100%;
+    }
+    .leftPanel {
+    	border: solid thin #DDD;
+    	box-shadow: -1px 1px 5px 1px #CCC;
+      display: block;
+      padding: 15px 10px 30px 35px;
+      margin: 35px 0px 0px 40px;
+      width: 230px;
+    }
+    .linkMenu {
+      margin: 0px;
+      padding: 0px;
+    }
+    .linkBrowse, .linkCreate, .linkEdit, .linkExplore, .linkResponses, .linkDocuments {
+    	padding: 4px 5px 4px 30px;
+    	background-repeat: no-repeat;
+    	background-position: 5px 50%;
+    }
+    .linkBrowse {
+    	background-image: url('images/folder_explore.png');
+    }
+    .linkCreate {
+    	background-image: url('images/phone.png');
+    }
+    .linkEdit {
+    	background-image: url('images/page_white_edit.png');
+    }
+    .linkExplore {
+    	background-image: url('images/chart_bar.png');
+    }
+    .linkResponses {
+    	background-image: url('images/table_multiple.png');
+    }
+    .linkDocuments {
+    	background-image: url('images/page_white_upload.png');
+    }
+    .notify {
+    	margin: 15px 5px;
+      padding: 10px;
+    }
+    .notify p {
+      padding: 0px;
+      margin: 0px;
+    }
+    .notify a {
+      font-size: 0.9em;
+      padding-left: 5px;
+      text-align: right;
+    }
+    .question {
+      font-size: 1.2em;
+      font-weight: bold;
+      padding-left: 5px;
+    }
+    .rightPanel {
+      display: block;
+      padding: 20px 0px 0px 20px;
+      width: 410px;
+    }
+    .notifyResponses {
+      background-color: #FCE4CD;
+      border: solid 1px #F58F3E;
+    }
+    .notifyParticipant {
+    	background-color: #D7E8AB;
+      border: solid 1px #99CA3B;
+    }
+    .notifyAuthor {
+    	background-color: #CCECFC;
+    	border: solid thin #25B4E7;
+    }
+    .notifyResponses, .notifyParticipant, .notifyAuthor {
+    	background-image: url('images/bg_white_transparent_50.png');
+    	background-position: top;
+    	background-repeat: repeat-x;
+    	box-shadow: -1px 1px 5px 1px #CCC;
+    }
+    .topBar {
+    	background-color: #EEE;
+    	border-bottom: solid 1px #AAA;
+    	height: 20px;
+    	width: 100%;
+    }
+  </ui:style>
+  <g:HTMLPanel>
+   <g:HorizontalPanel ui:field='dashboardContainer' addStyleNames='{style.dashboard}'>
+     <g:HTMLPanel addStyleNames='{style.topBar}' />
+     
+     <g:HTMLPanel ui:field='leftPanel' addStyleNames='{style.leftPanel}'>
+       <p class='{style.question}'>What would you like to do?</p>
+       <g:MenuBar vertical='true' addStyleNames='{style.linkMenu}'>
+         <g:MenuItem ui:field='quickLinkCreate' addStyleNames='{style.linkCreate}'>
+           <a href='#campaigns?v=create'>Create a new campaign</a>
+         </g:MenuItem>
+         <g:MenuItem ui:field='quickLinkEdit' addStyleNames='{style.linkEdit}'>
+           <a href="#campaigns?v=list">Edit an existing campaign</a>
+         </g:MenuItem>
+         <g:MenuItem ui:field='quickLinkBrowse' addStyleNames='{style.linkBrowse}'>
+           <a href="#campaigns">Browse campaigns</a>
+         </g:MenuItem>
+         <g:MenuItem ui:field='quickLinkResponses' addStyleNames='{style.linkResponses}'>
+           <a href="#responses">Share or delete survey responses</a>
+         </g:MenuItem>
+         <!--
+         <g:MenuItem ui:field='quickLinkExplore' addStyleNames='{style.linkExplore}'>
+           <a href="#explore_data">Plot campaign data</a>
+         </g:MenuItem>
+         -->
+         <g:MenuItem ui:field='quickLinkUpload' addStyleNames='{style.linkDocuments}'>
+           <a href="#documents?v=create">Upload documents</a>
+         </g:MenuItem>
+       </g:MenuBar>
+     </g:HTMLPanel>
+     
+     <g:HTMLPanel ui:field='rightPanel' addStyleNames='{style.rightPanel}'>
+       <g:HTMLPanel ui:field='notificationResponses' 
+                    visible='false' 
+                    addStyleNames="{style.notify} {style.notifyResponses}">
+         <p>
+           You have <span ui:field="privateResponseCount">0</span> private survey 
+           responses waiting to be shared or deleted.
+         </p>
+         <p>
+           &raquo;
+           <g:InlineHyperlink ui:field="privateResponsesLink">
+             view private responses
+           </g:InlineHyperlink>
+         </p>
+       </g:HTMLPanel>
+       <g:HTMLPanel ui:field='notificationParticipant'  
+                    addStyleNames='{style.notify} {style.notifyParticipant}'
+                    visible='false'>
+         <p>
+           You are participating in 
+           <span ui:field="campaignParticipantRoleCount">0</span> 
+           active campaigns.
+         </p>
+         <p>
+           &raquo;
+           <g:InlineHyperlink ui:field='participantCampaignsLink'>
+             view active campaigns 
+           </g:InlineHyperlink>
+         </p>
+       </g:HTMLPanel>
+       <g:HTMLPanel ui:field='notificationAuthor' 
+                    addStyleNames='{style.notify} {style.notifyAuthor}'
+                    visible='false'>
+         <p>
+           You are running <span ui:field='campaignAuthorRoleCount'>0</span> 
+           active campaigns.
+         </p>
+         <p>
+           &raquo;
+           <g:InlineHyperlink ui:field='authorCampaignsLink'>
+             see your running campaigns
+           </g:InlineHyperlink>
+         </p>
+       </g:HTMLPanel>
+     </g:HTMLPanel>
+   </g:HorizontalPanel>
+  
+  </g:HTMLPanel>
+</ui:UiBinder> 

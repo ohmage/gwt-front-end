@@ -1,0 +1,109 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.ClassDetail.ClassDetailStyle">
+   .backLink {
+     display: inline-block;
+     padding-left: 20px;
+     width: 150px;
+   }
+   .container {
+   }
+   .detailLabel {
+     display: inline-block;
+     font-weight: bold;
+     padding: 2px 20px;
+     text-align: right;
+     width: 150px;
+   }
+   .detailPanel {
+   }
+   .detailRow {
+     white-space: nowrap;
+   }
+   .legend {
+     border: solid 1px #EEE;
+     padding: 2px;
+     white-space: nowrap;
+   }
+   .legendItem {
+     padding-right: 7px;
+   }
+   .membersRow {
+     margin-top: 10px;
+   }
+   .membersTable {
+     margin: auto;
+     margin-bottom: 20px;
+   }
+   .membersTable td {
+   	padding-left: 22px;
+   	white-space: nowrap;
+   }
+   .membersTableHeader {
+     font-weight: bold;
+   }
+   .missingValue {
+     color: #AAA;
+     font-style: italic;
+   }
+   .rolePrivileged {
+     background: 5px 50% no-repeat url("images/asterisk_orange_small.png");
+     padding-left: 22px;
+   }
+   .rolePrivilegedRow {
+   	color: #950;
+   }
+   .rolePrivileged, .roleRestricted {
+   }
+	 .sectionHeader {
+	 	background: #EAEFF3 repeat-x url("images/bg_white_transparent_50.png");
+	 	border-bottom: solid thin #DDD;
+	  margin-bottom: 10px;
+	  padding: 15px 0px;
+	  width: 100%;
+	}
+	.sectionHeaderTitle {
+	  font-size: 1.2em;
+	  font-weight: bold;
+	}
+
+	</ui:style>
+  <g:HTMLPanel ui:field='container' addStyleNames='{style.container}'>
+    <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
+      <g:Anchor ui:field='backLink' addStyleNames='link {style.backLink}'>&laquo;&nbsp;Back</g:Anchor>
+      <g:InlineLabel addStyleNames='{style.sectionHeaderTitle}'>
+        Class&nbsp;Details
+      </g:InlineLabel>
+    </g:HTMLPanel>
+    
+    <g:HTMLPanel addStyleNames='{style.detailPanel}'>
+      <g:HTMLPanel addStyleNames='{style.detailRow}'>
+        <g:InlineLabel addStyleNames='{style.detailLabel}'>Class name:</g:InlineLabel>
+        <g:InlineLabel ui:field='className' />
+      </g:HTMLPanel>
+      
+      <g:HTMLPanel addStyleNames='{style.detailRow}'>
+        <g:InlineLabel addStyleNames='{style.detailLabel}'>Urn:</g:InlineLabel>
+        <g:InlineLabel ui:field='classUrn' />
+      </g:HTMLPanel>
+      
+      <g:HTMLPanel addStyleNames='{style.detailRow}'>
+        <g:InlineLabel addStyleNames='{style.detailLabel}'>Description:</g:InlineLabel>
+        <g:InlineLabel ui:field='classDescription' />
+      </g:HTMLPanel>
+      
+      <g:HTMLPanel addStyleNames='{style.membersRow}'>
+        <g:InlineLabel addStyleNames='{style.detailLabel}'>Members:</g:InlineLabel>
+        <g:HTMLPanel tag='span' ui:field='legend' addStyleNames='{style.legend}'>
+        <g:InlineLabel addStyleNames='{style.rolePrivileged} {style.legendItem}'>privileged</g:InlineLabel>
+        <g:InlineLabel addStyleNames='{style.missingValue}'>---</g:InlineLabel>
+        <g:InlineLabel addStyleNames='{style.legendItem}'>missing value</g:InlineLabel>
+        </g:HTMLPanel>
+        <g:Grid ui:field='membersTable' addStyleNames='{style.membersTable}' />
+      </g:HTMLPanel>
+    </g:HTMLPanel>
+  
+  </g:HTMLPanel>
+</ui:UiBinder> 

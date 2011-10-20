@@ -1,0 +1,94 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.ResponseDisclosurePanel.ResponseDisclosurePanelStyle">
+	/* header row is always visible, shows summary info */
+	.checkbox {
+	}
+	.clickable {
+		cursor: pointer;
+  }
+	.date {
+		padding-right: 5px;
+	}
+	.header td {
+		color: #222445;
+		padding: 2px 5px;
+	}
+	.header img {
+		border: none;
+	}
+	.campaignName {
+		overflow: hidden;
+		padding-right: 20px;
+		width: 200px;
+	}
+	.surveyName {
+		overflow: hidden;
+		padding-right: 20px;
+		width: 200px;
+  }
+  .responseWidgetContainer { /* the whole thing, including checkbox */
+    border-top: solid thin #CCC;
+    padding: 0px 10px;
+    white-space: nowrap;
+    width: 100%;
+  }
+  /* underlying style for all privacy state cells */
+	.responsePrivacy { 
+		font-size: 0.8em;
+		padding: 2px 0px 2px 17px;
+		width: 80px;
+	}
+	/* dynamically added to privacy state cell for private response */
+	.privacyPrivate { 
+		background-image: url('images/lock_small.png');
+		background-repeat: no-repeat;
+	}
+	/* dynamically added to privacy state cell for public response */
+	.privacyShared {
+		background-image: url('images/group_small.png');
+		background-repeat: no-repeat;
+  }
+  /* dynamically added to privacy state cell for invisible response */
+  .privacyInvisible { 
+  	background-repeat: no-repeat;
+  }
+	/* prompt responses are visible when disclosure panel is open */
+	.promptResponseCtr {
+		padding: 5px 0px;
+		border: solid thin #EEE;
+		background-color: #F8F8FF; /* ghostWhite */
+		margin: 5px 0px 10px;
+  }
+	.promptResponse {
+		padding-bottom: 2px;
+  }
+	.promptText {
+		font-size: 0.9em;
+		font-style: italic;
+	  padding: 2px 15px;
+  }
+  /* todo: different styles for different prompt types */
+  .promptValue {
+  	color: #666;
+    margin: 2px 15px;
+    padding: 1px 10px;
+  }
+	</ui:style>
+ <g:HorizontalPanel addStyleNames='{style.responseWidgetContainer}'>
+   <g:CheckBox ui:field='checkbox' addStyleNames='{style.checkbox}' />
+	 <g:DisclosurePanel ui:field='disclosurePanel'>
+	   <g:customHeader>
+	     <g:HorizontalPanel addStyleNames='{style.header} header'>
+	         <g:Label ui:field='campaignName' addStyleNames='{style.campaignName}' />
+		       <g:Label ui:field='surveyName' addStyleNames='{style.surveyName}'>survey name</g:Label>
+		       <g:Label ui:field='responsePrivacy' addStyleNames='{style.responsePrivacy}' />
+		       <g:Label ui:field='responseDateLabel' addStyleNames='{style.date}' />
+		       <g:Hidden ui:field='responseKey' />
+	     </g:HorizontalPanel>
+	   </g:customHeader>
+	   <g:VerticalPanel ui:field='promptResponseVerticalPanel' />
+	 </g:DisclosurePanel>
+   </g:HorizontalPanel>
+</ui:UiBinder> 

@@ -1,0 +1,51 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+	 .container {
+	 	padding: 20px;
+	 }
+		.question {
+			font-weight: bold;
+		}
+		.answer {
+		}
+		.faq {
+			padding: 5px;
+		}
+	</ui:style>
+	<g:HTMLPanel addStyleNames='{style.container}'>
+	 <div class='{style.faq}'>
+	   <div class='{style.question}'>What is MOBILIZE?</div>
+	   <div class='{style.answer}'>
+	     Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+	     Sed quis sapien diam, eget rutrum lectus. 
+	     Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+	   </div>
+	 </div>
+	 <div class='{style.faq}'>
+     <div class='{style.question}'>What is a Campaign?</div>
+     <div class='{style.answer}'>
+       Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+       Sed quis sapien diam, eget rutrum lectus. 
+       Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+     </div>
+   </div>
+   <div class='{style.faq}'>
+     <div class='{style.question}'>Why do I have to approve Responses?</div>
+     <div class='{style.answer}'>
+       Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+       Sed quis sapien diam, eget rutrum lectus. 
+       Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+     </div>
+   </div>
+   <div class='style.faq'>
+     <div class='{style.question}'>Who can see my data?</div>
+     <div class='{style.answer}'>
+       Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+       Sed quis sapien diam, eget rutrum lectus. 
+       Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+     </div>
+   </div>
+	</g:HTMLPanel>
+</ui:UiBinder> 
