@@ -58,6 +58,7 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
+import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
@@ -233,6 +234,11 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @Override
   public void setParticipantList(List<String> participants) {
     participantListBox.clear();
+    
+    // add a multi-user option
+    if (this.getSelectedPlotType() == PlotType.MAP)
+    	participantListBox.addItem("(all users)", "");
+    
     if (participants == null) return;
     for (String username : participants) {
       participantListBox.addItem(username, username);
@@ -259,17 +265,36 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     return (index > -1) ? participantListBox.getValue(index) : null;
   }
 
+  // Returns true if a promptId is disabled in a listBox, false otherwise or invalid
+  public boolean isPromptIdDisabled(ListBox listBox, String promptId) {
+	  //Determine index of prompt containing "value"
+	  boolean found = false;
+	  int itemIndex = 0;
+	  for ( ; itemIndex < listBox.getItemCount(); itemIndex++) {
+		  if (listBox.getValue(itemIndex) == promptId) {
+			  found = true;
+			  break;
+		  }
+	  }
+	  if (!found)
+		  return false;
+	  
+	  //See if "disabled" option is true or false
+      NodeList<Element> items = listBox.getElement().getElementsByTagName("option");
+      return (items.getItem(itemIndex).getAttribute("disabled") == "disabled");
+  }
+
   @Override
   public void setSelectedPromptX(String promptId) {
     promptXListBox.setSelectedIndex(-1);
     for (int i = 0; i < promptXListBox.getItemCount(); i++) {
       if (promptXListBox.getValue(i).equals(promptId)) {
-        promptXListBox.setSelectedIndex(i);
+    	if (isPromptIdDisabled(promptXListBox, promptId) == false)
+    	  promptXListBox.setSelectedIndex(i);
         break;
       }
     }    
   }
-
 
   @Override
   public String getSelectedPromptX() {
@@ -283,7 +308,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     promptYListBox.setSelectedIndex(-1);
     for (int i = 0; i < promptYListBox.getItemCount(); i++) {
       if (promptYListBox.getValue(i).equals(promptId)) {
-        promptYListBox.setSelectedIndex(i);
+    	if (isPromptIdDisabled(promptYListBox, promptId) == false)
+          promptYListBox.setSelectedIndex(i);
         break;
       }
     }       
@@ -590,7 +616,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     // Clear any previous data points    
     clearOverlays();
     
-    if (responses == null || responses.isEmpty()) return;
+    // Show error message if campaign has no user response data for map plotting
+    if (responses == null || responses.isEmpty()) {
+    	String user = this.getSelectedParticipant();
+    	if (user == null || user.isEmpty())
+    		ErrorDialog.show("This campaign has no user responses.");
+    	else
+    		ErrorDialog.show("The user \'" + user + "\' does not have any geo location data.");
+    	return;
+    }
     
     LatLngBounds bounds = LatLngBounds.newInstance();    
     // Add new data points 

@@ -339,7 +339,13 @@ public class AndWellnessDataService implements DataService {
               AppConfig.setPrivacyStates(privacyStates);
               AppConfig.setSharedResponsesOnly(true);
               AppConfig.setResponsePrivacyIsEditable(true);
-            } else if ("chipts".equals(appName)) {
+            } else if ("ohmage".equals(appName)) { 
+                List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);    
+                AppConfig.setAppDisplayName("Ohmage");
+                AppConfig.setPrivacyStates(privacyStates);
+                AppConfig.setSharedResponsesOnly(false); // show everything
+                AppConfig.setResponsePrivacyIsEditable(true);
+              } else if ("chipts".equals(appName)) {
               List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED, Privacy.INVISIBLE);
               AppConfig.setAppDisplayName("AndWellness");
               AppConfig.setPrivacyStates(privacyStates);

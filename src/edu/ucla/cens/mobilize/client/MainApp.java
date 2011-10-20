@@ -59,6 +59,7 @@ import edu.ucla.cens.mobilize.client.view.HelpView;
 import edu.ucla.cens.mobilize.client.view.LoginView;
 import edu.ucla.cens.mobilize.client.view.LoginViewAndWellnessImpl;
 import edu.ucla.cens.mobilize.client.view.LoginViewMobilizeImpl;
+import edu.ucla.cens.mobilize.client.view.LoginViewOhmageImpl;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.view.ResponseViewImpl;
 
@@ -222,9 +223,13 @@ public class MainApp implements EntryPoint, HistoryListener {
       public void onSuccess(AppConfig appConfig) {
         Window.setTitle(AppConfig.getAppDisplayName());
         String appName = AppConfig.getAppName();
-        if (appName.equalsIgnoreCase("mobilize")) { // mobilize has it's own login page
+        if (appName.equalsIgnoreCase("mobilize")) { // mobilize has its own login page
           loginView = new LoginViewMobilizeImpl();
-        } else  { // anything other than mobilize uses andwellness login page
+        }
+        else if (appName.equalsIgnoreCase("ohmage")) { // ohmage has its own login page
+          loginView = new LoginViewOhmageImpl();
+        }
+        else  { // anything other than mobilize uses andwellness login page
           loginView = new LoginViewAndWellnessImpl();
         } 
         loginPresenter = new LoginPresenter(awDataService, 

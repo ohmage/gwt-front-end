@@ -162,7 +162,13 @@ public class ExploreDataPresenter implements Presenter {
     final String campaignName = userInfo.getCampaigns().get(campaignId);
     Privacy privacy = AppConfig.exportAndVisualizeSharedResponsesOnly() ? Privacy.SHARED : null; // null shows everything
     view.showWaitIndicator();
-    dataService.fetchSurveyResponses(participantUsername, campaignId, 
+    
+    if (participantUsername != null && participantUsername.isEmpty())
+      participantUsername = null;
+    
+    dataService.fetchSurveyResponses(
+       participantUsername,
+       campaignId, 
        null, //surveyName 
        privacy, 
        startDate,
@@ -185,7 +191,7 @@ public class ExploreDataPresenter implements Presenter {
             view.showResponsesOnMap(result);
             view.hideWaitIndicator();
           }
-    });     
+       });
   }
   
 
@@ -240,6 +246,12 @@ public class ExploreDataPresenter implements Presenter {
       public void onTreeItemSelected(TreeItem item) {
         view.clearMissingFieldMarkers(); // clear any leftover validation errors
         setEnabledFiltersForPlotType(view.getSelectedPlotType());
+        
+        //preserve old choices, if valid. fetchAndFill... will reset any invalid choices in the list
+        String campaignId = view.getSelectedCampaign();
+        PlotType plotType = view.getSelectedPlotType();
+        fetchAndFillPromptChoices(campaignId, plotType, view.getSelectedPromptX(), view.getSelectedPromptY(), view.getFromDate(), view.getToDate());
+        fetchAndFillParticipantChoices(campaignId, view.getSelectedParticipant());
       }
 
       @Override
@@ -260,7 +272,7 @@ public class ExploreDataPresenter implements Presenter {
     view.getDrawPlotButton().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        view.clearPlot(); // prev plot is cleared even if inputs are invalid
+    	view.clearPlot(); // prev plot is cleared even if inputs are invalid
         String promptX = view.getSelectedPromptX();
         String promptY = view.getSelectedPromptY();
         Date fromDate = view.getFromDate();
@@ -285,7 +297,7 @@ public class ExploreDataPresenter implements Presenter {
     
   }
 
-  private void setEnabledFiltersForPlotType(PlotType plotType) {
+  private void setEnabledFiltersForPlotType(final PlotType plotType) {
     if (plotType == null) { // no plot selected
       view.disableAllDataControls();
       view.setSelectedPlotType(null); // don't allow "selection" of category nodes
@@ -300,12 +312,14 @@ public class ExploreDataPresenter implements Presenter {
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
+          //TODO: ADD DATE RANGE
           break;
         case USER_TIMESERIES:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(true);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(false);
+        //TODO: ADD DATE RANGE
           break;
         case PROMPT_TIMESERIES:
         case PROMPT_DISTRIBUTION:
@@ -313,6 +327,7 @@ public class ExploreDataPresenter implements Presenter {
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(false);
+        //TODO: ADD DATE RANGE
           break;
         case SCATTER_PLOT:
         case DENSITY_PLOT:
@@ -320,12 +335,14 @@ public class ExploreDataPresenter implements Presenter {
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(true);
+        //TODO: ADD DATE RANGE
           break;
         case MAP:
           view.setCampaignDropDownEnabled(true);
-          view.setParticipantDropDownEnabled(false);
+          view.setParticipantDropDownEnabled(true);
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
+        //TODO: ADD DATE RANGE
           break;
         default:
           break;
@@ -405,7 +422,7 @@ public class ExploreDataPresenter implements Presenter {
           String promptId = prompt.getPromptId();
           view.addPromptX(promptId, promptId, isSupported); // display text == id for now
           view.addPromptY(promptId, promptId, isSupported); // display text == id for now
-        }     
+        }
         view.setSelectedPromptX(promptToSelectX);
         view.setSelectedPromptY(promptToSelectY);
       }
