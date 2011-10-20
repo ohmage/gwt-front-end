@@ -166,7 +166,7 @@
           use their personal mobile devices and web services to systematically explore interesting aspects of their worlds ranging from 
           health to culture. A data campaign is used to define a collection of prompted inputs or questions. The answers to these questions 
           provide insight into the subject of the campaign, organizing the capture of facts and personal observations from participants.</p>
-          <p>Ohmage is an open-source participatory sensing technology. It supports expressive campaign authoring; mobile phone-based data 
+          <p><b>ohmage</b> is an open-source participatory sensing technology platform. It supports expressive campaign authoring; mobile phone-based data 
           capture through both inquiry-based surveys and automated data capture as well as temporally/spatially triggered reminders, data 
           visualization and real-time feedback; privacy respecting data management; and extensible data exploration. All captured data are 
           automatically timestamped, geocoded and uploaded for analysis and visualization. Ohmage has been used in pilot health studies 
