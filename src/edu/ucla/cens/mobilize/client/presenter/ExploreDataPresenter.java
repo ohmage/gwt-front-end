@@ -105,7 +105,8 @@ public class ExploreDataPresenter implements Presenter {
   public void go(Map<String, String> params) {
     
     // clear existing plot, if any
-    view.clearPlot(); 
+    view.clearPlot();
+    view.showStartArrow();
     
     // get plot settings from params
     String selectedPlotTypeString = params.containsKey("plot") ? params.get("plot") : null;
@@ -252,6 +253,8 @@ public class ExploreDataPresenter implements Presenter {
         PlotType plotType = view.getSelectedPlotType();
         fetchAndFillPromptChoices(campaignId, plotType, view.getSelectedPromptX(), view.getSelectedPromptY(), view.getFromDate(), view.getToDate());
         fetchAndFillParticipantChoices(campaignId, view.getSelectedParticipant());
+        
+        view.isMissingRequiredField();
       }
 
       @Override
@@ -280,9 +283,14 @@ public class ExploreDataPresenter implements Presenter {
         
         if (promptX != null && promptX.equals(promptY)) {
           ErrorDialog.show("Invalid prompt choice", "X and Y prompts must be different.");
-        } else if (fromDate != null && toDate != null && fromDate.after(toDate)) {	//make sure date range is valid
-          ErrorDialog.show("Invalid date range", "Starting date must be older or equal to the end date");
-        } else if (!view.isMissingRequiredField()) { // view marks missing fields, if any
+        }
+        else if ((fromDate == null && toDate != null) || (fromDate != null && toDate == null)) {
+          ErrorDialog.show("Invalid date range", "You must specify both a start date and an end date for date filtering. Otherwise, leave both fields blank.");
+        }
+        else if (fromDate != null && toDate != null && fromDate.after(toDate)) {	//make sure date range is valid
+          ErrorDialog.show("Invalid date range", "Starting date must be before or equal to the end date.");
+        }
+        else if (!view.isMissingRequiredField()) { // view marks missing fields, if any
           fireHistoryTokenToMatchSelectedSettings();
         }
       }
@@ -312,14 +320,14 @@ public class ExploreDataPresenter implements Presenter {
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
-          //TODO: ADD DATE RANGE
+          view.setDateRangeEnabled(false);
           break;
         case USER_TIMESERIES:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(true);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(false);
-        //TODO: ADD DATE RANGE
+          view.setDateRangeEnabled(false);
           break;
         case PROMPT_TIMESERIES:
         case PROMPT_DISTRIBUTION:
@@ -327,7 +335,7 @@ public class ExploreDataPresenter implements Presenter {
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(false);
-        //TODO: ADD DATE RANGE
+          view.setDateRangeEnabled(false);
           break;
         case SCATTER_PLOT:
         case DENSITY_PLOT:
@@ -335,14 +343,14 @@ public class ExploreDataPresenter implements Presenter {
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(true);
-        //TODO: ADD DATE RANGE
+          view.setDateRangeEnabled(false);
           break;
         case MAP:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(true);
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
-        //TODO: ADD DATE RANGE
+          view.setDateRangeEnabled(true);
           break;
         default:
           break;

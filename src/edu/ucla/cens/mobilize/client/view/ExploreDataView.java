@@ -72,11 +72,14 @@ public interface ExploreDataView extends IsWidget {
   void setParticipantDropDownEnabled(boolean isEnabled);
   void setPromptXDropDownEnabled(boolean isEnabled);
   void setPromptYDropDownEnabled(boolean isEnabled);
+  void setDateRangeEnabled(boolean isEnabled);
   void setDataButtonsEnabled(boolean isEnabled);
   void disableAllDataControls();
   
   void showWaitIndicator();
   void hideWaitIndicator();
+  void showStartArrow();
+  void hideStartArrow();
   
   // methods for event handling
   @SuppressWarnings("deprecation")
@@ -92,5 +95,4 @@ public interface ExploreDataView extends IsWidget {
   void clearMissingFieldMarkers();
   
   void doExportCsvFormPost(String url, Map<String, String> params);
-
 }

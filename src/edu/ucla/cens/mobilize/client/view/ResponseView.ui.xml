@@ -169,9 +169,9 @@
 	        <g:ListBox ui:field='privacyFilter'
 	                   visibleItemCount='1' 
 	                   addStyleNames='{style.filter}' />
-	        <g:Label addStyleNames='{style.label}'>From date:</g:Label>
+	        <g:Label addStyleNames='{style.label}'>Start Date:</g:Label>
 	        <dp:DateBox ui:field='fromDateBox' addStyleNames='{style.dateBox}' />
-	        <g:Label addStyleNames='{style.label}'>To date:</g:Label>
+	        <g:Label addStyleNames='{style.label}'>End Date:</g:Label>
 	        <dp:DateBox ui:field='toDateBox' addStyleNames='{style.dateBox}' />
 	        <g:HTMLPanel addStyleNames='{style.photoCheckBox}'>
 	          <g:CheckBox ui:field='hasPhotoCheckBox'>Only photo responses</g:CheckBox>

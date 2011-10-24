@@ -47,6 +47,7 @@
     	width: auto;
     }
     .promptQuestion {
+		font-weight: bold;
     }
     .promptResponse {
     	font-style: italic;

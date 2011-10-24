@@ -86,6 +86,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     String treeItemTimeseries();
     String treeItemTable();
     String waiting();
+    String startarrow();
   }
   
   @UiField ExploreDataStyles style;
@@ -98,8 +99,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @UiField ListBox participantListBox;
   @UiField ListBox promptXListBox;
   @UiField ListBox promptYListBox;
-  @UiField DateBox fromDateBox;
-  @UiField DateBox toDateBox;
+  @UiField DateBox dateStartBox;
+  @UiField DateBox dateEndBox;
   @UiField Button drawPlotButton;
   //@UiField Button pdfButton;
   @UiField Button exportButton;
@@ -112,6 +113,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   private List<HasMapsEventListener> clickHandlers;
   private Map<Marker, SurveyResponse> markerToResponseMap = new HashMap<Marker, SurveyResponse>();
   private Image spinner; 
+  private Image startarrow;
   
   public ExploreDataViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -125,12 +127,16 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     
     // set up date pickers
     DateBox.Format fmt = new DateBox.DefaultFormat(DateUtils.getDateBoxDisplayFormat());
-    fromDateBox.setFormat(fmt);
-    toDateBox.setFormat(fmt);
+    dateStartBox.setFormat(fmt);
+    dateEndBox.setFormat(fmt);
     
     // set up image to use as wait indicator
     spinner = new Image();
     spinner.setStyleName(style.waiting());
+    
+    // set up start arrow screen
+    startarrow = new Image();
+    startarrow.setStyleName(style.startarrow());
     
     // Single info window instance used by all markers
     infoWindow = InfoWindow.newInstance();
@@ -235,11 +241,18 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   public void setParticipantList(List<String> participants) {
     participantListBox.clear();
     
+    if (participants == null) {
+    	//participantListBox.addItem("(no users)", "");
+    	//participantListBox.setSelectedIndex(0);
+    	//NodeList<Element> items = participantListBox.getElement().getElementsByTagName("option");
+        //items.getItem(0).setAttribute("disabled", "disabled");
+    	return;
+    }
+    
     // add a multi-user option
     if (this.getSelectedPlotType() == PlotType.MAP)
     	participantListBox.addItem("(all users)", "");
     
-    if (participants == null) return;
     for (String username : participants) {
       participantListBox.addItem(username, username);
     }
@@ -369,7 +382,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
       @Override
       public void onError(ErrorEvent event) {
         // get rid of the loading indicator and broken image
-        plotContainer.clear();
+    	clearPlot();
         // also call custom error handler, if given
         if (errorHandler != null) errorHandler.onError(event);
       }
@@ -388,6 +401,17 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @Override
   public void hideWaitIndicator() {
     plotContainer.remove(spinner);
+  }
+  
+  @Override
+  public void showStartArrow() {
+     clearPlot();
+     plotContainer.add(startarrow);
+  }
+  
+  @Override
+  public void hideStartArrow() {
+    plotContainer.remove(startarrow);
   }
 
   @Override
@@ -421,6 +445,17 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     setRequiredFlag(promptYListBox, isEnabled);
   }
 
+  @Override
+  public void setDateRangeEnabled(boolean isEnabled) {
+	  dateStartBox.setEnabled(isEnabled);
+	  dateEndBox.setEnabled(isEnabled);
+	  
+	  if (isEnabled == false) {
+		  dateStartBox.setValue(null);
+		  dateEndBox.setValue(null);
+	  }
+  }
+  
   @Override
   public void disableAllDataControls() {
     campaignListBox.setSelectedIndex(-1); // campaigns never change, just deselect
@@ -620,7 +655,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     if (responses == null || responses.isEmpty()) {
     	String user = this.getSelectedParticipant();
     	if (user == null || user.isEmpty())
-    		ErrorDialog.show("This campaign has no user responses.");
+    		ErrorDialog.show("This campaign has no user responses for the selected parameters.");
     	else
     		ErrorDialog.show("The user \'" + user + "\' does not have any geo location data.");
     	return;
@@ -791,21 +826,21 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	
 	@Override
 	public void selectFromDate(Date fromDate) {
-		fromDateBox.setValue(fromDate);
+		dateStartBox.setValue(fromDate);
 	}
 	
 	@Override
 	public Date getFromDate() {
-		return this.fromDateBox.getValue();
+		return this.dateStartBox.getValue();
 	}
 	
 	@Override
 	public void selectToDate(Date toDate) {
-		toDateBox.setValue(toDate);
+		dateEndBox.setValue(toDate);
 	}
 	
 	@Override
 	public Date getToDate() {
-		return this.toDateBox.getValue();
+		return this.dateEndBox.getValue();
 	}
 }

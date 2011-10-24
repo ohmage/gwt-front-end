@@ -41,6 +41,8 @@
       padding: 5px 10px 10px 25px;
     }
 		.promptQuestion {
+			font-weight: bold;
+
 		}
 		.promptResponse {
 			font-style: italic;

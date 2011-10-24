@@ -113,6 +113,20 @@ public class DocumentList extends Composite {
     this.documentDownloadHandler = handler;
   }
   
+  private String getSizeAsStr(float size_in_kb) {
+	  String postfix = "KB";
+	  if (size_in_kb < 1000) {
+		  postfix = "KB";
+	  } else if (size_in_kb < 1000000) {
+		  size_in_kb /= 1000;
+		  postfix = "MB";
+	  } else {
+		  size_in_kb /= 1000000;
+		  postfix = "GB";
+	  }
+	  return NumberFormat.getFormat("#####0.00").format(size_in_kb) + " " + postfix;
+  }
+  
   private void addDocument(int row, DocumentInfo documentInfo) {
     // stripe odd rows
     if (row % 2 != 0) {
@@ -133,7 +147,7 @@ public class DocumentList extends Composite {
     // size
     this.documentGrid.setText(row, 
                               Column.SIZE, 
-                              NumberFormat.getFormat("######.00").format(documentInfo.getSizeInKB()) + " KB");
+                              getSizeAsStr(documentInfo.getSizeInKB()));
     this.documentGrid.getCellFormatter().setStyleName(row, Column.SIZE, style.documentSize());
     
     // privacy 

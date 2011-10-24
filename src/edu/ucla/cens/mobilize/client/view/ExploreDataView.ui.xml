@@ -126,6 +126,15 @@
     	height: 100%;
     	width: 100%;
     }
+    .startarrow {
+    	background: 30% 30% no-repeat url('images/exploredata_beginarrow.png');
+    	background-color: #FFF;
+    	position: absolute;
+    	top: 0;
+    	left: 0;
+    	height: 100%;
+    	width: 100%;
+    }
   </ui:style>
     <g:DockLayoutPanel addStyleNames='{style.layout}' unit='PX' ui:field='layoutPanel'>
      
@@ -163,7 +172,7 @@
 	           <g:Label ui:field='requiredFieldMissingMsg' 
 	                    visible='false' 
 	                    addStyleNames='{style.requiredFieldMissingMsg}'>
-	             Missing required field
+	             Required options
 	           </g:Label>
 	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
 	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Campaign:</g:InlineLabel>
@@ -181,14 +190,13 @@
 	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>PromptY:</g:InlineLabel>
 	             <g:ListBox ui:field='promptYListBox' addStyleNames='{style.dataControlListBox}' />
 	           </g:HTMLPanel>
-	           <!-- TODO: range selection not finished yet OCT.12.2011 - ewang -->
-	           <g:HTMLPanel addStyleNames='{style.hidden}'>
+	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
 	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Start Date:</g:InlineLabel>
-		         <dp:DateBox ui:field='fromDateBox' addStyleNames='{style.dateBox}' />
+		         <dp:DateBox ui:field='dateStartBox' addStyleNames='{style.dateBox}' />
 		       </g:HTMLPanel>
-	           <g:HTMLPanel addStyleNames='{style.hidden}'>
+	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
 		         <g:InlineLabel addStyleNames='{style.dataControlLabel}'>End Date:</g:InlineLabel>
-		         <dp:DateBox ui:field='toDateBox' addStyleNames='{style.dateBox}' />
+		         <dp:DateBox ui:field='dateEndBox' addStyleNames='{style.dateBox}' />
 		       </g:HTMLPanel>
 	         </g:HTMLPanel>
          </g:CaptionPanel>

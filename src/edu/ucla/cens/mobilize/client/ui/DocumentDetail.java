@@ -101,6 +101,20 @@ public class DocumentDetail extends Composite {
   private String getDocumentId() {
     return this.documentId; // gets set in setDocumentDetail()
   }
+
+  private String getSizeAsStr(float size_in_kb) {
+	  String postfix = "KB";
+	  if (size_in_kb < 1000) {
+		  postfix = "KB";
+	  } else if (size_in_kb < 1000000) {
+		  size_in_kb /= 1000;
+		  postfix = "MB";
+	  } else {
+		  size_in_kb /= 1000000;
+		  postfix = "GB";
+	  }
+	  return NumberFormat.getFormat("#####0.00").format(size_in_kb) + " " + postfix;
+  }
   
   public void setDocumentDetail(DocumentInfo documentInfo, boolean canEdit) {
     if (documentInfo != null) {
@@ -110,8 +124,8 @@ public class DocumentDetail extends Composite {
       // creation details
       this.creatorLabel.setText(documentInfo.getCreator());
       this.lastModifiedDateLabel.setText(this.dateFormat.format(documentInfo.getLastModifiedTimestamp()));
-      String sizeString = NumberFormat.getFormat("######.00").format(documentInfo.getSizeInKB());
-      this.sizeLabel.setText(sizeString + " KB");
+      String sizeString = getSizeAsStr(documentInfo.getSizeInKB());
+      this.sizeLabel.setText(sizeString + " (" + NumberFormat.getDecimalFormat().format(documentInfo.getSizeInBytes()) + " bytes)");
       
       // copy info from data obj into fields
       this.documentNameLabel.setText(documentInfo.getDocumentName());
