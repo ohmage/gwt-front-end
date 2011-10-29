@@ -54,7 +54,8 @@ public class CampaignEditFormView extends Composite {
   @UiField TextArea campaignDescriptionTextArea;
   @UiField Button addClassesButton;
   @UiField FlexTable classesFlexTable;
-  @UiField Hidden classHiddenField; // holds serialized class list
+  @UiField Hidden classAddHiddenField; // holds serialized list of classes to add
+  @UiField Hidden classDelHiddenField; // holds serialized list of classes to delete
   @UiField HTMLPanel authorsPanel;
   @UiField Button addAuthorsButton;
   @UiField FlexTable authorsFlexTable;
@@ -80,6 +81,7 @@ public class CampaignEditFormView extends Composite {
 
   private boolean formIsInitialized = false;
   private List<String> originalAuthors;
+  private List<String> originalClasses;
   
   public CampaignEditFormView() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -108,7 +110,10 @@ public class CampaignEditFormView extends Composite {
     }
     // NOTE(06/15/2011): create api does not support adding authors
 
-    classHiddenField.setValue(getClassUrnsSerialized());
+    classAddHiddenField.setValue(getClassesToAddSerialized());
+    classDelHiddenField.setValue(getClassesToRemoveSerialized());
+    clearOriginalClasses();	//FIXME: is it safe to clear the old list here before we know everything submitted?
+    
     campaignUrnHiddenField.setValue(this.campaignUrn.getText());
     
     // Disable author hidden fields when empty to prevent api errors. (Fields would
@@ -183,10 +188,6 @@ public class CampaignEditFormView extends Composite {
       urns.add(this.classesFlexTable.getText(i, CLASS_URN_COL));
     }
     return urns;
-  }
-  
-  private String getClassUrnsSerialized() {
-    return CollectionUtils.join(getClassUrns(), ",");
   }
   
   public void addAuthor(String authorLogin) {
@@ -285,7 +286,26 @@ public class CampaignEditFormView extends Composite {
     return CollectionUtils.join(authorsToRemoveWithRoles, ",");
   }
   
-  
+  // Classes list needs to be diffed when doing a campaign update because
+  // class add/remove are separate parameters sent to Campaign Update API 2.8+
+  public void storeOriginalClasses(List<String> classUrnList) {
+	  this.originalClasses = classUrnList;
+  }
+  private void clearOriginalClasses() {
+	  this.originalClasses.clear();
+  }
+  private Collection<String> getClassesToAdd() {
+    return CollectionUtils.setDiff(getClassUrns(), this.originalClasses);
+  }
+  private Collection<String> getClassesToRemove() {
+    return CollectionUtils.setDiff(this.originalClasses, getClassUrns());
+  }
+  private String getClassesToAddSerialized() {
+    return CollectionUtils.join(getClassesToAdd(), ",");
+  }
+  private String getClassesToRemoveSerialized() {
+    return CollectionUtils.join(getClassesToRemove(), ",");
+  }
   
   public HasClickHandlers getSaveButton() {
     return this.saveButton;
@@ -444,7 +464,7 @@ public class CampaignEditFormView extends Composite {
     this.formPanel.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
     this.formPanel.setMethod(FormPanel.METHOD_POST);
     this.saveButton.setEnabled(true);
-    this.formIsInitialized = true;    
+    this.formIsInitialized = true;
   }
 
   public boolean formIsInitialized() {

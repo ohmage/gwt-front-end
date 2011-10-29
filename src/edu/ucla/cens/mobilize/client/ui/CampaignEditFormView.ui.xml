@@ -152,9 +152,9 @@
                 <label>Classes:</label>
               </td>
               <td>
-                <g:FlexTable ui:field='classesFlexTable' 
-                             addStyleNames='{style.classList}' />
-                <g:Hidden ui:field='classHiddenField' name='class_urn_list' />
+                <g:FlexTable ui:field='classesFlexTable' addStyleNames='{style.classList}' />
+                <g:Hidden ui:field='classAddHiddenField' name='class_list_add' />
+                <g:Hidden ui:field='classDelHiddenField' name='class_list_remove' />
                 <g:Button ui:field='addClassesButton'>Add Classes</g:Button>
               </td>
             </tr>

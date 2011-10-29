@@ -231,12 +231,12 @@
 	          </g:HTMLPanel>
 	        </g:HTMLPanel>
         </g:HTMLPanel>
-	      <g:FlowPanel addStyleNames='{style.responseContainer}'>
-	      
-		      <!-- list of responses that match the selected filters  -->
-		      <g:FlowPanel ui:field="responseList" addStyleNames='{style.responseList}' />
-		      
-	      </g:FlowPanel>
+        
+        <g:FlowPanel addStyleNames='{style.responseContainer}'>
+          <!-- list of responses that match the selected filters  -->
+          <g:FlowPanel ui:field="responseList" addStyleNames='{style.responseList}' />
+        </g:FlowPanel>
+        
       </g:HTMLPanel>
     </g:center>
     

@@ -149,7 +149,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                        selectedPrivacy,
                                        onlyPhotoResponses,
                                        startDate,
-                                       endDate);      
+                                       endDate);
       break;
     case EDIT:
       // if editing isn't allowed for this installation, redirect to browse

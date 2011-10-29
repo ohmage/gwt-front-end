@@ -88,6 +88,7 @@ public class CampaignEditFormPresenter {
                                  classUrn; // put class urn if name not available // FIXME?
             classes.put(classUrn, className);
           }
+          view.storeOriginalClasses(new ArrayList<String>(classes.keySet()));
           view.setSelectedClasses(classes);
           view.setDeletePanelVisible(true); 
           view.setAuthorsPanelVisible(true);
