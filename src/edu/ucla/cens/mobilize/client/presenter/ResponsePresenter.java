@@ -616,9 +616,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
               } else { 
                 // user is looking at all responses or shared responses, change the 
                 // privacy icon and update privacy in the internal data struct
-                view.markShared(surveyKey);
                 SurveyResponse response = getSurveyResponse(surveyKey);
                 response.setPrivacyState(Privacy.SHARED);
+                view.markShared(surveyKey); // only mark shared after setPrivacyState is successful
               }
 
             }
@@ -680,9 +680,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
               } else {
                 // user is looking at all responses or private responses, change the 
                 // privacy icon and update privacy in the internal data struct
-                view.markPrivate(surveyKey);
                 SurveyResponse response = getSurveyResponse(surveyKey);
                 response.setPrivacyState(Privacy.PRIVATE);
+                view.markPrivate(surveyKey); // only mark private after setPrivacyState is successful
               }
             }
       });
