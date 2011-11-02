@@ -69,6 +69,10 @@ a:hover, a:active {
 	font-weight: normal;
 }
 
+.formFieldInvalid {
+	color: maroon;
+}
+
 /** Most GWT widgets already have a style name defined */
 
 .gwt-DateBox {
@@ -225,8 +229,9 @@ a:hover, a:active {
 
 .gwt-DialogBox { 
   background-color: #888;
-	border: 1px solid #333;
-	border-top: 1px solid #666;  
+	/*border: 1px solid #AAA;*/
+	border: none;
+	border-top: 1px solid #888;  
 }
 .gwt-DialogBox .dialogContent { background-color: white; }
 .gwt-DialogBox .dialogTopLeft { background-color: #888; }
@@ -252,7 +257,7 @@ a:hover, a:active {
 .gwt-DialogBox .dialogBottomRight { background-color: #AAA; }
 .gwt-DialogBox .dialogBottomRightInner {}
 
-/********* app-wide error message styles *********************/
+/********* app-wide message styles *********************/
 
 .errorBox {
 	background-image: url(images/exclamation.png);
@@ -268,6 +273,12 @@ a:hover, a:active {
   text-align: right;
 }
 
+.infoDialogButtonDiv {
+	background-color: #CCC;
+	border-top: solid 1px #AAA;
+	text-align: right;
+}
+
 ul.errorList {
 	list-style-type: none; /* no html bullets */
 	padding: 0px 10px 0px 5px;
@@ -280,6 +291,16 @@ li.errorListItem {
 	padding-left: 17px;
 }
 
+.successMsg {
+	background-color: #FFFFE0;
+  background-image: url(images/star.png);
+  background-repeat: no-repeat;
+  background-position: 10px 50%;
+  border: solid 1px #F8CF3E;
+  margin: auto;
+  padding: 10px 10px 10px 30px;
+}
+
 /********* end app-wide error message styles *********************/
 
 /********* hack for disclosure panels *********************/
@@ -289,3 +310,25 @@ a.header, a.header td, a.header table, a.header tr {
 }
 /********* end hack for disclosure panels *****************/
 
+/************** list widget styles *****************/
+
+.listWidget button {
+  background-color: #DDD;
+  border: solid 1px #AAA;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.8em;
+  height: 13px;
+  padding: 0px;
+  width: 13px;
+}
+
+.listWidget td {
+  border-bottom: solid thin #CCC;
+  color: #444;
+  font-size: 0.9em;
+  padding-right: 5px;
+  vertical-align: middle;
+}
+
+/********* end list widget styles *****************/

@@ -1,4 +1,5 @@
 package edu.ucla.cens.mobilize.client.dataaccess;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -8,17 +9,23 @@ import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserCreateParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserSearchParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserUpdateParams;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
+import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
+import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 
 
@@ -84,18 +91,55 @@ public interface DataService {
    * @param newPassword
    * @param callback
    */
-  void changePassword(String userName, 
+  void changePassword(String username, 
                       String oldPassword, 
                       String newPassword, 
                       final AsyncCallback<String> callback);
-
+  
+  void adminChangePassword(String usernameLoggedInUser,
+                           String passwordLoggedInUser,
+                           String usernameThatOwnsPassword,
+                           String newPassword,
+                           final AsyncCallback<String> callback);
+  
   /**
-   * @param userName
+   * @param username
    * @param asyncCallback returns UserInfo object on success
    */
-  void fetchUserInfo(String userName, final AsyncCallback<UserInfo> asyncCallback);
+  void fetchUserInfo(String username, final AsyncCallback<UserInfo> asyncCallback);
   
-  void fetchClassMembers(String classUrn, final AsyncCallback<List<UserShortInfo>> callback);
+  void fetchUserShortInfo(String username, final AsyncCallback<UserShortInfo> asyncCallback);
+  
+  /**
+   * Lets admin query user search api.
+   * @param UserSearchParams
+   * @param callback
+   */
+  void fetchUserSearchResults(UserSearchParams params, final AsyncCallback<List<UserSearchInfo>> callback);
+  
+  /**
+   * Lets admin query search api for detailed info about a single user. Same as 
+   * fetchUserSearchResults except that it only returns info about a single user
+   * whose name matches the username string exactly. (fetchUserSearchResults would
+   * return a list of all users whose usernames contain the search string.)
+   * @note will return null to the onSuccess callback if the search api doesn't return 
+   *   a record with username that matches exactly, even if there are partial matches
+   * @param username
+   * @param callback 
+   */
+  void fetchUserSearchInfo(String username, final AsyncCallback<UserSearchInfo> callback);
+  
+  void fetchClassMembers(Collection<String> classUrn, final AsyncCallback<List<UserShortInfo>> callback);
+  
+  void deleteUsers(Collection<String> usernames, final AsyncCallback<String> callback);
+  
+  void disableUser(String username, final AsyncCallback<String> callback);
+  
+  void enableUser(String username, final AsyncCallback<String> callback);
+  
+  void updateUser(UserUpdateParams params, final AsyncCallback<String> callback);
+
+  void createUser(UserCreateParams params, final AsyncCallback<String> callback);
   
   // campaigns
   void fetchCampaignIds(CampaignReadParams params,
@@ -230,6 +274,23 @@ public interface DataService {
   void fetchClassList(List<String> classIds,
                       final AsyncCallback<List<ClassInfo>> callback);
   
+  
+  void fetchClassSearchResults(ClassSearchParams params, final AsyncCallback<List<ClassSearchInfo>> callback);
+  
+  /**
+   * Same as fetchClassSearchResults except it only returns the single result with class urn
+   * that exactly matches the classUrn argument. If no result matches exactly (even if there
+   * are partial matches) it will return null to the onSuccess function.
+   * @param params
+   * @param callback 
+   */
+  void fetchClassSearchInfo(String classUrn, final AsyncCallback<ClassSearchInfo> callback);
+  
+  /**
+   * @param callback Returns a map of class urns to names (for all classes)
+   */
+  void fetchClassNamesAndUrns(final AsyncCallback<Map<String, String>> callback);
+  
   /**
    * Convenience method for getting info about just one class
    * @param classId
@@ -238,11 +299,23 @@ public interface DataService {
   void fetchClassDetail(String classId, final AsyncCallback<ClassInfo> callback);
   
   /**
+   * @param params ClassUpdateParams
+   * @param callback AsyncCallback\<String\>
+   */
+  void createClass(ClassUpdateParams params, final AsyncCallback<String> callback);
+  
+  /**
    * @param params
    * @param callback
    */
   void updateClass(ClassUpdateParams params, final AsyncCallback<String> callback);
 
+  /**
+   * @param classUrn
+   * @param callback
+   */
+  void deleteClass(String classUrn, final AsyncCallback<String> callback);
+  
   /**
    * @param params
    * @param callback returns List\<DocumentInfo\> on success
@@ -278,6 +351,16 @@ public interface DataService {
    * @return
    */
   Map<String, String> getCampaignXmlDownloadParams(String campaignId);
+  
+  /**
+   * Generates parameter names and values for querying the class roster read API.
+   * Given as a map of parameter names to values instead of a dataService call 
+   * because you need to make the request with a FormPanel post to get the
+   * browser to prompt the user to save the file. 
+   * @param classUrns List of class urns
+   * @return Map of param names to values that can be used in a FormPanel to fetch the roster
+   */
+  Map<String, String> getClassRosterCsvDownloadParams(List<String> classUrns);
   
   /**
    * Generates url that, when fetched, generates a visualization on-the-fly.

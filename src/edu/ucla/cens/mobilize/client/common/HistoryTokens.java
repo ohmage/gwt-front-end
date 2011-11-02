@@ -21,6 +21,101 @@ public class HistoryTokens {
     return "logout";
   }
   
+  public static String admin() {
+    return "admin";
+  }
+  
+  public static String adminClassList() {
+    return "admin_class_list";
+  }
+  
+  public static String adminClassList(String className, String classMember, String classUrn) {
+    Map<String, String> params = new HashMap<String, String>();
+    if (className != null && !className.isEmpty()) {
+      params.put("class", className);
+    }
+    if (classMember != null && !classMember.isEmpty()) {
+      params.put("member", classMember);
+    }
+    if (classUrn != null && !classUrn.isEmpty()) {
+      params.put("urn", classUrn);
+    }
+    return "admin_class_list?" + MapUtils.translateToParameters(params);
+  }
+  
+  public static String adminClassDetail(String class_id) {
+    return "admin_class_detail?cid=" + class_id;
+  }
+  
+  public static String adminClassCreate() {
+    return "admin_class_create";
+  }
+  
+  public static String adminClassEdit(String class_id) {
+    return "admin_class_edit?cid=" + class_id;
+  }
+
+  
+  public static String adminUserList() {
+    return "admin_user_list";
+  }
+  
+  public static String adminUserList(String username,
+                                     String personalId,
+                                     Boolean isEnabled,
+                                     Boolean canCreateCampaigns,
+                                     Boolean isAdmin,
+                                     String firstName,
+                                     String lastName,
+                                     String email,
+                                     String organization,
+                                     String json) {
+    Map<String, String> params = new HashMap<String, String>();
+    if (username != null && !username.isEmpty()) {
+      params.put("username", username);
+    }
+    if (personalId != null && !personalId.isEmpty()) {
+      params.put("pid", personalId);
+    }
+    if (isEnabled != null) {
+      params.put("enabled", isEnabled ? "true" : "false");
+    }
+    if (canCreateCampaigns != null) {
+      params.put("can_create", canCreateCampaigns ? "true" : "false");
+    }
+    if (isAdmin != null) {
+      params.put("admin", isAdmin ? "true" : "false");
+    }
+    if (firstName != null && !firstName.isEmpty()) {
+      params.put("first_name", firstName);
+    }
+    if (lastName != null && !lastName.isEmpty()) {
+      params.put("last_name", lastName);
+    }
+    if (email != null && !email.isEmpty()) { 
+      params.put("email", email);
+    }
+    if (organization != null && !organization.isEmpty()) {
+      params.put("organization", organization);
+    }
+    if (json != null && !json.isEmpty()) {
+      params.put("json", json);
+    }
+    return "admin_user_list?" + MapUtils.translateToParameters(params);
+  }
+  
+  public static String adminUserDetail(String user_id) {
+    return "admin_user_detail?uid=" + user_id;
+  }
+  
+  public static String adminUserCreate() {
+    return "admin_user_create";
+  }
+  
+  public static String adminUserEdit(String user_id) {
+    return "admin_user_edit?uid=" + user_id;
+  }
+  
   public static String campaignList() {
     return "campaigns";
   }

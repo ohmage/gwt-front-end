@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.dataaccess;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,17 +22,24 @@ import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.common.UserStats;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserCreateParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserSearchParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserUpdateParams;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
+import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
+import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.utils.XmlConfigTranslator;
 
 public class MockDataService implements DataService {
@@ -255,8 +263,11 @@ public class MockDataService implements DataService {
                              String oldPassword,
                              String newPassword,
                              final AsyncCallback<String> callback) {
-    // TODO Auto-generated method stub
     
+  }
+  
+  public void resetPassword(String username, final AsyncCallback<String> callback) {
+    callback.onSuccess("Password not really changed (mock data service)");
   }
   
   @Override
@@ -360,6 +371,12 @@ public class MockDataService implements DataService {
     callback.onSuccess(this.classInfos);    
   }
 
+  @Override
+  public void fetchClassSearchResults(ClassSearchParams params,
+      AsyncCallback<List<ClassSearchInfo>> callback) {
+    // TODO Auto-generated method stub
+    
+  }
 
   @Override
   public void fetchClassDetail(String classId, AsyncCallback<ClassInfo> callback) {
@@ -479,7 +496,7 @@ public class MockDataService implements DataService {
   }
 
   @Override
-  public void fetchClassMembers(String classUrn,
+  public void fetchClassMembers(Collection<String> classUrns,
       AsyncCallback<List<UserShortInfo>> callback) {
     // TODO Auto-generated method stub
     
@@ -515,5 +532,107 @@ public class MockDataService implements DataService {
     AppConfig.setSharedResponsesOnly(false); // show everything
     AppConfig.setResponsePrivacyIsEditable(false);
   }
+
+  @Override
+  public void deleteUsers(Collection<String> usernames, AsyncCallback<String> callback) {
+    _logger.finer("Mock delete");
+    callback.onSuccess("Mock delete");
+  }
+
+  @Override
+  public void disableUser(String username, AsyncCallback<String> callback) {
+    _logger.finer("Mock disable");
+    callback.onSuccess("Mock disable");
+  }
+
+  @Override
+  public void enableUser(String username, AsyncCallback<String> callback) {
+    _logger.finer("Mock enable");
+    callback.onSuccess("Mock enable");
+  }
+
+  @Override
+  public void updateUser(UserUpdateParams params, AsyncCallback<String> callback) {
+    //callback.onFailure(new Exception("Username already exists"));
+    callback.onSuccess("Saved!");
+  }
+
+  @Override
+  public void fetchUserShortInfo(String username, AsyncCallback<UserShortInfo> asyncCallback) {
+    List<String> firstNames = Arrays.asList("Joe", "Harriet", "Dora", "Benji");
+    List<String> lastNames = Arrays.asList("Jones", "Smith", "Tennyson", "Eames");
+    UserShortInfo user = new UserShortInfo();
+    user.setUsername(username);
+    user.setEmail(username + "@gmail.com");
+    user.setFirstName(firstNames.get(Random.nextInt(firstNames.size() - 1)));
+    user.setLastName(lastNames.get(Random.nextInt(lastNames.size() - 1)));
+    user.setOrganization("Acme");
+    user.setPersonalId(Integer.toString(Random.nextInt(1000000)));
+    asyncCallback.onSuccess(user);
+  }
+
+  @Override
+  public void deleteClass(String classUrn, AsyncCallback<String> callback) {
+    String successMsg = "Mock delete of " + classUrn;
+    callback.onSuccess(successMsg);
+    _logger.finer(successMsg);
+  }
+
+  @Override
+  public void createClass(ClassUpdateParams params,
+      AsyncCallback<String> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public Map<String, String> getClassRosterCsvDownloadParams(List<String> classUrns) { 
+      Map<String, String> params = new HashMap<String, String>();
+      params.put("auth_token", "my_auth_token");
+      params.put("client", "mock");
+      params.put("class_urn_list", CollectionUtils.join(classUrns, ","));
+      return params;
+  }
+
+  @Override
+  public void fetchUserSearchResults(UserSearchParams params,
+      AsyncCallback<List<UserSearchInfo>> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void fetchUserSearchInfo(String username,
+      AsyncCallback<UserSearchInfo> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void fetchClassSearchInfo(String classUrn,
+      AsyncCallback<ClassSearchInfo> callback) {
+    // TODO Auto-generated method stub
+  }
+
+  @Override
+  public void fetchClassNamesAndUrns(AsyncCallback<Map<String, String>> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void createUser(UserCreateParams params, AsyncCallback<String> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void adminChangePassword(String usernameLoggedInUser,
+      String passwordLoggedInUser, String usernameThatOwnsPassword,
+      String newPassword, AsyncCallback<String> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
 
 }

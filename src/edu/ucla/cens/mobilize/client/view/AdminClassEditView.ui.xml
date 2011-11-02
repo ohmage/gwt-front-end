@@ -1,0 +1,235 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
+  <ui:style type='edu.ucla.cens.mobilize.client.view.AdminClassEditView.AdminClassEditViewStyles'>
+    .backLink {
+      cursor: pointer;
+      padding-left: 20px;
+      padding: 5px 20px;
+      text-decoration: underline;
+    }
+    .bold {
+    	font-weight: bold;
+     }
+    .buttonPanel {
+      padding: 5px 10px;
+    }
+    .centerContainer {
+      padding: 15px 20px;
+      overflow-y: auto;
+    }
+    .example {
+    	color: #AAA;
+    	font-style: italic;
+    }
+    input.data, textarea.data {
+    	border: solid thin #AAA;
+    }
+    input.data {
+    	width: 252px;
+    }
+    textarea.data {
+    	width: 250px;
+    }
+    .dataList {
+    	border: solid thin #CCC;
+    }
+    .dataList .label {
+      vertical-align: top;
+    }
+    .deleteButton {
+    	color: maroon;
+    	margin-left: 20px;
+    }
+    .label {
+      display: inline-block;
+      font-weight: bold;
+      width: 100px;
+    }
+    .invalid {
+      border: solid 1px red;
+    }
+    .invalidMsg {
+      /* todo: put error icon in background */
+      color: maroon;
+    }
+    .row {
+      whitespace: no-wrap;
+    }
+    .sectionHeader {
+      background: #FFFFE0 repeat-x url("images/bg_white_transparent_50.png");
+      border-bottom: thin solid #DDD;
+      padding: 10px 0px;
+      text-align: center;
+      whitespace: no-wrap;
+      width: 100%;
+    }
+    .sectionHeaderInstructions {
+      font-size: 0.8em;
+    }
+    .sectionHeaderTitle {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    .textAreaRow {
+    	vertical-align: top;
+    }
+    .textAreaRow textarea {
+    	height: 50px;
+    }
+    .textAreaRow span {
+    	vertical-align: top;
+    }
+    /* member list styles */
+    .memberListButtonContainer {
+    	background-color: #EAEFF3;
+    	border-bottom: solid thin #CCC;
+    	padding: 3px 0px;
+    	text-align: left;
+    }
+    .addMembersButton {
+    	color: #254117;
+    	float: right;
+    }
+    .memberListGrid {
+    }
+    .memberListGridContainer {
+    	border-top: none;
+    	display: block;
+    	height: 200px;
+    	width: 440px; 
+     	overflow-x: visible;
+    	overflow-y: auto;
+    }
+    .memberListHeaderRow {
+    	font-weight: bold;
+    	background-color: #236;
+    	color: white;
+    	width: 100%;
+    }
+    .memberListHeaderRow td {
+    	padding: 0px;
+    }
+    .memberListCheckBoxCell {
+    	text-align: center;
+    	vertical-align: middle;
+      width: 30px;
+    }
+    .memberListRoleCell {
+    	padding-left: 22px;
+      width: 200px;
+    }
+    .memberListUsernameCell {
+      width: 200px;
+    }
+    .memberPrivilegedRow {
+    	color: #950;
+    }
+    .memberPrivilegedRoleCell {
+    	background: url(http://127.0.0.1:8888/images/asterisk_orange_small.png) no-repeat 5px 50%;
+    }
+    .memberRemoved {
+    	color: #AAA;
+    	text-decoration: line-through;
+    }
+  </ui:style>
+  <g:DockLayoutPanel unit='PX' ui:field='mainLayoutPanel'>
+    <g:west size='150'>
+      <g:HTMLPanel>
+        <w:AdminMenu ui:field='adminMenu' />
+      </g:HTMLPanel>
+    </g:west>
+    <g:north size='50'>
+      
+      <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
+        <g:HorizontalPanel>
+          <g:HTMLPanel addStyleNames='{style.backLink}'>
+            <g:Anchor ui:field='backLink' addStyleNames='link'>&laquo;&nbsp;Back</g:Anchor>
+          </g:HTMLPanel>
+          <g:HTMLPanel>
+            <g:Label addStyleNames='{style.sectionHeaderTitle}'  ui:field='sectionHeaderTitle'>
+              Editing&nbsp;Class
+            </g:Label>
+            <g:Label addStyleNames='{style.sectionHeaderInstructions}'>
+              Changes will not be stored until you click Save.
+            </g:Label>
+          </g:HTMLPanel>
+        </g:HorizontalPanel>
+      </g:HTMLPanel>
+    </g:north>
+    <g:center>
+      <g:HTMLPanel addStyleNames='{style.centerContainer}' ui:field='centerContainer'>
+        <g:VerticalPanel>
+          <g:HTMLPanel addStyleNames='{style.row}'>
+            <g:InlineLabel addStyleNames='{style.label}'>Class Urn:</g:InlineLabel>
+            <!-- TextBox allows entering urn during class creation and is hidden during edit. -->
+            <g:TextBox ui:field='classUrnTextBox' addStyleNames='{style.data}' />
+            <!-- Read-only label displays username during edit and is hidden during creat. -->
+            <g:InlineLabel ui:field='classUrnLabel' />
+            <g:InlineLabel ui:field='classUrnInvalidMsg' addStyleNames='{style.invalidMsg}' />
+            <g:InlineLabel ui:field='classUrnExample' addStyleNames='{style.example}'>
+              (e.g., "urn:class:lausd:chemistry:101")
+            </g:InlineLabel>
+          </g:HTMLPanel>
+          <g:HTMLPanel addStyleNames='{style.row}'>
+            <g:InlineLabel addStyleNames='{style.label}'>Class Name:</g:InlineLabel>
+            <g:TextBox ui:field='classNameTextBox' addStyleNames='{style.data}' />
+            <g:InlineLabel ui:field='classNameInvalidMsg' addStyleNames='{style.invalidMsg}' />
+            <g:InlineLabel ui:field='classNameExample' addStyleNames='{style.example}'>
+              (e.g., "Chemistry 101")
+            </g:InlineLabel>
+          </g:HTMLPanel>
+          <g:HTMLPanel addStyleNames='{style.row} {style.textAreaRow}'>
+            <g:InlineLabel addStyleNames='{style.label}'>Description:</g:InlineLabel>
+            <g:TextArea ui:field='descriptionTextArea' addStyleNames='{style.data}' />
+            <g:InlineLabel ui:field='descriptionInvalidMsg' addStyleNames='{style.invalidMsg}' />
+          </g:HTMLPanel>
+          <g:HTMLPanel ui:field='memberPanel'>
+	          <g:HTMLPanel>
+		          <g:InlineLabel addStyleNames='{style.bold}'>Members </g:InlineLabel>
+		          <g:InlineLabel addStyleNames='{style.bold}' ui:field='memberCount'/>
+		          <g:InlineLabel addStyleNames='{style.bold}'>:</g:InlineLabel>
+	          </g:HTMLPanel>
+	          <g:HTMLPanel addStyleNames='{style.dataList}'>
+	            <g:HTMLPanel addStyleNames='{style.memberListButtonContainer}'>
+	              <g:Button ui:field='membersPrivilegedButton'>Make Privileged</g:Button>
+	              <g:Button ui:field='membersRestrictedButton'>Make Restricted</g:Button>
+	              <g:Button ui:field='membersRemoveButton'>Remove</g:Button>
+	              <g:Button ui:field='addMembersButton' addStyleNames='{style.addMembersButton}'>
+	                Add Members
+	              </g:Button>
+	            </g:HTMLPanel>
+		          <g:HTMLPanel addStyleNames='{style.memberListHeaderRow}'>
+		            <g:Grid ui:field='memberListHeaderRow' addStyleNames='{style.memberListHeaderRow}'>
+		              <g:row>
+		                <g:customCell width='30'>
+		                  <g:CheckBox ui:field='selectAllMembersCheckBox' />
+		                </g:customCell>
+		                <g:cell>
+		                  Username
+		                </g:cell>
+		                <g:cell>
+		                  User Role
+		                </g:cell>
+		                <g:cell /> <!-- to absorb extra space -->
+		              </g:row>
+		            </g:Grid>
+		          </g:HTMLPanel>
+	            <g:HTMLPanel addStyleNames='{style.memberListGridContainer}' ui:field='memberListGridContainer'>
+		            <g:Grid ui:field='memberListGrid' addStyleNames='{style.memberListGrid}' />
+	            </g:HTMLPanel>
+            </g:HTMLPanel>
+          </g:HTMLPanel>
+        </g:VerticalPanel>
+      </g:HTMLPanel>
+    </g:center>
+    <g:south size='45'>
+      <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
+        <g:Button ui:field='saveButton'>Save Changes</g:Button>
+        <g:Button ui:field='cancelButton'>Cancel</g:Button>
+        <g:Button ui:field='deleteClassButton' addStyleNames='{style.deleteButton}'>Delete Class</g:Button>
+      </g:HorizontalPanel>
+    </g:south>
+  </g:DockLayoutPanel>
+</ui:UiBinder> 

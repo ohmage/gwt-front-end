@@ -1,5 +1,6 @@
 package edu.ucla.cens.mobilize.client;
 
+
 import java.util.ArrayList;
 
 import java.util.HashMap;
@@ -13,10 +14,9 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.Window;
@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.TokenLoginManager;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.MockDataService;
@@ -35,6 +36,14 @@ import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEventHandler;
 import edu.ucla.cens.mobilize.client.event.CampaignInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.presenter.AccountPresenter;
+import edu.ucla.cens.mobilize.client.presenter.AdminClassDetailPresenter;
+import edu.ucla.cens.mobilize.client.presenter.AdminClassEditPresenter;
+import edu.ucla.cens.mobilize.client.presenter.AdminClassListPresenter;
+import edu.ucla.cens.mobilize.client.presenter.AdminPresenter;
+import edu.ucla.cens.mobilize.client.presenter.AdminUserCreatePresenter;
+import edu.ucla.cens.mobilize.client.presenter.AdminUserDetailPresenter;
+import edu.ucla.cens.mobilize.client.presenter.AdminUserEditPresenter;
+import edu.ucla.cens.mobilize.client.presenter.AdminUserListPresenter;
 import edu.ucla.cens.mobilize.client.presenter.CampaignPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ClassPresenter;
 import edu.ucla.cens.mobilize.client.presenter.DashboardPresenter;
@@ -46,6 +55,15 @@ import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.Header;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.view.AccountViewImpl;
+import edu.ucla.cens.mobilize.client.view.AdminClassDetailView;
+import edu.ucla.cens.mobilize.client.view.AdminClassEditView;
+import edu.ucla.cens.mobilize.client.view.AdminClassListView;
+import edu.ucla.cens.mobilize.client.view.AdminUserCreateView;
+import edu.ucla.cens.mobilize.client.view.AdminUserDetailView;
+import edu.ucla.cens.mobilize.client.view.AdminUserListView;
+import edu.ucla.cens.mobilize.client.view.AdminUserEditView;
+import edu.ucla.cens.mobilize.client.view.AdminView;
+import edu.ucla.cens.mobilize.client.view.AdminViewImpl;
 import edu.ucla.cens.mobilize.client.view.CampaignView;
 import edu.ucla.cens.mobilize.client.view.CampaignViewImpl;
 import edu.ucla.cens.mobilize.client.view.ClassView;
@@ -80,7 +98,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   EventBus eventBus = new SimpleEventBus();
   
   // classes for accessing data store
-  //DataService mockDataService = new MockDataService(); // for testing new data methods
+  DataService mockDataService = new MockDataService(); // for testing new data methods
   DataService awDataService = new AndWellnessDataService();
   
   // login management
@@ -117,10 +135,28 @@ public class MainApp implements EntryPoint, HistoryListener {
 	DocumentPresenter documentPresenter;
   ClassPresenter classPresenter;
   AccountPresenter accountPresenter;
+  
+  // admin classes will only be instantiated if user is an admin
+  AdminView adminView;
+  AdminUserListView adminUserListView;
+  AdminUserDetailView adminUserDetailView;
+  AdminUserEditView adminUserEditView;
+  AdminUserCreateView adminUserCreateView;
+  AdminClassListView adminClassListView;
+  AdminClassDetailView adminClassDetailView;
+  AdminClassEditView adminClassEditView;
+  AdminPresenter adminPresenter;
+  AdminUserListPresenter adminUserListPresenter;
+  AdminUserDetailPresenter adminUserDetailPresenter;
+  AdminUserEditPresenter adminUserEditPresenter;
+  AdminUserCreatePresenter adminUserCreatePresenter;
+  AdminClassListPresenter adminClassListPresenter;
+  AdminClassDetailPresenter adminClassDetailPresenter;
+  AdminClassEditPresenter adminClassEditPresenter;
 
   // convenience class for readability
   private static class TabIndex {
-    public static int DASHBOARD, CAMPAIGNS, RESPONSES, EXPLORE_DATA, DOCUMENTS, CLASSES = 0;
+    public static int DASHBOARD, CAMPAIGNS, RESPONSES, EXPLORE_DATA, DOCUMENTS, CLASSES, ADMIN = 0;
   }
   
   // Logging utility
@@ -196,9 +232,12 @@ public class MainApp implements EntryPoint, HistoryListener {
     this.userInfo = userInfo;
     this.campaigns = campaigns;
     Window.setTitle(AppConfig.getAppDisplayName());
-    
-    initComponents(userInfo);
-    initLayoutAndNavigation();
+    try {
+      initComponents(userInfo);
+    } catch (Exception e) {
+      _logger.fine("Exception in initComponents: " + e.getMessage());
+    }
+    initLayoutAndNavigation(userInfo);
     initHistory();
   }
   
@@ -279,7 +318,7 @@ public class MainApp implements EntryPoint, HistoryListener {
           @Override
           public void onFailure(Throwable caught) {
             AwErrorUtils.logoutIfAuthException(caught);
-            _logger.severe("Failed to fetch campaign short infos: " + caught.getMessage());
+            _logger.severe("Failed to fetch campaign short infos or init app: " + caught.getMessage());
           }
           
           @Override
@@ -360,9 +399,38 @@ public class MainApp implements EntryPoint, HistoryListener {
     documentPresenter.setView(documentView);
     classPresenter.setView(classView);
     accountPresenter.setView(accountView);
+    
+    // avoid unneccessary work by only instantiating admin classes if user is an admin
+    if (userInfo.isAdmin()) {
+      adminView = new AdminViewImpl();
+      adminUserListView = new AdminUserListView();
+      adminUserDetailView = new AdminUserDetailView();
+      adminUserEditView = new AdminUserEditView();
+      adminUserCreateView = new AdminUserCreateView();
+      adminClassListView = new AdminClassListView();
+      adminClassDetailView = new AdminClassDetailView();
+      adminClassEditView = new AdminClassEditView();
+      adminPresenter = new AdminPresenter(userInfo, awDataService, eventBus);
+      adminUserListPresenter = new AdminUserListPresenter(userInfo, awDataService, eventBus);
+      adminUserDetailPresenter = new AdminUserDetailPresenter(userInfo, awDataService, eventBus);
+      adminUserEditPresenter = new AdminUserEditPresenter(userInfo, awDataService, eventBus);
+      adminUserCreatePresenter = new AdminUserCreatePresenter(userInfo, awDataService, eventBus);
+      adminClassListPresenter = new AdminClassListPresenter(userInfo, awDataService, eventBus);
+      adminClassDetailPresenter = new AdminClassDetailPresenter(userInfo, awDataService, eventBus);
+      adminClassEditPresenter = new AdminClassEditPresenter(userInfo, awDataService, eventBus);
+      adminPresenter.setView(adminView);
+      adminUserListPresenter.setView(adminUserListView);
+      adminUserDetailPresenter.setView(adminUserDetailView);
+      adminUserEditPresenter.setView(adminUserEditView);
+      adminUserCreatePresenter.setView(adminUserCreateView);
+      adminClassListPresenter.setView(adminClassListView);
+      adminClassDetailPresenter.setView(adminClassDetailView);
+      adminClassEditPresenter.setView(adminClassEditView);
+    }
   }
   
-  private void initLayoutAndNavigation() {
+  // NOTE: userInfo is needed here because some users see tabs that others don't (e.g., Admin tab)
+  private void initLayoutAndNavigation(UserInfo userInfo) {
     // create tabs (use class to keep track of tab index b/c it may change for different users)
     int index = 0;
     tabPanel.add(dashboardView, "Dashboard");
@@ -383,10 +451,14 @@ public class MainApp implements EntryPoint, HistoryListener {
     tabPanel.add(classView, "Classes");
     tabHistoryTokens.add("classes");
     TabIndex.CLASSES = index++;
-
+    if (userInfo.isAdmin()) {
+      tabPanel.add(adminView, "Admin"); 
+      tabHistoryTokens.add("admin");
+      TabIndex.ADMIN = index++;
+    }
+    
     // Clicking on a tab fires history token. tab will be selected when the 
-    // history token is processed. NOTE: app used to use TabListener but it
-    // didn't play well with History management
+    // history token is processed. 
     for (int i = 0; i < tabPanel.getTabBar().getTabCount(); i++) {
       final int tabIndex = i;
       tabPanel.getTabBar().getTab(i).addClickHandler(new ClickHandler() {
@@ -437,7 +509,126 @@ public class MainApp implements EntryPoint, HistoryListener {
     setMainContentTabPanel();
     tabPanel.selectTab(TabIndex.CLASSES);
   }
+  
+  private void showAdmin() {
+    setMainContentTabPanel();
+    tabPanel.remove(TabIndex.ADMIN);
+    tabPanel.insert(adminView, "Admin", TabIndex.ADMIN);
+    // since it's a new tab, clickhandler must be re-added
+    tabPanel.getTabBar().getTab(TabIndex.ADMIN).addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.newItem(HistoryTokens.admin());
+      }
+    });
+    tabPanel.selectTab(TabIndex.ADMIN);
+  }
 
+  // The historyToken arg is the token that triggered this view, used in the
+  // tab click handler to make the view sticky. (So search results are not
+  // reset every time you click away from the page and click back.)
+  private void showAdminUserList(final String historyToken) {
+    setMainContentTabPanel();
+    tabPanel.remove(TabIndex.ADMIN);
+    tabPanel.insert(adminUserListView, "Admin", TabIndex.ADMIN);
+    // since it's a new tab, clickhandler must be re-added
+    tabPanel.getTabBar().getTab(TabIndex.ADMIN).addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.newItem(historyToken); 
+      }
+    });
+    tabPanel.selectTab(TabIndex.ADMIN);
+  }
+  
+  // The historyToken arg is the token that triggered this view, used in the
+  // tab click handler to make the view sticky. 
+  private void showAdminUserDetail(final String historyToken) {
+    setMainContentTabPanel();
+    tabPanel.remove(TabIndex.ADMIN);
+    tabPanel.insert(adminUserDetailView, "Admin", TabIndex.ADMIN);
+    // since it's a new tab, clickhandler must be re-added
+    tabPanel.getTabBar().getTab(TabIndex.ADMIN).addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.newItem(historyToken); 
+      }
+    });
+    tabPanel.selectTab(TabIndex.ADMIN);
+  }
+
+  // The historyToken arg is the token that triggered this view, used in the
+  // tab click handler to make the view sticky. 
+  private void showAdminUserEdit(final String historyToken) {
+    setMainContentTabPanel();
+    tabPanel.remove(TabIndex.ADMIN);
+    tabPanel.insert(adminUserEditView, "Admin", TabIndex.ADMIN);
+    // since it's a new tab, clickhandler must be re-added
+    tabPanel.getTabBar().getTab(TabIndex.ADMIN).addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.newItem(historyToken); 
+      }
+    });
+    tabPanel.selectTab(TabIndex.ADMIN);
+  }
+
+  private void showAdminUserCreate() {
+    setMainContentTabPanel();
+    tabPanel.remove(TabIndex.ADMIN);
+    tabPanel.insert(adminUserCreateView, "Admin", TabIndex.ADMIN);
+    // since it's a new tab, clickhandler must be re-added
+    tabPanel.getTabBar().getTab(TabIndex.ADMIN).addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.newItem(HistoryTokens.adminUserCreate()); 
+      }
+    });
+    tabPanel.selectTab(TabIndex.ADMIN);
+  }
+
+  private void showAdminClassList() {
+    setMainContentTabPanel();
+    tabPanel.remove(TabIndex.ADMIN);
+    tabPanel.insert(adminClassListView, "Admin", TabIndex.ADMIN);
+    // since it's a new tab, clickhandler must be re-added
+    tabPanel.getTabBar().getTab(TabIndex.ADMIN).addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.newItem(HistoryTokens.adminClassList()); 
+      }
+    });
+    tabPanel.selectTab(TabIndex.ADMIN);
+  }
+  
+  private void showAdminClassDetail(final String historyToken) {
+    setMainContentTabPanel();
+    tabPanel.remove(TabIndex.ADMIN);
+    tabPanel.insert(adminClassDetailView, "Admin", TabIndex.ADMIN);
+    // since it's a new tab, clickhandler must be re-added
+    tabPanel.getTabBar().getTab(TabIndex.ADMIN).addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.newItem(historyToken); 
+      }
+    });
+    tabPanel.selectTab(TabIndex.ADMIN);
+  }
+  
+  private void showAdminClassEdit(final String historyToken) {
+    setMainContentTabPanel();
+    tabPanel.remove(TabIndex.ADMIN);
+    tabPanel.insert(adminClassEditView, "Admin", TabIndex.ADMIN);
+    // since it's a new tab, clickhandler must be re-added
+    tabPanel.getTabBar().getTab(TabIndex.ADMIN).addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.newItem(historyToken); 
+      }
+    });
+    tabPanel.selectTab(TabIndex.ADMIN);
+  }
+  
   private void showAccount() {
     setMainContentAccountView();
     accountView.setVisible(true);
@@ -502,6 +693,30 @@ public class MainApp implements EntryPoint, HistoryListener {
     } else if (view.equals("classes")) {
       classPresenter.go(params);
       showClasses();
+    } else if (view.equals("admin")) {
+      adminPresenter.go(params);
+      showAdmin();
+    } else if (view.equals("admin_user_list")) {
+      adminUserListPresenter.go(params);
+      showAdminUserList(History.getToken());
+    } else if (view.equals("admin_user_edit")) {
+      adminUserEditPresenter.go(params);
+      showAdminUserEdit(History.getToken());
+    } else if (view.equals("admin_user_create")) {
+      adminUserCreatePresenter.go(params);
+      showAdminUserCreate();
+    } else if (view.equals("admin_user_detail")) {
+      showAdminUserDetail(History.getToken());
+      adminUserDetailPresenter.go(params);
+    } else if (view.equals("admin_class_list")) {
+      adminClassListPresenter.go(params);
+      showAdminClassList();
+    } else if (view.equals("admin_class_edit") || view.equals("admin_class_create")) {
+      adminClassEditPresenter.go(params);
+      showAdminClassEdit(History.getToken());
+    } else if (view.equals("admin_class_detail")) {
+      showAdminClassDetail(History.getToken());
+      adminClassDetailPresenter.go(params);
     } else if (view.equals("account")) {
       accountPresenter.go(params);
       showAccount();
@@ -522,9 +737,11 @@ public class MainApp implements EntryPoint, HistoryListener {
     return historyToken.split("\\?")[0]; // everything before the ?
   }
   
+  private static RegExp urlWithQueryParams = RegExp.compile(".+\\?.+");
   private Map<String, String> extractParams(String historyToken) {
     Map<String, String> params = new HashMap<String, String>();
-    if (historyToken.contains("?")) {
+    //if (historyToken.contains("?")) {
+    if (urlWithQueryParams.test(historyToken)) {
       String[] paramPairs = historyToken.split("\\?")[1].split("&");
       String paramName = null, paramValue = null;
       // todo: sanitize input?

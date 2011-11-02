@@ -51,6 +51,8 @@ public class ClassInfo {
   
   public void setClassName(String className) { this.className = className; }
 
+  public void setDescription(String description) { this.description = description; }
+  
   public boolean userCanEdit(String userName) {
     return RoleClass.PRIVILEGED.equals(getMemberRole(userName));
   }

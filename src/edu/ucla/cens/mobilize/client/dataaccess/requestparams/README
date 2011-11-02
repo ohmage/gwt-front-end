@@ -5,3 +5,6 @@ to the post param string.
 
 "_opt" is appended to member variable names when params are optional.
 
+Using parameter objects instead of just maps/string is useful because if the api changes
+you can change the object and the gwt compiler errors will identify places in the code 
+that need to be updated.

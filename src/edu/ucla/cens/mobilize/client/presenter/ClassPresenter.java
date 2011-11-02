@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.presenter;
 
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -80,7 +81,8 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
   }
   
   private void fetchAndShowClassMemberDetails(String classId, final Map<String, RoleClass> usernameToRoleMap) {
-    dataService.fetchClassMembers(classId, new AsyncCallback<List<UserShortInfo>>() {
+    List<String> classIdList = Arrays.asList(classId); // list containing one item
+    dataService.fetchClassMembers(classIdList, new AsyncCallback<List<UserShortInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());

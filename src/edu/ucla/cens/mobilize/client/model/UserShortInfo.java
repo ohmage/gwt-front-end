@@ -1,6 +1,6 @@
 package edu.ucla.cens.mobilize.client.model;
 
-public class UserShortInfo {
+public class UserShortInfo implements Comparable<UserShortInfo> {
   
   String username;
   String firstName;
@@ -44,5 +44,10 @@ public class UserShortInfo {
   }
   public void setPersonalId(String personalId) {
     this.personalId = personalId;
+  }
+  
+  @Override
+  public int compareTo(UserShortInfo other) {
+    return this.getUsername().compareTo(other.getUsername());
   }
 }

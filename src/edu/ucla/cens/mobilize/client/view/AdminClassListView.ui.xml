@@ -1,0 +1,125 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
+  <ui:style type="edu.ucla.cens.mobilize.client.view.AdminClassListView.AdminClassListViewStyle">
+    .oddRow { /* stripe every other row for easier viewing */
+      background-color: #EAEFF3; /* pale blue */
+    }
+    .classList {
+    	table-layout: fixed;
+    	width: 100%
+    }
+    .classListGrid td {
+    	overflow: hidden; /* don't let long strings flow obscure the next cell */
+    }
+    .classListEmptyMessage {
+    	background-color: #EEE;
+    	border: solid thin #AAA;
+    	color: #888;
+    	font-size: 14px;
+    	font-weight: bold;
+    	margin: 40px 50px;
+    	padding: 20px;
+    	text-align: center;
+    	width: 400px;
+    }
+    .classListGrid {
+      border: solid thin #CCC;
+      table-layout: fixed;
+      width: 100%;
+    }
+    .classListGrid td {
+      white-space: nowrap; /* don't wrap text in table */
+    }
+    .classListHeaderRow {
+    }
+    .classListHeaderRow td {
+    	background-color: #236;
+      color: white;
+      font-weight: bold;
+      whitespace: no-wrap;
+    }
+    .classListNumberColumn {
+    	padding-right: 40px; 
+    	text-align: right;
+    }
+    .classListActionsColumn {
+    }
+    .container {
+      margin: auto;
+    }
+    .filterContainer {
+      border-color: #AAA;
+    }
+    /* action link styles */
+    .detailsLink {
+      background-image: url('images/page_white_magnify_small.png');
+    }
+    .editLink {
+      background-image: url('images/page_white_edit_small.png');
+    }
+    .editLink, .detailsLink {
+      background-repeat: no-repeat;
+      background-position: 2px 50%;
+      display: inline-block;
+      font-size: 0.8em;
+      height: 10px;
+      padding: 3px 8px 2px 20px;
+    }
+    .north {
+      background-color: #EEE;
+    }
+    .scrollable {
+    	height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    .searchContainerUsername, .searchContainerClassName {
+      background: #EAEFF3 0 0 repeat-x url('images/bg_white_transparent_10.png'); 
+      border: solid thin #BBB; 
+      margin: 2px;
+      padding: 5px;
+    }
+
+  </ui:style>
+  <g:DockLayoutPanel unit='PX'>
+    <g:west size='150'>
+      <g:HTMLPanel>
+        <w:AdminMenu ui:field='adminMenu' />
+      </g:HTMLPanel>
+    </g:west>
+    <g:north size='55'>
+      <g:HTMLPanel addStyleNames='{style.north}'>
+        <g:HTMLPanel addStyleNames='{style.filterContainer}'>
+          <g:HorizontalPanel verticalAlignment='top'>
+            <g:HTMLPanel addStyleNames='{style.searchContainerClassName}'>
+              <g:Label>Search by class name</g:Label>
+              <g:TextBox ui:field='searchClassNameTextBox' />
+              <g:Button ui:field='searchClassNameButton'>Go</g:Button>
+            </g:HTMLPanel>
+            <g:HTMLPanel addStyleNames='{style.searchContainerUsername}'>
+              <g:Label>Search by member</g:Label>
+              <g:TextBox ui:field='searchUsernameTextBox' />
+              <g:Button ui:field='searchUsernameButton'>Go</g:Button>
+            </g:HTMLPanel> 
+          </g:HorizontalPanel>
+        </g:HTMLPanel>
+      </g:HTMLPanel>
+    </g:north>
+    <g:center>
+      <g:HTMLPanel>
+        <g:Grid addStyleNames='{style.classList}' ui:field='classListHeader' />
+	      <g:HTMLPanel addStyleNames='{style.scrollable}'>
+	        <g:Grid ui:field='classListGrid' addStyleNames='{style.classListGrid}' />
+	        <g:HTMLPanel ui:field='instructionsPanel' addStyleNames='{style.classListEmptyMessage}'>
+            Enter a search term above or
+            <g:InlineHyperlink ui:field='showAllClassesLink'>
+              show all classes
+            </g:InlineHyperlink>
+          </g:HTMLPanel>
+	      </g:HTMLPanel>
+	    </g:HTMLPanel>
+    </g:center>
+  </g:DockLayoutPanel>
+</ui:UiBinder> 

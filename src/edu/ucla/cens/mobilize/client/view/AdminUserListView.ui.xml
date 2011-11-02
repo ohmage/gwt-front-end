@@ -1,0 +1,189 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
+	<ui:style type="edu.ucla.cens.mobilize.client.view.AdminUserListView.AdminUserListViewStyle">
+		.container {
+      margin: auto;
+    }
+    .controlPanel {
+    }
+    .controlPanelContainer {
+      border-color: #DDD;
+    	width: 100%;
+    }
+    .disabled {
+      color: #888;
+    }
+    .errorLink {
+      background: no-repeat 5px 5px url('images/exclamation.png');
+      color: #BD4020;
+      cursor: pointer;
+      display: block;
+      padding: 5px 0px 5px 25px;
+      text-decoration: underline;
+    }
+    .filterContainer {
+      border-color: #AAA;
+    }
+    .userListHeader {
+    	width: 100%;
+    	table-layout: fixed;
+    }
+    .userListHeaderRow {}
+    .userListHeaderRow td {
+      background-color: #236;
+      color: white;
+      font-weight: bold;
+      whitespace: no-wrap;
+    }
+    .oddRow { /* stripe every other row for easier viewing */
+      background-color: #EAEFF3; /* pale blue */
+    }
+    .userListEmptyMessage {
+      background-color: #EEE;
+      border: solid thin #AAA;
+      color: #888;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 40px 50px;
+      padding: 20px;
+      text-align: center;
+      width: 400px;
+    }
+    .userListGrid {
+    	border: solid thin #CCC;
+    	table-layout: fixed;
+    	width: 100%;
+    }
+    .userListGrid td {
+    	overflow: hidden; /* don't let long strings obscure the next cell */
+      white-space: nowrap; /* don't wrap text in table */
+    }
+    /* action link styles */
+    .detailsLink {
+    	background-image: url('images/page_white_magnify_small.png');
+    }
+    .editLink {
+      background-image: url('images/page_white_edit_small.png');
+    }
+    .editLink, .detailsLink {
+      background-repeat: no-repeat;
+      background-position: 2px 50%;
+      display: inline-block;
+      font-size: 0.8em;
+      height: 10px;
+      padding: 3px 8px 2px 20px;
+    }
+    .manageClassesLink {
+    	padding-left: 5px;
+    }
+    /* button styles */
+    .actionButton {
+      box-shadow: none;
+      margin: 0px 2px;
+      padding: 2px 5px 2px 3px;
+    }
+    .actionButtonImage {
+      margin: 0px 0px 2px 0px;
+      padding: 0px;
+      vertical-align: middle;
+    }
+    .north {
+    	background-color: #EEE;
+    }
+    .scrollable {
+    	height: 100%;
+    	overflow-x: hidden;
+    	overflow-y: auto;
+    }
+    .searchContainerUsername, .searchContainerPersonalId {
+    	background: #EAEFF3 0 0 repeat-x url('images/bg_white_transparent_10.png'); 
+      border: solid thin #BBB; 
+    	margin: 2px;
+    	padding: 5px;
+    }
+    .searchContainerAdvanced {
+    	margin: 2px;
+    	padding: 5px 10px 5px 0px;
+    }
+    .searchLinkAdvanced {
+      background: 5px 50% no-repeat url('images/magnifier.png');
+      color: purple;
+      cursor: pointer;
+      display: inline-block;
+      height: 14px;
+      text-decoration: underline;
+      padding-left: 23px;
+    }
+	</ui:style>
+	<g:DockLayoutPanel unit='PX'>
+	  <g:west size='150'>
+	    <g:HTMLPanel>
+	      <w:AdminMenu ui:field='adminMenu' />
+	    </g:HTMLPanel>
+	  </g:west>
+	  <g:north size='77'>
+	    <g:HTMLPanel addStyleNames='{style.north}'>
+		    <g:HTMLPanel addStyleNames='{style.filterContainer}'>
+		      <g:HorizontalPanel verticalAlignment='top'>
+		        <g:HTMLPanel addStyleNames='{style.searchContainerUsername}'>
+			        <g:Label>Search by username</g:Label>
+			        <g:TextBox ui:field='searchUsernameTextBox' />
+			        <g:Button ui:field='searchUsernameButton'>Go</g:Button>
+		        </g:HTMLPanel>
+		        <g:HTMLPanel addStyleNames='{style.searchContainerPersonalId}'>
+		          <g:Label>Search by personal id</g:Label>
+		          <g:TextBox ui:field='searchPersonalIdTextBox' />
+		          <g:Button ui:field='searchPersonalIdButton'>Go</g:Button>
+		        </g:HTMLPanel>
+		        <g:HTMLPanel addStyleNames='{style.searchContainerAdvanced}'>
+		          <g:Anchor ui:field='advancedSearchLink' 
+		                    addStyleNames='{style.searchLinkAdvanced}'>
+		            Advanced search
+		          </g:Anchor>
+		          <g:Anchor ui:field='errorLink' addStyleNames='{style.errorLink}'>Errors</g:Anchor>
+		        </g:HTMLPanel>
+	        </g:HorizontalPanel>
+	      </g:HTMLPanel>
+	      <g:HTMLPanel addStyleNames='{style.controlPanelContainer}'>
+		      <g:HorizontalPanel addStyleNames='{style.controlPanel}' verticalAlignment='middle'>
+		        <g:Button ui:field='enableButton' addStyleNames='{style.actionButton}'>
+		          <img src='images/tick.png' class='{style.actionButtonImage}' />
+		          Enable
+		        </g:Button>
+		        <g:Button ui:field='disableButton' addStyleNames='{style.actionButton}'>
+		          <img src='images/cross.png' class='{style.actionButtonImage}' />
+		          Disable
+		        </g:Button>
+		        <g:Button ui:field='deleteButton' addStyleNames='{style.actionButton}'>
+		          <img src='images/delete.png' class='{style.actionButtonImage}' />
+		          Delete
+		        </g:Button>
+		        <g:Button ui:field='addToClassButton' addStyleNames='{style.actionButton}'>
+		          <img src='images/group_add.png' class='{style.actionButtonImage}' />
+		          Add to Class
+		        </g:Button>
+		        <g:InlineHyperlink addStyleNames='{style.manageClassesLink}' ui:field='manageClassesLink'>
+		          Manage classes
+		        </g:InlineHyperlink>
+		      </g:HorizontalPanel>
+	      </g:HTMLPanel>
+	    </g:HTMLPanel>
+	  </g:north>
+	  <g:center>
+	    <g:HTMLPanel>
+	      <g:Grid addStyleNames='{style.userListHeader}' ui:field='userListHeader'></g:Grid>
+		    <g:HTMLPanel addStyleNames='{style.scrollable}'>
+	       <g:HTMLPanel ui:field='instructionsPanel' addStyleNames='{style.userListEmptyMessage}'>
+	          Enter a search term above or
+	          <g:InlineHyperlink ui:field='showAllUsersLink'>
+	            show all users
+	          </g:InlineHyperlink>
+	        </g:HTMLPanel>
+		      <g:Grid ui:field='userListGrid' addStyleNames='{style.userListGrid}' />
+		    </g:HTMLPanel>
+	    </g:HTMLPanel>
+	  </g:center>
+	</g:DockLayoutPanel>
+</ui:UiBinder> 

@@ -47,27 +47,8 @@
     .labelForMultilineDetail {
     	vertical-align: top;
     }
-    .listWidget {
-    }
     .listWidgetContainer {
     	display: inline-block;
-    }
-    .listWidget button {
-      background-color: #DDD;
-      border: solid 1px #AAA;
-      color: #888;
-      cursor: pointer;
-      font-size: 0.8em;
-      height: 13px;
-      padding: 0px;
-      width: 13px;
-    }
-    .listWidget td {
-      border-bottom: solid thin #CCC;
-      color: #444;
-      font-size: 0.9em;
-      padding-right: 5px;
-      vertical-align: middle;
     }
     .sectionHeader {
       background: #FFFFE0 repeat-x url("images/bg_white_transparent_50.png");
@@ -140,7 +121,7 @@
 	            Linked Campaigns:
 	          </g:InlineLabel>
 	          <g:HTMLPanel addStyleNames='{style.listWidgetContainer}'>
-		          <w:ListWidget ui:field='campaignsListWidget' addStyleNames='{style.listWidget}' />
+		          <w:ListWidget ui:field='campaignsListWidget' />
 		          <g:Button ui:field='campaignsAddButton' addStyleNames='{style.addButton}'>Add Campaigns</g:Button>
 		          <!-- names of hidden fields are set dynamically b/c they're different for create vs edit -->
 		          <g:Hidden ui:field='campaignsToAddHiddenField' />
@@ -152,7 +133,7 @@
 	            Linked Classes:
 	          </g:InlineLabel>
 	          <g:HTMLPanel addStyleNames='{style.listWidgetContainer}'>
-		          <w:ListWidget ui:field='classesListWidget' addStyleNames='{style.listWidget}' />
+		          <w:ListWidget ui:field='classesListWidget' />
 		          <g:Button ui:field='classesAddButton' addStyleNames='{style.addButton}' >Add Classes</g:Button>
 		          <!-- names of hidden fields are set dynamically b/c they're different for create vs edit -->
 		          <g:Hidden ui:field='classesToAddHiddenField' />

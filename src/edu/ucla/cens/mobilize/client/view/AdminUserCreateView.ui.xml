@@ -1,0 +1,198 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
+	<ui:style type='edu.ucla.cens.mobilize.client.view.AdminUserCreateView.AdminUserCreateViewStyles'>
+		.backLink {
+      cursor: pointer;
+      padding: 5px 20px;
+      text-decoration: underline;
+    }
+    .buttonPanel {
+      padding: 5px 10px;
+      text-align: right;
+    }
+    .cancelButton {
+    	color: #444;
+    }
+    .centerContainer {
+      padding: 25px 30px;
+      overflow-y: auto;
+    }
+    .checkBox {
+      margin: 10px 10px 10px 0px;
+    }
+    .checkBoxRow {
+      padding: 10px 0px 20px;
+    }
+    .data {
+    }
+    .formContainer {
+    	width: 340px;
+    }
+    .helpPanel {
+    	border: solid thin #FCE4CD;
+    	margin: 0px 20px;
+    	padding: 10px;
+    	width: 320px;
+    }
+    .helpPanelBody {
+    	padding: 10px 10px 5px 10px;
+    }
+    .helpPanelSpecialChars {
+    	margin: auto;
+    }
+    .helpPanelSpecialChars td {
+    	border: solid thin #DDD;
+    	margin: 0px;
+    	padding: 0px 3px;
+    }
+    .helpPanelTitle {
+    	color: #444;
+    	font-size: 1.1em;
+      font-weight: bold;
+    }
+    .helpPanelTitle {
+    	border: solid thin #F58F3D;
+    	background: #FCE4CD 0 0 repeat-x url('images/bg_white_transparent_10.png');
+    	display: block;
+      font-size: 1.1em;
+      font-weight: bold;
+      padding: 5px;
+      text-align: center;
+    }
+    .hidePasswordButton {
+    	background: #FFF 0px 50% no-repeat url('images/lock.png');
+      border: none;
+      width: 22px;
+    }
+    .label {
+      display: inline-block;
+      font-weight: bold;
+      width: 120px;
+    }
+    .invalid {
+      border: solid 1px #BD4020;
+    }
+    .invalidMsg {
+      /* todo: put error icon in background */
+      color: #BD4020;
+    }
+    .row {
+      whitespace: no-wrap;
+    }
+    .saveButton {
+    	border: solid thin #686;
+    	color: #353;
+    }
+    .sectionHeader {
+      background: #FFFFE0 repeat-x url("images/bg_white_transparent_50.png");
+      border-bottom: thin solid #DDD;
+      padding: 10px 0px;
+      text-align: center;
+      width: 100%;
+    }
+    .sectionHeaderInstructions {
+      font-size: 0.8em;
+    }
+    .sectionHeaderTitle {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    .showPasswordButton {
+    	background: #FFF 0px 50% no-repeat url('images/eye.png');
+    	border: none;
+    	width: 22px;
+    }
+	</ui:style>
+  <g:DockLayoutPanel unit='PX'>
+    <g:west size='150'>
+      <g:HTMLPanel>
+        <w:AdminMenu ui:field='adminMenu' />
+      </g:HTMLPanel>
+    </g:west>
+    <g:north size='50'>
+      
+      <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
+        <g:HorizontalPanel>
+          <g:HTMLPanel addStyleNames='{style.backLink}'>
+            <g:Anchor ui:field='backLink' addStyleNames='link'>&laquo;&nbsp;Back</g:Anchor>
+          </g:HTMLPanel>
+          <g:HTMLPanel>
+            <g:Label ui:field='header' addStyleNames='{style.sectionHeaderTitle}'>
+              Creating&nbsp;New&nbsp;User
+            </g:Label>
+            <g:Label addStyleNames='{style.sectionHeaderInstructions}'>
+              Changes will not be stored until you click Save.
+            </g:Label>
+          </g:HTMLPanel>
+        </g:HorizontalPanel>
+      </g:HTMLPanel>
+    </g:north>
+    <g:center>
+      <g:HorizontalPanel addStyleNames='{style.centerContainer}'>
+        <g:VerticalPanel addStyleNames='{style.formContainer}'>
+          <g:HTMLPanel addStyleNames='{style.row}'>
+            <g:InlineLabel addStyleNames='{style.label}'>Username:</g:InlineLabel>
+            <g:TextBox ui:field='usernameTextBox' addStyleNames='{style.data}' />
+            <g:InlineLabel ui:field='usernameInvalidMsg' addStyleNames='{style.invalidMsg}' />
+          </g:HTMLPanel>
+          <g:HTMLPanel addStyleNames='{style.row}'>
+            <g:InlineLabel addStyleNames='{style.label}'>Password:</g:InlineLabel>
+            <g:PasswordTextBox ui:field='passwordTextBox' addStyleNames='{style.data}' />
+            <g:Button ui:field='showPasswordButton' addStyleNames='{style.showPasswordButton}' />
+            <g:TextBox ui:field='passwordClearTextBox' addStyleNames='{style.data}' />
+            <g:Button ui:field='hidePasswordButton' addStyleNames='{style.hidePasswordButton}' />
+            <g:InlineLabel ui:field='passwordInvalidMsg' addStyleNames='{style.invalidMsg}' />
+          </g:HTMLPanel>
+          <g:HTMLPanel addStyleNames='{style.row}'>
+            <g:InlineLabel addStyleNames='{style.label}'>Confirm Password:</g:InlineLabel>
+            <g:PasswordTextBox ui:field='passwordConfirmTextBox' addStyleNames='{style.data}' />
+            <g:Button ui:field='showPasswordConfirmButton' addStyleNames='{style.showPasswordButton}' />
+            <g:TextBox ui:field='passwordConfirmClearTextBox' addStyleNames='{style.data}' />
+            <g:Button ui:field='hidePasswordConfirmButton' addStyleNames='{style.hidePasswordButton}' />
+            <g:InlineLabel ui:field='passwordConfirmInvalidMsg' addStyleNames='{style.invalidMsg}' />
+          </g:HTMLPanel>
+          <g:HTMLPanel addStyleNames='{style.checkBoxRow}'>
+            <g:CheckBox ui:field='isEnabledCheckBox' checked='true' addStyleNames='{style.checkBox}'>
+              Enabled
+            </g:CheckBox>
+            <g:CheckBox ui:field='canCreateCampaignsCheckBox' checked='false' addStyleNames='{style.checkBox}'>
+              Can create campaigns
+            </g:CheckBox>
+            <g:CheckBox ui:field='isAdminCheckBox' checked='false' addStyleNames='{style.checkBox}'>
+              Make Admin
+            </g:CheckBox>
+          </g:HTMLPanel>
+          <g:HTMLPanel addStyleNames='{style.buttonPanel}'>
+	          <g:Button ui:field='saveButton' addStyleNames='{style.saveButton}'>Create User</g:Button>
+	          <g:Button ui:field='cancelButton' addStyleNames='{style.cancelButton}'>Cancel</g:Button>
+          </g:HTMLPanel>
+        </g:VerticalPanel>
+        <g:HTMLPanel addStyleNames='{style.helpPanel}'>
+          <g:Label addStyleNames='{style.helpPanelTitle}'>
+            Password Instructions
+          </g:Label>
+          <g:HTMLPanel addStyleNames='{style.helpPanelBody}'>
+              The password must be between 8 and 16 characters, 
+              contain at least one lower case character, 
+              contain at least one upper case character, 
+              contain at least one digit, 
+              and contain at least one of the following special characters:
+          </g:HTMLPanel>
+          <g:HTMLPanel addStyleNames='{style.helpPanelSpecialChars}'>
+            <g:Grid>
+              <g:row>
+                <g:cell>,</g:cell><g:cell>.</g:cell><g:cell>&#60;</g:cell><g:cell>&#62;</g:cell>
+                <g:cell>[</g:cell><g:cell>]</g:cell><g:cell>!</g:cell><g:cell>@</g:cell>
+                <g:cell>#</g:cell><g:cell>$</g:cell><g:cell>%</g:cell><g:cell>^</g:cell>
+                <g:cell>&amp;</g:cell><g:cell>*</g:cell><g:cell>+</g:cell><g:cell>-</g:cell>
+                <g:cell>{</g:cell><g:cell>}</g:cell><g:cell>|</g:cell><g:cell>:</g:cell>
+              </g:row>
+            </g:Grid> 
+          </g:HTMLPanel>
+        </g:HTMLPanel>
+      </g:HorizontalPanel>
+    </g:center>
+  </g:DockLayoutPanel>
+</ui:UiBinder> 

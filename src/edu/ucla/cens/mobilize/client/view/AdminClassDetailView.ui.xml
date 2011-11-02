@@ -1,0 +1,194 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
+  <ui:style type='edu.ucla.cens.mobilize.client.view.AdminClassDetailView.AdminClassDetailViewStyle'>    
+    .actionBar {
+      background-color: #FFF;
+      border-bottom: solid thin #DDD;
+      font-size: 0.8em;
+      margin-bottom: 20px;
+      padding: 4px 20px;
+      width: 100%;
+    }
+    .actionLabel {
+      font-weight: bold;
+      padding-right: 8px;
+    }
+    .actionLinks {
+      font-size: 0.9em;
+      padding: 20px;
+    }
+    .actionEdit, .actionDeleteClass, .actionUploadRoster, .actionDownloadRoster {
+      color: #238;
+      cursor: pointer;
+      padding: 3px 10px 3px 20px;
+      text-decoration: underline;
+      background-repeat: no-repeat;
+      background-position: 2px 50%;
+    }
+    .actionDeleteClass {
+      background-image: url('images/delete.png');
+    }
+    .actionEdit {
+      background-image: url('images/page_white_edit_small.png');
+    }
+    .actionUploadRoster {
+      background-image: url('images/page_white_upload_small.png');
+    }
+    .actionDownloadRoster {
+      background-image: url('images/page_white_download_small.png');
+    }
+    .backLink {
+      cursor: pointer;
+      display: inline-block;
+      padding: 0px 20px;
+      text-decoration: underline;
+    }
+    .campaignLink {
+    	background: 0px 50% no-repeat url('images/phone.png');
+    }
+    .centerContainer {
+      padding: 15px 20px;
+      overflow-y: auto;
+    }
+    .data {
+    	display: inline-block;
+    }
+    .dataList .label {
+      vertical-align: top;
+    }
+    .emptyFieldMsg {
+    	color: #AAA;
+    	font-style: italic;
+    }
+    .infoGrid td {
+    	vertical-align: top;
+    }
+    .label {
+      display: inline-block;
+      font-weight: bold;
+      width: 100px;
+    }
+    .memberListContainer td, .campaignListContainer td {
+    	padding: 0px 10px 5px 0px;
+    }
+    .memberLink {
+    }
+    .memberListContainer, .campaignListContainer {
+    	display: inline-block;
+    	margin-left: -17px;
+    }
+    .memberListContainer a, .campaignListContainer a {
+    	padding-left: 17px;
+    }
+    .memberListContainer td {
+    	/*border: solid 1px #EEE;*/
+    }
+    .memberLinkPrivileged a {
+    	background-image: url("images/asterisk_orange_small.png");
+    	background-repeat: no-repeat;
+    	background-position: 0px 50%;
+    	color: #950;
+    }
+    .row {
+      height: 20px;
+    }
+    .sectionHeader {
+      background: #EAEFF3 repeat-x url("images/bg_white_transparent_50.png");
+      border-bottom: thin solid #DDD;
+      padding: 15px 0px;
+      text-align: center;
+      width: 100%;
+    }
+    .sectionHeaderTitle {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  </ui:style>
+  <g:DockLayoutPanel unit='PX'>
+    <g:west size='150'>
+      <g:HTMLPanel>
+        <w:AdminMenu />
+      </g:HTMLPanel>
+    </g:west>
+    <g:north size='75'>
+      <g:HTMLPanel>      
+        <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
+          <g:HorizontalPanel>
+            <g:HTMLPanel addStyleNames='{style.backLink}'>
+              <g:Anchor ui:field='backLink' addStyleNames='link'>&laquo;&nbsp;Back</g:Anchor>
+            </g:HTMLPanel>
+            <g:HTMLPanel addStyleNames='{style.sectionHeaderTitle}'>
+              Class&nbsp;Detail
+            </g:HTMLPanel>
+          </g:HorizontalPanel>
+        </g:HTMLPanel>
+        <g:HTMLPanel addStyleNames='{style.actionBar}'>
+         <g:InlineLabel addStyleNames='{style.actionLabel}'>Actions:</g:InlineLabel>
+         <g:InlineHyperlink addStyleNames='{style.actionEdit}' 
+                             ui:field='actionLinkEditClass'>
+           Edit&nbsp;Class
+         </g:InlineHyperlink>
+         <g:Anchor addStyleNames='{style.actionUploadRoster}'
+                   ui:field='actionLinkUploadRoster'>
+           Upload&nbsp;Roster
+         </g:Anchor>
+         <g:Anchor addStyleNames='{style.actionDownloadRoster}'
+                   ui:field='actionLinkDownloadRoster'>
+           Download&nbsp;Roster
+         </g:Anchor>
+         <g:Anchor addStyleNames='{style.actionDeleteClass}'
+                   ui:field='actionLinkDeleteClass'>
+           Delete&nbsp;Class
+         </g:Anchor>
+               
+        </g:HTMLPanel>
+      </g:HTMLPanel>
+    </g:north>
+    <g:center>
+      <g:HTMLPanel addStyleNames='{style.centerContainer}'>
+        <g:VerticalPanel>
+          <g:Grid addStyleNames='{style.infoGrid}'>
+	          <g:row>
+	            <g:customCell>
+	              <g:InlineLabel addStyleNames='{style.label}'>Class Urn:</g:InlineLabel>
+	            </g:customCell>
+	            <g:customCell>
+	              <g:InlineLabel ui:field='classUrnField' addStyleNames='{style.data} '/>
+	            </g:customCell>
+	          </g:row>
+	          <g:row>
+	            <g:customCell> 
+		            <g:InlineLabel addStyleNames='{style.label}'>Class Name:</g:InlineLabel>
+		          </g:customCell>
+		          <g:customCell>
+		            <g:InlineLabel addStyleNames='{style.data}' ui:field='classNameField' />
+	            </g:customCell>
+	          </g:row>
+	          <g:row>
+	            <g:customCell>
+	              <g:InlineLabel addStyleNames='{style.label}'>Description:</g:InlineLabel>
+	            </g:customCell>
+	            <g:customCell>
+	              <g:InlineLabel addStyleNames='{style.data}' ui:field='descriptionField' />
+	            </g:customCell>
+	          </g:row>
+          </g:Grid>
+          <g:HTMLPanel addStyleNames='{style.dataList}'>
+            <g:InlineLabel addStyleNames='{style.label}'>Members:</g:InlineLabel>
+            <g:HTMLPanel addStyleNames='{style.memberListContainer}'>
+              <g:Grid ui:field='membersGrid' />
+            </g:HTMLPanel>
+          </g:HTMLPanel>
+          <g:HTMLPanel ui:field='campaignsPanel' addStyleNames='{style.dataList}'>
+            <g:InlineLabel addStyleNames='{style.label}'>Campaigns:</g:InlineLabel>
+            <g:HTMLPanel addStyleNames='{style.campaignListContainer}'>
+              <g:Grid ui:field='campaignsGrid' />
+            </g:HTMLPanel>
+          </g:HTMLPanel>
+        </g:VerticalPanel>
+      </g:HTMLPanel>
+    </g:center>
+  </g:DockLayoutPanel>
+</ui:UiBinder> 

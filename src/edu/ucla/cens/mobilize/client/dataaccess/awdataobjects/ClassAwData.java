@@ -14,6 +14,7 @@ public class ClassAwData extends JavaScriptObject {
   protected ClassAwData() {};
   
   public final native String getName() /*-{ return this.name; }-*/;
+  public final native String getDescription() /*-{ return this.description; }-*/;
   
   public final native JsArrayString getUserNames() /*-{
     var usernames = [];

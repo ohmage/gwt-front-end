@@ -43,6 +43,10 @@ public class AwConstants {
     private final static String USER_INFO_READ  = "user_info/read";
     private final static String USER_READ       = "user/read";
     private final static String USER_CHANGE_PASSWORD = "user/change_password";
+    private final static String USER_CREATE = "user/create";
+    private final static String USER_UPDATE = "user/update";
+    private final static String USER_DELETE = "user/delete";
+    private final static String USER_SEARCH = "user/search";
     private final static String CAMPAIGN_READ   = "campaign/read";
     private final static String CAMPAIGN_CREATE = "campaign/create";
     private final static String CAMPAIGN_UPDATE = "campaign/update";
@@ -51,7 +55,12 @@ public class AwConstants {
     private final static String SURVEY_RESPONSE_UPDATE = "survey_response/update";
     private final static String SURVEY_RESPONSE_DELETE = "survey_response/delete";
     private final static String CLASS_READ      = "class/read";
+    private final static String CLASS_CREATE    = "class/create";
     private final static String CLASS_UPDATE    = "class/update";
+    private final static String CLASS_DELETE    = "class/delete";
+    private final static String CLASS_SEARCH    = "class/search";
+    private final static String CLASS_ROSTER_READ   = "class/roster/read";
+    private final static String CLASS_ROSTER_UPDATE = "class/roster/update";
     private final static String IMAGE_READ      = "image/read";
     private final static String DOCUMENT_READ   = "document/read";
     private final static String DOCUMENT_READ_CONTENTS = "document/read/contents";
@@ -90,6 +99,22 @@ public class AwConstants {
     
     public static String getUserReadUrl() {
       return getServerLocation() + USER_READ;
+    }
+    
+    public static String getUserCreateUrl() {
+      return getServerLocation() + USER_CREATE;
+    }
+    
+    public static String getUserDeleteUrl() {
+      return getServerLocation() + USER_DELETE;
+    }
+    
+    public static String getUserSearchUrl() {
+      return getServerLocation() + USER_SEARCH;
+    }
+    
+    public static String getUserUpdateUrl() {
+      return getServerLocation() + USER_UPDATE;
     }
     
     public static String getUserChangePasswordUrl() {
@@ -132,9 +157,29 @@ public class AwConstants {
       return getServerLocation() + CLASS_READ;
     }
     
+    public static String getClassCreateUrl() {
+      return getServerLocation() + CLASS_CREATE;
+    }
+    
     public static String getClassUpdateUrl() {
       return getServerLocation() + CLASS_UPDATE;
     }
+    
+    public static String getClassDeleteUrl() {
+      return getServerLocation() + CLASS_DELETE;
+    }
+    
+    public static String getClassSearchUrl() {
+      return getServerLocation() + CLASS_SEARCH;
+    }
+    
+    public static String getClassRosterReadUrl() {
+      return getServerLocation() + CLASS_ROSTER_READ;
+    }
+    
+    public static String getClassRosterUpdateUrl() {
+      return getServerLocation() + CLASS_ROSTER_UPDATE;
+    } 
     
     public static String getImageReadUrl() {
       return getServerLocation() + IMAGE_READ;
@@ -167,6 +212,8 @@ public class AwConstants {
     public static String getVisualizationUrl(String plotType) {
       return getServerLocation() + VISUALIZATION_URL + "/" + plotType + "/read";
     }
+    
 
+    
     
 }

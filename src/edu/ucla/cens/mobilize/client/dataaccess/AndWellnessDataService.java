@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.dataaccess;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,10 +26,14 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.QueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.DocumentReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseUpdateParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserCreateParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserSearchParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserUpdateParams;
 import edu.ucla.cens.mobilize.client.exceptions.ApiException;
 import edu.ucla.cens.mobilize.client.exceptions.AuthenticationException;
 import edu.ucla.cens.mobilize.client.exceptions.NotLoggedInException;
@@ -38,9 +43,11 @@ import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
+import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
@@ -425,6 +432,50 @@ public class AndWellnessDataService implements DataService {
     
   }
   
+
+  @Override
+  public void adminChangePassword(String usernameLoggedInUser,
+                                  String passwordLoggedInUser, 
+                                  String usernameThatOwnsPassword,
+                                  String newPassword,
+                                  final AsyncCallback<String> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before making any api calls";
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserChangePasswordUrl());
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", this.authToken);
+    params.put("client", this.client);
+    params.put("user", usernameLoggedInUser);
+    params.put("password", passwordLoggedInUser);
+    params.put("username", usernameThatOwnsPassword);
+    params.put("new_password", newPassword);
+    String postParams = MapUtils.translateToParameters(params);
+    _logger.fine("Attempting to change password with parameters: " + postParams);
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          try {
+            getResponseTextOrThrowException(requestBuilder, response);
+            // no exception? then it was successful
+            callback.onSuccess("");
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }    
+  }
+  
   @Override
   public void fetchUserInfo(final String username, final AsyncCallback<UserInfo> callback) {
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserInfoReadUrl());
@@ -467,15 +518,114 @@ public class AndWellnessDataService implements DataService {
     }
   }
 
+  @Override
+  public void fetchUserShortInfo(final String username, final AsyncCallback<UserShortInfo> callback) {
+    UserSearchParams params = new UserSearchParams();
+    params.username_opt = username;
+    fetchUserSearchResults(params, new AsyncCallback<List<UserSearchInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        callback.onFailure(caught);
+      }
+
+      @Override
+      public void onSuccess(List<UserSearchInfo> result) {
+        boolean found = false;
+        for (UserSearchInfo info : result) {
+          if (username.equals(info.getUsername())) {
+            UserShortInfo shortInfo = new UserShortInfo();
+            shortInfo.setUsername(info.getUsername());
+            shortInfo.setFirstName(info.getFirstName());
+            shortInfo.setLastName(info.getLastName());
+            shortInfo.setOrganization(info.getOrganization());
+            shortInfo.setPersonalId(info.getPersonalId());
+            shortInfo.setEmail(info.getEmail());
+            callback.onSuccess(shortInfo);
+            found = true;
+            break;
+          }
+        }
+        // call succeeded but user was not found. return null.
+        if (!found) callback.onSuccess(null);
+      }
+    });
+  }
+  
 
   @Override
-  public void fetchClassMembers(String classUrn, final AsyncCallback<List<UserShortInfo>> callback) {
+  public void fetchUserSearchResults(UserSearchParams params, final AsyncCallback<List<UserSearchInfo>> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserSearchUrl());
+    params.authToken = this.authToken();
+    params.client = this.client();
+    String postParams = params.toString();
+    _logger.fine("Attempting to query user search api with parameters: " + postParams);
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          List<UserSearchInfo> userInfos = null;
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            userInfos = AwDataTranslators.translateUserSearchQueryJSONToUserSearchInfoList(responseText);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          if (userInfos != null) {
+            callback.onSuccess(userInfos); 
+          } else {
+            callback.onFailure(new Exception("Failed to parse user data."));
+          }
+          
+        }
+
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+  }
+  
+  @Override
+  public void fetchUserSearchInfo(final String username, final AsyncCallback<UserSearchInfo> callback) {
+    UserSearchParams params = new UserSearchParams();
+    params.username_opt = username;
+    fetchUserSearchResults(params, new AsyncCallback<List<UserSearchInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        callback.onFailure(caught);
+      }
+
+      @Override
+      public void onSuccess(List<UserSearchInfo> result) {
+        boolean isFound = false;
+        // return object with username that matches exactly
+        for (UserSearchInfo userInfo : result) {
+          if (userInfo.getUsername().equals(username)) {
+            callback.onSuccess(userInfo);
+            isFound = true;
+          }
+        }
+        // if no exact match was found, return null
+        if (!isFound) callback.onSuccess(null);
+      }
+    });
+  }
+
+  @Override
+  public void fetchClassMembers(Collection<String> classUrns, final AsyncCallback<List<UserShortInfo>> callback) {
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserReadUrl());
     Map<String, String> params = new HashMap<String, String>();
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     params.put("auth_token", this.authToken);
     params.put("client", this.client);
-    params.put("class_urn_list", classUrn); 
+    params.put("class_urn_list", CollectionUtils.join(classUrns, ",")); 
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Attempting to fetch user info with parameters: " + postParams);
     try {
@@ -517,7 +667,7 @@ public class AndWellnessDataService implements DataService {
     fetchCampaignListShort(params, new AsyncCallback<List<CampaignShortInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
-        // TODO Auto-generated method stub
+        callback.onFailure(caught);
       }
 
       @Override
@@ -582,7 +732,6 @@ public class AndWellnessDataService implements DataService {
 
         @Override
         public void onError(Request request, Throwable exception) {
-          // TODO Auto-generated method stub
           _logger.severe(exception.getMessage());
           callback.onFailure(exception);
         }
@@ -995,6 +1144,85 @@ public class AndWellnessDataService implements DataService {
       throw new ServerException("Cannot contact server.");
     }        
   }
+  
+  @Override
+  public void fetchClassSearchResults(ClassSearchParams params, final AsyncCallback<List<ClassSearchInfo>> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.authToken = this.authToken();
+    params.client = this.client();
+    String postParams = params.toString();
+    _logger.fine("Fetching class search results with params: " + postParams);
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getClassSearchUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            List<ClassSearchInfo> result = AwDataTranslators.translateClassSearchQueryJSONToClassSearchInfoList(responseText);
+            callback.onSuccess(result);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+  }
+  
+  @Override
+  public void fetchClassSearchInfo(final String classUrn, final AsyncCallback<ClassSearchInfo> callback) {
+    ClassSearchParams params = new ClassSearchParams();
+    params.classUrn_opt = classUrn;
+    fetchClassSearchResults(params, new AsyncCallback<List<ClassSearchInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        callback.onFailure(caught);
+      }
+
+      @Override
+      public void onSuccess(List<ClassSearchInfo> result) {
+        boolean isFound = false;
+        for (ClassSearchInfo classInfo : result) {
+          if (classInfo.getClassUrn().equals(classUrn)) {
+            callback.onSuccess(classInfo);
+            isFound = true;
+          }
+        }
+        if (!isFound) callback.onSuccess(null);
+      }
+    });
+  }
+  
+  @Override
+  public void fetchClassNamesAndUrns(final AsyncCallback<Map<String, String>> callback) {
+    // TODO: cache results
+    fetchClassSearchResults(new ClassSearchParams(), new AsyncCallback<List<ClassSearchInfo>>() {
+      @Override
+      public void onFailure(Throwable caught) {
+        callback.onFailure(caught);
+      }
+
+      @Override
+      public void onSuccess(List<ClassSearchInfo> result) {
+        Map<String, String> classUrnToNameMap = new HashMap<String, String>();
+        for (ClassSearchInfo classInfo : result) {
+          classUrnToNameMap.put(classInfo.getClassUrn(), classInfo.getClassName());
+        }
+        callback.onSuccess(classUrnToNameMap);
+      }
+    });
+  }
 
   // FIXME: get cached data instead of refetching every time
   @Override
@@ -1019,11 +1247,48 @@ public class AndWellnessDataService implements DataService {
     });
   }
 
+
+  @Override
+  public void createClass(final ClassUpdateParams params, final AsyncCallback<String> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.authToken = this.authToken;
+    params.client = this.client;
+    String postParams = params.toString();
+    _logger.fine("Creating class with params: " + postParams);
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getClassCreateUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            callback.onSuccess("Class " + params.classId + " created successfully.");
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+  }
+  
   @Override
   public void updateClass(final ClassUpdateParams params, 
                           final AsyncCallback<String> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     params.authToken = this.authToken;
+    params.client = this.client;
     String postParams = params.toString();
     _logger.fine("Updating class with params: " + postParams);
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getClassUpdateUrl());
@@ -1035,6 +1300,43 @@ public class AndWellnessDataService implements DataService {
             getResponseTextOrThrowException(requestBuilder, response);
             // no exception thrown? then it was a success
             callback.onSuccess("Class " + params.classId + " updated successfully.");
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+  }
+  
+  @Override
+  public void deleteClass(final String classUrn, final AsyncCallback<String> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", this.authToken);
+    params.put("client", this.client);
+    params.put("class_urn", classUrn);
+    String postParams = MapUtils.translateToParameters(params);
+    _logger.fine("Deleting class with params: " + postParams);
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getClassDeleteUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            getResponseTextOrThrowException(requestBuilder, response);
+            // if no exception was thrown then it's successful
+            callback.onSuccess(classUrn + " deleted");
           } catch (Exception exception) {
             _logger.severe(exception.getMessage());
             callback.onFailure(exception);
@@ -1094,7 +1396,6 @@ public class AndWellnessDataService implements DataService {
   
   @Override
   public void deleteDocument(String documentId, final AsyncCallback<String> callback) {
-    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     // set up request params
     Map<String, String> params = new HashMap<String, String>();
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
@@ -1138,6 +1439,15 @@ public class AndWellnessDataService implements DataService {
     params.put("client", this.client);
     params.put("output_format", "xml");
     params.put("campaign_urn_list", campaignId);
+    return params;
+  }
+  
+  @Override
+  public Map<String, String> getClassRosterCsvDownloadParams(List<String> classUrns) {
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("auth_token", this.authToken);
+    params.put("client", this.client);
+    params.put("class_urn_list", CollectionUtils.join(classUrns, ","));
     return params;
   }
 
@@ -1258,7 +1568,129 @@ public class AndWellnessDataService implements DataService {
     
   }
 
+  @Override
+  public void deleteUsers(Collection<String> usernames, final AsyncCallback<String> callback) {
+    // set up request params
+    Map<String, String> params = new HashMap<String, String>();
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.put("auth_token", this.authToken);
+    params.put("client", this.client);
+    params.put("user_list", CollectionUtils.join(usernames, ","));
+    String postParams = MapUtils.translateToParameters(params);
+    _logger.fine("Attempting to delete users with params: " + postParams);
+    // make the request
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserDeleteUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            callback.onSuccess(responseText);
+          } catch (Exception exception) {
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }  
+  }
 
+  @Override
+  public void disableUser(String username, final AsyncCallback<String> callback) {
+    UserUpdateParams params = new UserUpdateParams();
+    params.username = username;
+    params.enabled_opt = false;
+    updateUser(params, callback);    
+  }
 
+  @Override
+  public void enableUser(String username, final AsyncCallback<String> callback) {
+    UserUpdateParams params = new UserUpdateParams();
+    params.username = username;
+    params.enabled_opt = true;
+    updateUser(params, callback);
+  }
+  
+
+  @Override
+  public void createUser(UserCreateParams params, final AsyncCallback<String> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.authToken = this.authToken();
+    params.client = this.client();
+    String postParams = params.toString();
+    _logger.fine("Attempting to create user with params: " + postParams);
+    // make the request
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserCreateUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            callback.onSuccess(responseText);
+          } catch (Exception exception) {
+            callback.onFailure(exception);
+          }
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }    
+  }    
+
+  @Override
+  public void updateUser(UserUpdateParams params,
+                         final AsyncCallback<String> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.authToken = this.authToken();
+    params.client = this.client();
+    String postParams = params.toString();
+    _logger.fine("Attempting to update user with params: " + postParams);
+    // make the request
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserUpdateUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            callback.onSuccess(responseText);
+          } catch (Exception exception) {
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }    
+  }
 
 }

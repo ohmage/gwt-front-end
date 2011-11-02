@@ -1,0 +1,98 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
+	<ui:style>
+	  .adminDashboard {
+	  	background-color: #FFF;
+	  	margin: 10px auto auto;
+	  	padding: 5px;
+	  	position: static;
+	  }
+	  .dashboardBlockTitleUsers, .dashboardBlockTitleClasses, .dashboardBlockTitleCampaigns {
+	  	background: 0 0 repeat-x url('images/bg_white_transparent_10.png');
+	  	font-weight: bold;
+	  	padding: 5px;
+	  	text-align: center;
+	  }
+	  .dashboardBlockUsers {
+      border: solid 1px #F58F3E;
+      border: solid 1px #FCE4CD;
+    }
+    .dashboardBlockClasses {
+      border: solid 1px #99CA3B;
+      border: solid 1px #D7E8AB;
+    }
+    .dashboardBlockCampaigns {
+      border: solid thin #25B4E7;
+      border: solid thin #CCECFC;
+    }
+	  .dashboardBlockTitleUsers {
+      background-color: #FCE4CD; /* orange */
+      border: solid 1px #F58F3E;
+    }
+    .dashboardBlockTitleClasses {
+      background-color: #D7E8AB; /* green */
+      border: solid 1px #99CA3B;
+    }
+    .dashboardBlockTitleCampaigns {
+      background-color: #CCECFC; /* blue */
+      border: solid thin #25B4E7;
+    }
+    .dashboardBlockUsers, .dashboardBlockClasses, .dashboardBlockCampaigns {
+      /*background-image: url('images/bg_white_transparent_50.png');
+      background-position: top;
+      background-repeat: repeat-x;*/
+      background-color: white;
+      box-shadow: -1px 1px 5px 1px #CCC;
+      height: 100px;
+      margin: 10px;
+      padding: 5px 10px;
+      width: 200px;
+    }
+    .dashboardBlockUsers ul, .dashboardBlockClasses ul, .dashboardBlockCampaigns ul {
+    	background-color: white;
+    }
+    .mainContent {
+    	display: block;
+    }
+	  .msgBox {
+	  }
+	  .msgLabel {
+	  }
+	  .scrollable {
+	  	overflow-y: auto;
+	  }
+	  .innerTopPanel {
+	  	background-color: #EEE;
+	  }
+	</ui:style>
+
+  <g:DockLayoutPanel>
+    <g:west size="150">
+      <w:AdminMenu ui:field='adminMenu' />
+    </g:west>
+    <g:center>
+	    <g:HorizontalPanel ui:field='adminDashboard' addStyleNames='{style.adminDashboard}'>
+	      <g:HTMLPanel addStyleNames='{style.dashboardBlockUsers}'>
+	        <g:HTML addStyleNames='{style.dashboardBlockTitleUsers}'>Manage Users</g:HTML>
+	        <ul>
+	          <li><a href='#admin_user_create'>Create a new user</a></li>
+	          <li><a href='#admin_user_list'>View and edit existing users</a></li>
+	        </ul>
+	      </g:HTMLPanel>
+	      <g:HTMLPanel addStyleNames='{style.dashboardBlockClasses}'>
+	        <g:HTML addStyleNames='{style.dashboardBlockTitleClasses}'>Manage Classes</g:HTML>
+	        <ul>
+	          <li><a href='#admin_class_create'>Create a new class</a></li>
+	          <li><a href='#admin_class_list'>View and edit existing classes</a></li>
+	        </ul>
+	      </g:HTMLPanel>
+	      <g:HTMLPanel addStyleNames='{style.dashboardBlockCampaigns}'>
+	        <g:HTML addStyleNames='{style.dashboardBlockTitleCampaigns}'>Manage Campaigns</g:HTML>
+	        <g:HTML><p>Create, edit, and delete campaigns from the <a href='#campaigns'>Campaigns tab</a>.</p></g:HTML>
+	      </g:HTMLPanel>
+	    </g:HorizontalPanel>
+    </g:center>
+  </g:DockLayoutPanel>
+</ui:UiBinder> 

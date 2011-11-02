@@ -15,18 +15,29 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
+/**
+ * This widget lists user-friendly names of items with an "X" next to each that,
+ * when clicked, removes the item from the list. Items are uniquely identified
+ * by an invisible "value" column, which can be retrieved with getItems(). Adding a 
+ * duplicate item to the list (where uniqueness is enforced by the value column)
+ * has no effect.
+ * 
+ * Fires value changed event when an item is added or deleted, where the value
+ * give is "myitemvalue" for added item or "-myitemvalue" for a deleted item.
+ * 
+ * @author shlurbee
+ */
 public class ListWidget extends Composite implements HasValueChangeHandlers<String> {
   
   private Panel panel = new SimplePanel();
   private FlexTable flexTable = new FlexTable();
 
-  private MultiSelectDialog dialog = new MultiSelectDialog();
-  
   private static final int USER_FRIENDLY_NAME_COLUMN = 0;
   private static final int DELETE_BUTTON_COLUMN = 1;
   private static final int VALUE_COLUMN = 2; // invisible
   
   public ListWidget() {
+    panel.addStyleName("listWidget");
     panel.add(flexTable);
     
     // flex table is invisible when empty to keep it from affecting flow

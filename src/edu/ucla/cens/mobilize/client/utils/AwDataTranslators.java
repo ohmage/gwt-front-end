@@ -21,19 +21,23 @@ import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AppConfigAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassSearchAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DocumentAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.PromptResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.SurveyResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserSearchInfoAwData;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
+import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 
 // json
@@ -354,6 +358,61 @@ public class AwDataTranslators {
       return users;
     }
     
+    // {"result":"success","data":{"ohmage.bbj":{"classes":{"urn:class:ca:ucla:Mobilize:May:2011":"restricted"},"permissions":{"enabled":true,"new_account":false,"admin":false,"can_create_campaigns":true},"campaigns":{"urn:campaign:ca:ucla:Mobilize:May:2011:Advertisement":["analyst","participant"],"urn:campaign:ca:ucla:Mobilize:May:2011:Sleep":["analyst","participant"]}}}}
+    public static List<UserSearchInfo> translateUserSearchQueryJSONToUserSearchInfoList(String userSearchQueryResponseJSON) {
+      List<UserSearchInfo> users = new ArrayList<UserSearchInfo>();
+      
+      // Parse response obj
+      JSONValue value = JSONParser.parseStrict(userSearchQueryResponseJSON);
+      JSONObject responseObj = value.isObject();
+      
+      // Get data field from response. It's a hash with usernames as keys and
+      // serialized userShortInfos as values.
+      if (responseObj == null || !responseObj.containsKey("data")) return null;
+      JSONObject usernameToUserDataHash = responseObj.get("data").isObject();
+      
+      // For each user, translate the serialized info into a UserInfo object and save
+      if (usernameToUserDataHash == null) return null;
+      Set<String> usernames = usernameToUserDataHash.keySet();
+      JSONValue jsonValue = null;
+      for (String username : usernames) {
+        // wrap in try/catch because it uses a UserSearchInfoAwData
+        try { 
+          jsonValue = usernameToUserDataHash.get(username);
+          JSONObject userJSONObject = jsonValue.isObject();
+          if (userJSONObject == null) throw new Exception("user data field not a valid JSON object");
+          UserSearchInfoAwData userAwData = (UserSearchInfoAwData)userJSONObject.getJavaScriptObject();
+          UserSearchInfo userInfo = new UserSearchInfo();
+          userInfo.setUsername(username);
+          userInfo.setFirstName(userAwData.getFirstName());
+          userInfo.setLastName(userAwData.getLastName());
+          userInfo.setPersonalId(userAwData.getPersonalId());
+          userInfo.setOrganization(userAwData.getOrganization());
+          userInfo.setEmail(userAwData.getEmailAddress());
+          userInfo.setAdmin(userAwData.getAdminFlag());
+          userInfo.setCanCreateCampaigns(userAwData.getCanCreateFlag());
+          userInfo.setEnabled(userAwData.getEnabledFlag());
+          userInfo.setNewAccount(userAwData.getNewAccountFlag());
+          // TODO: get class and campaign roles instead of just urns?
+          JsArrayString classUrns = userAwData.getClassUrns();
+          for (int i = 0; i < classUrns.length(); i++) {
+            userInfo.addClassUrn(classUrns.get(i));
+          }
+          JsArrayString campaignUrns = userAwData.getCampaignUrns();
+          for (int i = 0; i < campaignUrns.length(); i++) {
+            userInfo.addCampaignUrn(campaignUrns.get(i));
+          }
+          users.add(userInfo);
+          
+        } catch (Exception e) { 
+          _logger.warning("Could not parse json for user: " + username + ". Skipping record.");
+          _logger.fine(e.getMessage());
+          _logger.finer("jsonValue: " + (jsonValue != null ? jsonValue.toString() : "null"));
+        }
+      }
+      return users;
+    }
+    
     // {"result":"success","data":{"urn:andwellness:nih":{"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}},"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
     public static List<CampaignShortInfo> translateCampaignReadQueryJSONtoCampaignShortInfoList(
         String responseText) {
@@ -499,6 +558,7 @@ public class AwDataTranslators {
           ClassInfo classInfo = new ClassInfo();
           classInfo.setClassId(classId);
           classInfo.setClassName(awData.getName());
+          classInfo.setDescription(awData.getDescription());
           JsArrayString users = awData.getUserNames();
           for (int i = 0; i < users.length(); i++) {
             String username = users.get(i);
@@ -517,6 +577,37 @@ public class AwDataTranslators {
       }
 
       return classInfos;
+    }
+    
+    public static List<ClassSearchInfo> translateClassSearchQueryJSONToClassSearchInfoList(String classSearchQueryJSON) throws Exception {
+      List<ClassSearchInfo> classSearchInfos = new ArrayList<ClassSearchInfo>(); // retval
+      JSONValue value = JSONParser.parseStrict(classSearchQueryJSON);
+      JSONObject obj = value.isObject();
+      if (obj == null || !obj.containsKey("data")) throw new Exception("Invalid json format.");
+      JSONObject dataHash = obj.get("data").isObject();
+      for (String classUrn : dataHash.keySet()) {
+        try {
+          ClassSearchAwData awData = (ClassSearchAwData)dataHash.get(classUrn).isObject().getJavaScriptObject();
+          ClassSearchInfo classSearchInfo = new ClassSearchInfo();
+          classSearchInfo.setClassUrn(classUrn);
+          classSearchInfo.setClassName(awData.getName());
+          classSearchInfo.setDescription(awData.getDescription());
+          JsArrayString users = awData.getUserNames();
+          for (int i = 0; i < users.length(); i++) {
+            classSearchInfo.addMember(users.get(i));
+          }
+          classSearchInfos.add(classSearchInfo);
+          JsArrayString campaignUrns = awData.getCampaignUrns();
+          for (int i = 0; i < campaignUrns.length(); i++) {
+            classSearchInfo.addCampaign(campaignUrns.get(i));
+          }
+        } catch (Exception e) { 
+          _logger.warning("Could not parse json for class urn: " + classUrn + ". Skipping record.");
+          _logger.fine(e.getMessage());
+        }
+      }
+
+      return classSearchInfos;
     }
 
     // {"result":"success","data":{"7bf3ab79-d30d-4cec-91b0-75d5d337be5d":{"class_role":{},"user_role":"owner","last_modified":"2011-05-26 13:01:03","description":"","name":"testdoc1.txt","privacy_state":"private","campaign_roles":{"urn:campaign:ca:lausd:Addams_HS:CS101:Fall:2011:Advertisement":"reader"},"size":27},"35e795c7-c6dc-4f22-8293-aa3369729b35":{"class_role":{},"user_role":"owner","last_modified":"2011-05-26 13:02:08","description":"","name":"testdoc3.txt","privacy_state":"private","campaign_roles":{"urn:campaign:ca:lausd:Addams_HS:CS101:Fall:2011:Advertisement":"reader"},"size":27},"0c61e063-cc11-46fa-aa13-20f9fbc560e6":{"class_role":{},"user_role":"owner","last_modified":"2011-05-26 13:01:46","description":"","name":"testdoc2.txt","privacy_state":"private","campaign_roles":{"urn:campaign:ca:lausd:Addams_HS:CS101:Fall:2011:Advertisement":"reader"},"size":27}}}
@@ -563,6 +654,8 @@ public class AwDataTranslators {
       AppConfig.setAppName(awData.getApplicationName());
       return appConfig;
     }
+
+
 
     
 }
