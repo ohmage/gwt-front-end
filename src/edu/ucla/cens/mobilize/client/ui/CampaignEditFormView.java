@@ -54,6 +54,7 @@ public class CampaignEditFormView extends Composite {
   @UiField TextArea campaignDescriptionTextArea;
   @UiField Button addClassesButton;
   @UiField FlexTable classesFlexTable;
+  @UiField Hidden classHiddenField; // holds serialized class list
   @UiField Hidden classAddHiddenField; // holds serialized list of classes to add
   @UiField Hidden classDelHiddenField; // holds serialized list of classes to delete
   @UiField HTMLPanel authorsPanel;
@@ -110,6 +111,7 @@ public class CampaignEditFormView extends Composite {
     }
     // NOTE(06/15/2011): create api does not support adding authors
 
+    classHiddenField.setValue(getClassUrnsSerialized());
     classAddHiddenField.setValue(getClassesToAddSerialized());
     classDelHiddenField.setValue(getClassesToRemoveSerialized());
     clearOriginalClasses();	//FIXME: is it safe to clear the old list here before we know everything submitted?
@@ -188,6 +190,10 @@ public class CampaignEditFormView extends Composite {
       urns.add(this.classesFlexTable.getText(i, CLASS_URN_COL));
     }
     return urns;
+  }
+  
+  private String getClassUrnsSerialized() {
+    return CollectionUtils.join(getClassUrns(), ",");
   }
   
   public void addAuthor(String authorLogin) {
