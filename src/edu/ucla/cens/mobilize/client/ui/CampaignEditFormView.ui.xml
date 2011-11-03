@@ -172,6 +172,7 @@
 	                <g:Hidden ui:field='authorsToRemoveHiddenField' name='user_role_list_remove' />
 	                <g:Button ui:field='addAuthorsButton'>Add Authors</g:Button>
                 </g:HTMLPanel>
+                <g:Label ui:field='authorsPlaceholderText' addStyleNames='{style.authorList}' />
               </td>
             </tr>
             <tr>

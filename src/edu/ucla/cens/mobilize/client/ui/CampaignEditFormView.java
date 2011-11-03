@@ -59,6 +59,7 @@ public class CampaignEditFormView extends Composite {
   @UiField Hidden classDelHiddenField; // holds serialized list of classes to delete
   @UiField HTMLPanel authorsPanel;
   @UiField Button addAuthorsButton;
+  @UiField Label authorsPlaceholderText;
   @UiField FlexTable authorsFlexTable;
   @UiField Hidden authorsToAddHiddenField; // list of authors with roles
   @UiField Hidden authorsToRemoveHiddenField; // list of authors with roles
@@ -102,19 +103,20 @@ public class CampaignEditFormView extends Composite {
     authorsFlexTable.setBorderWidth(0);
   }
   
-  public void prepareFormForSubmit() {
-    if (authorsPanel.isVisible()) { // this is an edit
-      authorsToAddHiddenField.setName("user_role_list_add");
-      authorsToRemoveHiddenField.setName("user_role_list_remove");
-      authorsToAddHiddenField.setValue(getAuthorsToAddSerialized());
-      authorsToRemoveHiddenField.setValue(getAuthorsToRemoveSerialized());
+  public void prepareFormForSubmit(boolean isCreate) {
+	  // NOTE(06/15/2011): create api does not support adding authors
+	  // NOTE(11/02/2011): edit api does not have class_urn_list api, but add/remove instead
+	  if (isCreate == false) { // this is an edit
+        authorsToAddHiddenField.setName("user_role_list_add");
+        authorsToRemoveHiddenField.setName("user_role_list_remove");
+        authorsToAddHiddenField.setValue(getAuthorsToAddSerialized());
+        authorsToRemoveHiddenField.setValue(getAuthorsToRemoveSerialized());
+        classAddHiddenField.setValue(getClassesToAddSerialized());
+        classDelHiddenField.setValue(getClassesToRemoveSerialized());
+        clearOriginalClasses();	//FIXME: is it safe to clear the old list here before we know everything submitted?
+    } else { // campaign creation
+    	classHiddenField.setValue(getClassUrnsSerialized());
     }
-    // NOTE(06/15/2011): create api does not support adding authors
-
-    classHiddenField.setValue(getClassUrnsSerialized());
-    classAddHiddenField.setValue(getClassesToAddSerialized());
-    classDelHiddenField.setValue(getClassesToRemoveSerialized());
-    clearOriginalClasses();	//FIXME: is it safe to clear the old list here before we know everything submitted?
     
     campaignUrnHiddenField.setValue(this.campaignUrn.getText());
     
@@ -125,6 +127,8 @@ public class CampaignEditFormView extends Composite {
   }
 
   public void setAuthorsPanelVisible(boolean isVisible) {
+    //if isVisible == true, display author drop-down list, else display placeholder text
+    this.authorsPlaceholderText.setVisible(!isVisible);
     this.authorsPanel.setVisible(isVisible);
   }
 
@@ -194,6 +198,12 @@ public class CampaignEditFormView extends Composite {
   
   private String getClassUrnsSerialized() {
     return CollectionUtils.join(getClassUrns(), ",");
+  }
+  
+  public void setAuthorPlaceholderText(String authorLogin) {
+	  if (authorLogin == null) return;
+	  this.authorsPlaceholderText.setText(authorLogin);
+	  this.authorsPlaceholderText.setVisible(true);
   }
   
   public void addAuthor(String authorLogin) {
