@@ -99,7 +99,7 @@ public class LoginViewAndWellnessImpl extends Composite implements LoginView {
     }
 
     @Override
-    public String getUserName() {
+    public String getUsername() {
       return userNameTextBox.getText();
     }
 

@@ -30,37 +30,6 @@
     .formContainer {
     	width: 340px;
     }
-    .helpPanel {
-    	border: solid thin #FCE4CD;
-    	margin: 0px 20px;
-    	padding: 10px;
-    	width: 320px;
-    }
-    .helpPanelBody {
-    	padding: 10px 10px 5px 10px;
-    }
-    .helpPanelSpecialChars {
-    	margin: auto;
-    }
-    .helpPanelSpecialChars td {
-    	border: solid thin #DDD;
-    	margin: 0px;
-    	padding: 0px 3px;
-    }
-    .helpPanelTitle {
-    	color: #444;
-    	font-size: 1.1em;
-      font-weight: bold;
-    }
-    .helpPanelTitle {
-    	border: solid thin #F58F3D;
-    	background: #FCE4CD 0 0 repeat-x url('images/bg_white_transparent_10.png');
-    	display: block;
-      font-size: 1.1em;
-      font-weight: bold;
-      padding: 5px;
-      text-align: center;
-    }
     .hidePasswordButton {
     	background: #FFF 0px 50% no-repeat url('images/lock.png');
       border: none;
@@ -169,29 +138,7 @@
 	          <g:Button ui:field='cancelButton' addStyleNames='{style.cancelButton}'>Cancel</g:Button>
           </g:HTMLPanel>
         </g:VerticalPanel>
-        <g:HTMLPanel addStyleNames='{style.helpPanel}'>
-          <g:Label addStyleNames='{style.helpPanelTitle}'>
-            Password Instructions
-          </g:Label>
-          <g:HTMLPanel addStyleNames='{style.helpPanelBody}'>
-              The password must be between 8 and 16 characters, 
-              contain at least one lower case character, 
-              contain at least one upper case character, 
-              contain at least one digit, 
-              and contain at least one of the following special characters:
-          </g:HTMLPanel>
-          <g:HTMLPanel addStyleNames='{style.helpPanelSpecialChars}'>
-            <g:Grid>
-              <g:row>
-                <g:cell>,</g:cell><g:cell>.</g:cell><g:cell>&#60;</g:cell><g:cell>&#62;</g:cell>
-                <g:cell>[</g:cell><g:cell>]</g:cell><g:cell>!</g:cell><g:cell>@</g:cell>
-                <g:cell>#</g:cell><g:cell>$</g:cell><g:cell>%</g:cell><g:cell>^</g:cell>
-                <g:cell>&amp;</g:cell><g:cell>*</g:cell><g:cell>+</g:cell><g:cell>-</g:cell>
-                <g:cell>{</g:cell><g:cell>}</g:cell><g:cell>|</g:cell><g:cell>:</g:cell>
-              </g:row>
-            </g:Grid> 
-          </g:HTMLPanel>
-        </g:HTMLPanel>
+        <w:PasswordChangeInstructions />
       </g:HorizontalPanel>
     </g:center>
   </g:DockLayoutPanel>

@@ -104,7 +104,7 @@ public class LoginViewOhmageImpl extends Composite implements LoginView {
     }
 
     @Override
-    public String getUserName() {
+    public String getUsername() {
       return userNameTextBox.getText();
     }
 

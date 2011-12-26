@@ -233,7 +233,5 @@ public class HistoryTokens {
     if (endDate != null) params.put("to", DateUtils.translateToHistoryTokenFormat(endDate));
     return params.isEmpty() ? "responses" : "responses?" + MapUtils.translateToParameters(params);
   }
-                                    
-
   
 }

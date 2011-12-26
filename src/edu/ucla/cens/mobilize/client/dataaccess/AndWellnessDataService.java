@@ -167,9 +167,18 @@ public class AndWellnessDataService implements DataService {
                 returnError = new NotLoggedInException(errorCode.getErrorDesc());
                 break;
             case E0200: 
-            case E0201: 
-            case E0202: 
-                returnError = new AuthenticationException(errorCode.getErrorDesc());
+            case E0201:
+            case E0202:
+                // FIXME: new account is returning 200 error code, once it returns 202 instead
+                // give new account error its own case 
+                String errorText = errorList.get(0).getText();
+                if (errorText.toLowerCase().contains("new account")) {
+                  errorCode = ErrorCode.E0202; // deleteme
+                  returnError = new AuthenticationException(errorCode.getErrorCode(),
+                                                            errorCode.getErrorDesc());
+                } else {
+                  returnError = new AuthenticationException(errorCode.getErrorDesc());
+                }
                 break;
             case E0300:
             case E0301:
@@ -395,10 +404,8 @@ public class AndWellnessDataService implements DataService {
                              String oldPassword, 
                              String newPassword,
                              final AsyncCallback<String> callback) {
-    assert this.isInitialized : "You must call init(username, auth_token) before making any api calls";
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserChangePasswordUrl());
     Map<String, String> params = new HashMap<String, String>();
-    params.put("auth_token", this.authToken);
     params.put("client", this.client);
     params.put("user", username);
     params.put("password", oldPassword);

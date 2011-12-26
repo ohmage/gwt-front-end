@@ -13,7 +13,7 @@ public interface LoginView extends IsWidget {
     }
   
     // Getters
-    String getUserName();
+    String getUsername();
     String getPassword();
     
     // Changes the appearance of the LoginBox

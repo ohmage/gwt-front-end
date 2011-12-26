@@ -9,6 +9,8 @@ package edu.ucla.cens.mobilize.client.exceptions;
  */
 @SuppressWarnings("serial")
 public class AuthenticationException extends RuntimeException {
+    private String _errorCode = "";
+    
     public AuthenticationException(String message) {
         super(message);
     }
@@ -19,5 +21,14 @@ public class AuthenticationException extends RuntimeException {
     
     public AuthenticationException(Throwable cause) {
         super(cause);
+    }
+    
+    public AuthenticationException(String errorCode, String message) {
+      super(message);
+      this._errorCode = errorCode;
+    }
+    
+    public String getErrorCode() {
+      return this._errorCode != null && !this._errorCode.isEmpty() ? this._errorCode : "0200";
     }
 }
