@@ -2,7 +2,8 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui"
-	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
+	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client"
+	xmlns:c="urn:import:com.google.gwt.user.cellview.client">
   <ui:style type="edu.ucla.cens.mobilize.client.view.ResponseViewImpl.ResponseViewStyles">
     .actionButton {
     	box-shadow: none;
@@ -59,6 +60,24 @@
     	background-color: #EEE;
       padding: 5px 0px 0px 5px;
       vertical-align: middle;
+    }
+    .pager {
+    	display: inline-block;
+      margin-right: 150px;
+    	position: relative;
+    	top: -6px;
+    }
+    .pagerLabel {
+    	padding-right: 8px;
+    }
+    .pagerMenuBarWrapper {
+    	position: absolute;
+    	right: 10px;
+    	top: 3px;
+    }
+    .pagerWrapper {
+    	margin: 0px auto;
+    	width: 150px;
     }
     .photoCheckBox {
     	padding: 5px 0px;
@@ -131,6 +150,10 @@
       font-size: 0.9em;
       margin: 0px;
       padding: 5px 5px 10px 15px;
+      white-space: nowrap;
+    }
+    .topNavMenuWrapper {
+    	position: absolute;
     }
     .visibilityWrapper {
     	padding: 0px;
@@ -141,10 +164,33 @@
   
     <g:north size='25'>
       <g:HTMLPanel addStyleNames='{style.topNav}'>
+        <g:HTMLPanel addStyleNames='{style.topNavMenuWrapper}'>
           <g:Anchor ui:field='viewLinkBrowse' addStyleNames='link'>Browse Responses</g:Anchor>
           <g:HTMLPanel tag='span' ui:field='editResponsesMenuItem' addStyleNames='{style.visibilityWrapper}'>
 	          <span class='{style.separator}'>|</span>
 	          <g:Anchor ui:field='viewLinkEdit' addStyleNames='link'>Edit Responses</g:Anchor>
+          </g:HTMLPanel>
+        </g:HTMLPanel>
+          <g:HTMLPanel addStyleNames='{style.pagerWrapper}'>
+            <c:SimplePager ui:field='pager' addStyleNames='{style.pager}' />
+          </g:HTMLPanel>
+          <g:HTMLPanel addStyleNames='{style.pagerMenuBarWrapper}'>
+            <g:MenuBar vertical='false'>
+              <g:MenuItem addStyleNames='{style.pagerLabel}'>Results per page:</g:MenuItem>
+              <g:MenuItem ui:field='resultsPerPage10MenuItem' addStyleNames='link'>
+                10
+              </g:MenuItem>
+              <g:MenuItemSeparator />
+              <g:MenuItem ui:field='resultsPerPage50MenuItem' addStyleNames='link'>
+                50
+              </g:MenuItem>
+              <g:MenuItemSeparator />
+              <g:MenuItem ui:field='resultsPerPage100MenuItem' addStyleNames='link'>
+                100
+              </g:MenuItem>
+              <g:MenuItemSeparator />
+              <g:MenuItem></g:MenuItem>
+            </g:MenuBar>
           </g:HTMLPanel>
       </g:HTMLPanel>
     </g:north>
@@ -183,54 +229,56 @@
     
     <g:center>
       <g:HTMLPanel addStyleNames='{style.scrollable}'>
-        <w:MessageWidget ui:field='messageWidget' />
-        <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
-            <!-- title changes depending on filter selections -->
-            <g:Label ui:field='sectionHeaderTitle' addStyleNames='{style.sectionHeaderTitle}' />
-            <g:Label ui:field='sectionHeaderDetail' addStyleNames='{style.sectionHeaderDetail}' />
-        </g:HTMLPanel>
-        
-        <!-- buttons that affect selected responses -->
-        <g:HTMLPanel addStyleNames='{style.buttonPanelWrapperTop}'>
-          <g:HTMLPanel tag='span' ui:field='buttonPanelTop'>
-	          <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
-	            <g:Anchor ui:field='selectAllLinkTop' addStyleNames='{style.smallActionLink}'>
-	              select all
-	            </g:Anchor>
+	      <g:HTMLPanel>
+	        <w:MessageWidget ui:field='messageWidget' />
+	        <g:HTMLPanel addStyleNames='{style.sectionHeader}'>
+	            <!-- title changes depending on filter selections -->
+	            <g:Label ui:field='sectionHeaderTitle' addStyleNames='{style.sectionHeaderTitle}' />
+	            <g:Label ui:field='sectionHeaderDetail' addStyleNames='{style.sectionHeaderDetail}' />
+	        </g:HTMLPanel>
+	        
+	        <!-- buttons that affect selected responses -->
+	        <g:HTMLPanel addStyleNames='{style.buttonPanelWrapperTop}'>
+	          <g:HTMLPanel tag='span' ui:field='buttonPanelTop'>
+	            <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
+	              <g:Anchor ui:field='selectAllLinkTop' addStyleNames='{style.smallActionLink}'>
+	                select all
+	              </g:Anchor>
+	            </g:HTMLPanel>
+	            <g:HTMLPanel tag='span' addStyleNames='{style.separator}'>|</g:HTMLPanel>
+	            <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
+	              <g:Anchor ui:field='selectNoneLinkTop' addStyleNames='{style.smallActionLink}'>
+	                none
+	              </g:Anchor>
+	            </g:HTMLPanel>
+	            <g:Button ui:field='shareButtonTop' addStyleNames='{style.actionButton}'>
+	              <img src='images/group_small.png' class='{style.actionButtonImage}' />
+	              Share
+	            </g:Button> 
+	            <g:Button ui:field='makePrivateButtonTop' addStyleNames='{style.actionButton}'>
+	              <img src='images/lock_small.png' class='{style.actionButtonImage}' />
+	              Make Private
+	            </g:Button>
+	            <g:Button ui:field='deleteButtonTop' addStyleNames='{style.actionButton}'>
+	              <img src='images/delete.png' class='{style.actionButtonImage}' />
+	              Delete
+	            </g:Button>
 	          </g:HTMLPanel>
-	          <g:HTMLPanel tag='span' addStyleNames='{style.separator}'>|</g:HTMLPanel>
-	          <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
-	            <g:Anchor ui:field='selectNoneLinkTop' addStyleNames='{style.smallActionLink}'>
-                none
-              </g:Anchor>
-            </g:HTMLPanel>
-            <g:Button ui:field='shareButtonTop' addStyleNames='{style.actionButton}'>
-              <img src='images/group_small.png' class='{style.actionButtonImage}' />
-              Share
-            </g:Button> 
-            <g:Button ui:field='makePrivateButtonTop' addStyleNames='{style.actionButton}'>
-              <img src='images/lock_small.png' class='{style.actionButtonImage}' />
-              Make Private
-            </g:Button>
-            <g:Button ui:field='deleteButtonTop' addStyleNames='{style.actionButton}'>
-              <img src='images/delete.png' class='{style.actionButtonImage}' />
-              Delete
-            </g:Button>
-          </g:HTMLPanel>
-		      <g:HTMLPanel tag='span' ui:field='expandCollapseLinksTop' addStyleNames='{style.expandCollapseLinkMenu}'>
-		        <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
-	            <g:Anchor ui:field='expandLinkTop' addStyleNames='{style.smallActionLink}'>
-	              expand
-	            </g:Anchor>
-	          </g:HTMLPanel>
-	          <g:HTMLPanel tag='span' addStyleNames='{style.separator}'>|</g:HTMLPanel>
-	          <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
-	            <g:Anchor ui:field='collapseLinkTop' addStyleNames='{style.smallActionLink}'>
-	              collapse
-	            </g:Anchor>
+	          <g:HTMLPanel tag='span' ui:field='expandCollapseLinksTop' addStyleNames='{style.expandCollapseLinkMenu}'>
+	            <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
+	              <g:Anchor ui:field='expandLinkTop' addStyleNames='{style.smallActionLink}'>
+	                expand
+	              </g:Anchor>
+	            </g:HTMLPanel>
+	            <g:HTMLPanel tag='span' addStyleNames='{style.separator}'>|</g:HTMLPanel>
+	            <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
+	              <g:Anchor ui:field='collapseLinkTop' addStyleNames='{style.smallActionLink}'>
+	                collapse
+	              </g:Anchor>
+	            </g:HTMLPanel>
 	          </g:HTMLPanel>
 	        </g:HTMLPanel>
-        </g:HTMLPanel>
+	      </g:HTMLPanel>
 	      <g:FlowPanel addStyleNames='{style.responseContainer}'>
 	      
 		      <!-- list of responses that match the selected filters  -->
@@ -240,9 +288,10 @@
       </g:HTMLPanel>
     </g:center>
     
-    <g:south size='40'>
+    <g:south size='28'>
       <g:HTMLPanel>
       <g:HTMLPanel addStyleNames='{style.buttonPanelWrapperBottom}'>
+        <g:HorizontalPanel>
           <g:HTMLPanel tag='span' ui:field='buttonPanelBottom'>
             <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
               <g:Anchor ui:field='selectAllLinkBottom' addStyleNames='{style.smallActionLink}'>
@@ -268,6 +317,7 @@
               Delete
             </g:Button>
           </g:HTMLPanel>
+          
           <g:HTMLPanel tag='span' ui:field='expandCollapseLinksBottom' addStyleNames='{style.expandCollapseLinkMenu}'>
             <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
               <g:Anchor ui:field='expandLinkBottom' addStyleNames='{style.smallActionLink}'>
@@ -281,8 +331,9 @@
               </g:Anchor>
             </g:HTMLPanel>
           </g:HTMLPanel>
-        </g:HTMLPanel>
-     </g:HTMLPanel>
+        </g:HorizontalPanel>
+       </g:HTMLPanel>
+       </g:HTMLPanel>
     </g:south>
     
   </g:DockLayoutPanel>

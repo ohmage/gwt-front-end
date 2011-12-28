@@ -27,6 +27,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
+import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
@@ -35,7 +36,6 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
-import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.event.ResponseDataChangedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
@@ -188,8 +188,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                       final Privacy selectedPrivacy,
                                       final boolean onlyPhotoResponses,
                                       final Date startDate,
-                                      final Date endDate) {
-    
+                                      final Date endDate) {    
     // clear previous data, if any
     this.responses.clear();
     this.view.clearResponseList();
@@ -206,15 +205,18 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     CampaignReadParams params = new CampaignReadParams();
     params.campaignUrns_opt.add(selectedCampaign);
 
+    WaitIndicator.show();
     dataService.fetchCampaignDetail(selectedCampaign, new AsyncCallback<CampaignDetailedInfo>() {
         @Override
         public void onFailure(Throwable caught) {
+          WaitIndicator.hide();
           AwErrorUtils.logoutIfAuthException(caught);
           ErrorDialog.show("Could not load data for campaign: " + selectedCampaign); 
         }
   
         @Override
         public void onSuccess(CampaignDetailedInfo campaignInfo) {
+          WaitIndicator.hide();
           // set up survey filter with survey ids from campaign info (comes from xml config)
           view.enableSurveyFilter();
           view.setSurveyList(campaignInfo.getSurveyIds());
@@ -273,7 +275,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                         final Privacy selectedPrivacy,
                                         final boolean onlyPhotoResponses,
                                         final Date startDate,
-                                        final Date endDate) {
+                                        final Date endDate) {    
     // clear previous data, if any
     this.responses.clear();
     this.view.clearResponseList();
@@ -287,15 +289,18 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     if (selectedCampaign == null || selectedCampaign.isEmpty()) return;
     
     // fetch info about campaign: surveys, user's roles, campaign privacy setting
+    WaitIndicator.show();
     dataService.fetchCampaignDetail(selectedCampaign, new AsyncCallback<CampaignDetailedInfo>() {
         @Override
         public void onFailure(Throwable caught) {
+          WaitIndicator.hide();
           AwErrorUtils.logoutIfAuthException(caught);
           ErrorDialog.show("Could not load data for campaign: " + selectedCampaign); 
         }
   
         @Override
         public void onSuccess(CampaignDetailedInfo campaignInfo) {
+          WaitIndicator.hide();
           boolean includeAllChoice = true;
           fetchParticipantsWithResponsesAndAddToList(selectedCampaign,
                                                      selectedParticipant,
@@ -778,7 +783,6 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                      final boolean onlyPhotoResponses,
                                      final Date startDate,
                                      final Date endDate) {
-    
     // clear previous display so app will show appropriate message if all
     // the async requests return 0 responses
     this.responses.clear();
@@ -799,6 +803,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       suppressCampaignErrors = true; 
     }
     
+    WaitIndicator.show(); // will be hidden by first result in fetchAndShowResponsesForCampaign
     for (String campaignId : campaignsToQuery.keySet()) {
       fetchAndShowResponsesForCampaign(userName,
           campaignId, 
@@ -837,6 +842,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         new AsyncCallback<List<SurveyResponse>>() {
           @Override
           public void onFailure(Throwable caught) {
+            WaitIndicator.hide();
             // NOTE: When fetching all responses, we don't know ahead of time which campaigns
             //   it makes sense to query, so we query all the user's campaigns and ignore 
             //   certain errors  :(
@@ -861,6 +867,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           
           @Override
           public void onSuccess(List<SurveyResponse> result) {
+            WaitIndicator.hide();
             if (result == null || result.isEmpty()) return; // avoid unnecessary work 
             
             // if successful, add the result to list of responses already
@@ -883,7 +890,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
             // sort by date, newest first
             Collections.sort(responses, responseDateComparator);
             view.showResponseCountInSectionHeader(participantName, responses.size());
-            view.renderResponses(responses);
+            view.setResponses(responses);
           }
     });
 

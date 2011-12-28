@@ -12,10 +12,15 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -25,8 +30,14 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
+import com.google.gwt.view.client.HasRows;
+import com.google.gwt.view.client.Range;
+import com.google.gwt.view.client.RangeChangeEvent;
+import com.google.gwt.view.client.RowCountChangeEvent;
+import com.google.gwt.view.client.RangeChangeEvent.Handler;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
@@ -37,7 +48,7 @@ import edu.ucla.cens.mobilize.client.ui.ResponseWidgetBasic;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
-public class ResponseViewImpl extends Composite implements ResponseView {
+public class ResponseViewImpl extends Composite implements ResponseView, HasRows {
   
   private static ResponseViewUiBinder uiBinder = GWT
       .create(ResponseViewUiBinder.class);
@@ -54,6 +65,10 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField HTMLPanel editResponsesMenuItem; // used for showing/hiding
   @UiField Anchor viewLinkEdit;
   @UiField Anchor viewLinkBrowse;
+  @UiField(provided=true) SimplePager pager;
+  @UiField MenuItem resultsPerPage10MenuItem;
+  @UiField MenuItem resultsPerPage50MenuItem;
+  @UiField MenuItem resultsPerPage100MenuItem;
   @UiField Label singleParticipantLabel;
   @UiField ListBox participantFilter;
   @UiField HTMLPanel optionalFilters;
@@ -91,15 +106,30 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   Privacy selectedPrivacy = Privacy.UNDEFINED;
   private Subview selectedSubview;
   private String emptyParticipantListString = "None visible.";
+  private List<SurveyResponse> responses;
+  private int visibleRangeStart = 0;
+  private int visibleRangeLength;
   
   public ResponseViewImpl() {
-    initWidget(uiBinder.createAndBindUi(this));
-    setEventHandlers();
+    // instantiate pager here so instructor params can be passed
+    SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class); 
+    pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
     
+    initWidget(uiBinder.createAndBindUi(this));
+    initComponents();
+    setEventHandlers();
+  }
+  
+  private void initComponents() {
     // set up date pickers
     DateBox.Format fmt = new DateBox.DefaultFormat(DateUtils.getDateBoxDisplayFormat());
     fromDateBox.setFormat(fmt);
     toDateBox.setFormat(fmt);
+    
+    // set up pager
+    pager.setDisplay(this);
+    pager.setHeight("15px");
+    setVisibleRangeLength(10);
   }
   
   private void setEventHandlers() {
@@ -159,6 +189,39 @@ public class ResponseViewImpl extends Composite implements ResponseView {
         collapseAll();
       }
     });
+
+    resultsPerPage10MenuItem.setCommand(new Command() {
+      @Override
+      public void execute() {
+        setVisibleRangeLength(10);
+        setVisibleRange(visibleRangeStart, visibleRangeLength);
+      }
+    });
+    
+    resultsPerPage50MenuItem.setCommand(new Command() {
+      @Override
+      public void execute() {
+        setVisibleRangeLength(50);
+        setVisibleRange(visibleRangeStart, visibleRangeLength);
+      }
+    });
+    
+    resultsPerPage100MenuItem.setCommand(new Command() {
+      @Override
+      public void execute() {
+        setVisibleRangeLength(100);
+        setVisibleRange(visibleRangeStart, visibleRangeLength);
+      }
+    });
+  }
+  
+  private void setVisibleRangeLength(int length) { 
+    assert length == 10 || length == 50 || length == 100 : "visible range length must be one of 10, 50, 100";
+    this.visibleRangeLength = length;
+    // remove underline from selected number 
+    this.resultsPerPage10MenuItem.setStyleName(length == 10 ? "" : "link");
+    this.resultsPerPage50MenuItem.setStyleName(length == 50 ? "" : "link");
+    this.resultsPerPage100MenuItem.setStyleName(length == 100 ? "" : "link");
   }
 
   private void selectAll() {
@@ -327,32 +390,39 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
   
   @Override
-  public void renderResponses(List<SurveyResponse> responses) {
+  public void setResponses(List<SurveyResponse> responses) {
+    if (responses == null) return;
+    this.responses = responses;
     if (Subview.EDIT.equals(selectedSubview)) {
-      renderResponsesEditView(responses);
+      renderResponsesEditView(0, this.visibleRangeLength);
     } else if (Subview.BROWSE.equals(selectedSubview)) {
-      renderResponsesBrowseView(responses);
+      renderResponsesBrowseView(0, this.visibleRangeLength);
     } else { // default to browse
-      renderResponsesBrowseView(responses);
+      renderResponsesBrowseView(0, this.visibleRangeLength);
     }
+    RowCountChangeEvent.fire(this, this.responses.size(), true);
   }
   
-  private void renderResponsesEditView(List<SurveyResponse> responses) {
+  private void renderResponsesEditView(int rangeStart, int rangeLength) {
+    if (this.responseList == null) return;
     this.responseList.clear();
-    for (SurveyResponse response : responses) {
+    int rangeEnd = Math.min(rangeStart + rangeLength, this.responses.size());
+    for (int i = rangeStart; i < rangeEnd; i++) {
       ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
       responseWidget.setSelectable(true);
-      responseWidget.setResponse(response);
+      responseWidget.setResponse(this.responses.get(i));
       this.responseList.add(responseWidget);
     }
   }
   
-  private void renderResponsesBrowseView(List<SurveyResponse> responses) {
+  private void renderResponsesBrowseView(int rangeStart, int rangeLength) {
+    if (this.responseList == null) return;
     this.responseList.clear();
-    for (SurveyResponse response : responses) {
+    int rangeEnd = Math.min(rangeStart + rangeLength, this.responses.size());
+    for (int i = rangeStart; i < rangeEnd; i++) {
       ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
       responseWidget.setSelectable(false);
-      responseWidget.setResponse(response);
+      responseWidget.setResponse(this.responses.get(i));
       this.responseList.add(responseWidget);
     }
   }
@@ -614,7 +684,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void showResponseCountInSectionHeader(String username, int responseCount) {
     String userDisplayName = username.equals(AwConstants.specialAllValuesToken) ? "all users" : username;
-    setSectionHeader("Showing " + Integer.toString(responseCount) + " responses from " + userDisplayName);
+    setSectionHeader("Found " + Integer.toString(responseCount) + " responses by " + userDisplayName);
   }
   
   @Override
@@ -667,6 +737,61 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void hideOptionalFilters() {
     this.optionalFilters.setVisible(false);
+  }
+
+  @Override
+  public HandlerRegistration addRangeChangeHandler(Handler handler) {
+    return addHandler(handler, RangeChangeEvent.getType());
+  }
+
+  @Override
+  public HandlerRegistration addRowCountChangeHandler(RowCountChangeEvent.Handler handler) {
+    return addHandler(handler, RowCountChangeEvent.getType());
+  }
+
+  @Override
+  public int getRowCount() {
+    return this.responses != null ? this.responses.size() : 0;
+  }
+
+  @Override
+  public Range getVisibleRange() {
+    return new Range(this.visibleRangeStart, this.visibleRangeLength);
+  }
+
+  @Override
+  public boolean isRowCountExact() {
+    return true;
+  }
+
+  @Override
+  public void setRowCount(int count) {
+    Window.alert("set row count: " + count);
+    
+  }
+
+  @Override
+  public void setRowCount(int count, boolean isExact) {
+    Window.alert("set row count exact: " + count);
+  }
+
+  @Override
+  public void setVisibleRange(int start, int length) {
+    this.visibleRangeStart = start;
+    this.visibleRangeLength = responses != null ? Math.min(length, this.responses.size() - start) : 0;
+    if (Subview.EDIT.equals(selectedSubview)) {
+      renderResponsesEditView(start, length);
+    } else if (Subview.BROWSE.equals(selectedSubview)) {
+      renderResponsesBrowseView(start, length);
+    } else { // default to browse
+      renderResponsesBrowseView(start, length);
+    }
+    RangeChangeEvent.fire(this, new Range(start, length));
+  }
+
+  @Override
+  public void setVisibleRange(Range range) {
+    setVisibleRange(range.getStart(), range.getLength());
   }
   
 }

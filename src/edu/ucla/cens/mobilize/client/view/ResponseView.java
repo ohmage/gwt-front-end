@@ -68,7 +68,7 @@ public interface ResponseView extends IsWidget {
   void clearSelectedSurveyResponseKeys();
   
   // display
-  void renderResponses(List<SurveyResponse> responses);
+  void setResponses(List<SurveyResponse> responses);
   
   void clearResponseList();
   void markShared(int responseKey);

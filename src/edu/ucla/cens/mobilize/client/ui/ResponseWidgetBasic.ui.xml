@@ -10,7 +10,7 @@
 		}
 		.header {
 			background-color:#EEE;
-      padding: 1px 8px;
+      padding: 2px 8px 3px;
       white-space: nowrap;
     }
     .headerField {
