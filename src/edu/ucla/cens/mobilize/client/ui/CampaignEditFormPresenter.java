@@ -13,6 +13,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
@@ -20,6 +21,7 @@ import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEvent;
+import edu.ucla.cens.mobilize.client.exceptions.AuthenticationException;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -213,6 +215,8 @@ public class CampaignEditFormPresenter {
           result = AwDataTranslators.stripPreTags(result); // in case content-type is not text/html  
           status = JSONParser.parseStrict(result).isObject().get("result").isString().stringValue();
           if (!"success".equals(status)) {
+            // FIXME: refactor AndWellnessDataService parse/error methods so they can be reused here
+            // (see parseServerErrorResponse and getResponseTextOrThrowException)
             errorCodeToDescriptionMap = AwDataTranslators.translateErrorResponse(result);
           }
         } catch (Exception e) {
@@ -232,7 +236,12 @@ public class CampaignEditFormPresenter {
         String msg = isCreate ? "There was a problem creating the campaign." :
                                 "There was a problem editing the campaign.";
         _logger.severe(msg + " Response was: " + result);
-        ErrorDialog.showErrorsByCode(msg, errorCodeToDescriptionMap);
+        if (errorCodeToDescriptionMap.containsKey("0200")) {
+          AwErrorUtils.logoutIfAuthException(new AuthenticationException("0200"));
+          ErrorDialog.show("Authentication failed.");
+        } else {
+          ErrorDialog.showErrorsByCode(msg, errorCodeToDescriptionMap);
+        }
       }
     }
   };

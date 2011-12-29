@@ -150,14 +150,12 @@ public class CampaignViewImpl extends Composite implements CampaignView {
   public void showList() {
     hideAllWidgets();
     campaignList.setVisible(true);
-    // TODO: quick filters in left sidebar
   }
   
   @Override
   public void showDetail() {
     hideAllWidgets();
     campaignDetail.setVisible(true);
-    // TODO: campaign actions in left sidebar
   }
   
   @Override
@@ -197,7 +195,6 @@ public class CampaignViewImpl extends Composite implements CampaignView {
 
   @Override
   public void showError(String msg, Throwable caught) {
-    // TODO: enable detail for debug mode only
     String detail = (caught != null) ? caught.getMessage() : null;
     ErrorDialog.show(msg, detail);
   }
