@@ -11,6 +11,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
@@ -32,6 +34,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
     this.userInfo = userInfo;
     this.dataService = dataService;
     this.eventBus = eventBus;
+    bind();
   }
   
   public void setView(ClassView classView) {
@@ -53,6 +56,16 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
     } else {
       _logger.warning("Unrecognized subview: " + params.get("v"));
     }
+  }
+  
+  private void bind() {
+    eventBus.addHandler(UserInfoUpdatedEvent.TYPE, new UserInfoUpdatedEventHandler() {
+      @Override
+      public void onUserInfoChanged(UserInfoUpdatedEvent event) {
+        // makes sure userInfo is up to date b/c class list view uses it
+        userInfo = event.getUserInfo();
+      }
+    });
   }
 
   private void fetchAndShowClassDetail(String classId) {

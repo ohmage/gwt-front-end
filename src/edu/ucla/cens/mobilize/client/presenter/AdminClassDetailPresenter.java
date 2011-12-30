@@ -18,9 +18,7 @@ import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.formpanel.AwFormPanel;
-import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
-import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassSearchParams;
-import edu.ucla.cens.mobilize.client.model.ClassInfo;
+import edu.ucla.cens.mobilize.client.event.ClassDataChangedEvent;
 import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.ui.ConfirmDeleteDialog;
@@ -146,6 +144,7 @@ public class AdminClassDetailPresenter implements Presenter {
 
       @Override
       public void onSuccess(String result) {
+        eventBus.fireEvent(new ClassDataChangedEvent());
         History.newItem(HistoryTokens.adminClassList());
       }
     });

@@ -19,6 +19,7 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
+import edu.ucla.cens.mobilize.client.event.ClassDataChangedEvent;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
@@ -267,6 +268,7 @@ public class AdminClassEditPresenter implements Presenter {
       @Override
       public void onSuccess(String result) {
         view.resetForm();
+        eventBus.fireEvent(new ClassDataChangedEvent());
         History.newItem(HistoryTokens.adminClassDetail(classUrn));
       }
     });
@@ -290,6 +292,7 @@ public class AdminClassEditPresenter implements Presenter {
       @Override
       public void onSuccess(String result) {
         view.resetForm();
+        eventBus.fireEvent(new ClassDataChangedEvent());
         History.newItem(HistoryTokens.adminClassDetail(classUrn));
       }
     });
@@ -305,6 +308,7 @@ public class AdminClassEditPresenter implements Presenter {
 
       @Override
       public void onSuccess(String result) {
+        eventBus.fireEvent(new ClassDataChangedEvent());
         History.newItem(HistoryTokens.adminClassList());
       }
     });

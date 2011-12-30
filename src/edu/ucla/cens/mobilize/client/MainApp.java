@@ -34,6 +34,8 @@ import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEvent;
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEventHandler;
 import edu.ucla.cens.mobilize.client.event.CampaignInfoUpdatedEvent;
+import edu.ucla.cens.mobilize.client.event.ClassDataChangedEvent;
+import edu.ucla.cens.mobilize.client.event.ClassDataChangedEventHandler;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.presenter.AccountPresenter;
 import edu.ucla.cens.mobilize.client.presenter.AdminClassDetailPresenter;
@@ -202,6 +204,13 @@ public class MainApp implements EntryPoint, HistoryListener {
       public void onCampaignDataChanged(CampaignDataChangedEvent event) {
         refreshUserInfo(); // because campaigns listed in userInfo may have changed
         refreshCampaignList();
+      }
+    });
+    
+    eventBus.addHandler(ClassDataChangedEvent.TYPE, new ClassDataChangedEventHandler() {
+      @Override
+      public void onClassDataChanged(ClassDataChangedEvent event) {
+        refreshUserInfo(); // because classes listed in userInfo may have changed
       }
     });
   }
