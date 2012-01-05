@@ -82,6 +82,10 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
   }
   
   private void fetchAndShowDashboardData() {
+    // initialize to 0
+    view.showAuthorRoleCount(0);
+    view.showParticipantRoleCount(0);
+    view.showPrivateResponseCount(0);
     fetchAndShowCampaignCounts();
     fetchAndShowResponseCounts();
     isLoaded = true;
@@ -94,8 +98,6 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
       @Override
       public void onFailure(Throwable caught) {
         _logger.severe(caught.getMessage());
-        view.hideAuthorRoleCount();
-        view.hideParticipantRoleCount();
       }
   
       @Override
@@ -110,10 +112,8 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
             _authorRoleCount++;
           }
         }
-        if (_participantRoleCount > 0) view.showParticipantRoleCount(_participantRoleCount);
-        else view.hideParticipantRoleCount();
-        if (_authorRoleCount > 0) view.showAuthorRoleCount(_authorRoleCount);
-        else view.hideAuthorRoleCount();
+        view.showParticipantRoleCount(_participantRoleCount);
+        view.showAuthorRoleCount(_authorRoleCount);
       }
     });
   }
@@ -151,8 +151,7 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
           for (String key : _campaignIdToPrivateResponseCountMap.keySet()) {
             privateResponseCount += _campaignIdToPrivateResponseCountMap.get(key);
           }
-          if (privateResponseCount > 0) view.showPrivateResponseCount(privateResponseCount);
-          else view.hidePrivateResponseCount();
+          view.showPrivateResponseCount(privateResponseCount);
         }
       });
     }

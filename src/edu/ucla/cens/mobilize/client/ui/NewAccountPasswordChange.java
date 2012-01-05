@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.Widget;
 
 public class NewAccountPasswordChange extends Composite {
@@ -25,7 +26,7 @@ public class NewAccountPasswordChange extends Composite {
   @UiField Label reusedPasswordMessage;
   @UiField PasswordTextBox newPasswordConfirm;
   @UiField Label mismatchedPasswordsMessage;
-  @UiField Button changePasswordButton;
+  @UiField SubmitButton changePasswordButton;
   @UiField Button cancelButton;
   
   public NewAccountPasswordChange() {
