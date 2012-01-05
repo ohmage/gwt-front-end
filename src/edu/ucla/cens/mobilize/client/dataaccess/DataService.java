@@ -22,6 +22,8 @@ import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
+import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
+import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
@@ -403,5 +405,22 @@ public interface DataService {
                                String promptY,
                                boolean includePrivateResponses,
                                AsyncCallback<String> callback); 
+ 
+  /**
+   * Retrieves mobility data via Server API call: /app/mobility/read
+   * @param single_date
+   * @param callback returns list of MobilityInfo on success (# of mobility data points)
+   */
+  void fetchMobilityData(Date single_date,
+                         AsyncCallback<List<MobilityInfo>> callback);
   
+  /**
+   * Retrieves mobility data via Server API call: /app/mobility/read/chunked
+   * @param start_date
+   * @param end_date
+   * @param callback returns list of MobilityChunkedInfo on success (# of mobility chunks)
+   */
+  void fetchMobilityDataChunked(Date start_date,
+                                Date end_date,
+                                AsyncCallback<List<MobilityChunkedInfo>> callback);
 }

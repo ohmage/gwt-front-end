@@ -35,6 +35,8 @@ import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
+import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
+import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
@@ -634,5 +636,16 @@ public class MockDataService implements DataService {
     
   }
 
+	@Override
+	public void fetchMobilityData(Date single_date, AsyncCallback<List<MobilityInfo>> callback) {
+		// TODO Auto-generated method stub
+		
+	}
 
+	@Override
+	public void fetchMobilityDataChunked(Date start_date, Date end_date,
+			AsyncCallback<List<MobilityChunkedInfo>> callback) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -152,9 +152,10 @@
                 <label>Classes:</label>
               </td>
               <td>
-                <g:FlexTable ui:field='classesFlexTable' 
-                             addStyleNames='{style.classList}' />
-                <g:Hidden ui:field='classHiddenField' name='class_urn_list' />
+                <g:FlexTable ui:field='classesFlexTable' addStyleNames='{style.classList}' />
+                <g:Hidden ui:field='classHiddenField' name='class_urn_list' /><!-- campaign create -->
+                <g:Hidden ui:field='classAddHiddenField' name='class_list_add' /><!-- campaign update -->
+                <g:Hidden ui:field='classDelHiddenField' name='class_list_remove' /><!-- campaign update -->
                 <g:Button ui:field='addClassesButton'>Add Classes</g:Button>
               </td>
             </tr>
@@ -171,6 +172,7 @@
 	                <g:Hidden ui:field='authorsToRemoveHiddenField' name='user_role_list_remove' />
 	                <g:Button ui:field='addAuthorsButton'>Add Authors</g:Button>
                 </g:HTMLPanel>
+                <g:Label ui:field='authorsPlaceholderText' addStyleNames='{style.authorList}' />
               </td>
             </tr>
             <tr>

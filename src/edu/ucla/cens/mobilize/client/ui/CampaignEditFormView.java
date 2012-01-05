@@ -55,8 +55,11 @@ public class CampaignEditFormView extends Composite {
   @UiField Button addClassesButton;
   @UiField FlexTable classesFlexTable;
   @UiField Hidden classHiddenField; // holds serialized class list
+  @UiField Hidden classAddHiddenField; // holds serialized list of classes to add
+  @UiField Hidden classDelHiddenField; // holds serialized list of classes to delete
   @UiField HTMLPanel authorsPanel;
   @UiField Button addAuthorsButton;
+  @UiField Label authorsPlaceholderText;
   @UiField FlexTable authorsFlexTable;
   @UiField Hidden authorsToAddHiddenField; // list of authors with roles
   @UiField Hidden authorsToRemoveHiddenField; // list of authors with roles
@@ -80,6 +83,7 @@ public class CampaignEditFormView extends Composite {
 
   private boolean formIsInitialized = false;
   private List<String> originalAuthors;
+  private List<String> originalClasses;
   
   public CampaignEditFormView() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -99,16 +103,21 @@ public class CampaignEditFormView extends Composite {
     authorsFlexTable.setBorderWidth(0);
   }
   
-  public void prepareFormForSubmit() {
-    if (authorsPanel.isVisible()) { // this is an edit
-      authorsToAddHiddenField.setName("user_role_list_add");
-      authorsToRemoveHiddenField.setName("user_role_list_remove");
-      authorsToAddHiddenField.setValue(getAuthorsToAddSerialized());
-      authorsToRemoveHiddenField.setValue(getAuthorsToRemoveSerialized());
+  public void prepareFormForSubmit(boolean isCreate) {
+	  // NOTE(06/15/2011): create api does not support adding authors
+	  // NOTE(11/02/2011): edit api does not have class_urn_list api, but add/remove instead
+	  if (isCreate == false) { // this is an edit
+        authorsToAddHiddenField.setName("user_role_list_add");
+        authorsToRemoveHiddenField.setName("user_role_list_remove");
+        authorsToAddHiddenField.setValue(getAuthorsToAddSerialized());
+        authorsToRemoveHiddenField.setValue(getAuthorsToRemoveSerialized());
+        classAddHiddenField.setValue(getClassesToAddSerialized());
+        classDelHiddenField.setValue(getClassesToRemoveSerialized());
+        clearOriginalClasses();	//FIXME: is it safe to clear the old list here before we know everything submitted?
+    } else { // campaign creation
+    	classHiddenField.setValue(getClassUrnsSerialized());
     }
-    // NOTE(06/15/2011): create api does not support adding authors
-
-    classHiddenField.setValue(getClassUrnsSerialized());
+    
     campaignUrnHiddenField.setValue(this.campaignUrn.getText());
     
     // Disable author hidden fields when empty to prevent api errors. (Fields would
@@ -118,6 +127,8 @@ public class CampaignEditFormView extends Composite {
   }
 
   public void setAuthorsPanelVisible(boolean isVisible) {
+    //if isVisible == true, display author drop-down list, else display placeholder text
+    this.authorsPlaceholderText.setVisible(!isVisible);
     this.authorsPanel.setVisible(isVisible);
   }
 
@@ -187,6 +198,12 @@ public class CampaignEditFormView extends Composite {
   
   private String getClassUrnsSerialized() {
     return CollectionUtils.join(getClassUrns(), ",");
+  }
+  
+  public void setAuthorPlaceholderText(String authorLogin) {
+	  if (authorLogin == null) return;
+	  this.authorsPlaceholderText.setText(authorLogin);
+	  this.authorsPlaceholderText.setVisible(true);
   }
   
   public void addAuthor(String authorLogin) {
@@ -285,7 +302,26 @@ public class CampaignEditFormView extends Composite {
     return CollectionUtils.join(authorsToRemoveWithRoles, ",");
   }
   
-  
+  // Classes list needs to be diffed when doing a campaign update because
+  // class add/remove are separate parameters sent to Campaign Update API 2.8+
+  public void storeOriginalClasses(List<String> classUrnList) {
+	  this.originalClasses = classUrnList;
+  }
+  private void clearOriginalClasses() {
+	  this.originalClasses.clear();
+  }
+  private Collection<String> getClassesToAdd() {
+    return CollectionUtils.setDiff(getClassUrns(), this.originalClasses);
+  }
+  private Collection<String> getClassesToRemove() {
+    return CollectionUtils.setDiff(this.originalClasses, getClassUrns());
+  }
+  private String getClassesToAddSerialized() {
+    return CollectionUtils.join(getClassesToAdd(), ",");
+  }
+  private String getClassesToRemoveSerialized() {
+    return CollectionUtils.join(getClassesToRemove(), ",");
+  }
   
   public HasClickHandlers getSaveButton() {
     return this.saveButton;
@@ -444,7 +480,7 @@ public class CampaignEditFormView extends Composite {
     this.formPanel.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
     this.formPanel.setMethod(FormPanel.METHOD_POST);
     this.saveButton.setEnabled(true);
-    this.formIsInitialized = true;    
+    this.formIsInitialized = true;
   }
 
   public boolean formIsInitialized() {

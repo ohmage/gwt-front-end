@@ -22,6 +22,16 @@ public class DateUtils {
     public final static String historyTokenFormat = "yyyy-MM-dd";
     
     /**
+     * Translates a String from server epoch long time format to a Date. New in 2.9
+     * 
+     * @param toTranslate The epoch seconds string to translate.
+     * @return The translated Date
+     */
+    public static Date translateFromEpochServerFormat(String toTranslate) {
+    	return new Date(Long.parseLong(toTranslate));	//string should be in epoch MILLISECONDS
+    }
+    
+    /**
      * Translates a String from the server time format to a Date.
      * 
      * @param toTranslate The Date to translate.
@@ -78,6 +88,16 @@ public class DateUtils {
      */
     public static DateTimeFormat getTableDisplayFormat() {
       return DateTimeFormat.getFormat(displayFormat);
+    }
+    
+    /**
+     * Useful for determining the number of days difference based on only the day
+     * @param start
+     * @param end
+     * @return Difference of days between the two dates. May be negative
+     */
+    public static int daysApart(Date start, Date end) {
+    	return (int)((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     }
     
     /**

@@ -14,6 +14,8 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SourcesTreeEvents;
 
 import edu.ucla.cens.mobilize.client.common.PlotType;
+import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
+import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 
@@ -64,6 +66,11 @@ public interface ExploreDataView extends IsWidget {
   // FIXME: what if there are multiple responses from the same location?
   void showResponsesOnMap(List<SurveyResponse> responses);
   void showResponseDetail(Marker location);
+  void showMobilityDataOnMap(List<MobilityInfo> mdata);
+  void showMobilityChunkedDataOnMap(List<MobilityChunkedInfo> mdata);
+  void showMobilityDetail(Marker location);
+  void showMobilityChunkedDetail(Marker location);
+  void showMobilityDataOnGraph(List<MobilityChunkedInfo> mdata);
   void renderLeaderBoard(List<UserParticipationInfo> participationInfo);
   void setInfoText(String string);
   
@@ -73,6 +80,8 @@ public interface ExploreDataView extends IsWidget {
   void setPromptXDropDownEnabled(boolean isEnabled);
   void setPromptYDropDownEnabled(boolean isEnabled);
   void setDateRangeEnabled(boolean isEnabled);
+  void setStartDateRangeEnabled(boolean isEnabled);
+  void setEndDateRangeEnabled(boolean isEnabled);
   void setDataButtonsEnabled(boolean isEnabled);
   void disableAllDataControls();
   

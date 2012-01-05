@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import com.google.gwt.core.client.JsArrayString;
 
 import edu.ucla.cens.mobilize.client.common.LocationStatus;
+import edu.ucla.cens.mobilize.client.common.MobilityMode;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.common.RoleClass;
@@ -23,6 +24,9 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwDa
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassSearchAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.DocumentAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.MobilityChunkedDataPointAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.MobilityDataPointAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.MobilityLocationAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.PromptResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.SurveyResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserAwData;
@@ -34,6 +38,8 @@ import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
+import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
+import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -657,7 +663,93 @@ public class AwDataTranslators {
       return appConfig;
     }
 
-
-
-    
+	public static List<MobilityInfo> translateMobilityReadQueryJSONToMobilityInfoList(String mobilityReadQueryJSON) throws Exception {
+		List<MobilityInfo> mobilityInfos = new ArrayList<MobilityInfo>(); // retval
+		
+		JSONValue value = JSONParser.parseStrict(mobilityReadQueryJSON);
+		JSONObject obj = value.isObject();
+		if (obj == null || !obj.containsKey("data")) throw new Exception("Invalid json format.");
+		JSONArray dataHash = obj.get("data").isArray();
+		if (dataHash == null) throw new Exception("dataHash has invalid json format.");
+		
+		for (int i = 0; i < dataHash.size(); i++) {
+			try {
+				//parse mobility array JSON
+				MobilityDataPointAwData awData = (MobilityDataPointAwData)dataHash.get(i).isObject().getJavaScriptObject();
+				MobilityInfo mobInfo = new MobilityInfo();
+				
+				mobInfo.setMode(MobilityMode.fromServerString(awData.getMode()));
+				mobInfo.setDate(DateUtils.translateFromEpochServerFormat(awData.getTime()));	//epoch long in msec
+				//mobInfo.setDate(DateUtils.translateFromServerFormat(awData.getTimestamp()));	//original
+				mobInfo.setTimezone(awData.getTimezone());
+				mobInfo.setLocationStatus(LocationStatus.fromServerString(awData.getLocStatus()));
+				if (mobInfo.getLocationStatus() != LocationStatus.UNAVAILABLE) {
+					MobilityLocationAwData l = awData.getLocation();
+					mobInfo.setLocationLat(l.getLatitude());
+					mobInfo.setLocationLong(l.getLongitude());
+					mobInfo.setLocationAccuracy(l.getAccuracy());
+					mobInfo.setLocationProvider(l.getProvider());
+					//mobInfo.setLocationTimestamp(DateUtils.translateFromServerFormat(l.getTimestamp()));	//2.8
+					mobInfo.setLocationTimestamp(DateUtils.translateFromEpochServerFormat(l.getTimestamp()));
+				}
+				//add to list "mobilityInfos"
+				mobilityInfos.add(mobInfo);
+			} catch (Exception e) {
+				_logger.warning("Could not parse json for mobility id: " + dataHash.get(i) + ". Skipping record.");
+				_logger.fine(e.getMessage());
+			}
+		}
+		
+		return mobilityInfos;
+	}
+	
+	public static List<MobilityChunkedInfo> translateMobilityReadChunkedQueryJSONToMobilityChunkedInfoList(String mobilityReadChunkedQueryJSON) throws Exception {
+		List<MobilityChunkedInfo> mobilityInfos = new ArrayList<MobilityChunkedInfo>(); // retval
+		
+		JSONValue value = JSONParser.parseStrict(mobilityReadChunkedQueryJSON);
+		JSONObject obj = value.isObject();
+		if (obj == null || !obj.containsKey("data")) throw new Exception("Invalid json format.");
+		JSONArray dataHash = obj.get("data").isArray();
+		if (dataHash == null) throw new Exception("dataHash has invalid json format.");
+		
+		for (int i = 0; i < dataHash.size(); i++) {
+			try {
+				//parse mobility array JSON
+				MobilityChunkedDataPointAwData awData = (MobilityChunkedDataPointAwData)dataHash.get(i).isObject().getJavaScriptObject();
+				MobilityChunkedInfo mobInfo = new MobilityChunkedInfo();
+				
+				Map<String, Integer> mc_str = awData.getModesCountObj().getMobilityModeCount();
+				Map<MobilityMode, Integer> mc = new HashMap<MobilityMode, Integer>();
+				for (String key : mc_str.keySet()) {
+					mc.put(MobilityMode.fromServerString(key), mc_str.get(key));
+				}
+				mobInfo.setModeCount(mc);
+				
+				mobInfo.setDuration(awData.getDuration());
+				mobInfo.setDate(DateUtils.translateFromServerFormat(awData.getTimeStamp()));	//old format
+				//mobInfo.setDate(DateUtils.translateFromEpochServerFormat(awData.getTimestamp()));	//epoch long msec
+				mobInfo.setTimezone(awData.getTimezone());
+				mobInfo.setLocationStatus(LocationStatus.fromServerString(awData.getLocStatus()));
+				
+				if (mobInfo.getLocationStatus() != LocationStatus.UNAVAILABLE) {
+					MobilityLocationAwData l = awData.getLocation();
+					
+					mobInfo.setLocationLat(l.getLatitude());
+					mobInfo.setLocationLong(l.getLongitude());
+					mobInfo.setLocationAccuracy(l.getAccuracy());
+					mobInfo.setLocationProvider(l.getProvider());
+					//mobInfo.setLocationTimestamp(DateUtils.translateFromServerFormat(l.getTimestamp()));	//2.8
+					mobInfo.setLocationTimestamp(DateUtils.translateFromEpochServerFormat(l.getTimestamp()));	//2.9
+				}
+				
+				//add to list "mobilityInfos"
+				mobilityInfos.add(mobInfo);
+			} catch (Exception e) {
+				_logger.warning("Could not parse json for mobility id: " + dataHash.get(i) + ". Skipping record.");
+				_logger.fine(e.getMessage());
+			}
+		}
+		
+		return mobilityInfos;
+	}
 }
