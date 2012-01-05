@@ -165,7 +165,7 @@ public class AdminUserListView extends Composite {
     if (users == null || users.isEmpty()) {
       return;
     }
-    this.userListGrid.resizeRows(users.size());
+    this.userListGrid.resizeRows(users.size() + 1); // hack: +1 to make last row visible
     int row = 0;
     for (UserSearchInfo user : users) {
       // stripe odd rows for readability
