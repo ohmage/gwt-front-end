@@ -56,8 +56,8 @@ public class CampaignEditFormPresenter {
     view.setHeader("Creating New Campaign");
     view.initializeForm(dataService.authToken(), AwConstants.getCampaignCreateUrl());
     view.setDeletePanelVisible(false);
-    view.addAuthor(userInfo.getUserName());
-    view.setAuthorsPanelVisible(true);
+    view.setAuthorPlaceholderText(userInfo.getUserName());
+    view.setAuthorsPanelVisible(false);
   }
   
   public void fetchCampaignAndInitFormForEdit(String campaignUrn) {
@@ -90,6 +90,7 @@ public class CampaignEditFormPresenter {
                                  classUrn; // put class urn if name not available // FIXME?
             classes.put(classUrn, className);
           }
+          view.storeOriginalClasses(new ArrayList<String>(classes.keySet()));
           view.setSelectedClasses(classes);
           view.setDeletePanelVisible(true); 
           view.setAuthorsPanelVisible(true);
@@ -188,7 +189,7 @@ public class CampaignEditFormPresenter {
         assert view.formIsInitialized() : "You must call view.initializeForm(authToken, serverLocation) before submitting";;
         if (validateForm()) {
           view.disableSubmitButton(); // don't allow double save
-          view.prepareFormForSubmit(); // copies some values into hidden fields
+          view.prepareFormForSubmit(isCreate); // copies some values into hidden fields
           view.submitForm();
         } // else do nothing (validateForm will have marked errors)
       }

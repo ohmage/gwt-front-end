@@ -10,7 +10,9 @@ public enum PlotType {
   PROMPT_DISTRIBUTION,
   SCATTER_PLOT,
   DENSITY_PLOT,
-  MAP;
+  MAP,
+  MOBILITY_MAP,
+  MOBILITY_GRAPH;
   
   public String toHistoryTokenString() {
     return this.toString().toLowerCase();

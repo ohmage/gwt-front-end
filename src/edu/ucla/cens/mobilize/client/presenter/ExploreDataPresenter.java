@@ -36,6 +36,8 @@ import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
+import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
+import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -137,6 +139,17 @@ public class ExploreDataPresenter implements Presenter {
     if (PlotType.MAP.equals(selectedPlotType)) {
       // fetch points to match data filters
       fetchResponseDataAndShowOnMap(selectedCampaign, selectedParticipant, startDate, endDate); // participant, startDate, endDate can be null
+    } else if (PlotType.MOBILITY_MAP.equals(selectedPlotType)) {
+    	
+    	//FIXME: this is a temporary workaround until code reorg for 2.10
+        // for 2.9, start date only allows single day of data. since we disable hidden fields, we need to set this
+    	endDate = new Date(startDate.getTime());
+     
+      // fetch points to mobility data
+      fetchMobilityDataAndShowOnMap(startDate, endDate);
+    } else if (PlotType.MOBILITY_GRAPH.equals(selectedPlotType)) {
+      // fetch data for mobility graph
+      fetchMobilityDataAndShowOnGraph(startDate, endDate);
     } else if (PlotType.LEADER_BOARD.equals(selectedPlotType)) {
       fetchAndShowLeaderBoard(selectedCampaign);
     } else {
@@ -158,7 +171,7 @@ public class ExploreDataPresenter implements Presenter {
     view.setCampaignList(campaignIdToNameMap);
   }
   
-    
+  
   private void fetchResponseDataAndShowOnMap(String campaignId, String participantUsername, Date startDate, Date endDate) {
     final String campaignName = userInfo.getCampaigns().get(campaignId);
     Privacy privacy = AppConfig.exportAndVisualizeSharedResponsesOnly() ? Privacy.SHARED : null; // null shows everything
@@ -178,7 +191,7 @@ public class ExploreDataPresenter implements Presenter {
           @Override
           public void onFailure(Throwable caught) {
             _logger.severe(caught.getMessage());
-            ErrorDialog.show("There was a problem fetching data points for the geo visualization",
+            ErrorDialog.show("We were unable to fetch any geo-location data from the server",
                              caught.getMessage());
           }
       
@@ -193,8 +206,80 @@ public class ExploreDataPresenter implements Presenter {
             view.hideWaitIndicator();
           }
        });
-  }
-  
+	}
+	
+	private void fetchMobilityDataAndShowOnMap(final Date startDate, final Date endDate) {
+		view.showWaitIndicator();
+		
+		//list for aggregating all the data
+		final List<MobilityInfo> mdata = new ArrayList<MobilityInfo>();
+		
+		for (Date curDate = new Date(startDate.getTime()); curDate.before(endDate) || (curDate.getDate() == endDate.getDate()); curDate = DateUtils.addOneDay(curDate)) {
+			dataService.fetchMobilityData(
+				curDate,
+				new AsyncCallback<List<MobilityInfo>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						_logger.severe(caught.getMessage());
+						ErrorDialog.show("We were unable to fetch your mobility data from the server", caught.getMessage());
+					}
+					@Override
+					public void onSuccess(List<MobilityInfo> result) {	//FIXME
+						mdata.addAll(result);
+						
+						// show responses on map
+						view.showMobilityDataOnMap(mdata);
+						view.hideWaitIndicator();
+					}
+				}
+			);
+		}
+	}
+	
+	private void fetchMobilityChunkedDataAndShowOnMap(final Date startDate, final Date endDate) {
+		view.showWaitIndicator();
+		dataService.fetchMobilityDataChunked(
+			startDate,
+			endDate,
+			new AsyncCallback<List<MobilityChunkedInfo>>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					_logger.severe(caught.getMessage());
+					ErrorDialog.show("We were unable to fetch your mobility data from the server", caught.getMessage());
+				}
+				@Override
+				public void onSuccess(List<MobilityChunkedInfo> result) {	//FIXME
+					// show responses on map
+					view.showMobilityChunkedDataOnMap(result);
+					view.hideWaitIndicator();
+				}
+			}
+		);
+	}
+
+	private void fetchMobilityDataAndShowOnGraph(final Date startDate, final Date endDate) {
+		view.showWaitIndicator();
+		
+		dataService.fetchMobilityDataChunked(
+			startDate,
+			endDate,
+			new AsyncCallback<List<MobilityChunkedInfo>>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					_logger.severe(caught.getMessage());
+					ErrorDialog.show("We were unable to fetch your mobility data from the server", caught.getMessage());
+				}
+				
+				@Override
+				public void onSuccess(List<MobilityChunkedInfo> result) {	//FIXME
+					// show responses on map
+					view.showMobilityDataOnGraph(result);
+					view.hideWaitIndicator();
+				}
+			}
+		);
+	}
+
 
   void fetchAndShowLeaderBoard(final String campaignId) {
     // fetch responses and use them to generate counts
@@ -281,7 +366,13 @@ public class ExploreDataPresenter implements Presenter {
         Date fromDate = view.getFromDate();
         Date toDate = view.getToDate();
         
-        if (promptX != null && promptX.equals(promptY)) {
+        //FIXME: this is a temporary workaround until code reorg for 2.10
+        // for 2.9, start date only allows single day of data. since we disable hidden fields, we need to set this
+        if (view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP)) {
+        	toDate = view.getFromDate();
+        }
+        
+        if (promptX != null && promptX.equals(promptY)) {	//FIXME: clean up this nasty nested 'if'
           ErrorDialog.show("Invalid prompt choice", "X and Y prompts must be different.");
         }
         else if ((fromDate == null && toDate != null) || (fromDate != null && toDate == null)) {
@@ -290,6 +381,14 @@ public class ExploreDataPresenter implements Presenter {
         else if (fromDate != null && toDate != null && fromDate.after(toDate)) {	//make sure date range is valid
           ErrorDialog.show("Invalid date range", "Starting date must be before or equal to the end date.");
         }
+        else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_GRAPH))
+        			&& (fromDate == null || toDate == null)) {
+        	ErrorDialog.show("Invalid date range", "You must specify a start and end date range to view your mobility data.");
+        }
+        else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_GRAPH))
+        			&& DateUtils.daysApart(fromDate, toDate) > 7) { //FIXME: quick and dirty date check until server supports longer date range
+        	ErrorDialog.show("Invalid date range", "Mobility dates can only be up to a 7 day range.");
+      	}
         else if (!view.isMissingRequiredField()) { // view marks missing fields, if any
           fireHistoryTokenToMatchSelectedSettings();
         }
@@ -348,6 +447,21 @@ public class ExploreDataPresenter implements Presenter {
         case MAP:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(true);
+          view.setPromptXDropDownEnabled(false);
+          view.setPromptYDropDownEnabled(false);
+          view.setDateRangeEnabled(true);
+          break;
+        case MOBILITY_MAP:
+        	view.setCampaignDropDownEnabled(false);
+            view.setParticipantDropDownEnabled(false);
+            view.setPromptXDropDownEnabled(false);
+            view.setPromptYDropDownEnabled(false);
+            view.setStartDateRangeEnabled(true);
+            view.setEndDateRangeEnabled(false);
+        	break;
+        case MOBILITY_GRAPH:
+          view.setCampaignDropDownEnabled(false);
+          view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
           view.setDateRangeEnabled(true);

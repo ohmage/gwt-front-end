@@ -45,6 +45,8 @@ import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
+import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
+import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
@@ -1700,4 +1702,82 @@ public class AndWellnessDataService implements DataService {
     }    
   }
 
+	@Override
+	public void fetchMobilityData(Date single_date, final AsyncCallback<List<MobilityInfo>> callback) {
+		assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+		
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("auth_token", this.authToken);
+		params.put("client", this.client);
+		params.put("date", DateUtils.translateToApiRequestFormat(single_date));
+		
+		String postParams = MapUtils.translateToParameters(params);
+		_logger.fine("Deleting survey response with params: " + postParams);
+
+		final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getMobilityReadUrl());
+		try {
+			requestBuilder.sendRequest(postParams, new RequestCallback() {
+				@Override
+				public void onResponseReceived(Request request, Response response) {          
+					try {
+						String responseText = getResponseTextOrThrowException(requestBuilder, response);
+						List<MobilityInfo> result = AwDataTranslators.translateMobilityReadQueryJSONToMobilityInfoList(responseText);	//FIXME
+						callback.onSuccess(result);
+					} catch (Exception exception) {
+						_logger.severe(exception.getMessage());
+						callback.onFailure(exception);
+					}
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					_logger.severe(exception.getMessage());
+					callback.onFailure(exception);
+				}
+			});
+		} catch (RequestException e) {
+			_logger.severe(e.getMessage());
+			throw new ServerException("Cannot contact server.");
+		}    
+	}
+
+	@Override
+	public void fetchMobilityDataChunked(Date start_date, Date end_date, final AsyncCallback<List<MobilityChunkedInfo>> callback) {
+		assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+		
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("auth_token", this.authToken);
+		params.put("client", this.client);
+		params.put("start_date", DateUtils.translateToApiRequestFormat(start_date));
+		params.put("end_date", DateUtils.translateToApiRequestFormat(DateUtils.addOneDay(end_date)));
+		
+		String postParams = MapUtils.translateToParameters(params);
+		_logger.fine("Deleting survey response with params: " + postParams);
+
+		final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getMobilityReadChunkedUrl());
+		try {
+			requestBuilder.sendRequest(postParams, new RequestCallback() {
+				@Override
+				public void onResponseReceived(Request request, Response response) {          
+					try {
+						String responseText = getResponseTextOrThrowException(requestBuilder, response);
+						List<MobilityChunkedInfo> result = AwDataTranslators.translateMobilityReadChunkedQueryJSONToMobilityChunkedInfoList(responseText);	//FIXME
+						callback.onSuccess(result);
+					} catch (Exception exception) {
+						_logger.severe(exception.getMessage());
+						callback.onFailure(exception);
+					}
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					_logger.severe(exception.getMessage());
+					callback.onFailure(exception);
+				}
+			});
+		} catch (RequestException e) {
+			_logger.severe(e.getMessage());
+			throw new ServerException("Cannot contact server.");
+		}    
+	}
 }

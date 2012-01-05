@@ -1,0 +1,144 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.MobilityChunkedWidgetPopup.MobilityChunkedWidgetPopupStyle">
+		.hidden {
+			/* use for hiding debug features */
+			height: 0px;
+			width: 0px;
+			visibility:hidden;
+		}
+		.container {
+			display: block;
+			font-size: 10px;
+			/* overflow-y: auto; */
+			width: 350px;
+		}
+		.modesContainer {
+			border: solid thin 1px;
+		}
+		.date {
+			background: #FFF no-repeat 0px 50% url("images/phone.png");
+			display: inline-block;
+			font-style: italic;
+			height: 15px;
+			padding-left: 15px;
+		}
+		.header {
+			background-color: #FFC288;
+			border: solid 1px #F58F3E;
+			margin: 5px 0px;
+			padding: 3px;
+		}
+		.infobar {
+			background-color: #DDD;
+			border: solid thin #CCC;
+			font-style: italic;
+			padding: 3px;
+		}
+		.label {
+			font-weight: bold;
+		}
+		.value {
+			font-style: italic;
+		}
+		.mode_still {
+			text-align: center;
+			height: 40px;
+			width: 32px;
+			font-color: #F00;
+			background: #FFF no-repeat 50% 10px url("images/mobility/m_still.png");
+			display: inline-block;
+		}
+		.mode_walk {
+			text-align: center;
+			height: 40px;
+			width: 32px;
+			font-color: #F80;
+			background: #FFF no-repeat 50% 10px url("images/mobility/m_walk.png");
+			display: inline-block;
+		}
+		.mode_run {
+			text-align: center;
+			height: 40px;
+			width: 32px;
+			font-color: #FF0;
+			background: #FFF no-repeat 50% 10px url("images/mobility/m_run.png");
+			display: inline-block;
+		}
+		.mode_bike {
+			text-align: center;
+			height: 40px;
+			width: 32px;
+			font-color: #4F0;
+			background: #FFF no-repeat 50% 10px url("images/mobility/m_bike.png");
+			display: inline-block;
+		}
+		.mode_drive {
+			text-align: center;
+			height: 40px;
+			width: 32px;
+			font-color: #00F;
+			background: #FFF no-repeat 50% 10px url("images/mobility/m_drive.png");
+			display: inline-block;
+		}
+		.mode_error {
+			text-align: center;
+			height: 40px;
+			width: 32px;
+			font-color: #888;
+			background: #FFF no-repeat 50% 10px url("images/mobility/m_error.png");
+			display: inline-block;
+		}
+	</ui:style>
+	<g:HTMLPanel addStyleNames='{style.container}'>
+		<table>
+			<tr><td><g:InlineLabel addStyleNames='{style.label}'>Grouped Mobility Data</g:InlineLabel></td></tr>
+			<tr>
+				<td><g:InlineLabel addStyleNames='{style.label}'>Mode:</g:InlineLabel></td>
+				<td>
+					<g:InlineLabel addStyleNames='{style.hidden}' ui:field='mode_still' />
+					<g:InlineLabel addStyleNames='{style.hidden}' ui:field='mode_walk' />
+					<g:InlineLabel addStyleNames='{style.hidden}' ui:field='mode_run' />
+					<g:InlineLabel addStyleNames='{style.hidden}' ui:field='mode_bike' />
+					<g:InlineLabel addStyleNames='{style.hidden}' ui:field='mode_drive' />
+					<g:InlineLabel addStyleNames='{style.hidden}' ui:field='mode_error' />
+				</td>
+			</tr>
+			<tr>
+				<td><g:InlineLabel addStyleNames='{style.label}'>Timestamp:</g:InlineLabel></td>
+				<td><g:InlineLabel addStyleNames='{style.value}' ui:field='timestamp' /></td>
+			</tr>
+			<tr>
+				<td><g:InlineLabel addStyleNames='{style.label}'>Duration:</g:InlineLabel></td>
+				<td><g:InlineLabel addStyleNames='{style.value}' ui:field='duration' /></td>
+			</tr>
+			<tr>
+				<td><g:InlineLabel addStyleNames='{style.label}'>Location Status:</g:InlineLabel></td>
+				<td><g:InlineLabel addStyleNames='{style.value}' ui:field='locStatus' /></td>
+			</tr>
+			<tr>
+				<td><g:InlineLabel addStyleNames='{style.label}'>Coordinates:</g:InlineLabel></td>
+				<td><g:InlineLabel addStyleNames='{style.value}' ui:field='locCoords' /></td>
+			</tr>
+			<tr>
+				<td><g:InlineLabel addStyleNames='{style.label}'>Provider:</g:InlineLabel></td>
+				<td><g:InlineLabel addStyleNames='{style.value}' ui:field='locProvider' /></td>
+			</tr>
+			<tr>
+				<td><g:InlineLabel addStyleNames='{style.label}'>GPS Timestamp: </g:InlineLabel></td>
+				<td><g:InlineLabel addStyleNames='{style.value}' ui:field='locTimestamp' /></td>
+			</tr>
+			<tr>
+				<td><g:InlineLabel addStyleNames='{style.label}'>Accuracy: </g:InlineLabel></td>
+				<td><g:InlineLabel addStyleNames='{style.value}' ui:field='locAccuracy' /></td>
+			</tr>
+		</table>
+		
+		<!-- 
+		<g:HTMLPanel tag='span' addStyleNames='{style.info}'>
+			<g:InlineLabel>Username: </g:InlineLabel>
+			<g:InlineLabel ui:field='username' />
+		</g:HTMLPanel>
+		 -->
+	</g:HTMLPanel>
+</ui:UiBinder> 

@@ -69,7 +69,8 @@ public class AwConstants {
     private final static String DOCUMENT_DELETE = "document/delete";
     private final static String DOCUMENT_DOWNLOAD = "document/read/contents";
     private final static String VISUALIZATION_URL = "viz";
-    
+    private final static String MOBILITY_READ	= "mobility/read";
+    private final static String MOBILITY_READ_CHUNKED = "mobility/read/chunked";
     
     /**
      * Returns data server url based on value of deployment status variable. 
@@ -212,8 +213,12 @@ public class AwConstants {
     public static String getVisualizationUrl(String plotType) {
       return getServerLocation() + VISUALIZATION_URL + "/" + plotType + "/read";
     }
-    
 
+    public static String getMobilityReadUrl() {
+      return getServerLocation() + MOBILITY_READ;
+    }
     
-    
+    public static String getMobilityReadChunkedUrl() {
+      return getServerLocation() + MOBILITY_READ_CHUNKED;
+    }
 }
