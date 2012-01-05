@@ -169,16 +169,8 @@ public class AndWellnessDataService implements DataService {
             case E0200: 
             case E0201:
             case E0202:
-                // FIXME: new account is returning 200 error code, once it returns 202 instead
-                // give new account error its own case 
-                String errorText = errorList.get(0).getText();
-                if (errorText.toLowerCase().contains("new account")) {
-                  errorCode = ErrorCode.E0202; // deleteme
-                  returnError = new AuthenticationException(errorCode.getErrorCode(),
-                                                            errorCode.getErrorDesc());
-                } else {
-                  returnError = new AuthenticationException(errorCode.getErrorDesc());
-                }
+                returnError = new AuthenticationException(errorCode.getErrorCode(),
+                                                          errorCode.getErrorDesc());
                 break;
             case E0300:
             case E0301:
