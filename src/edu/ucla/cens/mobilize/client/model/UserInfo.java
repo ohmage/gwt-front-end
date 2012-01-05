@@ -15,6 +15,7 @@ import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 public class UserInfo {
   private String userName; // login id
   boolean isPrivileged = false; // true if user is privileged member of any class
+  boolean isAdmin = false; // true if user is admin (can view/edit all classes and users)
   boolean canCreateCampaigns = false; // true if user is allowed to author campaigns
   private Map<String, String> classIdToNameMap;
   private Set<RoleCampaign> campaignRoles = new HashSet<RoleCampaign>();
@@ -89,6 +90,10 @@ public class UserInfo {
     return this.campaignIdToNameMap.keySet();
   }
 
+  public void setAdminFlag(boolean isAdmin) {
+    this.isAdmin = isAdmin;
+  }
+  
   public void setPrivilegeFlag(boolean isPrivileged) {
     this.isPrivileged = isPrivileged;
   }
@@ -105,7 +110,7 @@ public class UserInfo {
   /******* USER ROLES ******/
   
   public boolean isAdmin() {
-    return true; // FIXME
+    return this.isAdmin;
   }
   
   public boolean isSupervisor() {

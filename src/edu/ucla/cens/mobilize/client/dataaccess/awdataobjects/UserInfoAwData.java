@@ -32,6 +32,10 @@ public class UserInfoAwData extends JavaScriptObject {
     return (this.permissions != undefined) ? this.permissions.can_create_campaigns : false; 
   }-*/;
   
+  public final native boolean getIsAdminFlag() /*-{
+    return (this.permissions != undefined) ? this.permissions.is_admin : false;
+  }-*/;
+  
   public final Map<String, String> getClasses() {
     Map<String, String> classNameToIdMap = new HashMap<String, String>();
     JsArrayString classKeys = getClassKeys();

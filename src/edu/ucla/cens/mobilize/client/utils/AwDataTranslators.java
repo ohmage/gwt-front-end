@@ -285,6 +285,7 @@ public class AwDataTranslators {
           JSONObject userJSONObject = jsonValue.isObject();
           if (userJSONObject == null) throw new Exception("user data field not a valid JSON object");
           UserInfoAwData userDataJSObject = (UserInfoAwData)userJSONObject.getJavaScriptObject();
+          boolean isAdmin = userDataJSObject.getIsAdminFlag();
           boolean canCreateFlag = userDataJSObject.getCanCreateFlag();
           Map<String, String> campaignIdToNameMap = userDataJSObject.getCampaigns();
           Map<String, String> classIdToNameMap = userDataJSObject.getClasses();
@@ -300,6 +301,7 @@ public class AwDataTranslators {
           
           UserInfo userInfo = new UserInfo();
           userInfo.setUserName(username);
+          userInfo.setAdminFlag(isAdmin);
           userInfo.setPrivilegeFlag(isPrivileged);
           userInfo.setCanCreateFlag(canCreateFlag);
           userInfo.setCampaigns(campaignIdToNameMap);
