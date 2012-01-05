@@ -228,7 +228,7 @@
     </g:west>
     
     <g:center>
-      <g:HTMLPanel addStyleNames='{style.scrollable}'>
+      <g:HTMLPanel ui:field='scrollPanel' addStyleNames='{style.scrollable}'>
 	      <g:HTMLPanel>
 	        <w:MessageWidget ui:field='messageWidget' />
 	        <g:HTMLPanel addStyleNames='{style.sectionHeader}'>

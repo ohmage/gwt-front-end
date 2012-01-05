@@ -82,6 +82,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   @UiField MessageWidget messageWidget;
   @UiField Label sectionHeaderTitle;
   @UiField Label sectionHeaderDetail;
+  @UiField HTMLPanel scrollPanel;
   @UiField FlowPanel responseList;
   @UiField Button shareButtonTop;
   @UiField Button makePrivateButtonTop;
@@ -108,7 +109,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   private String emptyParticipantListString = "None visible.";
   private List<SurveyResponse> responses;
   private int visibleRangeStart = 0;
-  private int visibleRangeLength;
+  private int visibleRangeMaxLength;
   
   public ResponseViewImpl() {
     // instantiate pager here so instructor params can be passed
@@ -129,7 +130,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
     // set up pager
     pager.setDisplay(this);
     pager.setHeight("15px");
-    setVisibleRangeLength(10);
+    setVisibleRangeMaxLength(10);
   }
   
   private void setEventHandlers() {
@@ -193,31 +194,31 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
     resultsPerPage10MenuItem.setCommand(new Command() {
       @Override
       public void execute() {
-        setVisibleRangeLength(10);
-        setVisibleRange(visibleRangeStart, visibleRangeLength);
+        setVisibleRangeMaxLength(10);
+        setVisibleRange(visibleRangeStart, visibleRangeMaxLength);
       }
     });
     
     resultsPerPage50MenuItem.setCommand(new Command() {
       @Override
       public void execute() {
-        setVisibleRangeLength(50);
-        setVisibleRange(visibleRangeStart, visibleRangeLength);
+        setVisibleRangeMaxLength(50);
+        setVisibleRange(visibleRangeStart, visibleRangeMaxLength);
       }
     });
     
     resultsPerPage100MenuItem.setCommand(new Command() {
       @Override
       public void execute() {
-        setVisibleRangeLength(100);
-        setVisibleRange(visibleRangeStart, visibleRangeLength);
+        setVisibleRangeMaxLength(100);
+        setVisibleRange(visibleRangeStart, visibleRangeMaxLength);
       }
     });
   }
   
-  private void setVisibleRangeLength(int length) { 
+  private void setVisibleRangeMaxLength(int length) { 
     assert length == 10 || length == 50 || length == 100 : "visible range length must be one of 10, 50, 100";
-    this.visibleRangeLength = length;
+    this.visibleRangeMaxLength = length;
     // remove underline from selected number 
     this.resultsPerPage10MenuItem.setStyleName(length == 10 ? "" : "link");
     this.resultsPerPage50MenuItem.setStyleName(length == 50 ? "" : "link");
@@ -393,21 +394,33 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   public void setResponses(List<SurveyResponse> responses) {
     if (responses == null) return;
     this.responses = responses;
-    if (Subview.EDIT.equals(selectedSubview)) {
-      renderResponsesEditView(0, this.visibleRangeLength);
-    } else if (Subview.BROWSE.equals(selectedSubview)) {
-      renderResponsesBrowseView(0, this.visibleRangeLength);
-    } else { // default to browse
-      renderResponsesBrowseView(0, this.visibleRangeLength);
-    }
+    this.setVisibleRange(0, this.visibleRangeMaxLength);
     RowCountChangeEvent.fire(this, this.responses.size(), true);
-    this.setVisibleRange(0, this.visibleRangeLength);
+  }
+
+  @Override
+  public void setVisibleRange(int start, int maxLength) {
+    this.visibleRangeStart = start;
+    if (Subview.EDIT.equals(selectedSubview)) {
+      renderResponsesEditView(start);
+    } else if (Subview.BROWSE.equals(selectedSubview)) {
+      renderResponsesBrowseView(start);
+    } else { // default to browse
+      renderResponsesBrowseView(start);
+    }
+    RangeChangeEvent.fire(this, new Range(start, maxLength));
+    this.scrollPanel.getElement().setScrollTop(0);
+  }
+
+  @Override
+  public void setVisibleRange(Range range) {
+    setVisibleRange(range.getStart(), range.getLength());
   }
   
-  private void renderResponsesEditView(int rangeStart, int rangeLength) {
+  private void renderResponsesEditView(int rangeStart) {
     if (this.responseList == null) return;
     this.responseList.clear();
-    int rangeEnd = Math.min(rangeStart + rangeLength, this.responses.size());
+    int rangeEnd = Math.min(rangeStart + this.visibleRangeMaxLength, this.responses.size());
     for (int i = rangeStart; i < rangeEnd; i++) {
       ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
       responseWidget.setSelectable(true);
@@ -416,10 +429,10 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
     }
   }
   
-  private void renderResponsesBrowseView(int rangeStart, int rangeLength) {
+  private void renderResponsesBrowseView(int rangeStart) {
     if (this.responseList == null) return;
     this.responseList.clear();
-    int rangeEnd = Math.min(rangeStart + rangeLength, this.responses.size());
+    int rangeEnd = Math.min(rangeStart + this.visibleRangeMaxLength, this.responses.size());
     for (int i = rangeStart; i < rangeEnd; i++) {
       ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
       responseWidget.setSelectable(false);
@@ -757,7 +770,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
 
   @Override
   public Range getVisibleRange() {
-    return new Range(this.visibleRangeStart, this.visibleRangeLength);
+    return new Range(this.visibleRangeStart, this.visibleRangeMaxLength);
   }
 
   @Override
@@ -767,32 +780,13 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
 
   @Override
   public void setRowCount(int count) {
-    Window.alert("set row count: " + count);
-    
+    // FIXME: ???
   }
 
   @Override
   public void setRowCount(int count, boolean isExact) {
-    Window.alert("set row count exact: " + count);
+    // FIXME: ???
   }
 
-  @Override
-  public void setVisibleRange(int start, int length) {
-    this.visibleRangeStart = start;
-    this.visibleRangeLength = responses != null ? Math.min(length, this.responses.size() - start) : 0;
-    if (Subview.EDIT.equals(selectedSubview)) {
-      renderResponsesEditView(start, length);
-    } else if (Subview.BROWSE.equals(selectedSubview)) {
-      renderResponsesBrowseView(start, length);
-    } else { // default to browse
-      renderResponsesBrowseView(start, length);
-    }
-    RangeChangeEvent.fire(this, new Range(start, length));
-  }
-
-  @Override
-  public void setVisibleRange(Range range) {
-    setVisibleRange(range.getStart(), range.getLength());
-  }
   
 }
