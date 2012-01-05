@@ -401,6 +401,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
       renderResponsesBrowseView(0, this.visibleRangeLength);
     }
     RowCountChangeEvent.fire(this, this.responses.size(), true);
+    this.setVisibleRange(0, this.visibleRangeLength);
   }
   
   private void renderResponsesEditView(int rangeStart, int rangeLength) {
