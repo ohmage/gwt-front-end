@@ -26,7 +26,10 @@
 			height: 300px;
 			overflow-y: auto;
 			padding: 8px;
-			width: 300px;
+			width: 310px;
+		}
+		.userListContainer td {
+			white-space: nowrap;
 		}
 	</ui:style>
 	<g:HTMLPanel addStyleNames='{style.container}'>

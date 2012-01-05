@@ -549,7 +549,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
       ResponseDisplayWidget widget = (ResponseDisplayWidget)responseList.getWidget(i);
       if (widget != null && widget.isSelected()) {
-        keys.add(Integer.toString(widget.getResponseKey()));
+        keys.add(widget.getResponseKey());
         
       }
     }    
@@ -567,11 +567,11 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   }
 
   @Override
-  public void markShared(int responseKey) {
+  public void markShared(String responseKey) {
     int numWidgets = this.responseList.getWidgetCount();
     for (int i = 0; i < numWidgets; i++) {
       ResponseDisplayWidget responseWidget = (ResponseDisplayWidget)responseList.getWidget(i);
-      if (responseWidget.getResponseKey() == responseKey) {
+      if (responseWidget.getResponseKey().equals(responseKey)) {
         responseWidget.setPrivacy(Privacy.SHARED);
         break;
       }
@@ -579,11 +579,11 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   }
 
   @Override
-  public void markPrivate(int responseKey) {
+  public void markPrivate(String responseKey) {
     int numWidgets = this.responseList.getWidgetCount();
     for (int i = 0; i < numWidgets; i++) {
       ResponseDisplayWidget responseWidget = (ResponseDisplayWidget)responseList.getWidget(i);
-      if (responseWidget.getResponseKey() == responseKey) {
+      if (responseWidget.getResponseKey().equals(responseKey)) {
         responseWidget.setPrivacy(Privacy.PRIVATE);
         break;
       }
@@ -591,11 +591,11 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   }
   
   @Override
-  public void removeResponse(int responseKey) {
+  public void removeResponse(String responseKey) {
     int numWidgets = this.responseList.getWidgetCount();
     for (int i = 0; i < numWidgets; i++) {
       ResponseDisplayWidget responseWidget = (ResponseDisplayWidget)responseList.getWidget(i);
-      if (responseWidget.getResponseKey() == responseKey) {
+      if (responseWidget.getResponseKey().equals(responseKey)) {
         this.responseList.remove(i);
         break;
       }

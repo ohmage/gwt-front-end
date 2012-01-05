@@ -6,7 +6,7 @@ import com.google.gwt.core.client.JsArrayString;
 public class SurveyResponseAwData extends JavaScriptObject {
   protected SurveyResponseAwData() {}
     
-  public final native int getSurveyResponseKey() /*-{ return this.survey_key; }-*/;
+  public final native String getSurveyResponseKey() /*-{ return this.survey_key; }-*/;
   public final native String getSurveyDescription() /*-{ return this.survey_description; }-*/;
   public final native String getSurveyId() /*-{ return this.survey_id; }-*/;
   public final native String getSurveyTitle() /*-{ return this.survey_title; }-*/;

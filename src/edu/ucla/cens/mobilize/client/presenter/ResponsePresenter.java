@@ -558,10 +558,10 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     }
   };
   
-  private SurveyResponse getSurveyResponse(int surveyKey) {
+  private SurveyResponse getSurveyResponse(String surveyKey) {
     SurveyResponse retval = null;
     for (SurveyResponse surveyResponse : this.responses) {
-      if (surveyResponse.getResponseKey() == surveyKey) {
+      if (surveyResponse.getResponseKey().equals(surveyKey)) {
         retval = surveyResponse;
         break;
       }
@@ -570,7 +570,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   }
   
   // helper method
-  private String getCampaignUrnForSurveyKey(int surveyKey) {
+  private String getCampaignUrnForSurveyKey(String surveyKey) {
     SurveyResponse response = getSurveyResponse(surveyKey);
     return response != null ? response.getCampaignId() : null;
   }
@@ -580,14 +580,14 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   private void shareSelectedResponses() {
     List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
     for (String responseKey : responseKeys) {
-      final int surveyKey = Integer.parseInt(responseKey);
+      final String surveyKey = responseKey;
       // get info about the selected response
       SurveyResponse response = getSurveyResponse(surveyKey);
       // if no info was loaded, skip it
       if (response == null) {
         view.addErrorMessage("There was a problem updating the response(s)",
             "Could not find campaign urn for survey key: " + 
-            Integer.toString(surveyKey));
+            surveyKey);
         continue;
       }
       // if response is already shared, skip it
@@ -644,14 +644,14 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   private void makeSelectedResponsesPrivate() {
     List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
     for (String responseKey : responseKeys) {
-      final int surveyKey = Integer.parseInt(responseKey);
+      final String surveyKey = responseKey;
       // get info about the selected response
       SurveyResponse response = getSurveyResponse(surveyKey);
       // if no info was loaded, skip it
       if (response == null) {
         view.addErrorMessage("There was a problem updating the response(s)",
             "Could not find campaign urn for survey key: " + 
-            Integer.toString(surveyKey));
+            surveyKey);
         continue;
       }
       // if response is already private, skip it
@@ -707,7 +707,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   private void deleteSelectedResponses() {
     List<String> responseKeyStrings = this.view.getSelectedSurveyResponseKeys();
     for (String responseKeyString : responseKeyStrings) {
-      final int responseKey = Integer.parseInt(responseKeyString);
+      final String responseKey = responseKeyString;
       String campaignUrn = getCampaignUrnForSurveyKey(responseKey);
       if (campaignUrn == null) {
         _logger.severe("Could not find campaign urn for survey key: " + 

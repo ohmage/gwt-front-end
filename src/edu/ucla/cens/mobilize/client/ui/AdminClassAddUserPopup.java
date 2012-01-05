@@ -172,6 +172,7 @@ public class AdminClassAddUserPopup extends Composite {
       this.userListGrid.setText(row, Columns.USERNAME, username);
       this.userListGrid.setWidget(row, Columns.ROLE_PRIVILEGED, new RadioButton("popup_role_" + username, "Privileged"));
       this.userListGrid.setWidget(row, Columns.ROLE_RESTRICTED, new RadioButton("popup_role_" + username, "Restricted"));
+      unselectRow(row); // make sure there's no leftover highlighting from last time dialog was open
     }
   }
   

@@ -103,8 +103,8 @@ public class ResponseDisclosurePanel extends Composite
     }
 	}
 	
-	public void setSurveyResponseKey(int surveyResponseKey) {
-    this.responseKey.setValue(Integer.toString(surveyResponseKey));
+	public void setSurveyResponseKey(String surveyResponseKey) {
+    this.responseKey.setValue(surveyResponseKey);
 	}
 	
 	public void clearPromptResponses() {
@@ -233,8 +233,8 @@ public class ResponseDisclosurePanel extends Composite
 	  return this.checkbox.getValue();
 	}
 	
-	public int getResponseKey() {
-	  return Integer.parseInt(this.responseKey.getValue());
+	public String getResponseKey() {
+	  return this.responseKey.getValue();
 	}
 
   @Override

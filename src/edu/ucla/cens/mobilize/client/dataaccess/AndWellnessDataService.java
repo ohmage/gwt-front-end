@@ -1018,7 +1018,7 @@ public class AndWellnessDataService implements DataService {
   }
   
   @Override
-  public void updateSurveyResponse(String campaignId, int surveyKey,
+  public void updateSurveyResponse(String campaignId, String surveyKey,
       Privacy newPrivacyState, final AsyncCallback<String> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     SurveyResponseUpdateParams params = new SurveyResponseUpdateParams();
@@ -1060,14 +1060,14 @@ public class AndWellnessDataService implements DataService {
 
   @Override
   public void deleteSurveyResponse(String campaignId, 
-                                    int surveyKey, 
+                                    String surveyKey, 
                                     final AsyncCallback<String> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     Map<String, String> params = new HashMap<String, String>();
     params.put("auth_token", this.authToken);
     params.put("client", this.client);
     params.put("campaign_urn", campaignId);
-    params.put("survey_key", Integer.toString(surveyKey));
+    params.put("survey_key", surveyKey);
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Deleting survey response with params: " + postParams);
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getSurveyResponseDeleteUrl());

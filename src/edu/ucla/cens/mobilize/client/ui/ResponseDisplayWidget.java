@@ -4,7 +4,7 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 
 public interface ResponseDisplayWidget {
-  int getResponseKey();
+  String getResponseKey();
   boolean isSelected();
   void setSelected(boolean isSelected);
   void setPrivacy(Privacy privacy);

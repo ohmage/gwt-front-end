@@ -24,7 +24,6 @@ import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
-import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 
@@ -243,7 +242,7 @@ public interface DataService {
    * @param callback
    */
   void updateSurveyResponse(String campaignId,
-                            int surveyKey,
+                            String surveyKey,
                             Privacy newPrivacyState,
                             final AsyncCallback<String> callback);
   
@@ -253,8 +252,8 @@ public interface DataService {
    * @param callback
    */
   void deleteSurveyResponse(String campaignId,
-                             int surveyKey,
-                             final AsyncCallback<String> callback);
+                            String surveyKey,
+                            final AsyncCallback<String> callback);
   
   /** 
    * Generates parameter names and values for making a request. Use this

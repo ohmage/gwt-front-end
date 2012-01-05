@@ -415,13 +415,13 @@ public class MockDataService implements DataService {
   }
 
   @Override
-  public void updateSurveyResponse(String campaignId, int surveyKey,
+  public void updateSurveyResponse(String campaignId, String surveyKey,
       Privacy newPrivacyState, AsyncCallback<String> callback) {
     callback.onSuccess("");    
   }
 
   @Override
-  public void deleteSurveyResponse(String campaignId, int surveyKey,
+  public void deleteSurveyResponse(String campaignId, String surveyKey,
       AsyncCallback<String> callback) {
     callback.onSuccess("");
   }

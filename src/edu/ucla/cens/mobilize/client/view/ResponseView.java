@@ -71,9 +71,9 @@ public interface ResponseView extends IsWidget {
   void setResponses(List<SurveyResponse> responses);
   
   void clearResponseList();
-  void markShared(int responseKey);
-  void markPrivate(int responseKey);
-  void removeResponse(int responseKey);
+  void markShared(String responseKey);
+  void markPrivate(String responseKey);
+  void removeResponse(String responseKey);
   void enableSurveyFilter();
   void disableSurveyFilter();
   void setSectionHeader(String headerText);

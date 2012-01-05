@@ -79,9 +79,8 @@ public class ResponseWidgetBasic extends Composite implements ResponseDisplayWid
   }
 
   @Override
-  public int getResponseKey() {
-    String keyString = responseKeyHiddenField.getValue();
-    return keyString != null ? Integer.parseInt(keyString) : -1;
+  public String getResponseKey() {
+    return responseKeyHiddenField.getValue();
   }
 
   @Override
@@ -126,7 +125,7 @@ public class ResponseWidgetBasic extends Composite implements ResponseDisplayWid
   @Override
   public void setResponse(SurveyResponse response) {
     this.surveyResponseData = response;
-    responseKeyHiddenField.setValue(Integer.toString(response.getResponseKey()));
+    responseKeyHiddenField.setValue(response.getResponseKey());
     userLabel.setText(response.getUserName());
     dateLabel.setText(response.getResponseDate().toString());
     campaignLabel.setText(response.getCampaignName());
