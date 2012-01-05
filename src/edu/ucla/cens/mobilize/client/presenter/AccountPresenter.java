@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.view.AccountView;
 
 public class AccountPresenter implements AccountView.Presenter, Presenter {

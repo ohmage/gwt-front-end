@@ -30,6 +30,7 @@ public interface ClassView extends IsWidget {
   
   // show messages to user
   void showError(String msg);
+  void showError(String msg, String detail);
   void showMsg(String msg);
   void hideMsg();
   

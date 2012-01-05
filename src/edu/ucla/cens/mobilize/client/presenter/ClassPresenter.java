@@ -75,7 +75,7 @@ public class ClassPresenter implements ClassView.Presenter, Presenter {
       public void onFailure(Throwable caught) {
         _logger.fine(caught.getMessage());
         view.showListSubview();
-        view.showError("There was a problem retrieving the class data.");
+        view.showError("There was a problem retrieving the class data.", caught.getMessage());
         AwErrorUtils.logoutIfAuthException(caught);
       }
 

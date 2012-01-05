@@ -13,7 +13,7 @@
     	font-weight: bold;
      }
     .buttonPanel {
-      padding: 5px 10px;
+      padding: 5px 0px;
     }
     .centerContainer {
       padding: 15px 20px;
@@ -221,15 +221,13 @@
 	            </g:HTMLPanel>
             </g:HTMLPanel>
           </g:HTMLPanel>
+          <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
+		      <g:Button ui:field='saveButton'>Save Changes</g:Button>
+		      <g:Button ui:field='cancelButton'>Cancel</g:Button>
+		      <g:Button ui:field='deleteClassButton' addStyleNames='{style.deleteButton}'>Delete Class</g:Button>
+		    </g:HorizontalPanel>
         </g:VerticalPanel>
       </g:HTMLPanel>
     </g:center>
-    <g:south size='45'>
-      <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
-        <g:Button ui:field='saveButton'>Save Changes</g:Button>
-        <g:Button ui:field='cancelButton'>Cancel</g:Button>
-        <g:Button ui:field='deleteClassButton' addStyleNames='{style.deleteButton}'>Delete Class</g:Button>
-      </g:HorizontalPanel>
-    </g:south>
   </g:DockLayoutPanel>
 </ui:UiBinder> 
