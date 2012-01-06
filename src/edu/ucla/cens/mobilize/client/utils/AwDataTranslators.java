@@ -679,7 +679,7 @@ public class AwDataTranslators {
 				MobilityInfo mobInfo = new MobilityInfo();
 				
 				mobInfo.setMode(MobilityMode.fromServerString(awData.getMode()));
-				mobInfo.setDate(DateUtils.translateFromEpochServerFormat(awData.getTime()));	//epoch long in msec
+				mobInfo.setDate(new Date(awData.getTime()));
 				//mobInfo.setDate(DateUtils.translateFromServerFormat(awData.getTimestamp()));	//original
 				mobInfo.setTimezone(awData.getTimezone());
 				mobInfo.setLocationStatus(LocationStatus.fromServerString(awData.getLocStatus()));
@@ -689,8 +689,7 @@ public class AwDataTranslators {
 					mobInfo.setLocationLong(l.getLongitude());
 					mobInfo.setLocationAccuracy(l.getAccuracy());
 					mobInfo.setLocationProvider(l.getProvider());
-					//mobInfo.setLocationTimestamp(DateUtils.translateFromServerFormat(l.getTimestamp()));	//2.8
-					mobInfo.setLocationTimestamp(DateUtils.translateFromEpochServerFormat(l.getTimestamp()));
+					mobInfo.setLocationTimestamp(new Date(l.getTime()));
 				}
 				//add to list "mobilityInfos"
 				mobilityInfos.add(mobInfo);
@@ -738,8 +737,7 @@ public class AwDataTranslators {
 					mobInfo.setLocationLong(l.getLongitude());
 					mobInfo.setLocationAccuracy(l.getAccuracy());
 					mobInfo.setLocationProvider(l.getProvider());
-					//mobInfo.setLocationTimestamp(DateUtils.translateFromServerFormat(l.getTimestamp()));	//2.8
-					mobInfo.setLocationTimestamp(DateUtils.translateFromEpochServerFormat(l.getTimestamp()));	//2.9
+					mobInfo.setLocationTimestamp(new Date(l.getTime()));
 				}
 				
 				//add to list "mobilityInfos"

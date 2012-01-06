@@ -224,7 +224,7 @@ public class ExploreDataPresenter implements Presenter {
 						ErrorDialog.show("We were unable to fetch your mobility data from the server", caught.getMessage());
 					}
 					@Override
-					public void onSuccess(List<MobilityInfo> result) {	//FIXME
+					public void onSuccess(List<MobilityInfo> result) {
 						mdata.addAll(result);
 						
 						// show responses on map
@@ -248,7 +248,7 @@ public class ExploreDataPresenter implements Presenter {
 					ErrorDialog.show("We were unable to fetch your mobility data from the server", caught.getMessage());
 				}
 				@Override
-				public void onSuccess(List<MobilityChunkedInfo> result) {	//FIXME
+				public void onSuccess(List<MobilityChunkedInfo> result) {
 					// show responses on map
 					view.showMobilityChunkedDataOnMap(result);
 					view.hideWaitIndicator();
