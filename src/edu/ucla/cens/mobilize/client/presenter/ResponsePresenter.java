@@ -30,6 +30,7 @@ import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
+import edu.ucla.cens.mobilize.client.utils.StopWatch;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.view.ResponseView.Subview;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
@@ -831,6 +832,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                 final Date startDate,
                                                 final Date endDate, 
                                                 final boolean suppressCampaignErrors) {
+    StopWatch.start("fetch");
     // GOTCHA: when logged in user != selected participant, this only shows
     //   responses from campaigns that both participant and logged in user belong to
     this.dataService.fetchSurveyResponses(participantName,
@@ -842,6 +844,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         new AsyncCallback<List<SurveyResponse>>() {
           @Override
           public void onFailure(Throwable caught) {
+            StopWatch.stop("fetch");
             WaitIndicator.hide();
             // NOTE: When fetching all responses, we don't know ahead of time which campaigns
             //   it makes sense to query, so we query all the user's campaigns and ignore 
@@ -867,6 +870,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           
           @Override
           public void onSuccess(List<SurveyResponse> result) {
+            StopWatch.stop("fetch");
             WaitIndicator.hide();
             if (result == null || result.isEmpty()) return; // avoid unnecessary work 
             
@@ -887,10 +891,15 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
               responses.addAll(result);
             }
             
+            StopWatch.start("sort");
             // sort by date, newest first
             Collections.sort(responses, responseDateComparator);
+            StopWatch.stop("sort");
             view.showResponseCountInSectionHeader(participantName, responses.size());
+            StopWatch.start("render");
             view.setResponses(responses);
+            StopWatch.stop("render");
+            _logger.finest(StopWatch.getTotalsString());
           }
     });
 

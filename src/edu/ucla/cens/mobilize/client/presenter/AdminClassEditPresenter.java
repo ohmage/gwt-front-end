@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -19,15 +20,17 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserSearchParams;
 import edu.ucla.cens.mobilize.client.event.ClassDataChangedEvent;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
-import edu.ucla.cens.mobilize.client.model.UserShortInfo;
+import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.ui.ConfirmDeleteDialog;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
+import edu.ucla.cens.mobilize.client.utils.StopWatch;
 import edu.ucla.cens.mobilize.client.view.AdminClassEditView;
 
 public class AdminClassEditPresenter implements Presenter {
@@ -37,6 +40,7 @@ public class AdminClassEditPresenter implements Presenter {
   private AdminClassEditView view;
   
   private Map<String, RoleClass> currentMemberList; // used to identify deleted users
+  private static Logger _logger = Logger.getLogger(AdminClassEditPresenter.class.getName());
 
   public AdminClassEditPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
     this.userInfo = userInfo;
@@ -190,8 +194,8 @@ public class AdminClassEditPresenter implements Presenter {
   
   private void fetchUsersAndShowAddMembersPopup() {
     WaitIndicator.show();
-    // FIXME: only gets users from classes current user belongs to. should get all users
-    dataService.fetchClassMembers(userInfo.getClassIds(), new AsyncCallback<List<UserShortInfo>>() {
+    // TODO: FIXME: should only load users once when admin first goes to page, then re-use them everywhere
+    dataService.fetchUserSearchResults(new UserSearchParams(), new AsyncCallback<List<UserSearchInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
         WaitIndicator.hide();
@@ -200,19 +204,26 @@ public class AdminClassEditPresenter implements Presenter {
       }
 
       @Override
-      public void onSuccess(List<UserShortInfo> result) {
+      public void onSuccess(List<UserSearchInfo> result) {
+        WaitIndicator.hide();
         Map<String, RoleClass> currentMembers = view.getMembersAndRoles();
         List<String> usernames = new ArrayList<String>();
-        for (UserShortInfo user : result) {
+
+        StopWatch.start("search_and_sort");
+        for (UserSearchInfo user : result) {
           String username = user.getUsername();
           // popup only shows users that are not already in the class
           if (!currentMembers.containsKey(username)) {
             usernames.add(username);
           }
-          Collections.sort(usernames);
         }
+        Collections.sort(usernames);
+        StopWatch.stop("search_and_sort");
+        StopWatch.start("render_user_list");
         view.showAddMembersPopup(usernames);
-        WaitIndicator.hide();
+        StopWatch.stop("render_user_list");
+        _logger.finest(StopWatch.getTotalsString());
+        StopWatch.resetAll();
       }
     });
   }

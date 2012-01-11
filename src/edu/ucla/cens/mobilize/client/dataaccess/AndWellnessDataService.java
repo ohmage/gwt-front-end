@@ -55,6 +55,7 @@ import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
+import edu.ucla.cens.mobilize.client.utils.StopWatch;
 
 /**
  * Class for requesting data from the AndWellnessServer.
@@ -561,14 +562,20 @@ public class AndWellnessDataService implements DataService {
     params.client = this.client();
     String postParams = params.toString();
     _logger.fine("Attempting to query user search api with parameters: " + postParams);
+    StopWatch.start("user_search:fetch");
     try {
       requestBuilder.sendRequest(postParams, new RequestCallback() {
         @Override
         public void onResponseReceived(Request request, Response response) {
+          StopWatch.stop("user_search:fetch");
           List<UserSearchInfo> userInfos = null;
           try {
             String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            StopWatch.start("user_search:translate");
             userInfos = AwDataTranslators.translateUserSearchQueryJSONToUserSearchInfoList(responseText);
+            StopWatch.stop("user_search:translate");
+            _logger.finest(StopWatch.getTotalsString());
+            StopWatch.resetAll();
           } catch (Exception exception) {
             _logger.severe(exception.getMessage());
             callback.onFailure(exception);

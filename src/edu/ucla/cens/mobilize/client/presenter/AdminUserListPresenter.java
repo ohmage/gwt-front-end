@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -23,6 +24,7 @@ import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
+import edu.ucla.cens.mobilize.client.utils.StopWatch;
 import edu.ucla.cens.mobilize.client.view.AdminUserListView;
 
 public class AdminUserListPresenter implements Presenter {
@@ -32,6 +34,8 @@ public class AdminUserListPresenter implements Presenter {
   DataService dataService;
 
   private List<String> errors = new ArrayList<String>();
+  
+  private Logger _logger = Logger.getLogger(AdminUserListPresenter.class.getName());
   
   public AdminUserListPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
     this.userInfo = userInfo;
@@ -273,6 +277,7 @@ public class AdminUserListPresenter implements Presenter {
     params.email_opt = emailSearchString;
     params.organization_opt = organizationSearchString;
     params.jsonData_opt = jsonSearchString;
+    StopWatch.start("fetch_users");
     dataService.fetchUserSearchResults(params, new AsyncCallback<List<UserSearchInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
@@ -283,9 +288,16 @@ public class AdminUserListPresenter implements Presenter {
 
       @Override
       public void onSuccess(List<UserSearchInfo> result) {
+        StopWatch.stop("fetch_users");
         view.hideWaitIndicator();
+        StopWatch.start("sort_users");
         Collections.sort(result);
+        StopWatch.stop("sort_users");
+        StopWatch.start("render_users");
         view.setUserList(result);
+        StopWatch.stop("render_users");
+        _logger.finest(StopWatch.getTotalsString());
+        StopWatch.resetAll();
       }
     });
   }

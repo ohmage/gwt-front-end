@@ -56,6 +56,7 @@ import edu.ucla.cens.mobilize.client.presenter.ResponsePresenter;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.Header;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
+import edu.ucla.cens.mobilize.client.utils.StopWatch;
 import edu.ucla.cens.mobilize.client.view.AccountViewImpl;
 import edu.ucla.cens.mobilize.client.view.AdminClassDetailView;
 import edu.ucla.cens.mobilize.client.view.AdminClassEditView;
@@ -174,7 +175,12 @@ public class MainApp implements EntryPoint, HistoryListener {
       logout(); // logout and refresh
     } 
     
+    // enable stopwatch for debug mode. (all stopwatch methods are no-ops otherwise)
+    //if (AwConstants.status.getStatus().equals(Status.DEBUG)) StopWatch.enable();
+    StopWatch.enable();
+    
     if (loginManager.isCurrentlyLoggedIn()) {
+      
       initDataService(loginManager.getLoggedInUserName(), loginManager.getAuthorizationToken());
       loadAppConfigAndInitApp();
       bind();

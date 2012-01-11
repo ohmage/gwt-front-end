@@ -369,7 +369,7 @@ public class AdminClassEditView extends Composite {
    * @param usernames List of usernames that will appear in the add new
    * members popup
    */
-  public void showAddMembersPopup(List<String> usernames) {
+  public void showAddMembersPopup(List<String> usernames) {    
     this.addMembersWidget.clearSearchString();
     this.addMembersWidget.setUserList(usernames);
     this.addMembersDialog.center();

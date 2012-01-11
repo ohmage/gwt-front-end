@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -47,6 +48,7 @@ import edu.ucla.cens.mobilize.client.ui.ResponseDisplayWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetBasic;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
+import edu.ucla.cens.mobilize.client.utils.StopWatch;
 
 public class ResponseViewImpl extends Composite implements ResponseView, HasRows {
   
@@ -110,6 +112,8 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   private List<SurveyResponse> responses;
   private int visibleRangeStart = 0;
   private int visibleRangeMaxLength;
+
+  private Logger _logger = Logger.getLogger(ResponseViewImpl.class.getName());
   
   public ResponseViewImpl() {
     // instantiate pager here so instructor params can be passed
@@ -401,6 +405,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   @Override
   public void setVisibleRange(int start, int maxLength) {
     this.visibleRangeStart = start;
+    StopWatch.start("render");
     if (Subview.EDIT.equals(selectedSubview)) {
       renderResponsesEditView(start);
     } else if (Subview.BROWSE.equals(selectedSubview)) {
@@ -408,6 +413,10 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
     } else { // default to browse
       renderResponsesBrowseView(start);
     }
+    StopWatch.stop("render");
+    _logger.finest(StopWatch.getTotalsString());
+    StopWatch.reset("render");
+    
     RangeChangeEvent.fire(this, new Range(start, maxLength));
     this.scrollPanel.getElement().setScrollTop(0);
   }

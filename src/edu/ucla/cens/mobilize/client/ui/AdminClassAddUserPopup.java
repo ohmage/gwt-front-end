@@ -107,8 +107,7 @@ public class AdminClassAddUserPopup extends Composite {
       @Override
       public void onClick(ClickEvent event) {
         for (int row = 0; row < userListGrid.getRowCount(); row++) {
-          CheckBox cb = (CheckBox)userListGrid.getWidget(row, Columns.CHECKBOX);
-          cb.setValue(true);
+          selectRow(row);
         }
       }
     });
