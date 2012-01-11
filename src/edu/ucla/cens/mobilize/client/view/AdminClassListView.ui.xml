@@ -33,6 +33,7 @@
       white-space: nowrap; /* don't wrap text in table */
     }
     .classListHeaderRow {
+    	height: 26px;
     }
     .classListHeaderRow td {
     	background-color: #236;
@@ -107,9 +108,11 @@
         </g:HTMLPanel>
       </g:HTMLPanel>
     </g:north>
+    <g:north size='26'>
+      <g:Grid addStyleNames='{style.classList}' ui:field='classListHeader' />
+    </g:north>
     <g:center>
       <g:HTMLPanel>
-        <g:Grid addStyleNames='{style.classList}' ui:field='classListHeader' />
 	      <g:HTMLPanel addStyleNames='{style.scrollable}'>
 	        <g:Grid ui:field='classListGrid' addStyleNames='{style.classListGrid}' />
 	        <g:HTMLPanel ui:field='instructionsPanel' addStyleNames='{style.classListEmptyMessage}'>

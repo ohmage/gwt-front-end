@@ -130,7 +130,6 @@ public class AdminClassListPresenter implements Presenter {
                         memberCount, 
                         campaignCount);
         }
-        view.addClass("", "", 0, 0); // hack! b/c otherwise last row is not visible
       }
     });
   }
