@@ -82,6 +82,13 @@
       margin: 2px;
       padding: 5px;
     }
+    .tooltip {
+    	background-color: #FFFFE0;
+    	border: solid 1px #F8CF3E;
+    	padding: 2px 4px;
+    	position: relative;
+    	left: 40px;
+    }
 
   </ui:style>
   <g:DockLayoutPanel unit='PX'>

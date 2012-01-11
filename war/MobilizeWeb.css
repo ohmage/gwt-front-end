@@ -292,7 +292,7 @@ li.errorListItem {
 }
 
 .successMsg {
-	background-color: #FFFFE0;
+  background-color: #FFFFE0;
   background-image: url(images/star.png);
   background-repeat: no-repeat;
   background-position: 10px 50%;

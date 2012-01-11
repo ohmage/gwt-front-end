@@ -30,4 +30,19 @@ public class StringUtils {
             addHere.append("&" + URL.encode(key) + "=" + URL.encode(value));
         }
     }
+
+    /**
+     * Returns a copy of longString truncated at maxLength with ellipses
+     * appended, or returns the original string if not longer than maxLength.
+     * @param longString
+     * @param maxLength
+     * @return "Loooooooooooooooong -> Loooooooo..."
+     */
+    public static String shorten(String longString, int maxLength) {
+      String retval = longString;
+      if (longString != null && longString.length() > maxLength) {
+        retval = longString.substring(0, maxLength) + "...";
+      }
+      return retval;
+    }
 }

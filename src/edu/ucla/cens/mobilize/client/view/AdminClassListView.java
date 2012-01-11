@@ -3,6 +3,10 @@ package edu.ucla.cens.mobilize.client.view;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.HasKeyDownHandlers;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -10,15 +14,18 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.ui.AdminMenu;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
+import edu.ucla.cens.mobilize.client.utils.StringUtils;
 
 public class AdminClassListView extends Composite {
 
@@ -32,15 +39,17 @@ public class AdminClassListView extends Composite {
     String detailsLink();
     String editLink();
     String oddRow();
+    String tooltip();
   }
   
   interface AdminClassListViewUiBinder extends
       UiBinder<Widget, AdminClassListView> {
   }
 
-  private final String cellWidthName = "180px";
+  private final String cellWidthName = "220px";
   private final String cellWidthUrn = "300px";
   private final String cellWidthNumber = "80px";
+  private final int maxClassNameLength = 29;
   
   @UiField AdminClassListViewStyle style;
   @UiField AdminMenu adminMenu;
@@ -97,10 +106,46 @@ public class AdminClassListView extends Composite {
     this.adminMenu.selectManageClasses();
   }
 
+  // Returns a hyperlink with class name as text that links to the class detail page.
+  // If the class name is longer than maxClassNameLength, the name is truncated,
+  //  an ellipse is added, and the link is given a tooltip that shows the full
+  //  class name on mouse hover.
+  // (Note a js tooltip is used because the ordinary "title" tooltip takes too long to appear)
+  private InlineHyperlink getClassNameLink(String classUrn, String className) {
+    InlineHyperlink classNameLink = null;
+    if (className.length() > maxClassNameLength) {
+      classNameLink = new InlineHyperlink(StringUtils.shorten(className, maxClassNameLength),
+                                          HistoryTokens.adminClassDetail(classUrn));
+      
+      final PopupPanel popup = new PopupPanel();
+      HTML html = new HTML(className);
+      html.setStyleName(style.tooltip());
+      popup.setWidget(html);
+      final InlineHyperlink finalLink = classNameLink;
+      classNameLink.addDomHandler(new MouseOverHandler() {
+        @Override
+        public void onMouseOver(MouseOverEvent event) {
+          popup.showRelativeTo(finalLink);
+        }
+      }, MouseOverEvent.getType());
+
+      classNameLink.addDomHandler(new MouseOutHandler() {
+        @Override
+        public void onMouseOut(MouseOutEvent event) {
+          popup.hide();
+        }
+      }, MouseOutEvent.getType());
+
+    } else {
+      classNameLink = new InlineHyperlink(className, HistoryTokens.adminClassDetail(classUrn));
+    }
+    return classNameLink;
+  }
+  
   public void addClass(String classUrn, String className, int memberCount, int campaignCount) {
     int lastRow = this.classListGrid.getRowCount();
     this.classListGrid.resizeRows(lastRow + 1);
-    InlineHyperlink classNameLink = new InlineHyperlink(className, HistoryTokens.adminClassDetail(classUrn));
+    InlineHyperlink classNameLink = getClassNameLink(classUrn, className);
     this.classListGrid.setWidget(lastRow, Columns.CLASS_NAME, classNameLink);
     this.classListGrid.setText(lastRow, Columns.CLASS_URN, classUrn);
     this.classListGrid.setText(lastRow, Columns.MEMBER_COUNT, Integer.toString(memberCount));
