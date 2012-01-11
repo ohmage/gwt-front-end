@@ -30,7 +30,8 @@ public class MobilityChunkedDataPointAwData extends QueryAwData {
 	
 	public final native int getDuration() /*-{ return this.d; }-*/;
 	public final native String getTimeStamp() /*-{ return this.ts; }-*/;
-	public final native String getTime() /*-{ return this.t; }-*/;
+	public final native double getTimeRaw() /*-{ return this.t; }-*/;
+	public final long getTime() { return (long)getTimeRaw(); }
 	public final native String getTimezone() /*-{ return this.tz; }-*/;
 	public final native String getLocStatus() /*-{ return this.ls; }-*/;
 	

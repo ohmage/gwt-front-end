@@ -518,6 +518,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	  setRequiredFlag(dateEndBox, isEnabled);
 	  if (isEnabled == false) {
 		  dateEndBox.setValue(null);
+		  startDateLabel.setText("Date:");			//01/06/2012: temporary fix. explore data controls will be overhauled in next release
+	  } else {
+		  startDateLabel.setText("Start Date:");	//01/06/2012: see note above
 	  }
   }
   

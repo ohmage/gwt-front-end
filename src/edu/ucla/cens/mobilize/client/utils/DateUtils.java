@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.utils;
 
 import java.util.Date;
+import java.util.logging.Logger;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 
@@ -21,14 +22,16 @@ public class DateUtils {
     public final static String displayFormat = "MMM dd, yyyy";
     public final static String historyTokenFormat = "yyyy-MM-dd";
     
+    private static Logger _logger = Logger.getLogger(AwDataTranslators.class.getName());
+    
     /**
      * Translates a String from server epoch long time format to a Date. New in 2.9
      * 
-     * @param toTranslate The epoch seconds string to translate.
+     * @param toTranslate The epoch milliseconds string to translate.
      * @return The translated Date
      */
     public static Date translateFromEpochServerFormat(String toTranslate) {
-    	return new Date(Long.parseLong(toTranslate));	//string should be in epoch MILLISECONDS
+    	return new Date(Long.parseLong(toTranslate.trim()));	//string should be in epoch MILLISECONDS
     }
     
     /**

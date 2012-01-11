@@ -28,7 +28,8 @@ public class MobilityDataPointAwData extends QueryAwData {
 	
 	public final native String getMode() /*-{ return this.m; }-*/;
 	public final native String getTimeStamp() /*-{ return this.ts; }-*/;
-	public final native String getTime() /*-{ return this.t; }-*/;
+	public final native double getTimeRaw() /*-{ return this.t; }-*/;	//needs to be cast to long
+	public final long getTime() { return (long)getTimeRaw(); }
 	public final native String getTimezone() /*-{ return this.tz; }-*/;
 	public final native String getLocStatus() /*-{ return this.ls; }-*/;
 	
