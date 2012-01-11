@@ -84,6 +84,7 @@ public class AdminUserCreatePresenter implements Presenter {
 
       @Override
       public void onSuccess(String result) {
+        view.resetForm();
         History.newItem(HistoryTokens.adminUserDetail(username));
       }
     });

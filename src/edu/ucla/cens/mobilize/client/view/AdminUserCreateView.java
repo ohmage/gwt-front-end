@@ -166,6 +166,7 @@ public class AdminUserCreateView extends Composite {
     this.usernameTextBox.setText("");
     this.passwordTextBox.setText("");
     this.passwordConfirmTextBox.setText("");
+    hidePasswords();
   }
 
   // Methods for getting data from form
