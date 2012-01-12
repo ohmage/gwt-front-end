@@ -323,6 +323,9 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
     for (Privacy privacy : privacyStates) {
       privacyFilter.addItem(privacy.toUserFriendlyString(), privacy.toServerString());
     }
+    
+    // default is "All" if it's an option or no selection otherwise
+    privacyFilter.setSelectedIndex(0);
   }
 
   @Override
@@ -364,7 +367,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   @Override 
   public void selectPrivacyState(Privacy privacy) {
     if (privacy == null) {
-      privacyFilter.setSelectedIndex(-1);
+      privacyFilter.setSelectedIndex(0);
       return;
     }
     
