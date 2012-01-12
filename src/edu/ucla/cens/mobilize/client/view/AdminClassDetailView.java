@@ -100,6 +100,7 @@ public class AdminClassDetailView extends Composite {
     int numColumns = 4;
     int numUsersPerColumn = numUsers / numColumns;
     this.membersGrid.resize(numUsersPerColumn + 1, numColumns);
+    this.membersGrid.clear(); // remove any leftover links
     int currRow = 0;
     int currCol = 0;
     for (String username : usernames) {
