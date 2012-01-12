@@ -1,6 +1,8 @@
 package edu.ucla.cens.mobilize.client.view;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.HasKeyDownHandlers;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -135,6 +137,14 @@ public class AdminClassListView extends Composite {
           popup.hide();
         }
       }, MouseOutEvent.getType());
+      
+      // hide popup on click, too, so it doesn't carry over to detail page
+      classNameLink.addDomHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          popup.hide();
+        }
+      }, ClickEvent.getType());
 
     } else {
       classNameLink = new InlineHyperlink(className, HistoryTokens.adminClassDetail(classUrn));
