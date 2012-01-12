@@ -420,6 +420,7 @@ public class ExploreDataPresenter implements Presenter {
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
           view.setDateRangeEnabled(false);
+          view.setExportButtonEnabled(true);
           break;
         case USER_TIMESERIES:
           view.setCampaignDropDownEnabled(true);
@@ -427,6 +428,7 @@ public class ExploreDataPresenter implements Presenter {
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(false);
           view.setDateRangeEnabled(false);
+          view.setExportButtonEnabled(true);
           break;
         case PROMPT_TIMESERIES:
         case PROMPT_DISTRIBUTION:
@@ -435,6 +437,7 @@ public class ExploreDataPresenter implements Presenter {
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(false);
           view.setDateRangeEnabled(false);
+          view.setExportButtonEnabled(true);
           break;
         case SCATTER_PLOT:
         case DENSITY_PLOT:
@@ -443,6 +446,7 @@ public class ExploreDataPresenter implements Presenter {
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(true);
           view.setDateRangeEnabled(false);
+          view.setExportButtonEnabled(true);
           break;
         case MAP:
           view.setCampaignDropDownEnabled(true);
@@ -450,21 +454,24 @@ public class ExploreDataPresenter implements Presenter {
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
           view.setDateRangeEnabled(true);
+          view.setExportButtonEnabled(false);
           break;
         case MOBILITY_MAP:
-        	view.setCampaignDropDownEnabled(false);
-            view.setParticipantDropDownEnabled(false);
-            view.setPromptXDropDownEnabled(false);
-            view.setPromptYDropDownEnabled(false);
-            view.setStartDateRangeEnabled(true);
-            view.setEndDateRangeEnabled(false);
-        	break;
+          view.setCampaignDropDownEnabled(false);
+          view.setParticipantDropDownEnabled(false);
+          view.setPromptXDropDownEnabled(false);
+          view.setPromptYDropDownEnabled(false);
+          view.setStartDateRangeEnabled(true);
+          view.setEndDateRangeEnabled(false);
+          view.setExportButtonEnabled(false);
+          break;
         case MOBILITY_GRAPH:
           view.setCampaignDropDownEnabled(false);
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
           view.setDateRangeEnabled(true);
+          view.setExportButtonEnabled(false);
           break;
         default:
           break;

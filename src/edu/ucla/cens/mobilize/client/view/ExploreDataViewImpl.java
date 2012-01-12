@@ -475,7 +475,6 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     setRequiredFlag(participantListBox, isEnabled);
   }
 
-
   @Override
   public void setPromptXDropDownEnabled(boolean isEnabled) {
 	  promptXLabel.setVisible(isEnabled);
@@ -483,7 +482,6 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	  promptXListBox.setEnabled(isEnabled);
     setRequiredFlag(promptXListBox, isEnabled);
   }
-
 
   @Override
   public void setPromptYDropDownEnabled(boolean isEnabled) {
@@ -522,6 +520,12 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	  } else {
 		  startDateLabel.setText("Start Date:");	//01/06/2012: see note above
 	  }
+  }
+  
+  @Override
+  public void setExportButtonEnabled(boolean isEnabled) {
+	  exportButton.setVisible(isEnabled);
+	  exportButton.setEnabled(isEnabled);
   }
   
   @Override

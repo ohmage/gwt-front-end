@@ -83,6 +83,7 @@ public interface ExploreDataView extends IsWidget {
   void setStartDateRangeEnabled(boolean isEnabled);
   void setEndDateRangeEnabled(boolean isEnabled);
   void setDataButtonsEnabled(boolean isEnabled);
+  void setExportButtonEnabled(boolean isEnabled);
   void disableAllDataControls();
   
   void showWaitIndicator();
