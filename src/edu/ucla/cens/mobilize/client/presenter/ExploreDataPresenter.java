@@ -583,8 +583,9 @@ public class ExploreDataPresenter implements Presenter {
     final String participantId = view.getSelectedParticipant();
     final String promptX = view.getSelectedPromptX();
     final String promptY = view.getSelectedPromptY();
-    final int width = view.getPlotPanelWidth();
-    final int height = view.getPlotPanelHeight();
+    final int px_margin = 5; //for reducing pixel width/height to avoid scrollbars on browsers with thicker chromes
+    final int width = view.getPlotPanelWidth() - px_margin;
+    final int height = view.getPlotPanelHeight() - px_margin;
     
     // mobilize only shows shared responses for most plots but some installations 
     // may want to include private ones.
