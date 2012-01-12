@@ -52,7 +52,6 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.regexp.shared.RegExp;
 
 /**
  * A collection of translators to translate data from the AndWellness server to local
@@ -216,7 +215,6 @@ public class AwDataTranslators {
       String displayString = null;
       switch (promptType) {
       case MULTI_CHOICE:
-      case MULTI_CHOICE_CUSTOM:
         // FIXME: assumes choices are stored as comma separated list - is that correct?
         String[] choices = promptResponseAwData.getPromptResponse().split(",");
         StringBuilder sb = new StringBuilder();
@@ -228,9 +226,13 @@ public class AwDataTranslators {
         displayString = sb.toString();
         break;
       case SINGLE_CHOICE:
-      case SINGLE_CHOICE_CUSTOM:
         String promptResponseStringValue = promptResponseAwData.getPromptResponse();
         displayString = promptResponseAwData.getChoiceLabelFromGlossary(promptResponseStringValue);
+        break;
+      case MULTI_CHOICE_CUSTOM:
+      case SINGLE_CHOICE_CUSTOM:
+        // user has typed in an "other" value - display it verbatim
+        displayString = promptResponseAwData.getPromptResponse();
         break;
       default: // for all other types, just use the original string
         displayString = promptResponseAwData.getPromptResponse();
