@@ -74,6 +74,7 @@ public class AdminUserCreatePresenter implements Presenter {
     params.password = view.getPassword();
     params.enabled = view.getEnabledFlag();
     params.admin = view.getAdminFlag();
+    params.newAccount_opt = view.getNewAccountFlag();
     params.canCreateCampaigns_opt = view.getCanCreateCampaignsFlag();
     dataService.createUser(params, new AsyncCallback<String>() {
       @Override

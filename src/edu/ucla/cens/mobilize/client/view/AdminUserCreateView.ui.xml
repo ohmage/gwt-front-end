@@ -9,7 +9,7 @@
       text-decoration: underline;
     }
     .buttonPanel {
-      padding: 5px 10px;
+      padding: 11px 15px;
       text-align: right;
     }
     .cancelButton {
@@ -23,7 +23,7 @@
       margin: 10px 10px 10px 0px;
     }
     .checkBoxRow {
-      padding: 10px 0px 20px;
+      padding: 10px 0px 3px;
     }
     .data {
     }
@@ -31,7 +31,7 @@
     	width: 340px;
     }
     .hidePasswordButton {
-    	background: #FFF 0px 50% no-repeat url('images/lock.png');
+    	background: #FFF 0px 20% no-repeat url('images/lock.png');
       border: none;
       width: 22px;
     }
@@ -48,7 +48,8 @@
       color: #BD4020;
     }
     .row {
-      whitespace: no-wrap;
+    	height: 22px;
+      white-space: nowrap;
     }
     .saveButton {
     	border: solid thin #686;
@@ -69,7 +70,7 @@
       font-weight: bold;
     }
     .showPasswordButton {
-    	background: #FFF 0px 50% no-repeat url('images/eye.png');
+    	background: #FFF 0px 20% no-repeat url('images/eye.png');
     	border: none;
     	width: 22px;
     }
@@ -131,6 +132,11 @@
             </g:CheckBox>
             <g:CheckBox ui:field='isAdminCheckBox' checked='false' addStyleNames='{style.checkBox}'>
               Make Admin
+            </g:CheckBox>
+          </g:HTMLPanel>
+          <g:HTMLPanel>
+            <g:CheckBox ui:field='isNewAccountCheckBox' checked='true' addStyleNames='{style.checkBox}'>
+              Require password change on first login
             </g:CheckBox>
           </g:HTMLPanel>
           <g:HTMLPanel addStyleNames='{style.buttonPanel}'>

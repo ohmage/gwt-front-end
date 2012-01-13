@@ -177,7 +177,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     
     // enable stopwatch for debug mode. (all stopwatch methods are no-ops otherwise)
     //if (AwConstants.status.getStatus().equals(Status.DEBUG)) StopWatch.enable();
-    StopWatch.enable();
+    //StopWatch.enable();
     
     if (loginManager.isCurrentlyLoggedIn()) {
       

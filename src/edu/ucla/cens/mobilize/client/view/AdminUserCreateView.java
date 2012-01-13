@@ -56,6 +56,7 @@ public class AdminUserCreateView extends Composite {
   @UiField CheckBox isEnabledCheckBox;
   @UiField CheckBox canCreateCampaignsCheckBox;
   @UiField CheckBox isAdminCheckBox;
+  @UiField CheckBox isNewAccountCheckBox;
   @UiField Button saveButton;
   @UiField Button cancelButton;
   
@@ -193,6 +194,10 @@ public class AdminUserCreateView extends Composite {
   
   public boolean getAdminFlag() {
     return this.isAdminCheckBox.getValue();
+  }
+  
+  public boolean getNewAccountFlag() {
+    return this.isNewAccountCheckBox.getValue();
   }
   
   // Methods for marking form fields invalid
