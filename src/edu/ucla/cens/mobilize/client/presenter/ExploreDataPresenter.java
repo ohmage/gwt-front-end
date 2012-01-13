@@ -414,19 +414,28 @@ public class ExploreDataPresenter implements Presenter {
         case SURVEY_RESPONSE_COUNT:
         case SURVEY_RESPONSES_PRIVACY_STATE:
         case SURVEY_RESPONSES_PRIVACY_STATE_TIME:
+          view.setCampaignDropDownEnabled(true);
+          view.setParticipantDropDownEnabled(false);
+          view.setPromptXDropDownEnabled(false);
+          view.setPromptYDropDownEnabled(false);
+          view.setDateRangeEnabled(true);
+          view.setExportButtonEnabled(true);
+          break;
         case LEADER_BOARD:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
           view.setDateRangeEnabled(false);
+          view.setExportButtonEnabled(true);
           break;
         case USER_TIMESERIES:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(true);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(false);
-          view.setDateRangeEnabled(false);
+          view.setDateRangeEnabled(true);
+          view.setExportButtonEnabled(true);
           break;
         case PROMPT_TIMESERIES:
         case PROMPT_DISTRIBUTION:
@@ -434,7 +443,8 @@ public class ExploreDataPresenter implements Presenter {
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(false);
-          view.setDateRangeEnabled(false);
+          view.setDateRangeEnabled(true);
+          view.setExportButtonEnabled(true);
           break;
         case SCATTER_PLOT:
         case DENSITY_PLOT:
@@ -442,7 +452,8 @@ public class ExploreDataPresenter implements Presenter {
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(true);
-          view.setDateRangeEnabled(false);
+          view.setDateRangeEnabled(true);
+          view.setExportButtonEnabled(true);
           break;
         case MAP:
           view.setCampaignDropDownEnabled(true);
@@ -450,21 +461,24 @@ public class ExploreDataPresenter implements Presenter {
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
           view.setDateRangeEnabled(true);
+          view.setExportButtonEnabled(false);
           break;
         case MOBILITY_MAP:
-        	view.setCampaignDropDownEnabled(false);
-            view.setParticipantDropDownEnabled(false);
-            view.setPromptXDropDownEnabled(false);
-            view.setPromptYDropDownEnabled(false);
-            view.setStartDateRangeEnabled(true);
-            view.setEndDateRangeEnabled(false);
-        	break;
+          view.setCampaignDropDownEnabled(false);
+          view.setParticipantDropDownEnabled(false);
+          view.setPromptXDropDownEnabled(false);
+          view.setPromptYDropDownEnabled(false);
+          view.setStartDateRangeEnabled(true);
+          view.setEndDateRangeEnabled(false);
+          view.setExportButtonEnabled(false);
+          break;
         case MOBILITY_GRAPH:
           view.setCampaignDropDownEnabled(false);
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
           view.setDateRangeEnabled(true);
+          view.setExportButtonEnabled(false);
           break;
         default:
           break;
@@ -583,8 +597,11 @@ public class ExploreDataPresenter implements Presenter {
     final String participantId = view.getSelectedParticipant();
     final String promptX = view.getSelectedPromptX();
     final String promptY = view.getSelectedPromptY();
-    final int width = view.getPlotPanelWidth();
-    final int height = view.getPlotPanelHeight();
+    final int px_margin = 5; //for reducing pixel width/height to avoid scrollbars on browsers with thicker chromes
+    final int width = view.getPlotPanelWidth() - px_margin;
+    final int height = view.getPlotPanelHeight() - px_margin;
+    final Date startDate = view.getFromDate();
+    final Date endDate = view.getToDate();
     
     // mobilize only shows shared responses for most plots but some installations 
     // may want to include private ones.
@@ -600,6 +617,8 @@ public class ExploreDataPresenter implements Presenter {
                                                  participantId,
                                                  promptX,
                                                  promptY,
+                                                 startDate,
+                                                 endDate,
                                                  includePrivateResponses);
     _logger.fine("Displaying plot url: " + url);
     view.setPlotUrl(url, new ErrorHandler() {
@@ -607,7 +626,7 @@ public class ExploreDataPresenter implements Presenter {
       public void onError(ErrorEvent event) {
         // if the image doesn't load, make an ajax call with the same params to retrieve the error message
         dataService.fetchVisualizationError(plotType, width, height, campaignId, 
-            participantId, promptX, promptY, includePrivateResponses,
+            participantId, promptX, promptY, startDate, endDate, includePrivateResponses,
           new AsyncCallback<String>() {
             @Override
             public void onFailure(Throwable caught) {

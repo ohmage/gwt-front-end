@@ -380,7 +380,9 @@ public interface DataService {
                              String campaignId, 
                              String participantId, 
                              String promptX, 
-                             String promptY,
+                             String promptY, 
+                             Date startDate, 
+                             Date endDate, 
                              boolean includePrivateResponses);
   
   /**
@@ -403,6 +405,8 @@ public interface DataService {
                                String participantId, 
                                String promptX, 
                                String promptY,
+                               Date startDate, 
+                               Date endDate, 
                                boolean includePrivateResponses,
                                AsyncCallback<String> callback); 
  
