@@ -21,7 +21,6 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -46,6 +45,7 @@ import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisplayWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetBasic;
+import edu.ucla.cens.mobilize.client.ui.AwSimplePager;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 import edu.ucla.cens.mobilize.client.utils.StopWatch;
@@ -67,7 +67,6 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   @UiField HTMLPanel editResponsesMenuItem; // used for showing/hiding
   @UiField Anchor viewLinkEdit;
   @UiField Anchor viewLinkBrowse;
-  @UiField(provided=true) SimplePager pager;
   @UiField MenuItem resultsPerPage10MenuItem;
   @UiField MenuItem resultsPerPage50MenuItem;
   @UiField MenuItem resultsPerPage100MenuItem;
@@ -104,6 +103,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   @UiField Anchor collapseLinkBottom;
   @UiField HTMLPanel buttonPanelTop;
   @UiField HTMLPanel buttonPanelBottom;
+  @UiField(provided=true) AwSimplePager pager;
   
   ResponseView.Presenter presenter;
   Privacy selectedPrivacy = Privacy.UNDEFINED;
@@ -118,8 +118,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   public ResponseViewImpl() {
     // instantiate pager here so instructor params can be passed
     SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class); 
-    pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
-    
+    pager = new AwSimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
     initWidget(uiBinder.createAndBindUi(this));
     initComponents();
     setEventHandlers();
