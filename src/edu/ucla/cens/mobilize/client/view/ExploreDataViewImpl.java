@@ -17,6 +17,10 @@ import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -243,6 +247,35 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     geographic.addItem(googleMap);
     mobility.addItem(mobilityMap);
     mobility.addItem(mobilityGraph);
+    
+    // add expand/fold click handler for tree's categories
+    plotTypeTree.addSelectionHandler(new SelectionHandler<TreeItem>() {
+    	int comingFromSetState = 0;
+    	boolean prevOpenState = true;
+    	
+		@Override
+		public void onSelection(SelectionEvent<TreeItem> event) {
+			TreeItem item = event.getSelectedItem();
+			
+			//this expands/collapses the category on click
+			//NOTE: this code is a workaround due to a bug in GWT's TreeItem
+			if (item.getChildCount() == 0) {
+				// Do nothing
+			} else {
+				if (comingFromSetState == 1 && prevOpenState) {
+					comingFromSetState++;
+				}
+				if (comingFromSetState != 2) {
+					comingFromSetState++;
+					item.setState(!item.getState());
+					prevOpenState = !item.getState();
+				} else {
+					comingFromSetState = 0;
+					prevOpenState = true;
+				}
+			}
+		}
+    });
   }
 
   @Override
