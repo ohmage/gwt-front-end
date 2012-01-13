@@ -51,7 +51,6 @@
       border: solid 1px red;
     }
     .invalidMsg {
-      /* todo: put error icon in background */
       color: maroon;
     }
     .row {
@@ -133,6 +132,12 @@
     	color: #AAA;
     	text-decoration: line-through;
     }
+    .warning {
+    	color: maroon;
+    	padding-left: 5px;
+   	background-color: #FFFFE0;
+	   border: solid 1px #F8CF3E;
+    }
   </ui:style>
   <g:DockLayoutPanel unit='PX' ui:field='mainLayoutPanel'>
     <g:west size='150'>
@@ -190,6 +195,9 @@
 		          <g:InlineLabel addStyleNames='{style.bold}'>Members </g:InlineLabel>
 		          <g:InlineLabel addStyleNames='{style.bold}' ui:field='memberCount'/>
 		          <g:InlineLabel addStyleNames='{style.bold}'>:</g:InlineLabel>
+		          <g:InlineLabel addStyleNames='{style.warning}' ui:field='membersNotSavedWarning'>
+		            Member changes are not applied until you click Save.
+		          </g:InlineLabel>
 	          </g:HTMLPanel>
 	          <g:HTMLPanel addStyleNames='{style.dataList}'>
 	            <g:HTMLPanel addStyleNames='{style.memberListButtonContainer}'>

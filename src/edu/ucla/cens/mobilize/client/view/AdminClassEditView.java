@@ -78,6 +78,7 @@ public class AdminClassEditView extends Composite {
   @UiField Grid memberListGrid;
   @UiField Button addMembersButton;
   @UiField InlineLabel memberCount;
+  @UiField InlineLabel membersNotSavedWarning;
   @UiField Button saveButton;
   @UiField Button cancelButton;
   @UiField Button deleteClassButton;
@@ -115,6 +116,10 @@ public class AdminClassEditView extends Composite {
       }
     });
   }
+
+  private void showMembersNotSavedWarning() {
+    this.membersNotSavedWarning.setVisible(true);
+  }
   
   public void selectAllMembers() {
     for (int row = 0; row < getMemberCount(); row++) {
@@ -136,6 +141,7 @@ public class AdminClassEditView extends Composite {
   }
   
   public void markSelectedMembersPrivileged() {
+    this.showMembersNotSavedWarning();
     int memberCount = this.memberListGrid.getRowCount();
     for (int row = 0; row < memberCount; row++) {
       if (memberIsSelected(row)) {
@@ -145,6 +151,7 @@ public class AdminClassEditView extends Composite {
   }
   
   public void markSelectedMembersRestricted() {
+    this.showMembersNotSavedWarning();
     int memberCount = this.memberListGrid.getRowCount();
     for (int row = 0; row < memberCount; row++) {
       if (memberIsSelected(row)) {
@@ -154,6 +161,7 @@ public class AdminClassEditView extends Composite {
   }
   
   public void markSelectedMembersRemoved() {
+    this.showMembersNotSavedWarning();
     int memberCount = this.memberListGrid.getRowCount();
     for (int row = 0; row < memberCount; row++) {
       if (memberIsSelected(row)) {
@@ -190,7 +198,7 @@ public class AdminClassEditView extends Composite {
   
   private void updateMemberListHeight() {
     int centerHeight = centerContainer.getElement().getClientHeight();
-    int memberListContainerHeight = Math.max(centerHeight - 190, 50);
+    int memberListContainerHeight = Math.max(centerHeight - 215, 50);
     this.memberListGridContainer.setHeight(memberListContainerHeight + "px");
   }
   
@@ -265,8 +273,10 @@ public class AdminClassEditView extends Composite {
       
       if (role.equals(RoleClass.PRIVILEGED)) {
         markMemberPrivileged(row);
-      } else {
+      } else if (role.equals(RoleClass.RESTRICTED)) {
         markMemberRestricted(row);
+      } else if (role.equals(RoleClass.REMOVED)) {
+        markMemberRemoved(row);
       }
     }
     this.memberCount.setText("(" + Integer.toString(memberCount) + ")" );
@@ -335,6 +345,7 @@ public class AdminClassEditView extends Composite {
     this.classNameTextBox.setText("");
     this.descriptionTextArea.setText("");
     clearMemberList();
+    this.membersNotSavedWarning.setVisible(false);
   }
   
   public void showFieldsForCreate() {
@@ -369,7 +380,7 @@ public class AdminClassEditView extends Composite {
    * @param usernames List of usernames that will appear in the add new
    * members popup
    */
-  public void showAddMembersPopup(List<String> usernames) {    
+  public void showAddMembersPopup(List<String> usernames) {
     this.addMembersWidget.clearSearchString();
     this.addMembersWidget.setUserList(usernames);
     this.addMembersDialog.center();
@@ -379,6 +390,7 @@ public class AdminClassEditView extends Composite {
     if (this.addMembersDialog != null) {
       this.addMembersDialog.hide();
     }
+    this.showMembersNotSavedWarning();
   }
   
   public HasValueChangeHandlers<Boolean> getSelectAllMembersCheckBox() {
