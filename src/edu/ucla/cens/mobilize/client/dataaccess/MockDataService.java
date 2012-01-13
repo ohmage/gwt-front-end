@@ -484,14 +484,14 @@ public class MockDataService implements DataService {
 
   @Override
   public String getVisualizationUrl(PlotType plotType, int width, int height, String campaignId,
-      String participantId, String promptX, String promptY, boolean sharedResponsesOnly) {
+      String participantId, String promptX, String promptY, Date startDate, Date endDate, boolean sharedResponsesOnly) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public void fetchVisualizationError(PlotType plotType, int width, int height,
-      String campaignId, String participantId, String promptX, String promptY,
+      String campaignId, String participantId, String promptX, String promptY, Date startDate, Date endDate, 
       boolean sharedResponsesOnly, AsyncCallback<String> callback) {
     // TODO Auto-generated method stub
     

@@ -937,7 +937,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		// first divide up the mdata list by day (warning: assumes MobilityChunkedInfo is sorted)
 		int num_days_span = getMobilityDaysSpan(mdata);
 		if (num_days_span < 1) {
-			ErrorDialog.show("There was a problem rendering your data.");
+			ErrorDialog.show("There was no mobility data found for the selected date range.");
 			return;
 		}
 		List<List<MobilityChunkedInfo>> split_data = splitMobilityChunkedByDays(mdata);
