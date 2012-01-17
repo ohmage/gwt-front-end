@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to='mobilizeweb'>
-  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <!-- Inherit the core Web Toolkit stuff -->
   <inherits name='com.google.gwt.user.User'/>
   <inherits name='com.google.gwt.maps.Maps' />
   <inherits name='com.google.gwt.visualization.Visualization' />
+  
+  <!-- Setting English locale so DatePicker starts on Sunday -->
+  <inherits name="com.google.gwt.i18n.I18N"/>
+  <extend-property name='locale' values='en'/>
+  <set-property-fallback name='locale' value='en'/> 
+  <set-property name='locale' value='en'/>
   
   <!-- GWT logging -->
   <inherits name='com.google.gwt.logging.Logging' />    
