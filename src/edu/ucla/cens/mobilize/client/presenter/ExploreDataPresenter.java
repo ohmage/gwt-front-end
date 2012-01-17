@@ -151,7 +151,7 @@ public class ExploreDataPresenter implements Presenter {
       // fetch data for mobility graph
       fetchMobilityDataAndShowOnGraph(startDate, endDate);
     } else if (PlotType.LEADER_BOARD.equals(selectedPlotType)) {
-      fetchAndShowLeaderBoard(selectedCampaign);
+      fetchAndShowLeaderBoard(selectedCampaign, startDate, endDate);
     } else {
       showPlot();
     }
@@ -281,7 +281,7 @@ public class ExploreDataPresenter implements Presenter {
 	}
 
 
-  void fetchAndShowLeaderBoard(final String campaignId) {
+  void fetchAndShowLeaderBoard(final String campaignId, Date startDate, Date endDate) {
     // fetch responses and use them to generate counts
     SurveyResponseReadParams params = new SurveyResponseReadParams();
     params.campaignUrn = campaignId;
@@ -289,6 +289,10 @@ public class ExploreDataPresenter implements Presenter {
     params.columnList_opt.add("urn:ohmage:survey:privacy_state");
     params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
     params.userList.add(AwConstants.specialAllValuesToken);
+    if (startDate != null && endDate != null) {
+	    params.startDate_opt = (Date)startDate.clone();
+	    params.endDate_opt = (Date)endDate.clone();
+    }
         
     dataService.fetchSurveyResponses(params, new AsyncCallback<List<SurveyResponse>>() {
       @Override
@@ -414,19 +418,12 @@ public class ExploreDataPresenter implements Presenter {
         case SURVEY_RESPONSE_COUNT:
         case SURVEY_RESPONSES_PRIVACY_STATE:
         case SURVEY_RESPONSES_PRIVACY_STATE_TIME:
-          view.setCampaignDropDownEnabled(true);
-          view.setParticipantDropDownEnabled(false);
-          view.setPromptXDropDownEnabled(false);
-          view.setPromptYDropDownEnabled(false);
-          view.setDateRangeEnabled(true);
-          view.setExportButtonEnabled(true);
-          break;
         case LEADER_BOARD:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
-          view.setDateRangeEnabled(false);
+          view.setDateRangeEnabled(true);
           view.setExportButtonEnabled(true);
           break;
         case USER_TIMESERIES:

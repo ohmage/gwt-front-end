@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.media.j3d.View;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ErrorEvent;
@@ -21,6 +23,8 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -162,9 +166,30 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     requiredFields = Arrays.asList(campaignListBox, participantListBox, promptXListBox, promptYListBox);
     
     // set up date pickers
-    DateBox.Format fmt = new DateBox.DefaultFormat(DateUtils.getDateBoxDisplayFormat());
+    final DateBox.Format fmt = new DateBox.DefaultFormat(DateUtils.getDateBoxDisplayFormat());
+    
     dateStartBox.setFormat(fmt);
     dateEndBox.setFormat(fmt);
+    dateStartBox.addValueChangeHandler(new ValueChangeHandler<Date>() {
+		@Override
+		public void onValueChange(ValueChangeEvent<Date> event) {
+			Date s_new = event.getValue();
+			Date e_old = getToDate();
+			if (e_old == null || s_new.after(e_old)) {
+				selectToDate(s_new);
+			}
+		}
+    });
+    dateEndBox.addValueChangeHandler(new ValueChangeHandler<Date>() {
+		@Override
+		public void onValueChange(ValueChangeEvent<Date> event) {
+			Date e_new = event.getValue();
+			Date s_old = getFromDate();
+			if (s_old == null || e_new.before(s_old)) {
+				selectFromDate(e_new);
+			}
+		}
+    });
     
     // set up image to use as wait indicator
     spinner = new Image();
@@ -548,7 +573,6 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	  dateEndBox.setEnabled(isEnabled);
 	  setRequiredFlag(dateEndBox, isEnabled);
 	  if (isEnabled == false) {
-		  dateEndBox.setValue(null);
 		  startDateLabel.setText("Date:");			//01/06/2012: temporary fix. explore data controls will be overhauled in next release
 	  } else {
 		  startDateLabel.setText("Start Date:");	//01/06/2012: see note above
