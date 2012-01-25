@@ -235,13 +235,13 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     TreeItem leaderBoard = getTreeItem("Leader Board", PlotType.LEADER_BOARD, style.treeItemPlotType());
     
     // univariate 
-    TreeItem univariate = getTreeItem("Univariate", style.treeItemCategory());
+    TreeItem univariate = getTreeItem("Single Variable", style.treeItemCategory());
     TreeItem userTimeseries = getTreeItem("User Timeseries", PlotType.USER_TIMESERIES, style.treeItemTimeseries());
     TreeItem promptTimeseries = getTreeItem("Prompt Timeseries", PlotType.PROMPT_TIMESERIES, style.treeItemTimeseries());
     TreeItem promptDistribution = getTreeItem("Prompt Distribution", PlotType.PROMPT_DISTRIBUTION, style.treeItemHist());
     
     // multivariate 
-    TreeItem multivariate = getTreeItem("Multivariate", style.treeItemCategory()); // category
+    TreeItem multivariate = getTreeItem("Multiple Variables", style.treeItemCategory()); // category
     TreeItem scatterplot = getTreeItem("Scatterplot", PlotType.SCATTER_PLOT, style.treeItemTable());
     TreeItem density = getTreeItem("2D Density Plot", PlotType.DENSITY_PLOT, style.treeItemTable());
     
