@@ -6,7 +6,7 @@
   <property name="libdir" value="lib" />
 
   <!-- Configure path to GWT SDK -->
-  <property name="gwt.sdk" location="/Applications/eclipse/plugins/com.google.gwt.eclipse.sdkbundle.2.1.1_2.1.1.v201012170127/gwt-2.1.1" />
+  <!-- property name="gwt.sdk" location="/Applications/eclipse/plugins/com.google.gwt.eclipse.sdkbundle.2.1.1_2.1.1.v201012170127/gwt-2.1.1" -->
 
   <path id="project.class.path">
     <pathelement location="war/WEB-INF/classes"/>
@@ -18,8 +18,6 @@
 
   <target name="libs" description="Copy libs to WEB-INF/lib">
     <mkdir dir="war/WEB-INF/lib" />
-    <copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
-    <copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
     <!-- Add any additional server libs that need to be copied -->
     <copy todir="war/WEB-INF/lib" file="${libdir}/gwt-google-maps-v3.jar" />
     <copy todir="war/WEB-INF/lib" file="${libdir}/totoe-0.2.2.jar" />
