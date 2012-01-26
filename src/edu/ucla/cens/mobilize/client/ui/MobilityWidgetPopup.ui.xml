@@ -10,7 +10,7 @@
 		.container {
 			display: block;
 			font-size: 10px;
-			/* overflow-y: auto; */
+			overflow-y: auto;
 			width: 300px;
 		}
 		.modesContainer {
@@ -108,14 +108,6 @@
 			<tr>
 				<td><g:InlineLabel addStyleNames='{style.label}'>Coordinates:</g:InlineLabel></td>
 				<td><g:InlineLabel addStyleNames='{style.value}' ui:field='locCoords' /></td>
-			</tr>
-			<tr>
-				<td><g:InlineLabel addStyleNames='{style.label}'>Provider:</g:InlineLabel></td>
-				<td><g:InlineLabel addStyleNames='{style.value}' ui:field='locProvider' /></td>
-			</tr>
-			<tr>
-				<td><g:InlineLabel addStyleNames='{style.label}'>GPS Timestamp: </g:InlineLabel></td>
-				<td><g:InlineLabel addStyleNames='{style.value}' ui:field='locTimestamp' /></td>
 			</tr>
 			<tr>
 				<td><g:InlineLabel addStyleNames='{style.label}'>Accuracy: </g:InlineLabel></td>

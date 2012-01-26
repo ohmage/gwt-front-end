@@ -80,6 +80,7 @@ import edu.ucla.cens.mobilize.client.ui.MobilityWidgetPopup;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
+import edu.ucla.cens.mobilize.client.utils.MarkerClusterer;
 
 // viz
 import com.google.gwt.visualization.client.AbstractDataTable;
@@ -149,6 +150,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   private MapWidget mapWidget;
   private final InfoWindow infoWindow;
   private List<HasMapsEventListener> clickHandlers;
+  private MarkerClusterer markerClusterer;
   private Map<Marker, SurveyResponse> markerToResponseMap = new HashMap<Marker, SurveyResponse>();
   private Map<Marker, MobilityChunkedInfo> markerToMobilityChunkedMap = new HashMap<Marker, MobilityChunkedInfo>();
   private Map<Marker, MobilityInfo> markerToMobilityMap = new HashMap<Marker, MobilityInfo>();
@@ -349,7 +351,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     
     // add a multi-user option
     if (this.getSelectedPlotType() == PlotType.MAP)
-    	participantListBox.addItem("(all users)", "");
+    	participantListBox.addItem("All Users", "");
     
     for (String username : participants) {
       participantListBox.addItem(username, username);
@@ -359,13 +361,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
   @Override
   public void setSelectedParticipant(String participantUsername) {
-    participantListBox.setSelectedIndex(-1);
     for (int i = 0; i < participantListBox.getItemCount(); i++) {
       if (participantListBox.getValue(i).equals(participantUsername)) {
         participantListBox.setSelectedIndex(i);
-        break;
+        return;
       }
-    }    
+    }
+    
+    // if not found, select first item
+    participantListBox.setSelectedIndex(0);
   }
 
 
@@ -743,6 +747,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     	return;
     }
     
+    List<Marker> markers = new ArrayList<Marker>();	// markers to add to MarkerClusterer
+    
     LatLngBounds bounds = LatLngBounds.newInstance();    
     // Add new data points 
     for (SurveyResponse response : responses) {
@@ -751,7 +757,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
         bounds.extend(location);
         final Marker marker = Marker.newInstance();
         marker.setPosition(location);
-        marker.setMap(mapWidget.getMap());
+        //marker.setMap(mapWidget.getMap());	//*** old ***
+        markers.add(marker);	// instead of rendering the marker directly, add it to our list
         markerToResponseMap.put(marker, response);
         
         Event.addListener(marker, "click", new EventCallback() {
@@ -763,6 +770,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
       }
     }    
 
+    // pass markers list to MarkerClusterer for clustered rendering
+    markerClusterer = MarkerClusterer.newInstance(mapWidget.getMap(), markers.toArray(new Marker[markers.size()]));
+    
     // Attach map before calculating zoom level or it might be incorrectly set to 0 (?)
     if (!mapWidget.isAttached()) plotContainer.add(mapWidget);
     
@@ -796,7 +806,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		
 		// Show error message if user has no mobility data
 		if (mdata == null || mdata.isEmpty()) {
-			ErrorDialog.show("Sorry, we couldn't find any mobility data for the selected date range.");
+			ErrorDialog.show("Sorry, we couldn't find any mobility data for the selected date(s).");
 			return;
 		}
 		boolean hasPlottableData = false;
@@ -807,11 +817,13 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			}
 		}
 		if (hasPlottableData == false) {
-			ErrorDialog.show("Sorry, we couldn't find any mobility data with geolocations for the selected date range.");
+			ErrorDialog.show("Sorry, we couldn't find any mobility data with geolocations for the selected date(s).");
 			return;
 		}
 		
-		LatLngBounds bounds = LatLngBounds.newInstance();    
+		List<Marker> markers = new ArrayList<Marker>();	// markers to add to MarkerClusterer
+		LatLngBounds bounds = LatLngBounds.newInstance();
+		
 		// Add new data points 
 		for (MobilityInfo m : mdata) {
 			if (m.getLocationStatus() != LocationStatus.UNAVAILABLE) {
@@ -820,7 +832,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 				
 				final Marker marker = Marker.newInstance();
 				marker.setPosition(location);
-				marker.setMap(mapWidget.getMap());
+				//marker.setMap(mapWidget.getMap());	//*** old ***
+		        markers.add(marker);	// instead of rendering the marker directly, add it to our list
 				
 				// Select mobility mode for icon
 				MobilityMode mode = m.getMode();
@@ -856,6 +869,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 				});
 			}
 		}
+		
+		// pass markers list to MarkerClusterer for clustered rendering
+		markerClusterer = MarkerClusterer.newInstance(mapWidget.getMap(), markers.toArray(new Marker[markers.size()]));
 		
 		// Attach map before calculating zoom level or it might be incorrectly set to 0 (?)
 		if (!mapWidget.isAttached()) plotContainer.add(mapWidget);
@@ -1313,6 +1329,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
    * Clears the markers one by one from the map.
    */
   private void clearOverlays() {
+	if (markerClusterer != null) {
+		markerClusterer.clearMarkers();
+	}
+	
     // Clear response map markers
     for (final Marker marker: markerToResponseMap.keySet()) {
       marker.setMap(null); // Remove from map
