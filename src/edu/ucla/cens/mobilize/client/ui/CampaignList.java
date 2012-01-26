@@ -151,10 +151,15 @@ public class CampaignList extends Composite {
     this.goButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        if (getSelectedStartDate().after(getSelectedEndDate()))
-          ErrorDialog.show("Invalid date range", "Starting date must be before or equal to the end date.");
-        else
-          fireHistoryTokenToMatchFilterValues();
+    	  Date s = getSelectedStartDate();
+    	  Date e = getSelectedEndDate();
+    	  
+    	  if (s != null && e != null && s.after(e))
+    		  ErrorDialog.show("Invalid date range", "Starting date must be before or equal to the end date.");
+    	  else if ((s != null && e == null) || (s == null && e != null))
+    		  ErrorDialog.show("Invalid date range", "You must provide both a start and end date, or leave both fields empty");
+    	  else
+    		  fireHistoryTokenToMatchFilterValues();
       }
     });
   }
