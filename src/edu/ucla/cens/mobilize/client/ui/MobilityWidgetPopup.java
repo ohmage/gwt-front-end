@@ -51,8 +51,8 @@ public class MobilityWidgetPopup extends Composite {
 	@UiField InlineLabel timestamp;
 	@UiField InlineLabel locStatus;
 	@UiField InlineLabel locCoords;
-	@UiField InlineLabel locProvider;
-	@UiField InlineLabel locTimestamp;
+	//@UiField InlineLabel locProvider;
+	//@UiField InlineLabel locTimestamp;
 	@UiField InlineLabel locAccuracy;
 
 	@UiField MobilityWidgetPopupStyle style;
@@ -93,8 +93,8 @@ public class MobilityWidgetPopup extends Composite {
 			String latString = locationFormat.format(mob.getLocationLat());
 			String longString = locationFormat.format(mob.getLocationLong());
 			locCoords.setText(latString + ", " + longString);
-			locProvider.setText(mob.getLocationProvider());
-			locTimestamp.setText(mob.getLocationTimestamp().toString());
+			//locProvider.setText(mob.getLocationProvider());
+			//locTimestamp.setText(mob.getLocationTimestamp().toString());
 			locAccuracy.setText(Float.toString(mob.getLocationAccuracy()) + " meters");
 		}
 	}
