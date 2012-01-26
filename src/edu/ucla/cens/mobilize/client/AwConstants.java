@@ -21,7 +21,7 @@ public class AwConstants {
     public final static String cookieAuthToken = "authToken";
     public final static String cookieUserName = "userName";
     
-    public final static String apiClientString = "gwt";
+    public final static String apiClientString = "ohmage-gwt";
     
     // special token that tells api to return all values, useful for api params
     // that don't default to all when omitted
