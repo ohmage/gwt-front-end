@@ -277,14 +277,17 @@ public class MainApp implements EntryPoint, HistoryListener {
       public void onSuccess(AppConfig appConfig) {
         Window.setTitle(AppConfig.getAppDisplayName());
         String appName = AppConfig.getAppName();
-        if (appName.equalsIgnoreCase("mobilize")) { // mobilize has its own login page
+        if (appName.equalsIgnoreCase("mobilize")) { // show "mobilize" login page
           loginView = new LoginViewMobilizeImpl();
         }
-        else if (appName.equalsIgnoreCase("ohmage")) { // ohmage has its own login page
+        else if (appName.equalsIgnoreCase("ohmage")) { // show "ohmage" login page
           loginView = new LoginViewOhmageImpl();
         }
-        else  { // anything other than mobilize uses andwellness login page
+        else if (appName.equalsIgnoreCase("andwellness")) { // show "andwellness" login page
           loginView = new LoginViewAndWellnessImpl();
+        }
+        else { // DEFAULT: show "ohmage" login page
+          loginView = new LoginViewOhmageImpl();
         } 
         loginPresenter = new LoginPresenter(awDataService, 
                                             eventBus, 
