@@ -188,12 +188,12 @@
     </g:HTMLPanel>
     
     <g:HTMLPanel addStyleNames='{style.footer}'>
-	    <span class='{style.footerCopyright}'>Copyright &#169; 2011 CENS</span>
+      <span class='{style.footerCopyright}'>Copyright &#169; 2012 CENS</span>
       <span class='{style.footerSpan}'><a href='#'>Help</a></span>
       <span>|</span>
       <span class='{style.footerSpan}'><a href='#'>Contact Us</a></span>
-      
-      
+      <span>|</span>
+      <span class='{style.footerSpan}'>Powered by ohmage</span>
     </g:HTMLPanel>
   </g:HTMLPanel>
   
