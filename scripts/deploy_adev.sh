@@ -20,7 +20,7 @@ DATE_STRING=`date +%m-%d-%y`
 REMOTE_FILENAME=MobilizeWeb.war.$DATE_STRING
 
 # which servers the war should be deployed to
-SERVERS=(webadmin@dev1.andwellness.org webadmin@dev.mobilizingcs.org webadmin@dev1.mobilizingcs.org)
+SERVERS=(webadmin@dev.andwellness.org)
 
 # for each server:
 # - copy war into temp dir (which must already exist) 
@@ -37,9 +37,9 @@ do
   echo "stopping app server on $SERVER";
   echo `ssh $SERVER "/opt/aw/as/bin/asd.sh stop"`
   echo "removing old MobilizeWeb directory"
-  echo `ssh $SERVER "rm -rf /opt/aw/as/webapps/MobilizeWeb"`
-  echo "copying $SERVER:$REMOTE_FILENAME to $SERVER:/opt/aw/as/webapps/MobilizeWeb.war" 
-  echo `ssh $SERVER "cp ~/temp/$REMOTE_FILENAME /opt/aw/as/webapps/MobilizeWeb.war"`
+  echo `ssh $SERVER "rm -rf /opt/aw/as/webapps/ROOT"`
+  echo "copying $SERVER:$REMOTE_FILENAME to $SERVER:/opt/aw/as/webapps/ROOT.war" 
+  echo `ssh $SERVER "cp ~/temp/$REMOTE_FILENAME /opt/aw/as/webapps/ROOT.war"`
   echo "restarting app server on $SERVER"
   echo `ssh $SERVER "/opt/aw/as/bin/asd.sh start"`
   echo "done deploying $REMOTE_FILENAME to $SERVER"
