@@ -59,6 +59,76 @@ public class MarkerClusterer extends JavaScriptObject {
   	};
     return new $wnd.MarkerClusterer(map, markers, mcOptions);
   }-*/;
+  
+  /**
+   * Constructs a new MarkerClusterer to cluster markers on the map.
+   * 
+   * @param map The map widget to manage.
+   * @param markers The markers to add.
+   * @param toggleClusterColor True for red cluster color, False for gray cluster color.
+   * @return A MarkerClusterer object.
+   */
+  public static native MarkerClusterer newInstance(Map map, Marker[] markers, boolean toggleClusterColor) /*-{
+    var markerStyles = [[{
+        url: 'images/markerclusterer_icons/red1.png',
+        height: 45,
+        width: 46,
+        anchor: [17,0],
+        textColor: '#000000',
+        textSize: 10
+      }, {
+        url: 'images/markerclusterer_icons/red2.png',
+        height: 55,
+        width: 56,
+        anchor: [22,0],
+        textColor: '#000000',
+        textSize: 11
+      }, {
+        url: 'images/markerclusterer_icons/red3.png',
+        height: 65,
+        width: 66,
+        anchor: [26,0],
+        textColor: '#000000',
+        textSize: 12
+      }],
+      [{
+        url: 'images/markerclusterer_icons/neutral46.png',
+        height: 45,
+        width: 46,
+        anchor: [17,0],
+        textColor: '#000000',
+        textSize: 10
+      }, {
+        url: 'images/markerclusterer_icons/neutral56.png',
+        height: 55,
+        width: 56,
+        anchor: [22,0],
+        textColor: '#000000',
+        textSize: 11
+      }, {
+        url: 'images/markerclusterer_icons/neutral66.png',
+        height: 65,
+        width: 66,
+        anchor: [26,0],
+        textColor: '#000000',
+        textSize: 12
+      }]];
+    
+    if (toggleClusterColor == true)
+    	var markerStyle = markerStyles[0];
+	else
+		var markerStyle = markerStyles[1];
+    
+  	var mcOptions = {
+  		averageCenter: true,
+  		gridSize: 30,
+  		maxZoom: 14,
+  		minimumClusterSize: 6,
+  		title: 'Click to expand this marker group',
+  		styles: markerStyle
+  	};
+    return new $wnd.MarkerClusterer(map, markers, mcOptions);
+  }-*/;
 
   protected MarkerClusterer() { }
 

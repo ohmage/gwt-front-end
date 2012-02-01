@@ -761,7 +761,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     }    
 
     // pass markers list to MarkerClusterer for clustered rendering
-    markerClusterer = MarkerClusterer.newInstance(mapWidget.getMap(), markers.toArray(new Marker[markers.size()]));
+    markerClusterer = MarkerClusterer.newInstance(mapWidget.getMap(), markers.toArray(new Marker[markers.size()]), true);
     
     // Attach map before calculating zoom level or it might be incorrectly set to 0 (?)
     if (!mapWidget.isAttached()) plotContainer.add(mapWidget);
@@ -861,7 +861,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		}
 		
 		// pass markers list to MarkerClusterer for clustered rendering
-		markerClusterer = MarkerClusterer.newInstance(mapWidget.getMap(), markers.toArray(new Marker[markers.size()]));
+		markerClusterer = MarkerClusterer.newInstance(mapWidget.getMap(), markers.toArray(new Marker[markers.size()]), false);
 		
 		// Attach map before calculating zoom level or it might be incorrectly set to 0 (?)
 		if (!mapWidget.isAttached()) plotContainer.add(mapWidget);
