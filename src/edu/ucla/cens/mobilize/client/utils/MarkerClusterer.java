@@ -124,8 +124,8 @@ public class MarkerClusterer extends JavaScriptObject {
   	var mcOptions = {
   		averageCenter: true,
   		gridSize: 30,
-  		maxZoom: 14,
-  		minimumClusterSize: 6,
+  		maxZoom: 15,
+  		minimumClusterSize: 10,
   		title: 'Click to expand this marker cluster',
   		styles: markerStyle
   	};
@@ -177,22 +177,28 @@ public class MarkerClusterer extends JavaScriptObject {
 	          // Store infowindow as global in $wnd
 	          if (!$wnd.infowindow) {
 		          $wnd.infowindow = new $wnd.google.maps.InfoWindow();
+		          $wnd.infowindow.setOptions({ pixelOffset: new $wnd.google.maps.Size(12,-12) });
 	          }
 	          $wnd.infowindow.setContent(content); //set infowindow content to titles
 	          $wnd.infowindow.open(map, info);
 	        });
 	    
+	    // Hide/reset infowindows on mouseout, click, or zoom events
 	    $wnd.google.maps.event.addListener(markerCluster, "mouseout", function (cluster) {
 	          if ($wnd.infowindow) {
 	              $wnd.infowindow.close();
 	          }
 	        });
-	    
 	    $wnd.google.maps.event.addListener(markerCluster, "click", function (cluster) {
 	          if ($wnd.infowindow) {
 	              $wnd.infowindow.close();
 	          }
 	        });
+	    $wnd.google.maps.event.addListener(map, 'zoom_changed', function() {
+              if ($wnd.infowindow) {
+	              $wnd.infowindow.close();
+	          }
+            });
   	}
   	
     return markerCluster;
