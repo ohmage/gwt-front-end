@@ -144,8 +144,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   private Map<Marker, SurveyResponse> markerToResponseMap = new HashMap<Marker, SurveyResponse>();
   private Map<Marker, MobilityChunkedInfo> markerToMobilityChunkedMap = new HashMap<Marker, MobilityChunkedInfo>();
   private Map<Marker, MobilityInfo> markerToMobilityMap = new HashMap<Marker, MobilityInfo>();
-  private Image spinner; 
-  private Image startarrow;
+  private FlowPanel spinner; 
+  private FlowPanel startarrow;
   
   public ExploreDataViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
@@ -184,11 +184,11 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     });
     
     // set up image to use as wait indicator
-    spinner = new Image();
+    spinner = new FlowPanel();
     spinner.setStyleName(style.waiting());
     
     // set up start arrow screen
-    startarrow = new Image();
+    startarrow = new FlowPanel();
     startarrow.setStyleName(style.startarrow());
     
     // Single info window instance used by all markers
