@@ -62,6 +62,8 @@ public class MarkerClusterer extends JavaScriptObject {
   
   /**
    * Constructs a new MarkerClusterer to cluster markers on the map.
+   * Proceed with caution when modifying any javascript code here.
+   * TODO: Clean up this hacky code!
    * 
    * @param map The map widget to manage.
    * @param markers The markers to add.
@@ -124,10 +126,76 @@ public class MarkerClusterer extends JavaScriptObject {
   		gridSize: 30,
   		maxZoom: 14,
   		minimumClusterSize: 6,
-  		title: 'Click to expand this marker group',
+  		title: 'Click to expand this marker cluster',
   		styles: markerStyle
   	};
-    return new $wnd.MarkerClusterer(map, markers, mcOptions);
+  	
+  	var markerCluster = new $wnd.MarkerClusterer(map, markers, mcOptions);
+  	
+  	// only show mouseover infowindow for mobility
+  	if (toggleClusterColor == false) {
+	  	//handle mouseover event
+	  	$wnd.google.maps.event.addListener(markerCluster, "mouseover", function (cluster) {
+	  	      // Convert lat/long from cluster object to a usable MVCObject
+	          var info = new $wnd.google.maps.MVCObject;
+	          info.set('position', cluster.center_);
+	          
+	          // Get markers in the cluster
+	          var markersInCluster = cluster.getMarkers();
+	          
+	          var counts = {};
+	          for (var i=0; i < markersInCluster.length; ++i) {
+	              var key = markersInCluster[i].getTitle();
+	              if (counts[key] == undefined) {
+	                  counts[key] = 1;
+	              } else {
+	                  counts[key] += 1;
+	              }
+	          }
+	          var content = 'There are <b>' + markersInCluster.length + '</b> markers in this cluster.<br/><br/>';
+	          content += "Here's the distribution:<br/>";
+	          content += "<table cellspacing=\"10\"><tr>";
+	          for (var key in counts) {
+	              content += "<td align=\"center\">";
+	              content += "<b>" + key.toUpperCase() + "</b><br/>";
+	              
+	              switch (key.toLowerCase()) {
+	              	case 'still':  content += "<img src=\"images/mobility/m_still.png\" /><br/>"; break;
+	              	case 'walk':   content += "<img src=\"images/mobility/m_walk.png\" /><br/>"; break;
+	              	case 'run':    content += "<img src=\"images/mobility/m_run.png\" /><br/>"; break;
+	              	case 'bike':   content += "<img src=\"images/mobility/m_bike.png\" /><br/>"; break;
+	              	case 'drive':  content += "<img src=\"images/mobility/m_drive.png\" /><br/>"; break;
+	              	case 'error':  content += "<img src=\"images/mobility/m_error.png\" /><br/>"; break;
+	              	default:       break;
+	              }
+	              
+	              content += "<b>" + counts[key] + "</b>";
+	              content += "</td>";
+	          }
+	          content += "</tr></table>";
+	  
+	          // Store infowindow as global in $wnd
+	          if (!$wnd.infowindow) {
+		          $wnd.infowindow = new $wnd.google.maps.InfoWindow();
+	          }
+	          $wnd.infowindow.setContent(content); //set infowindow content to titles
+	          $wnd.infowindow.open(map, info);
+	        });
+	    
+	    $wnd.google.maps.event.addListener(markerCluster, "mouseout", function (cluster) {
+	          if ($wnd.infowindow) {
+	              $wnd.infowindow.close();
+	          }
+	        });
+	    
+	    $wnd.google.maps.event.addListener(markerCluster, "click", function (cluster) {
+	          if ($wnd.infowindow) {
+	              $wnd.infowindow.close();
+	          }
+	        });
+  	}
+  	
+    return markerCluster;
   }-*/;
 
   protected MarkerClusterer() { }

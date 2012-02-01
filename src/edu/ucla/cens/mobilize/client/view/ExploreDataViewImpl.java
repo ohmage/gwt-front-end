@@ -832,16 +832,22 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 				try {
 					MarkerImage.Builder imgBuilder;
 					if (mode == MobilityMode.STILL) {
+						marker.setTitle("still");
 						imgBuilder = new MarkerImage.Builder("images/mobility/m_still.png");
 					} else if (mode == MobilityMode.WALK) {
+						marker.setTitle("walk");
 						imgBuilder = new MarkerImage.Builder("images/mobility/m_walk.png");
 					} else if (mode == MobilityMode.RUN) {
+						marker.setTitle("run");
 						imgBuilder = new MarkerImage.Builder("images/mobility/m_run.png");
 					} else if (mode == MobilityMode.BIKE) {
+						marker.setTitle("bike");
 						imgBuilder = new MarkerImage.Builder("images/mobility/m_bike.png");
 					} else if (mode == MobilityMode.DRIVE) {
+						marker.setTitle("drive");
 						imgBuilder = new MarkerImage.Builder("images/mobility/m_drive.png");
 					} else { // "ERROR" or unknown
+						marker.setTitle("error");
 						imgBuilder = new MarkerImage.Builder("images/mobility/m_error.png");
 					}
 					marker.setIcon(imgBuilder.build());
