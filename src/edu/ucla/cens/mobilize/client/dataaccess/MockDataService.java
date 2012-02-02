@@ -637,7 +637,7 @@ public class MockDataService implements DataService {
   }
 
 	@Override
-	public void fetchMobilityData(Date single_date, AsyncCallback<List<MobilityInfo>> callback) {
+	public void fetchMobilityData(Date date, String username, AsyncCallback<List<MobilityInfo>> callback) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -645,6 +645,12 @@ public class MockDataService implements DataService {
 	@Override
 	public void fetchMobilityDataChunked(Date start_date, Date end_date,
 			AsyncCallback<List<MobilityChunkedInfo>> callback) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void fetchMobilityDates(Date start_date, Date end_date, String username, AsyncCallback<List<Date>> callback) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -411,15 +411,17 @@ public interface DataService {
                                AsyncCallback<String> callback); 
  
   /**
-   * Retrieves mobility data via Server API call: /app/mobility/read
-   * @param single_date
+   * Retrieves mobility data via mobility/read
+   * @param date
+   * @param username (optional)
    * @param callback returns list of MobilityInfo on success (# of mobility data points)
    */
-  void fetchMobilityData(Date single_date,
+  void fetchMobilityData(Date date,
+                         String username,
                          AsyncCallback<List<MobilityInfo>> callback);
   
   /**
-   * Retrieves mobility data via Server API call: /app/mobility/read/chunked
+   * Retrieves mobility data via mobility/read/chunked
    * @param start_date
    * @param end_date
    * @param callback returns list of MobilityChunkedInfo on success (# of mobility chunks)
@@ -427,4 +429,16 @@ public interface DataService {
   void fetchMobilityDataChunked(Date start_date,
                                 Date end_date,
                                 AsyncCallback<List<MobilityChunkedInfo>> callback);
+  
+  /**
+   * Retrieves mobility data via mobility/dates/read
+   * @param start_date
+   * @param end_date
+   * @param username (optional)
+   * @param callback returns list of Date on success (dates that contain mobility data)
+   */
+  void fetchMobilityDates(Date start_date,
+                          Date end_date,
+                          String username,
+                          AsyncCallback<List<Date>> callback);
 }

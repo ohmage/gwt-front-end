@@ -71,6 +71,7 @@ public class AwConstants {
     private final static String VISUALIZATION_URL = "viz";
     private final static String MOBILITY_READ	= "mobility/read";
     private final static String MOBILITY_READ_CHUNKED = "mobility/read/chunked";
+    private final static String MOBILITY_DATES_READ  = "mobility/dates/read";
     
     /**
      * Returns data server url based on value of deployment status variable. 
@@ -220,5 +221,9 @@ public class AwConstants {
     
     public static String getMobilityReadChunkedUrl() {
       return getServerLocation() + MOBILITY_READ_CHUNKED;
+    }
+    
+    public static String getMobilityDatesReadUrl() {
+      return getServerLocation() + MOBILITY_DATES_READ;
     }
 }

@@ -217,6 +217,7 @@ public class ExploreDataPresenter implements Presenter {
 		for (Date curDate = new Date(startDate.getTime()); curDate.before(endDate) || (curDate.getDate() == endDate.getDate()); curDate = DateUtils.addOneDay(curDate)) {
 			dataService.fetchMobilityData(
 				curDate,
+				null, //TODO: username
 				new AsyncCallback<List<MobilityInfo>>() {
 					@Override
 					public void onFailure(Throwable caught) {

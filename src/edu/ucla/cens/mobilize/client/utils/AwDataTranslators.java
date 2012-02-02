@@ -51,6 +51,7 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 
 /**
@@ -59,6 +60,7 @@ import com.google.gwt.json.client.JSONValue;
  * 
  * @author jhicks
  * @author vhajdik
+ * @author ewang9
  *
  */
 public class AwDataTranslators {
@@ -751,5 +753,30 @@ public class AwDataTranslators {
 		}
 		
 		return mobilityInfos;
+	}
+	
+	public static List<Date> translateMobilityDatesReadQueryJSONToDatesList(String mobilityDatesReadQueryJSON) throws Exception {
+		List<Date> mobilityDates = new ArrayList<Date>(); // retval
+		
+		JSONValue value = JSONParser.parseStrict(mobilityDatesReadQueryJSON);
+		JSONObject obj = value.isObject();
+		if (obj == null || !obj.containsKey("data")) throw new Exception("Invalid json format.");
+		JSONArray data = obj.get("data").isArray();
+		if (data == null) throw new Exception("dataHash has invalid json format.");
+		
+		for (int i = 0; i < data.size(); i++) {
+			try {
+				JSONValue jsonVal = data.get(i);
+				JSONString jsonStr = jsonVal.isString();
+				String dateStr = jsonStr.stringValue();
+				Date d = DateUtils.translateFromServerFormat(dateStr);
+				mobilityDates.add(d);
+			} catch (Exception e) {
+				_logger.warning("Could not parse json for mobility date: " + data.get(i) + ". Skipping record.");
+				_logger.fine(e.getMessage());
+			}
+		}
+		
+		return mobilityDates;
 	}
 }
