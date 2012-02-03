@@ -248,22 +248,24 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     
     // build the tree
     plotTypeTree.addItem(surveyResponseCounts);
-    plotTypeTree.addItem(univariate);
-    plotTypeTree.addItem(multivariate);
-    plotTypeTree.addItem(geographic);
-    plotTypeTree.addItem(mobility);
     surveyResponseCounts.addItem(totalResponses);
     surveyResponseCounts.addItem(responsesByPrivacy);
     surveyResponseCounts.addItem(responseTimeseries);
     surveyResponseCounts.addItem(leaderBoard);
+    plotTypeTree.addItem(univariate);
     univariate.addItem(userTimeseries);
     univariate.addItem(promptTimeseries);
     univariate.addItem(promptDistribution);
+    plotTypeTree.addItem(multivariate);
     multivariate.addItem(scatterplot);
     multivariate.addItem(density);
+    plotTypeTree.addItem(geographic);
     geographic.addItem(googleMap);
-    mobility.addItem(mobilityMap);
-    mobility.addItem(mobilityGraph);
+    if (AppConfig.getMobilityEnabled()) {
+        plotTypeTree.addItem(mobility);
+        mobility.addItem(mobilityMap);
+        mobility.addItem(mobilityGraph);
+    }
     
     // add expand/fold click handler for tree's categories
     plotTypeTree.addSelectionHandler(new SelectionHandler<TreeItem>() {

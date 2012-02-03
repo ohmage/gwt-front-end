@@ -662,6 +662,11 @@ public class AwDataTranslators {
       AppConfig appConfig = new AppConfig();
       AppConfigAwData awData = AppConfigAwData.fromJsonString(result);
       AppConfig.setAppName(awData.getApplicationName());
+      if (awData.mobilityEnabledFlagExists()) {
+        AppConfig.setMobilityEnabled(awData.getMobilityEnabled());
+      } else { // Default behavior is "true" if no flag exists
+    	AppConfig.setMobilityEnabled(true);
+      }
       return appConfig;
     }
 
