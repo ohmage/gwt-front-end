@@ -129,7 +129,7 @@
          <p>
            &raquo;
            <g:InlineHyperlink ui:field="privateResponsesLink">
-             view private responses
+             edit private responses
            </g:InlineHyperlink>
          </p>
        </g:HTMLPanel>
