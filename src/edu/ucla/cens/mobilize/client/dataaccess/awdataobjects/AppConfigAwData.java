@@ -12,6 +12,14 @@ public class AppConfigAwData extends JavaScriptObject {
     return this.data['application_name'];
   }-*/;
   
+  public final native boolean mobilityEnabledFlagExists() /*-{
+    return this.data['mobility_enabled'] !== undefined;
+  }-*/;
+  
+  public final native boolean getMobilityEnabled() /*-{
+    return this.data['mobility_enabled'];
+  }-*/;
+  
   /*
   private final native JsArrayString getPrivacyStateStrings() /*-{
     return this.data.privacy_states;

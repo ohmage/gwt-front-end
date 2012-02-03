@@ -343,6 +343,8 @@ public class AndWellnessDataService implements DataService {
         public void onResponseReceived(Request request, Response response) {
           try {
             String result = getResponseTextOrThrowException(requestBuilder, response);
+            
+            // Configure server app name and privacy options
             AppConfig appConfig = AwDataTranslators.translateAppConfigReadQueryToAppConfig(result);
             String appName = AppConfig.getAppName().toLowerCase();
             // FIXME: get these from db instead of hard-coding them
@@ -353,12 +355,12 @@ public class AndWellnessDataService implements DataService {
               AppConfig.setSharedResponsesOnly(true);
               AppConfig.setResponsePrivacyIsEditable(true);
             } else if ("ohmage".equals(appName)) { 
-                List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);    
-                AppConfig.setAppDisplayName("Ohmage");
-                AppConfig.setPrivacyStates(privacyStates);
-                AppConfig.setSharedResponsesOnly(false); // show everything
-                AppConfig.setResponsePrivacyIsEditable(true);
-              } else if ("chipts".equals(appName)) {
+              List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);    
+              AppConfig.setAppDisplayName("Ohmage");
+              AppConfig.setPrivacyStates(privacyStates);
+              AppConfig.setSharedResponsesOnly(false); // show everything
+              AppConfig.setResponsePrivacyIsEditable(true);
+            } else if ("chipts".equals(appName)) {
               List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED, Privacy.INVISIBLE);
               AppConfig.setAppDisplayName("AndWellness");
               AppConfig.setPrivacyStates(privacyStates);
@@ -372,11 +374,12 @@ public class AndWellnessDataService implements DataService {
               AppConfig.setResponsePrivacyIsEditable(true);
             } else { // default settings
               List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);    
-              AppConfig.setAppDisplayName("AndWellness");
+              AppConfig.setAppDisplayName("Ohmage");
               AppConfig.setPrivacyStates(privacyStates);
               AppConfig.setSharedResponsesOnly(false); // show everything
               AppConfig.setResponsePrivacyIsEditable(true);
             }
+            
             callback.onSuccess(appConfig); // FIXME: all fields in obj are static - returning it is pointless
           } catch (Exception exception) {
             _logger.severe(exception.getMessage());

@@ -10,6 +10,7 @@ public class AppConfig {
   private static boolean sharedResponsesOnly;
   private static boolean responsePrivacyIsEditable;
   private static List<Privacy> privacyStates;
+  private static boolean mobilityEnabled;
   
   public static boolean isLoaded() {
     return appName != null && privacyStates != null;
@@ -63,5 +64,10 @@ public class AppConfig {
     AppConfig.privacyStates = privacyStates;
   }
   
-  
+  public static boolean getMobilityEnabled() {
+    return mobilityEnabled;
+  }
+  public static void setMobilityEnabled(boolean isEnabled) {
+    AppConfig.mobilityEnabled = isEnabled;
+  }
 }
