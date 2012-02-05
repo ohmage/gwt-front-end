@@ -31,47 +31,69 @@ public class AwConstants {
     public final static int MAPS_THUMBNAIL_WIDTH = 50;
     public final static int MAPS_THUMBNAIL_HEIGHT = 50;
     
-    //private final static String debugServerLocation = "https://dev1.andwellness.org/app/";
-    private final static String debugServerLocation = "http://localhost:8080/app/";
-    //private final static String debugServerLocation = "https://dev.mobilizingcs.org/app/";
-    private final static String releaseServerLocation = "../app/"; // same as web server
-    
+    //private final static String debugServerLocation = "https://dev1.andwellness.org";
+    private final static String debugServerLocation = "http://localhost:8080";
+    //private final static String debugServerLocation = "https://dev.mobilizingcs.org";
+    private final static String releaseServerLocation = ".."; // same as web server
+
     // API Endpoints
-    // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/AndWellness_Read_API_2.2
-    private final static String AUTHORIZATION   = "user/auth_token";
-    private final static String APP_CONFIG_READ = "config/read";
-    private final static String USER_INFO_READ  = "user_info/read";
-    private final static String USER_READ       = "user/read";
-    private final static String USER_CHANGE_PASSWORD = "user/change_password";
-    private final static String USER_CREATE = "user/create";
-    private final static String USER_UPDATE = "user/update";
-    private final static String USER_DELETE = "user/delete";
-    private final static String USER_SEARCH = "user/search";
-    private final static String CAMPAIGN_READ   = "campaign/read";
-    private final static String CAMPAIGN_CREATE = "campaign/create";
-    private final static String CAMPAIGN_UPDATE = "campaign/update";
-    private final static String CAMPAIGN_DELETE = "campaign/delete";
-    private final static String SURVEY_RESPONSE_READ   = "survey_response/read";
-    private final static String SURVEY_RESPONSE_UPDATE = "survey_response/update";
-    private final static String SURVEY_RESPONSE_DELETE = "survey_response/delete";
-    private final static String CLASS_READ      = "class/read";
-    private final static String CLASS_CREATE    = "class/create";
-    private final static String CLASS_UPDATE    = "class/update";
-    private final static String CLASS_DELETE    = "class/delete";
-    private final static String CLASS_SEARCH    = "class/search";
-    private final static String CLASS_ROSTER_READ   = "class/roster/read";
-    private final static String CLASS_ROSTER_UPDATE = "class/roster/update";
-    private final static String IMAGE_READ      = "image/read";
-    private final static String DOCUMENT_READ   = "document/read";
-    private final static String DOCUMENT_READ_CONTENTS = "document/read/contents";
-    private final static String DOCUMENT_CREATE = "document/create";
-    private final static String DOCUMENT_UPDATE = "document/update";
-    private final static String DOCUMENT_DELETE = "document/delete";
-    private final static String DOCUMENT_DOWNLOAD = "document/read/contents";
-    private final static String VISUALIZATION_URL = "viz";
-    private final static String MOBILITY_READ	= "mobility/read";
-    private final static String MOBILITY_READ_CHUNKED = "mobility/read/chunked";
-    private final static String MOBILITY_DATES_READ  = "mobility/dates/read";
+    // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/Main_Page#2.9.2B_Server_APIs
+    public enum AwUri {
+     AUTHORIZATION("/app/user/auth_token"),
+     APP_CONFIG_READ("/app/config/read"),
+     USER_INFO_READ ("/app/user_info/read"),
+     USER_READ("/app/user/read"),
+     USER_CHANGE_PASSWORD("/app/user/change_password"),
+     USER_CREATE("/app/user/create"),
+     USER_UPDATE("/app/user/update"),
+     USER_DELETE("/app/user/delete"),
+     USER_SEARCH("/app/user/search"),
+     CAMPAIGN_READ("/app/campaign/read"),
+     CAMPAIGN_CREATE("/app/campaign/create"),
+     CAMPAIGN_UPDATE("/app/campaign/update"),
+     CAMPAIGN_DELETE("/app/campaign/delete"),
+     SURVEY_RESPONSE_READ("/app/survey_response/read"),
+     SURVEY_RESPONSE_UPDATE("/app/survey_response/update"),
+     SURVEY_RESPONSE_DELETE("/app/survey_response/delete"),
+     CLASS_READ("/app/class/read"),
+     CLASS_CREATE("/app/class/create"),
+     CLASS_UPDATE("/app/class/update"),
+     CLASS_DELETE("/app/class/delete"),
+     CLASS_SEARCH("/app/class/search"),
+     CLASS_ROSTER_READ("/app/class/roster/read"),
+     CLASS_ROSTER_UPDATE("/app/class/roster/update"),
+     IMAGE_READ("/app/image/read"),
+     DOCUMENT_READ("/app/document/read"),
+     DOCUMENT_READ_CONTENTS("/app/document/read/contents"),
+     DOCUMENT_CREATE("/app/document/create"),
+     DOCUMENT_UPDATE("/app/document/update"),
+     DOCUMENT_DELETE("/app/document/delete"),
+     DOCUMENT_DOWNLOAD("/app/document/read/contents"),
+     VISUALIZATION_URL("/app/viz"),
+     AUDIT_READ("/app/audit/read"),
+     MOBILITY_READ("/app/mobility/read"),
+     MOBILITY_READ_CHUNKED("/app/mobility/read/chunked"),
+     MOBILITY_DATES_READ("mobility/dates/read");
+     
+     private AwUri(String uri) {
+       this.uriString = uri;
+     }
+     
+     private final String uriString;
+     
+     public String toString() {
+       return uriString;
+     }
+     
+     public static AwUri fromString(String uriString) {
+       for (AwUri uri : AwUri.values()) {
+         if (uri.uriString.equals(uriString)) {
+           return uri;
+         }
+       }
+       return null;
+     }
+    }
     
     /**
      * Returns data server url based on value of deployment status variable. 
@@ -92,138 +114,191 @@ public class AwConstants {
     }
     
     public static String getAppConfigReadUrl() {
-      return getServerLocation() + APP_CONFIG_READ;
+      return getServerLocation() + AwUri.APP_CONFIG_READ;
     }
     
     public static String getUserInfoReadUrl() {
-      return getServerLocation() + USER_INFO_READ;
+      return getServerLocation() + AwUri.USER_INFO_READ;
     }
     
     public static String getUserReadUrl() {
-      return getServerLocation() + USER_READ;
+      return getServerLocation() + AwUri.USER_READ;
     }
     
     public static String getUserCreateUrl() {
-      return getServerLocation() + USER_CREATE;
+      return getServerLocation() + AwUri.USER_CREATE;
     }
     
     public static String getUserDeleteUrl() {
-      return getServerLocation() + USER_DELETE;
+      return getServerLocation() + AwUri.USER_DELETE;
     }
     
     public static String getUserSearchUrl() {
-      return getServerLocation() + USER_SEARCH;
+      return getServerLocation() + AwUri.USER_SEARCH;
     }
     
     public static String getUserUpdateUrl() {
-      return getServerLocation() + USER_UPDATE;
+      return getServerLocation() + AwUri.USER_UPDATE;
     }
     
     public static String getUserChangePasswordUrl() {
-      return getServerLocation() + USER_CHANGE_PASSWORD;
+      return getServerLocation() + AwUri.USER_CHANGE_PASSWORD;
     }
     
     public static String getCampaignReadUrl() {
-      return getServerLocation() + CAMPAIGN_READ;
+      return getServerLocation() + AwUri.CAMPAIGN_READ;
     }
     
     public static String getCampaignCreateUrl() {
-      return getServerLocation() + CAMPAIGN_CREATE;
+      return getServerLocation() + AwUri.CAMPAIGN_CREATE;
     }
 
     public static String getCampaignUpdateUrl() {
-      return getServerLocation() + CAMPAIGN_UPDATE;
+      return getServerLocation() + AwUri.CAMPAIGN_UPDATE;
     }
     
     public static String getCampaignDeleteUrl() {
-      return getServerLocation() + CAMPAIGN_DELETE;
+      return getServerLocation() + AwUri.CAMPAIGN_DELETE;
     }
     
     public static String getAuthorizationUrl() {
-      return getServerLocation() + AUTHORIZATION;
+      return getServerLocation() + AwUri.AUTHORIZATION;
     }
     
     public static String getSurveyResponseReadUrl() {
-      return getServerLocation() + SURVEY_RESPONSE_READ;
+      return getServerLocation() + AwUri.SURVEY_RESPONSE_READ;
     }
     
     public static String getSurveyResponseUpdateUrl() {
-      return getServerLocation() + SURVEY_RESPONSE_UPDATE;
+      return getServerLocation() + AwUri.SURVEY_RESPONSE_UPDATE;
     }
     
     public static String getSurveyResponseDeleteUrl() {
-      return getServerLocation() + SURVEY_RESPONSE_DELETE;
+      return getServerLocation() + AwUri.SURVEY_RESPONSE_DELETE;
     }
     
     public static String getClassReadUrl() {
-      return getServerLocation() + CLASS_READ;
+      return getServerLocation() + AwUri.CLASS_READ;
     }
     
     public static String getClassCreateUrl() {
-      return getServerLocation() + CLASS_CREATE;
+      return getServerLocation() + AwUri.CLASS_CREATE;
     }
     
     public static String getClassUpdateUrl() {
-      return getServerLocation() + CLASS_UPDATE;
+      return getServerLocation() + AwUri.CLASS_UPDATE;
     }
     
     public static String getClassDeleteUrl() {
-      return getServerLocation() + CLASS_DELETE;
+      return getServerLocation() + AwUri.CLASS_DELETE;
     }
     
     public static String getClassSearchUrl() {
-      return getServerLocation() + CLASS_SEARCH;
+      return getServerLocation() + AwUri.CLASS_SEARCH;
     }
     
     public static String getClassRosterReadUrl() {
-      return getServerLocation() + CLASS_ROSTER_READ;
+      return getServerLocation() + AwUri.CLASS_ROSTER_READ;
     }
     
     public static String getClassRosterUpdateUrl() {
-      return getServerLocation() + CLASS_ROSTER_UPDATE;
+      return getServerLocation() + AwUri.CLASS_ROSTER_UPDATE;
     } 
     
     public static String getImageReadUrl() {
-      return getServerLocation() + IMAGE_READ;
+      return getServerLocation() + AwUri.IMAGE_READ;
     }
     
     public static String getDocumentReadUrl() {
-      return getServerLocation() + DOCUMENT_READ;
+      return getServerLocation() + AwUri.DOCUMENT_READ;
     }
     
     public static String getDocumentReadContentsUrl() {
-      return getServerLocation() + DOCUMENT_READ_CONTENTS;
+      return getServerLocation() + AwUri.DOCUMENT_READ_CONTENTS;
     }
     
     public static String getDocumentCreateUrl() {
-      return getServerLocation() + DOCUMENT_CREATE;
+      return getServerLocation() + AwUri.DOCUMENT_CREATE;
     }
     
     public static String getDocumentUpdateUrl() {
-      return getServerLocation() + DOCUMENT_UPDATE;
+      return getServerLocation() + AwUri.DOCUMENT_UPDATE;
     }
     
     public static String getDocumentDeleteUrl() {
-      return getServerLocation() + DOCUMENT_DELETE;
+      return getServerLocation() + AwUri.DOCUMENT_DELETE;
     }
 
     public static String getDocumentDownloadUrl() {
-      return getServerLocation() + DOCUMENT_DOWNLOAD;
+      return getServerLocation() + AwUri.DOCUMENT_DOWNLOAD;
     }
     
     public static String getVisualizationUrl(String plotType) {
-      return getServerLocation() + VISUALIZATION_URL + "/" + plotType + "/read";
+      return getServerLocation() + AwUri.VISUALIZATION_URL + "/" + plotType + "/read";
+    }
+    
+    public static String getAuditReadUrl() {
+      return getServerLocation() + AwUri.AUDIT_READ;
     }
 
     public static String getMobilityReadUrl() {
-      return getServerLocation() + MOBILITY_READ;
+      return getServerLocation() + AwUri.MOBILITY_READ;
     }
     
     public static String getMobilityReadChunkedUrl() {
-      return getServerLocation() + MOBILITY_READ_CHUNKED;
+      return getServerLocation() + AwUri.MOBILITY_READ_CHUNKED;
     }
     
     public static String getMobilityDatesReadUrl() {
-      return getServerLocation() + MOBILITY_DATES_READ;
+      return getServerLocation() + AwUri.MOBILITY_DATES_READ;
     }
+    
+    /**
+     * Contains all the possible error codes returned by the AndWellness server.
+     */
+    public static enum ErrorCode {
+        E0101("0101", "JSON syntax error"),
+        E0102("0102", "no data in message"),
+        E0103("0103", "server error"),
+        E0104("0104", "session expired"),
+        E0200("0200", "authentication failed"),
+        E0201("0201", "disabled user"),
+        E0202("0202", "new account attempting to access a service without changing default password first"),
+        E0300("0300", "missing JSON data"),
+        E0301("0301", "unknown request type"),
+        E0302("0302", "unknown phone version"),
+        E0304("0304", "invalid campaign id"),
+        E0701("0701", "invalid user in query"),
+        E0716("0716", "participant cannot query stopped campaign"),
+        E0717("0717", "authors or analysts cannot query private campaigns");
+        
+        private final String errorCode;
+        private final String errorDescription;
+        
+        ErrorCode(String code, String description) {
+            errorCode = code;
+            errorDescription = description;
+        }
+        
+        public String getErrorCode() { return errorCode; }
+        public String getErrorDesc() { return errorDescription; }
+        
+        /**
+         * Returns the ErrorCode that has the passed in error code from the server.
+         * 
+         * @param err The error code from the server
+         * @return The correct ErrorCode, NULL if not found.
+         */
+        public static ErrorCode translateServerError(String err) {
+            // Loop over all ErrorCodes to find the right one.
+            for (ErrorCode errCode : ErrorCode.values()) {
+                if (err.equals(errCode.getErrorCode())) {
+                    return errCode;
+                }
+            }
+            
+            return null;
+        }
+    }    
+    
 }

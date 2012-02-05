@@ -221,10 +221,6 @@ public class AdminUserEditView extends Composite {
     return this.backLink;
   }
   
-  public HasClickHandlers addClassesButton() {
-    return this.addClassesButton();
-  }
-  
   public HasClickHandlers getSaveChangesButton() {
     return this.saveChangesButton;
   }

@@ -1,0 +1,54 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui"
+	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
+	<ui:style>
+	  .auditLogCellTable {
+	  	
+	  }
+	  .filterPanel {
+	  	background-color: #EEE;
+	  	border-bottom: solid 1px #CCC;
+	  	padding: 5px 10px;
+	  }
+	  .filterLabel {
+	  	padding-right: 5px;
+	  }
+		.scrollable {
+			overflow-y: auto;
+	  }
+	</ui:style>
+	  <g:DockLayoutPanel unit='PX'>
+	  <g:west size='150'>
+	     <g:HTMLPanel>
+	       <w:AdminMenu ui:field='adminMenu' />
+	     </g:HTMLPanel>
+	   </g:west>
+	   <g:north size='30'>
+	     <g:HTMLPanel addStyleNames='{style.filterPanel}'>
+		     <g:HorizontalPanel>
+			     <g:HTMLPanel>
+			       <g:InlineLabel addStyleNames='{style.filterLabel}'>Date:</g:InlineLabel>
+		         <dp:DateBox ui:field='dateBox' />
+		         <g:InlineLabel addStyleNames='{style.filterLabel}'>Uri:</g:InlineLabel>
+		         <g:ListBox ui:field='uriListBox'></g:ListBox>
+			     </g:HTMLPanel>
+			     <g:HTMLPanel>
+			       <g:CheckBox ui:field='onlyFailuresCheckBox'>Only failures</g:CheckBox>
+			     </g:HTMLPanel>
+			     <g:Button ui:field='goButton'>Go</g:Button>
+		     </g:HorizontalPanel>
+	     </g:HTMLPanel>
+	   </g:north>
+	   <g:center>
+	     <g:HTMLPanel addStyleNames='{style.scrollable}'>
+         <c:CellTable ui:field='auditLogCellTable' />
+	     </g:HTMLPanel>
+	   </g:center>
+	   <g:south size='30'>
+	     <c:SimplePager ui:field='pager' />
+	   </g:south>
+  </g:DockLayoutPanel>
+</ui:UiBinder> 

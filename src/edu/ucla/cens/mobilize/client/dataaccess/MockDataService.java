@@ -21,6 +21,7 @@ import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.common.UserStats;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.AuditLogSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
@@ -30,6 +31,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserCreateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserUpdateParams;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
+import edu.ucla.cens.mobilize.client.model.AuditLogEntry;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -632,6 +634,13 @@ public class MockDataService implements DataService {
   public void adminChangePassword(String usernameLoggedInUser,
       String passwordLoggedInUser, String usernameThatOwnsPassword,
       String newPassword, AsyncCallback<String> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void fetchAuditLog(AuditLogSearchParams params,
+      AsyncCallback<List<AuditLogEntry>> callback) {
     // TODO Auto-generated method stub
     
   }

@@ -45,4 +45,15 @@ public class StringUtils {
       }
       return retval;
     }
+    
+    /**
+     * Helper function for capitalizing the first letter of a string. (Included
+     * here because the apache version is not supported in GWT.) Note that it 
+     * only capitalizes the first letter, not the first letter of each word.
+     * @param lowercaseString
+     * @return string with first letter capitalized, all other letters unchanged
+     */
+    public static String capitalize(String lowercaseString) {
+      return lowercaseString.substring(0, 1).concat(lowercaseString.substring(1));
+    }
 }

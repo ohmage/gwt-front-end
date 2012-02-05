@@ -38,6 +38,7 @@ import edu.ucla.cens.mobilize.client.event.ClassDataChangedEvent;
 import edu.ucla.cens.mobilize.client.event.ClassDataChangedEventHandler;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.presenter.AccountPresenter;
+import edu.ucla.cens.mobilize.client.presenter.AdminAuditLogPresenter;
 import edu.ucla.cens.mobilize.client.presenter.AdminClassDetailPresenter;
 import edu.ucla.cens.mobilize.client.presenter.AdminClassEditPresenter;
 import edu.ucla.cens.mobilize.client.presenter.AdminClassListPresenter;
@@ -58,6 +59,7 @@ import edu.ucla.cens.mobilize.client.ui.Header;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.StopWatch;
 import edu.ucla.cens.mobilize.client.view.AccountViewImpl;
+import edu.ucla.cens.mobilize.client.view.AdminAuditLogView;
 import edu.ucla.cens.mobilize.client.view.AdminClassDetailView;
 import edu.ucla.cens.mobilize.client.view.AdminClassEditView;
 import edu.ucla.cens.mobilize.client.view.AdminClassListView;
@@ -141,6 +143,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   
   // admin classes will only be instantiated if user is an admin
   AdminView adminView;
+  AdminAuditLogView adminAuditLogView;
   AdminUserListView adminUserListView;
   AdminUserDetailView adminUserDetailView;
   AdminUserEditView adminUserEditView;
@@ -149,6 +152,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   AdminClassDetailView adminClassDetailView;
   AdminClassEditView adminClassEditView;
   AdminPresenter adminPresenter;
+  AdminAuditLogPresenter adminAuditLogPresenter;
   AdminUserListPresenter adminUserListPresenter;
   AdminUserDetailPresenter adminUserDetailPresenter;
   AdminUserEditPresenter adminUserEditPresenter;
@@ -421,6 +425,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     // avoid unneccessary work by only instantiating admin classes if user is an admin
     if (userInfo.isAdmin()) {
       adminView = new AdminViewImpl();
+      adminAuditLogView = new AdminAuditLogView();
       adminUserListView = new AdminUserListView();
       adminUserDetailView = new AdminUserDetailView();
       adminUserEditView = new AdminUserEditView();
@@ -429,6 +434,7 @@ public class MainApp implements EntryPoint, HistoryListener {
       adminClassDetailView = new AdminClassDetailView();
       adminClassEditView = new AdminClassEditView();
       adminPresenter = new AdminPresenter(userInfo, awDataService, eventBus);
+      adminAuditLogPresenter = new AdminAuditLogPresenter(userInfo, awDataService, eventBus);
       adminUserListPresenter = new AdminUserListPresenter(userInfo, awDataService, eventBus);
       adminUserDetailPresenter = new AdminUserDetailPresenter(userInfo, awDataService, eventBus);
       adminUserEditPresenter = new AdminUserEditPresenter(userInfo, awDataService, eventBus);
@@ -437,6 +443,7 @@ public class MainApp implements EntryPoint, HistoryListener {
       adminClassDetailPresenter = new AdminClassDetailPresenter(userInfo, awDataService, eventBus);
       adminClassEditPresenter = new AdminClassEditPresenter(userInfo, awDataService, eventBus);
       adminPresenter.setView(adminView);
+      adminAuditLogPresenter.setView(adminAuditLogView);
       adminUserListPresenter.setView(adminUserListView);
       adminUserDetailPresenter.setView(adminUserDetailView);
       adminUserEditPresenter.setView(adminUserEditView);
@@ -542,6 +549,23 @@ public class MainApp implements EntryPoint, HistoryListener {
     tabPanel.selectTab(TabIndex.ADMIN);
   }
 
+  // The historyToken arg is the token that triggered this view, used in the
+  // tab click handler to make the view sticky. (So search results are not
+  // reset every time you click away from the page and click back.)
+  private void showAdminAuditLog(final String historyToken) {
+    setMainContentTabPanel();
+    tabPanel.remove(TabIndex.ADMIN);
+    tabPanel.insert(adminAuditLogView, "Admin", TabIndex.ADMIN);
+    // since it's a new tab, clickhandler must be re-added
+    tabPanel.getTabBar().getTab(TabIndex.ADMIN).addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        History.newItem(historyToken); 
+      }
+    });
+    tabPanel.selectTab(TabIndex.ADMIN);
+  }
+  
   // The historyToken arg is the token that triggered this view, used in the
   // tab click handler to make the view sticky. (So search results are not
   // reset every time you click away from the page and click back.)
@@ -714,6 +738,9 @@ public class MainApp implements EntryPoint, HistoryListener {
     } else if (view.equals("admin")) {
       adminPresenter.go(params);
       showAdmin();
+    } else if (view.equals("admin_audit")) {
+      adminAuditLogPresenter.go(params);
+      showAdminAuditLog(History.getToken());
     } else if (view.equals("admin_user_list")) {
       adminUserListPresenter.go(params);
       showAdminUserList(History.getToken());
