@@ -1728,7 +1728,7 @@ public class AndWellnessDataService implements DataService {
 		params.put("auth_token", this.authToken);
 		params.put("client", this.client);
 		params.put("date", DateUtils.translateToApiRequestFormat(date));
-		if (!username.isEmpty()) {
+		if (username != null && !username.isEmpty()) {
 			params.put("username", username);
 		}
 		
@@ -1811,7 +1811,7 @@ public class AndWellnessDataService implements DataService {
 		params.put("client", this.client);
 		params.put("start_date", DateUtils.translateToApiRequestFormat(start_date));
 		params.put("end_date", DateUtils.translateToApiRequestFormat(DateUtils.addOneDay(end_date)));
-		if (!username.isEmpty()) {
+		if (username != null && !username.isEmpty()) {
 			params.put("username", username);
 		}
 		
