@@ -76,15 +76,18 @@ public class AdminAuditLogPresenter implements Presenter {
     params.endDate_opt = endDate;
     params.uri_opt = uri;
     if (onlyFailures) params.responseType_opt = ResponseStatus.FAILURE;
+    view.showWaitIndicator();
     this.dataService.fetchAuditLog(params, new AsyncCallback<List<AuditLogEntry>>() {
       @Override
       public void onFailure(Throwable caught) {
+        view.hideWaitIndicator();
         AwErrorUtils.logoutIfAuthException(caught);
         view.showError("There was a problem fetching the audit log.", caught.getMessage());
       }
 
       @Override
       public void onSuccess(List<AuditLogEntry> result) {
+        view.hideWaitIndicator();
         view.showLog(result);
       }
     });

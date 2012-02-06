@@ -4,14 +4,27 @@
 	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui"
 	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
-	<ui:style>
+	<ui:style type="edu.ucla.cens.mobilize.client.view.AdminAuditLogView.AdminAuditLogViewStyles">
 	  .auditLogCellTable {
-	  	
+	  }
+	  .emptyLogMessage {
+	  	background-color: #EEE;
+      border: solid thin #AAA;
+      color: #888;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 40px 50px;
+      padding: 20px;
+      text-align: center;
+      width: 400px;
 	  }
 	  .filterPanel {
 	  	background-color: #EEE;
 	  	border-bottom: solid 1px #CCC;
 	  	padding: 5px 10px;
+	  }
+	  .filterPanel td {
+	  	padding: 0px 5px;
 	  }
 	  .filterLabel {
 	  	padding-right: 5px;

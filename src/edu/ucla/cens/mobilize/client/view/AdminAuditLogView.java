@@ -1,5 +1,7 @@
 package edu.ucla.cens.mobilize.client.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +12,7 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellTable;
@@ -21,6 +24,7 @@ import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
@@ -30,6 +34,7 @@ import edu.ucla.cens.mobilize.client.AwConstants.AwUri;
 import edu.ucla.cens.mobilize.client.model.AuditLogEntry;
 import edu.ucla.cens.mobilize.client.ui.AdminMenu;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
+import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 public class AdminAuditLogView extends Composite {
@@ -41,6 +46,11 @@ public class AdminAuditLogView extends Composite {
       UiBinder<Widget, AdminAuditLogView> {
   }
   
+  public interface AdminAuditLogViewStyles extends CssResource {
+    String emptyLogMessage();
+  }
+  
+  @UiField AdminAuditLogViewStyles style;
   @UiField AdminMenu adminMenu;
   @UiField DateBox dateBox;
   @UiField CheckBox onlyFailuresCheckBox;
@@ -56,14 +66,30 @@ public class AdminAuditLogView extends Composite {
   public AdminAuditLogView() {
     initCellTable(); // must be before initWidget
     initWidget(uiBinder.createAndBindUi(this));
-    adminMenu.selectAuditLog();
-    this.dateBox.setFormat(dateFormatDateBox);
-    this.uriListBox.addItem("All", "");
-    for (AwUri uri : AwUri.values()) {
-      this.uriListBox.addItem(uri.toString(), uri.toString());
-    }
+    initComponents();
   }
 
+  private void initComponents() {
+    adminMenu.selectAuditLog();
+    this.dateBox.setFormat(dateFormatDateBox);
+    
+    // fill uri drop down
+    this.uriListBox.addItem("All", "");
+    List<String> uris = new ArrayList<String>();
+    for (AwUri uri : AwUri.values()) {
+      uris.add(uri.toString());
+    }
+    Collections.sort(uris);
+    for (String uri : uris) {
+      this.uriListBox.addItem(uri);
+    }
+    
+    // set message that will be shown when there are no log entries
+    HTML html = new HTML("No log entries for the selected date.");
+    html.addStyleName(style.emptyLogMessage());
+    this.auditLogCellTable.setEmptyTableWidget(html);
+  }
+  
   public void showError(String msg, String detail) {
     ErrorDialog.show(msg, detail);
   }
@@ -203,8 +229,14 @@ public class AdminAuditLogView extends Composite {
 
      this.auditLogData.addDataDisplay(this.auditLogCellTable);
      
-     // TODO: this.auditLogCellTable.setEmptyTableWidget() // (need to upgrade to GWT 2.3 first)
-     
+  }
+  
+  public void showWaitIndicator() {
+    WaitIndicator.show();
+  }
+  
+  public void hideWaitIndicator() {
+    WaitIndicator.hide();
   }
   
 }
