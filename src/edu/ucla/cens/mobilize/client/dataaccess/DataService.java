@@ -8,6 +8,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.AuditLogSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
@@ -17,6 +18,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserCreateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserUpdateParams;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
+import edu.ucla.cens.mobilize.client.model.AuditLogEntry;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -409,6 +411,8 @@ public interface DataService {
                                Date endDate, 
                                boolean includePrivateResponses,
                                AsyncCallback<String> callback); 
+
+  void fetchAuditLog(AuditLogSearchParams params, AsyncCallback<List<AuditLogEntry>> callback);
  
   /**
    * Retrieves mobility data via mobility/read

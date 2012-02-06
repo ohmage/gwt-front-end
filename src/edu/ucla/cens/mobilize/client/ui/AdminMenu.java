@@ -25,6 +25,7 @@ public class AdminMenu extends Composite {
 
   @UiField AdminMenuStyles style;
   @UiField Hyperlink adminHomeHyperlink;
+  @UiField Hyperlink auditLogHyperlink;
   @UiField Hyperlink createUserHyperlink;
   @UiField Hyperlink manageUsersHyperlink;
   @UiField Hyperlink createClassHyperlink;
@@ -33,6 +34,7 @@ public class AdminMenu extends Composite {
   @UiField Hyperlink manageCampaignsHyperlink;
 
   @UiField HTMLPanel adminHomeContainer;
+  @UiField HTMLPanel auditLogContainer;
   @UiField HTMLPanel createUserContainer;
   @UiField HTMLPanel manageUsersContainer;
   @UiField HTMLPanel createClassContainer;
@@ -48,6 +50,7 @@ public class AdminMenu extends Composite {
   // done here instead of in template so they can use HistoryToken constants
   private void setLinkTargetUrls() {
     adminHomeHyperlink.setTargetHistoryToken(HistoryTokens.admin());
+    auditLogHyperlink.setTargetHistoryToken(HistoryTokens.auditLog());
     createUserHyperlink.setTargetHistoryToken(HistoryTokens.adminUserCreate());
     manageUsersHyperlink.setTargetHistoryToken(HistoryTokens.adminUserList());
     createClassHyperlink.setTargetHistoryToken(HistoryTokens.adminClassCreate());
@@ -58,6 +61,7 @@ public class AdminMenu extends Composite {
   
   public void clearSelectedItem() {
     adminHomeContainer.removeStyleName(style.menuItemContainerSelected());
+    auditLogContainer.removeStyleName(style.menuItemContainerSelected());
     createUserContainer.removeStyleName(style.menuItemContainerSelected());
     manageUsersContainer.removeStyleName(style.menuItemContainerSelected());
     createClassContainer.removeStyleName(style.menuItemContainerSelected());
@@ -69,6 +73,11 @@ public class AdminMenu extends Composite {
   public void selectAdminHome() {
     clearSelectedItem();
     adminHomeContainer.addStyleName(style.menuItemContainerSelected());
+  }
+  
+  public void selectAuditLog() {
+    clearSelectedItem();
+    auditLogContainer.addStyleName(style.menuItemContainerSelected());
   }
 
   public void selectManageUsers() {

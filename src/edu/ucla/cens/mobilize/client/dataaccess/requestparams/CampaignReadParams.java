@@ -12,7 +12,7 @@ import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
-public class CampaignReadParams {
+public class CampaignReadParams implements RequestParams {
   public String authToken;
   public String client;
   public OutputFormat outputFormat;

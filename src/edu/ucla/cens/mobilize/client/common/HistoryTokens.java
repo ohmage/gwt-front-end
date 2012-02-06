@@ -25,6 +25,22 @@ public class HistoryTokens {
     return "admin";
   }
   
+  public static String auditLog() {
+    return "admin_audit";
+  }
+  
+  public static String auditLog(Date date, 
+                                String uri, 
+                                Boolean onlyFailures) {
+    Map<String, String> params = new HashMap<String, String>();
+    if (date != null) params.put("date", DateUtils.translateToHistoryTokenFormat(date));
+    if (uri != null) params.put("uri", uri);
+    if (onlyFailures == true) params.put("fail", "1");
+    String token = auditLog();
+    if (!params.isEmpty()) token += "?" + MapUtils.translateToParameters(params);
+    return token;
+  }
+  
   public static String adminClassList() {
     return "admin_class_list";
   }

@@ -15,7 +15,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 public class DateUtils {
     // Format of the timestamp string returned from the server
     //public final static String timeStampFormat = "yyyy-MM-dd HH:mm:ss.S"; // old format
-    public final static String timeStampFormat = "yyyy-MM-dd HH:mm:ss"; // as of May 2011
+    public final static String timestampFormat = "yyyy-MM-dd HH:mm:ss"; // as of May 2011
     // Format of the timestamp string to upload to server POST api
     public final static String uploadTimeStampFormat = "yyyy-MM-dd";
     public final static String apiRequestFormat = "yyyy-MM-dd";
@@ -41,7 +41,7 @@ public class DateUtils {
      * @return The translated Date.
      */
     public static Date translateFromServerFormat(String toTranslate) {
-        DateTimeFormat dateFormat = DateTimeFormat.getFormat(timeStampFormat);
+        DateTimeFormat dateFormat = DateTimeFormat.getFormat(timestampFormat);
         return dateFormat.parse(toTranslate);
     }
     
@@ -94,6 +94,13 @@ public class DateUtils {
     }
     
     /**
+     * @return Default format to use when displaying date + time
+     */
+    public static DateTimeFormat getTimestampFormat() {
+      return DateTimeFormat.getFormat(timestampFormat);
+    }
+    
+    /**
      * Useful for determining the number of days difference based on only the day
      * @param start
      * @param end
@@ -111,10 +118,17 @@ public class DateUtils {
      * @return day after originalDate
      */
     public static Date addOneDay(Date originalDate) {
+      return addDays(originalDate, 1);
+    }
+    
+    /**
+     * @param originalDate
+     * @param numDaysToAdd (Make this negative to subtract days)
+     * @return
+     */
+    public static Date addDays(Date originalDate, int numDaysToAdd) {
       if (originalDate == null) return null;
-      long secs = originalDate.getTime();
-      secs = secs + (24 * 60 * 60 * 1000);
-      return new Date(secs);
+      return new Date(originalDate.getTime() + (numDaysToAdd)*(24 * 60 * 60 * 1000));
     }
     
     /**

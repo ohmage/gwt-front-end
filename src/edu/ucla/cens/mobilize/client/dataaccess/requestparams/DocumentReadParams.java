@@ -8,7 +8,7 @@ import java.util.Map;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
-public class DocumentReadParams extends RequestParams {
+public class DocumentReadParams implements RequestParams {
   public String authToken;
   public String client;
   public boolean includePersonalDocuments = true;
