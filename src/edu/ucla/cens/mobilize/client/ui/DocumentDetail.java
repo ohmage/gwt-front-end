@@ -136,11 +136,17 @@ public class DocumentDetail extends Composite {
       for (String campaignName : documentInfo.getCampaigns()) {
         this.campaignsVerticalPanel.add(new InlineLabel(campaignName));
       }
+      if (this.campaignsVerticalPanel.getWidgetCount() == 0) {
+    	  this.campaignsVerticalPanel.add(new InlineLabel("(there are no campaigns associated with this document)"));
+      }
       
       // class list
       this.classesVerticalPanel.clear();
       for (String className : documentInfo.getClasses()) {
         this.classesVerticalPanel.add(new InlineLabel(className));
+      }
+      if (this.classesVerticalPanel.getWidgetCount() == 0) {
+    	  this.classesVerticalPanel.add(new InlineLabel("(there are no classes associated with this document)"));
       }
 
       Privacy privacy = documentInfo.getPrivacy();
