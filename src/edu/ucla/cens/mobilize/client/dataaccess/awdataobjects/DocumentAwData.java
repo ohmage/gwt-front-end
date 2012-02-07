@@ -21,7 +21,7 @@ public class DocumentAwData extends QueryAwData {
   
   private final native JsArrayString getCampaignUrnsJsArray() /*-{
     var campaign_urns = [];
-    for (var key in this.campaign_roles) {
+    for (var key in this.campaign_role) {
       campaign_urns.push(key);
     } 
     return campaign_urns;
@@ -58,7 +58,7 @@ public class DocumentAwData extends QueryAwData {
   }-*/;
   
   public final native String getCampaignRole(String campaignUrn) /*-{
-    return this.campaign_roles[campaignUrn];
+    return this.campaign_role[campaignUrn];
   }-*/;
   
 }
