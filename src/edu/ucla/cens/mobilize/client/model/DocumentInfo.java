@@ -23,13 +23,15 @@ public class DocumentInfo {
   String description;
   Privacy privacy;
   RoleDocument userRole;
+  RoleDocument userMaxRole;
   float size;
   private static final int BYTES_PER_KB = 1024;
   private static final int BYTES_PER_MB = 1024 * 1024;
   
   public boolean userCanEdit () {
     return this.userRole.equals(RoleDocument.OWNER) ||
-           this.userRole.equals(RoleDocument.WRITER);
+           this.userRole.equals(RoleDocument.WRITER) ||
+           this.userMaxRole.equals(RoleDocument.WRITER); //user is supervisor of a class/campaign listed in the document info
   }
   
   public String getDocumentId() {
@@ -136,4 +138,11 @@ public class DocumentInfo {
     this.userRole = role;
   }
   
+  public RoleDocument getUserMaxRole() {
+    return this.userMaxRole;
+  }
+	  
+  public void setUserMaxRole(RoleDocument role) {
+    this.userMaxRole = role;
+  }
 }

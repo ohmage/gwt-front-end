@@ -642,6 +642,7 @@ public class AwDataTranslators {
           docInfo.setPrivacy(Privacy.fromServerString(awData.getPrivacyState()));
           docInfo.setSize(awData.getSize());
           docInfo.setUserRole(RoleDocument.fromServerString(awData.getUserRole()));
+          docInfo.setUserMaxRole(RoleDocument.fromServerString(awData.getUserMaxRole()));
           for (String classUrn : awData.getClassUrns()) {
             docInfo.addClass(classUrn,
                              RoleDocument.fromServerString(awData.getClassRole(classUrn)));

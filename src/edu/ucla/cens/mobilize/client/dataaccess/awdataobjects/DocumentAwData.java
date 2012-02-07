@@ -14,6 +14,7 @@ public class DocumentAwData extends QueryAwData {
   public final native String getCreator() /*-{ return this.creator; }-*/;
   public final native String getDescription() /*-{ return this.description; }-*/;
   public final native String getUserRole() /*-{ return this.user_role; }-*/;
+  public final native String getUserMaxRole() /*-{ return this.user_max_role; }-*/;
   public final native String getPrivacyState() /*-{ return this.privacy_state; }-*/;
   public final native float getSize() /*-{ return this.size; }-*/; // FIXME: int? 
   public final native String getLastModified() /*-{ return this.last_modified; }-*/;
