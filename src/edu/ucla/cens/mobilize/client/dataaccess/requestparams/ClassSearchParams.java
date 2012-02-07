@@ -5,7 +5,7 @@ import java.util.Map;
 
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
-public class ClassSearchParams extends RequestParams {
+public class ClassSearchParams implements RequestParams {
   public String client;
   public String authToken;
   public String className_opt;

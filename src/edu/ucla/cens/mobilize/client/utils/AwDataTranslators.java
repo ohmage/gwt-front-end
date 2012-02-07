@@ -14,12 +14,15 @@ import edu.ucla.cens.mobilize.client.common.LocationStatus;
 import edu.ucla.cens.mobilize.client.common.MobilityMode;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;
+import edu.ucla.cens.mobilize.client.common.RequestType;
+import edu.ucla.cens.mobilize.client.common.ResponseStatus;
 import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.common.RoleDocument;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AppConfigAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuditLogAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.CampaignDetailAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ClassSearchAwData;
@@ -33,6 +36,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserSearchInfoAwData;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
+import edu.ucla.cens.mobilize.client.model.AuditLogEntry;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -47,6 +51,7 @@ import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 
 // json
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
@@ -254,9 +259,9 @@ public class AwDataTranslators {
         // return empty list if there are zero participants
         JSONNumber numberOfSurveys = responseObj.get("metadata").isObject().get("number_of_surveys").isNumber();
         if (numberOfSurveys.doubleValue() < 1) return new ArrayList<String>(); 
-        
-        // if metadata didn't show zero participants and there's no data field, return null to indicate error
-        if (responseObj == null || !responseObj.containsKey("data")) return null;
+
+        // check for data field
+        if (!responseObj.containsKey("data")) throw new RuntimeException("missing data field");
         
         // get the list 
         JSONArray objArray = responseObj.get("data").isArray();
@@ -279,9 +284,11 @@ public class AwDataTranslators {
       JSONValue value = JSONParser.parseStrict(userReadQueryResponseJSON);
       JSONObject responseObj = value.isObject();
       
-      // Get data field from response. It's a hash with usernames as keys and
-      // serialized userinfos as values.
-      if (responseObj == null || !responseObj.containsKey("data")) return null;
+      if (responseObj == null || !responseObj.containsKey("data")) {
+        throw new RuntimeException("Invalid json format");
+      }
+      
+      // data field maps usernames to serialized userinfo values
       JSONObject usernameToUserDataHash = responseObj.get("data").isObject();
       
       // For each user, translate the serialized info into a UserInfo object and save
@@ -336,9 +343,11 @@ public class AwDataTranslators {
       JSONValue value = JSONParser.parseStrict(userReadQueryResponseJSON);
       JSONObject responseObj = value.isObject();
       
-      // Get data field from response. It's a hash with usernames as keys and
-      // serialized userShortInfos as values.
-      if (responseObj == null || !responseObj.containsKey("data")) return null;
+      if (responseObj == null || !responseObj.containsKey("data")) {
+        throw new RuntimeException("Invalid json format");
+      }
+      
+      // data field maps usernames to serialized userShortInfos
       JSONObject usernameToUserDataHash = responseObj.get("data").isObject();
       
       // For each user, translate the serialized info into a UserInfo object and save
@@ -378,9 +387,11 @@ public class AwDataTranslators {
       JSONValue value = JSONParser.parseStrict(userSearchQueryResponseJSON);
       JSONObject responseObj = value.isObject();
       
-      // Get data field from response. It's a hash with usernames as keys and
-      // serialized userShortInfos as values.
-      if (responseObj == null || !responseObj.containsKey("data")) return null;
+      if (responseObj == null || !responseObj.containsKey("data")) {
+        throw new RuntimeException("Invalid json format");
+      }
+      
+      // data field maps usernames to serialized userShortInfos
       JSONObject usernameToUserDataHash = responseObj.get("data").isObject();
       
       // For each user, translate the serialized info into a UserInfo object and save
@@ -437,10 +448,11 @@ public class AwDataTranslators {
       JSONValue value = JSONParser.parse(responseText);
       JSONObject responseObj = value.isObject();
       
-      // Get data field from response. It's a hash with campaign ids as 
-      // keys and serialized campaign info as values.
-      if (responseObj == null || !responseObj.containsKey("data")) return null;
+      if (responseObj == null || !responseObj.containsKey("data")) {
+        throw new RuntimeException("Invalid json format");
+      }
       
+      // data field is a map with campaign ids as keys and serialized campaign infos as values
       JSONObject dataHash = responseObj.get("data").isObject();
       
       // For each campaign, translate the serialized info into a 
@@ -500,10 +512,11 @@ public class AwDataTranslators {
       JSONValue value = JSONParser.parse(responseText);
       JSONObject responseObj = value.isObject();
       
-      // Get data field from response. It's a hash with campaign ids as 
-      // keys and serialized campaign info as values.
-      if (responseObj == null || !responseObj.containsKey("data")) return null;
+      if (responseObj == null || !responseObj.containsKey("data")) {
+        throw new RuntimeException("Invalid json format");
+      }
       
+      // data field is a map with campaign ids as keys and serialized campaign info as values
       JSONObject dataHash = responseObj.get("data").isObject();
       
       // For each campaign, translate json into a CampaignDetailedInfo 
@@ -673,6 +686,37 @@ public class AwDataTranslators {
       return appConfig;
     }
 
+    public static List<AuditLogEntry> translateAuditReadQueryJSONToAuditLogEntryList(String auditReadQueryJSON) throws Exception {
+      DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss.s");
+      List<AuditLogEntry> auditLogEntries = new ArrayList<AuditLogEntry>(); // retval
+      JSONValue value = JSONParser.parseStrict(auditReadQueryJSON);
+      JSONObject obj = value.isObject();
+      if (obj == null || !obj.containsKey("audits")) throw new Exception("Invalid json format.");
+      JSONArray auditList = obj.get("audits").isArray();
+      for (int i = 0; i < auditList.size(); i++) {
+        try {
+          AuditLogAwData awData = (AuditLogAwData)auditList.get(i).isObject().getJavaScriptObject();
+          AuditLogEntry audit = new AuditLogEntry();
+          audit.setTimestamp(dateTimeFormat.parse(awData.getTimestamp()));
+          audit.setClient(awData.getClient());
+          audit.setExtraDataJson(awData.getExtraData().toSource());
+          audit.setReceivedMillis(awData.getReceivedMillis());
+          audit.setRespondedMillis(awData.getRespondedMillis());
+          audit.setRequestParamsJson(awData.getRequestParams().toSource());
+          audit.setRequestType(RequestType.fromServerString(awData.getRequestType()));
+          audit.setResponseStatus(ResponseStatus.fromServerString(awData.getResponseStatus()));
+          audit.setUri(awData.getUri());
+          audit.setTimeToFillRequest(audit.getRespondedMillis() - audit.getReceivedMillis());
+          auditLogEntries.add(audit);
+        } catch (Exception e) {
+          _logger.warning("Could not parse json for audit log entry " + i + ", skipping entry.");
+          _logger.fine(e.getMessage());
+        }
+      }
+      return auditLogEntries;
+    }
+
+    
 	public static List<MobilityInfo> translateMobilityReadQueryJSONToMobilityInfoList(String mobilityReadQueryJSON) throws Exception {
 		List<MobilityInfo> mobilityInfos = new ArrayList<MobilityInfo>(); // retval
 		

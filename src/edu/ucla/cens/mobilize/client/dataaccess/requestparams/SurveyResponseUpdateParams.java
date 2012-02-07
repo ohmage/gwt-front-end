@@ -7,7 +7,7 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 
-public class SurveyResponseUpdateParams extends RequestParams {
+public class SurveyResponseUpdateParams implements RequestParams {
   public String authToken;
   public String campaignUrn;
   public String surveyKey;

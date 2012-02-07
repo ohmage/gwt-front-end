@@ -81,13 +81,11 @@ public class MessageWidget extends Composite {
     msg.setText(errorMsg); // overwrites existing, if any
     msgBox.setVisible(true);
     msgBox.setStyleName(style.msgBox() + " " + style.error());
-    if (errorList != null && !errorList.isEmpty()) {
-      StringBuilder sb = new StringBuilder();
-      for (String error : errorList) {
-        sb.append("<li>").append(error).append("</li>");
-      }
-      errorListElement.setInnerHTML(sb.toString());
+    StringBuilder sb = new StringBuilder();
+    for (String error : errorList) {
+      sb.append("<li>").append(error).append("</li>");
     }
+    errorListElement.setInnerHTML(sb.toString());
   }
   
   public void hide() {

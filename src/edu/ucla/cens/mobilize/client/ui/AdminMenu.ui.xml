@@ -11,6 +11,9 @@
 		.menuItemAdminHome {
 			background: 0px 50% no-repeat url('images/cog.png');
 		}
+		.menuItemAuditLog {
+			background: 0px 50% no-repeat url('images/table.png');
+		}
 	  .menuItemCreateUser {
 	  	background: 0px 50% no-repeat url('images/add_orange.png');
 	  }
@@ -29,7 +32,7 @@
 	  .menuItemManageCampaigns {
 	  	background: 0px 50% no-repeat url('images/phone.png');
 	  }
-	  .menuItemAdminHome,
+	  .menuItemAdminHome, .menuItemAuditLog,
 	  .menuItemCreateUser, .menuItemManageUsers,
 	  .menuItemCreateClass, .menuItemManageClasses,
 	  .menuItemCreateCampaign, .menuItemManageCampaigns {
@@ -64,9 +67,16 @@
 	</ui:style>
   <g:HTMLPanel addStyleNames='{style.container}'>
       <g:HTMLPanel ui:field='adminHomeContainer' addStyleNames='{style.menuItemContainer}'>
-        <g:Hyperlink targetHistoryToken='admin_user_create' ui:field='adminHomeHyperlink'>
+        <g:Hyperlink ui:field='adminHomeHyperlink'>
           <div class='{style.menuItemAdminHome}'>
             Admin Home
+          </div>
+        </g:Hyperlink>
+      </g:HTMLPanel>
+      <g:HTMLPanel ui:field='auditLogContainer' addStyleNames='{style.menuItemContainer}'>
+        <g:Hyperlink ui:field='auditLogHyperlink'>
+          <div class='{style.menuItemAuditLog}'>
+            Audit Log
           </div>
         </g:Hyperlink>
       </g:HTMLPanel>

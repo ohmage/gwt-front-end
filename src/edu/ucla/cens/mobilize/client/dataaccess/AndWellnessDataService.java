@@ -19,12 +19,14 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
+import edu.ucla.cens.mobilize.client.AwConstants.ErrorCode;
 import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.ErrorQueryAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.QueryAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.AuditLogSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
@@ -40,6 +42,7 @@ import edu.ucla.cens.mobilize.client.exceptions.NotLoggedInException;
 import edu.ucla.cens.mobilize.client.exceptions.ServerException;
 import edu.ucla.cens.mobilize.client.exceptions.ServerUnavailableException;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
+import edu.ucla.cens.mobilize.client.model.AuditLogEntry;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -87,54 +90,6 @@ public class AndWellnessDataService implements DataService {
     RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, URL.encode(serviceUrl));
     rb.setHeader("Content-Type", "application/x-www-form-urlencoded");
     return rb;
-  }
-  
-  /**
-   * Contains all the possible error codes returned by the AndWellness server.
-   */
-  public static enum ErrorCode {
-      E0101("0101", "JSON syntax error"),
-      E0102("0102", "no data in message"),
-      E0103("0103", "server error"),
-      E0104("0104", "session expired"),
-      E0200("0200", "authentication failed"),
-      E0201("0201", "disabled user"),
-      E0202("0202", "new account attempting to access a service without changing default password first"),
-      E0300("0300", "missing JSON data"),
-      E0301("0301", "unknown request type"),
-      E0302("0302", "unknown phone version"),
-      E0304("0304", "invalid campaign id"),
-      E0701("0701", "invalid user in query"),
-      E0716("0716", "participant cannot query stopped campaign"),
-      E0717("0717", "authors or analysts cannot query private campaigns");
-      
-      private final String errorCode;
-      private final String errorDescription;
-      
-      ErrorCode(String code, String description) {
-          errorCode = code;
-          errorDescription = description;
-      }
-      
-      public String getErrorCode() { return errorCode; }
-      public String getErrorDesc() { return errorDescription; }
-      
-      /**
-       * Returns the ErrorCode that has the passed in error code from the server.
-       * 
-       * @param err The error code from the server
-       * @return The correct ErrorCode, NULL if not found.
-       */
-      public static ErrorCode translateServerError(String err) {
-          // Loop over all ErrorCodes to find the right one.
-          for (ErrorCode errCode : ErrorCode.values()) {
-              if (err.equals(errCode.getErrorCode())) {
-                  return errCode;
-              }
-          }
-          
-          return null;
-      }
   }
   
   /**
@@ -557,7 +512,6 @@ public class AndWellnessDataService implements DataService {
       }
     });
   }
-  
 
   @Override
   public void fetchUserSearchResults(UserSearchParams params, final AsyncCallback<List<UserSearchInfo>> callback) {
@@ -1703,6 +1657,43 @@ public class AndWellnessDataService implements DataService {
             // no exception thrown? then it was a success
             callback.onSuccess(responseText);
           } catch (Exception exception) {
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }    
+  }
+
+  @Override
+  public void fetchAuditLog(AuditLogSearchParams params, final AsyncCallback<List<AuditLogEntry>> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.authToken = this.authToken;
+    params.client = this.client;
+    String postParams = params.toString();
+    _logger.fine("Fetching audit log with params: " + postParams);
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getAuditReadUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            List<AuditLogEntry> result = AwDataTranslators.translateAuditReadQueryJSONToAuditLogEntryList(responseText);
+            callback.onSuccess(result);            
+            // no exception thrown? then it was a success
+            callback.onSuccess(result);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
             callback.onFailure(exception);
           }
           
