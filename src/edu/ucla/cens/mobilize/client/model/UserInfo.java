@@ -81,6 +81,24 @@ public class UserInfo {
     return copy;
   }
   
+  /**
+   * Convenience method to get campaign name from user campaign info. Only works for 
+   * campaigns to which the user belongs.
+   * TODO: cache this data in dataservice instead
+   * @param campaignUrn
+   * @return Name of campaign with id campaignUrn or empty string if not found in user data
+   */
+  public String getCampaignName(String campaignUrn) {
+    String retval = "";
+    for (String campaignId : this.campaignIdToNameMap.keySet()) {
+      if (campaignId.equals(campaignUrn)) {
+        retval = this.campaignIdToNameMap.get(campaignId);
+        break;
+      }
+    }
+    return retval;
+  }
+  
   public void setCampaigns(Map<String, String> campaignIdToNameMap) {
     this.campaignIdToNameMap = campaignIdToNameMap;
   }

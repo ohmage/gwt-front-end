@@ -27,6 +27,7 @@ import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.model.SurveyResponseData;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
@@ -202,7 +203,6 @@ public interface DataService {
                             Date startDate,
                             Date endDate,
                             final AsyncCallback<List<SurveyResponse>> callback);
-  
   /**
    * Fetch survey response data to match the given parameter object
    * @param params
@@ -210,6 +210,9 @@ public interface DataService {
    */
   void fetchSurveyResponses(SurveyResponseReadParams params,
                             final AsyncCallback<List<SurveyResponse>> callback);
+
+  void fetchSurveyResponseData(SurveyResponseReadParams params, 
+                               final AsyncCallback<SurveyResponseData> callback);
   
   /**
    * Same as fetchSurveyResponses but just gives back the number of responses, not the data.

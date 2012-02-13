@@ -120,13 +120,13 @@ public class AwDataTranslators {
       return str;
     }
     
-    public static Integer translateSurveyResponseReadQueryJSONToSurveyCount(String surveyResponseReadQueryJSON) {
+    public static Integer translateSurveyResponseReadQueryJSONToTotalResponseCount(String surveyResponseReadQueryJSON) {
       int retval = -1;
       try {
         JSONValue value = JSONParser.parseStrict(surveyResponseReadQueryJSON);
         JSONObject responseHash = value.isObject();
         if (responseHash == null ) throw new RuntimeException("Invalid json response: " + surveyResponseReadQueryJSON);
-        JSONNumber numberOfSurveys = responseHash.get("metadata").isObject().get("number_of_surveys").isNumber();
+        JSONNumber numberOfSurveys = responseHash.get("metadata").isObject().get("total_num_survey_responses").isNumber();
         retval = (int)numberOfSurveys.doubleValue();
       } catch (Exception e) {
         _logger.severe("Could not extract survey count. Json was: " + surveyResponseReadQueryJSON);
@@ -134,7 +134,7 @@ public class AwDataTranslators {
       return retval;
     }
     
-    // returns null if there were no responses
+    // returns empty list if there were no responses
     public static List<SurveyResponse> translateSurveyResponseReadQueryJSONToSurveyResponseList(
         String promptResponseReadQueryJSON,
         String campaignId) {
@@ -144,6 +144,7 @@ public class AwDataTranslators {
       
       // if there were no responses for this query (for this campaign) return empty list immediately
       JSONNumber numberOfPrompts = responseHash.get("metadata").isObject().get("number_of_prompts").isNumber();
+      
       if (numberOfPrompts.doubleValue() < 1) return new ArrayList<SurveyResponse>();
       
       // data field contains a js array of survey response json objects
@@ -167,7 +168,7 @@ public class AwDataTranslators {
           surveyResponse.setCampaignId(campaignId);
           // NOTE: campaignName not included in prompt data, must be filled in later
           surveyResponse.setPrivacyState(Privacy.fromServerString(surveyResponseAwData.getPrivacy()));
-          surveyResponse.setResponseDate(surveyResponseAwData.getTimestamp()); // FIXME: timezone needed too?
+          surveyResponse.setResponseDate(new Date((long) surveyResponseAwData.getTime()));
           surveyResponse.setSurveyId(surveyResponseAwData.getSurveyId());
           surveyResponse.setSurveyName(surveyResponseAwData.getSurveyTitle());
           surveyResponse.setUserName(surveyResponseAwData.getUser());

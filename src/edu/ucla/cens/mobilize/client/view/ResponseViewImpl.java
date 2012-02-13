@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -33,7 +32,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
-import com.google.gwt.view.client.HasRows;
 import com.google.gwt.view.client.Range;
 import com.google.gwt.view.client.RangeChangeEvent;
 import com.google.gwt.view.client.RowCountChangeEvent;
@@ -46,11 +44,11 @@ import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisplayWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetBasic;
 import edu.ucla.cens.mobilize.client.ui.AwSimplePager;
+import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
-import edu.ucla.cens.mobilize.client.utils.StopWatch;
 
-public class ResponseViewImpl extends Composite implements ResponseView, HasRows {
+public class ResponseViewImpl extends Composite implements ResponseView {
   
   private static ResponseViewUiBinder uiBinder = GWT
       .create(ResponseViewUiBinder.class);
@@ -109,11 +107,10 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   Privacy selectedPrivacy = Privacy.UNDEFINED;
   private Subview selectedSubview;
   private String emptyParticipantListString = "None visible.";
-  private List<SurveyResponse> responses;
   private int visibleRangeStart = 0;
   private int visibleRangeMaxLength;
-
-  private Logger _logger = Logger.getLogger(ResponseViewImpl.class.getName());
+  private int rowCount;
+  private boolean rowCountIsExact = true;
   
   public ResponseViewImpl() {
     // instantiate pager here so instructor params can be passed
@@ -193,7 +190,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
         collapseAll();
       }
     });
-
+    
     resultsPerPage10MenuItem.setCommand(new Command() {
       @Override
       public void execute() {
@@ -218,27 +215,19 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
       }
     });
   }
-  
-  private void setVisibleRangeMaxLength(int length) { 
-    assert length == 10 || length == 50 || length == 100 : "visible range length must be one of 10, 50, 100";
-    this.visibleRangeMaxLength = length;
-    // remove underline from selected number 
-    this.resultsPerPage10MenuItem.setStyleName(length == 10 ? "" : "link");
-    this.resultsPerPage50MenuItem.setStyleName(length == 50 ? "" : "link");
-    this.resultsPerPage100MenuItem.setStyleName(length == 100 ? "" : "link");
-  }
+
 
   private void selectAll() {
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
         ResponseDisplayWidget widget = (ResponseDisplayWidget)responseList.getWidget(i);
-        widget.setSelected(true); // TODO: test for null?
+        widget.setSelected(true); 
     }
   }
   
   private void selectNone() {
     for (int i = 0; i < responseList.getWidgetCount(); i++) {
       ResponseDisplayWidget widget = (ResponseDisplayWidget)responseList.getWidget(i);
-      widget.setSelected(false); // TODO: test for null?
+      widget.setSelected(false); 
     }
   }
   
@@ -395,59 +384,56 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   public void setPhotoFilter(boolean showOnlyResponsesWithPhotos) {
     hasPhotoCheckBox.setValue(showOnlyResponsesWithPhotos);
   }
-  
+
   @Override
-  public void setResponses(List<SurveyResponse> responses) {
-    if (responses == null) return;
-    this.responses = responses;
-    this.setVisibleRange(0, this.visibleRangeMaxLength);
-    RowCountChangeEvent.fire(this, this.responses.size(), true);
+  public void showWaitIndicator() {
+    WaitIndicator.show();
   }
 
   @Override
-  public void setVisibleRange(int start, int maxLength) {
+  public void hideWaitIndicator() {
+    WaitIndicator.hide();
+  }
+  
+  @Override
+  public int getVisibleRangeStart() {
+    return this.visibleRangeStart;
+  }
+  
+  @Override
+  public void setVisibleRangeStart(int start) {
     this.visibleRangeStart = start;
-    StopWatch.start("render");
+  }
+  
+  public void renderResponses(List<SurveyResponse> responses) {
     if (Subview.EDIT.equals(selectedSubview)) {
-      renderResponsesEditView(start);
+      renderResponsesEditView(responses);
     } else if (Subview.BROWSE.equals(selectedSubview)) {
-      renderResponsesBrowseView(start);
+      renderResponsesBrowseView(responses);
     } else { // default to browse
-      renderResponsesBrowseView(start);
+      renderResponsesBrowseView(responses);
     }
-    StopWatch.stop("render");
-    _logger.finest(StopWatch.getTotalsString());
-    StopWatch.reset("render");
-    
-    RangeChangeEvent.fire(this, new Range(start, maxLength));
     this.scrollPanel.getElement().setScrollTop(0);
   }
-
-  @Override
-  public void setVisibleRange(Range range) {
-    setVisibleRange(range.getStart(), range.getLength());
-  }
   
-  private void renderResponsesEditView(int rangeStart) {
-    if (this.responseList == null) return;
+  private void renderResponsesEditView(List<SurveyResponse> responses) {
+    if (this.responseList == null || responses == null) return;
     this.responseList.clear();
-    int rangeEnd = Math.min(rangeStart + this.visibleRangeMaxLength, this.responses.size());
-    for (int i = rangeStart; i < rangeEnd; i++) {
+    for (SurveyResponse response : responses) {
       ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
       responseWidget.setSelectable(true);
-      responseWidget.setResponse(this.responses.get(i));
+      responseWidget.setResponse(response);
       this.responseList.add(responseWidget);
     }
   }
   
-  private void renderResponsesBrowseView(int rangeStart) {
-    if (this.responseList == null) return;
+  private void renderResponsesBrowseView(List<SurveyResponse> responses) {
+    if (this.responseList == null || responses == null) return;
     this.responseList.clear();
-    int rangeEnd = Math.min(rangeStart + this.visibleRangeMaxLength, this.responses.size());
-    for (int i = rangeStart; i < rangeEnd; i++) {
+    for (SurveyResponse response : responses) {
       ResponseWidgetBasic responseWidget = new ResponseWidgetBasic();
       responseWidget.setSelectable(false);
-      responseWidget.setResponse(this.responses.get(i));
+      responseWidget.setResponse(response);
       this.responseList.add(responseWidget);
     }
   }
@@ -479,6 +465,12 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
   public String getSelectedCampaign() {
     int index = this.campaignFilter.getSelectedIndex();
     return (index > -1) ? this.campaignFilter.getValue(index) : "";
+  }
+  
+  @Override
+  public String getSelectedCampaignName() {
+    int index = this.campaignFilter.getSelectedIndex();
+    return (index > -1) ? this.campaignFilter.getItemText(index) : "";
   }
 
   @Override
@@ -776,7 +768,7 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
 
   @Override
   public int getRowCount() {
-    return this.responses != null ? this.responses.size() : 0;
+    return this.rowCount;
   }
 
   @Override
@@ -786,18 +778,54 @@ public class ResponseViewImpl extends Composite implements ResponseView, HasRows
 
   @Override
   public boolean isRowCountExact() {
-    return true;
+    return this.rowCountIsExact;
   }
 
   @Override
   public void setRowCount(int count) {
-    // FIXME: ???
+    this.rowCount = count;
+    RowCountChangeEvent.fire(this, count, true);
   }
 
   @Override
   public void setRowCount(int count, boolean isExact) {
-    // FIXME: ???
+    setRowCount(count);
+    this.rowCountIsExact = isExact;
+  }
+  
+  @Override
+  public void setVisibleRange(Range range) {
+    setVisibleRange(range.getStart(), range.getLength());
   }
 
+  @Override
+  public void setVisibleRange(int start, int maxLength) {
+    this.visibleRangeStart = start;
+    RangeChangeEvent.fire(this, new Range(start, maxLength));
+  }
   
+  private void setVisibleRangeMaxLength(int length) {
+    // convert length (which could be any number, possibly typed in the url by user) to 
+    // one of the allowed page sizes - 10, 50, or 100
+    int pageSize; 
+    if (length < 50) pageSize = 10;
+    else if (length >= 50 && length < 100) pageSize = 50;
+    else pageSize = 100;
+    // save page size to make it available to presenter
+    this.visibleRangeMaxLength = pageSize;
+    // remove underline from selected number 
+    this.resultsPerPage10MenuItem.setStyleName(pageSize == 10 ? "" : "link");
+    this.resultsPerPage50MenuItem.setStyleName(pageSize == 50 ? "" : "link");
+    this.resultsPerPage100MenuItem.setStyleName(pageSize == 100 ? "" : "link");
+  }
+  
+  @Override
+  public int getSelectedPageSize() {
+    return this.visibleRangeMaxLength;
+  }
+  
+  @Override
+  public void setSelectedPageSize(int pageSize) {
+    setVisibleRangeMaxLength(pageSize);
+  }
 }

@@ -3,10 +3,7 @@ package edu.ucla.cens.mobilize.client.presenter;
 import java.util.ArrayList;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -24,27 +21,29 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.view.client.RangeChangeEvent;
+import com.google.gwt.view.client.RangeChangeEvent.Handler;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
-import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
-import edu.ucla.cens.mobilize.client.utils.StopWatch;
 import edu.ucla.cens.mobilize.client.view.ResponseView;
 import edu.ucla.cens.mobilize.client.view.ResponseView.Subview;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.dataaccess.requestparams.SurveyResponseReadParams;
 import edu.ucla.cens.mobilize.client.event.ResponseDataChangedEvent;
+import edu.ucla.cens.mobilize.client.event.ResponseDataChangedEventHandler;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
-import edu.ucla.cens.mobilize.client.exceptions.ApiException;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.model.SurveyResponseData;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 
@@ -57,11 +56,16 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   SortedSet<String> participants = new TreeSet<String>();
   List<String> campaignIds = new ArrayList<String>();
   List<String> surveys = new ArrayList<String>();
-  List<SurveyResponse> responses = new ArrayList<SurveyResponse>();
+  SurveyResponseData surveyResponseData = new SurveyResponseData();
   List<UserParticipationInfo> participationInfo;
   
   UserInfo userInfo;
-  List<CampaignShortInfo> campaigns;
+  String campaignName;
+  //List<CampaignShortInfo> campaigns;
+  
+
+  // when forceRefetch is true, every history token change causes data to be refetched
+  private boolean forceReload = false; // (useful for troubleshooting)
 
   private static Logger _logger = Logger.getLogger(ResponsePresenter.class.getName());
   
@@ -79,12 +83,24 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         userInfo = event.getUserInfo();
       }
     });
+    
+    eventBus.addHandler(ResponseDataChangedEvent.TYPE, new ResponseDataChangedEventHandler() {
+      @Override
+      public void onSurveyResponseDataChanged(ResponseDataChangedEvent event) {
+        // GOTCHA: drop down contents might be wrong if different responses are shared now
+        fetchAndShowResponses(surveyResponseData.getParams(), 
+                              view.getVisibleRangeStart(),
+                              view.getSelectedPageSize());
+      }
+    });
   }
 
   
   @Override
   public void go(Map<String, String> params) {
     assert view != null : "ResponsePresenter.go() called before view was set";
+    
+    boolean refireTokenWithDefaultValues = false;
     
     // remove leftover error messages, if any
     view.clearErrorMessages();
@@ -106,6 +122,35 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     boolean onlyPhotoResponses = params.containsKey("photo") ? params.get("photo").equals("true") : false;
     String startDateString = params.containsKey("from") ? params.get("from") : null;
     String endDateString = params.containsKey("to") ? params.get("to") : null;
+    
+    // Get start index from params if available, or refire history token which will
+    //   set start index to what's shown in the pager
+    int startIndex = -1;
+    if (params.containsKey("start")) {
+      try {
+        startIndex = Integer.parseInt(params.get("start"));
+      } catch (NumberFormatException e) {
+        refireTokenWithDefaultValues = true;
+      } 
+    } else {
+      refireTokenWithDefaultValues = true;
+    }
+    
+    // Get page size from params if available, or refire history token, which will
+    //   set page size to what's shown in the view
+    int pageSize = 10;
+    if (params.containsKey("page_size")) {
+      try {
+        pageSize = Integer.parseInt(params.get("page_size"));
+      } catch (NumberFormatException e) {
+        refireTokenWithDefaultValues = true;
+      }
+    } else {
+      refireTokenWithDefaultValues = true;
+    }
+    
+    // if true, app will always refetch data instead of attempting to use already loaded data
+    forceReload = params.containsKey("force_reload");
     
     // if no username given, default to all
     if (selectedParticipant == null || selectedParticipant.isEmpty()) {
@@ -137,6 +182,16 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     view.selectStartDate(startDate);
     view.selectEndDate(endDate);
     
+    view.setSelectedPageSize(pageSize);
+    pageSize = view.getSelectedPageSize(); // view might have rounded it
+    view.setVisibleRangeStart(startIndex);
+    
+    // if any missing values were set to defaults above, refire history token to make them explicit
+    if (refireTokenWithDefaultValues) {
+      this.fireHistoryTokenToMatchFilterValues();
+      return;
+    }
+    
     switch (selectedSubview) {
     case BROWSE:
       view.setSectionHeaderDetail("Private responses are visible only to the participant and supervisors. " +
@@ -150,7 +205,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                        selectedPrivacy,
                                        onlyPhotoResponses,
                                        startDate,
-                                       endDate);
+                                       endDate,
+                                       startIndex,
+                                       pageSize);
       break;
     case EDIT:
       // if editing isn't allowed for this installation, redirect to browse
@@ -170,7 +227,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                      selectedPrivacy,
                                      onlyPhotoResponses,
                                      startDate,
-                                     endDate);
+                                     endDate,
+                                     startIndex,
+                                     pageSize);
       break;
     default: // unrecognized view: redirect to browse
       view.setSelectedSubview(Subview.BROWSE);
@@ -184,40 +243,39 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   // as in fetchAndFillFiltersForEditView() which is called when user makes
   // a selection in the campaign drop down
   void fetchAndDisplayDataForEditView(final String selectedParticipant, 
-                                      final String selectedCampaign, 
+                                      final String selectedCampaignId, 
                                       final String selectedSurvey, 
                                       final Privacy selectedPrivacy,
                                       final boolean onlyPhotoResponses,
                                       final Date startDate,
-                                      final Date endDate) {    
-    // clear previous data, if any
-    this.responses.clear();
+                                      final Date endDate,
+                                      final int startIndex,
+                                      final int pageSize) {    
+    // Clear previous data, if any. Note: do not clear surveyResponseData b/c it can be re-used 
     this.view.clearResponseList();
     this.participants.clear();
     this.view.clearParticipantList();
     this.surveys.clear();
     this.view.clearSurveyList();
     this.view.disableSurveyFilter(); // disabled if campaign not selected
-
+    
     // campaign must be selected in edit view
-    if (selectedCampaign == null || selectedCampaign.isEmpty()) return;
+    if (selectedCampaignId == null || selectedCampaignId.isEmpty()) return;
     
     // fetch info about selected campaign - user's role and campaign running state
     CampaignReadParams params = new CampaignReadParams();
-    params.campaignUrns_opt.add(selectedCampaign);
+    params.campaignUrns_opt.add(selectedCampaignId);
 
-    WaitIndicator.show();
-    dataService.fetchCampaignDetail(selectedCampaign, new AsyncCallback<CampaignDetailedInfo>() {
+    dataService.fetchCampaignDetail(selectedCampaignId, new AsyncCallback<CampaignDetailedInfo>() {
         @Override
         public void onFailure(Throwable caught) {
-          WaitIndicator.hide();
+          campaignName = null;
           AwErrorUtils.logoutIfAuthException(caught);
-          ErrorDialog.show("Could not load data for campaign: " + selectedCampaign); 
+          ErrorDialog.show("Could not load data for campaign: " + selectedCampaignId); 
         }
   
         @Override
         public void onSuccess(CampaignDetailedInfo campaignInfo) {
-          WaitIndicator.hide();
           // set up survey filter with survey ids from campaign info (comes from xml config)
           view.enableSurveyFilter();
           view.setSurveyList(campaignInfo.getSurveyIds());
@@ -227,16 +285,19 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           if (campaignInfo.userIsSupervisorOrAdmin()) { 
             // supervisors can edit responses from any participant for any campaign
             boolean includeAllChoice = true; 
-            fetchParticipantsWithResponsesAndAddToList(selectedCampaign, 
+            fetchParticipantsWithResponsesAndAddToList(selectedCampaignId, 
                                                        selectedParticipant, 
                                                        includeAllChoice);
             fetchAndShowResponses(selectedParticipant, 
-                                  selectedCampaign, 
+                                  selectedCampaignId, 
+                                  campaignInfo.getCampaignName(),
                                   selectedSurvey, 
                                   selectedPrivacy,
                                   onlyPhotoResponses,
                                   startDate,
-                                  endDate);
+                                  endDate,
+                                  startIndex,
+                                  pageSize);
             
           } else if (campaignInfo.userIsParticipant()) {
             if (campaignInfo.isRunning()) {
@@ -246,12 +307,15 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
               view.setParticipantList(participants, false);
               view.selectParticipant(currentUser);
               fetchAndShowResponses(currentUser,
-                                    selectedCampaign, 
+                                    selectedCampaignId, 
+                                    campaignInfo.getCampaignName(),
                                     selectedSurvey, 
                                     selectedPrivacy,
                                     onlyPhotoResponses,
                                     startDate,
-                                    endDate);
+                                    endDate,
+                                    startIndex,
+                                    pageSize);
             } else {
               // user is participant but campaign is stopped - show an error message
               view.setSectionHeader(campaignInfo.getCampaignName() + " is stopped. " +
@@ -276,9 +340,10 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                         final Privacy selectedPrivacy,
                                         final boolean onlyPhotoResponses,
                                         final Date startDate,
-                                        final Date endDate) {    
-    // clear previous data, if any
-    this.responses.clear();
+                                        final Date endDate,
+                                        final int startIndex,
+                                        final int pageSize) {    
+    // Clear previous data, if any. Note: do not clear surveyResponseData b/c it can be re-used
     this.view.clearResponseList();
     this.participants.clear();
     this.view.clearParticipantList();
@@ -290,30 +355,30 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     if (selectedCampaign == null || selectedCampaign.isEmpty()) return;
     
     // fetch info about campaign: surveys, user's roles, campaign privacy setting
-    WaitIndicator.show();
     dataService.fetchCampaignDetail(selectedCampaign, new AsyncCallback<CampaignDetailedInfo>() {
         @Override
         public void onFailure(Throwable caught) {
-          WaitIndicator.hide();
           AwErrorUtils.logoutIfAuthException(caught);
           ErrorDialog.show("Could not load data for campaign: " + selectedCampaign); 
         }
   
         @Override
         public void onSuccess(CampaignDetailedInfo campaignInfo) {
-          WaitIndicator.hide();
           boolean includeAllChoice = true;
           fetchParticipantsWithResponsesAndAddToList(selectedCampaign,
                                                      selectedParticipant,
                                                      includeAllChoice);
           // fill responses            
           fetchAndShowResponses(selectedParticipant, 
-                                selectedCampaign, 
+                                selectedCampaign,
+                                campaignInfo.getCampaignName(),
                                 selectedSurvey, 
                                 selectedPrivacy,
                                 onlyPhotoResponses,
                                 startDate,
-                                endDate);
+                                endDate,
+                                startIndex,
+                                pageSize);
           // fill survey filter with survey ids from campaign info (comes from xml config)
           view.enableSurveyFilter();
           view.setSurveyList(campaignInfo.getSurveyIds()); 
@@ -449,7 +514,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       @Override
       public void onClick(ClickEvent event) {
         view.setSelectedSubview(Subview.EDIT);
-        view.selectPrivacyState(null); // so "All" will be selected when view changes
+        view.setVisibleRangeStart(0); 
         fireHistoryTokenToMatchFilterValues();
       }
     });
@@ -479,6 +544,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       @Override
       public void onClick(ClickEvent event) {
         if (validateDateFilters()) {
+          view.setVisibleRangeStart(0); 
           fireHistoryTokenToMatchFilterValues();
         }
       }
@@ -510,6 +576,19 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         if (endDate != null && endDate.before(event.getValue())) { 
           view.selectEndDate(newStartDate);
         }
+      }
+    });
+   
+    // pager next/prev fires history token to reload data. (allows bookmarking a page)
+    this.view.addRangeChangeHandler(new Handler() {
+      @Override
+      public void onRangeChange(RangeChangeEvent event) {
+        // save history token so page can be bookmarked, but don't fire it b/c that would reload everything
+        History.newItem(getHistoryTokenToMatchFilterValues(), false);
+        // update display, fetching more data only if needed
+        fetchAndShowResponses(surveyResponseData.getParams(), 
+                              view.getVisibleRangeStart(),
+                              view.getSelectedPageSize());
       }
     });
   }
@@ -560,14 +639,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   };
   
   private SurveyResponse getSurveyResponse(String surveyKey) {
-    SurveyResponse retval = null;
-    for (SurveyResponse surveyResponse : this.responses) {
-      if (surveyResponse.getResponseKey().equals(surveyKey)) {
-        retval = surveyResponse;
-        break;
-      }
-    }
-    return retval;
+    return this.surveyResponseData.getSurveyResponse(surveyKey);
   }
   
   // helper method
@@ -580,6 +652,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   // Responses in the display are updated one at a time when their request returns.
   private void shareSelectedResponses() {
     List<String> responseKeys = this.view.getSelectedSurveyResponseKeys();
+    // Update each response, updating display when the data call returns successfully
     for (String responseKey : responseKeys) {
       final String surveyKey = responseKey;
       // get info about the selected response
@@ -609,24 +682,16 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
             @Override
             public void onSuccess(String result) {
-              // update the display and internal data structure
-              
-              // if user is looking at only private responses, remove the newly shared response
-              // from the display and internal data structure and update the response count
-              if (view.getSelectedPrivacyState().equals(Privacy.PRIVATE)) { 
-                view.removeResponse(surveyKey);
-                SurveyResponse response = getSurveyResponse(surveyKey);
-                if (response != null) responses.remove(response);
-                view.showResponseCountInSectionHeader(view.getSelectedParticipant(), responses.size());
-                
+              // Update display. If privacy filter is set to show only Private responses, the newly
+              //   shared response is removed. Otherwise, it's just marked as shared.
+              if (view.getSelectedPrivacyState().equals(Privacy.PRIVATE)) {
+                // just remove for now. ResponseDataChangedEvent will cause page to refresh
+                surveyResponseData.removeResponse(surveyKey);
+                updateResponseDisplay(surveyResponseData, view.getVisibleRangeStart(), view.getSelectedPageSize());
               } else { 
-                // user is looking at all responses or shared responses, change the 
-                // privacy icon and update privacy in the internal data struct
-                SurveyResponse response = getSurveyResponse(surveyKey);
-                response.setPrivacyState(Privacy.SHARED);
-                view.markShared(surveyKey); // only mark shared after setPrivacyState is successful
+                surveyResponseData.setPrivacyState(surveyKey, Privacy.SHARED);
+                view.markShared(surveyKey); 
               }
-
             }
       });
     }
@@ -637,7 +702,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         eventBus.fireEvent(new ResponseDataChangedEvent());
       }
     };
-    t.schedule(3000); // 3 seconds
+    t.schedule(2000); // 2 seconds
   }
 
   // Loops through responses, sending a data request to update each one. 
@@ -674,21 +739,15 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
             @Override
             public void onSuccess(String result) {
-              // update display and internal data struct
-              
-              // if user is looking at only shared responses, remove the newly private response
-              // from the display and internal data structure and update the response count
+              // Update display. If privacy filter is set to show only Shared responses, the newly
+              //   Private response is removed. Otherwise, it's just marked as Private.
               if (view.getSelectedPrivacyState().equals(Privacy.SHARED)) {
-                view.removeResponse(surveyKey);
-                SurveyResponse response = getSurveyResponse(surveyKey);
-                if (response != null) responses.remove(response);
-                view.showResponseCountInSectionHeader(view.getSelectedParticipant(), responses.size());
-              } else {
-                // user is looking at all responses or private responses, change the 
-                // privacy icon and update privacy in the internal data struct
-                SurveyResponse response = getSurveyResponse(surveyKey);
-                response.setPrivacyState(Privacy.PRIVATE);
-                view.markPrivate(surveyKey); // only mark private after setPrivacyState is successful
+                // just remove for now. ResponseDataChangedEvent will cause page to refresh
+                surveyResponseData.removeResponse(surveyKey);
+                updateResponseDisplay(surveyResponseData, view.getVisibleRangeStart(), view.getSelectedPageSize());
+              } else { 
+                surveyResponseData.setPrivacyState(surveyKey, Privacy.PRIVATE);
+                view.markPrivate(surveyKey); 
               }
             }
       });
@@ -700,7 +759,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         eventBus.fireEvent(new ResponseDataChangedEvent());
       }
     };
-    t.schedule(3000); // 3 seconds
+    t.schedule(2000); // 2 seconds
   }
   
   // Loops through responses, sending a data request to delete each one. 
@@ -710,6 +769,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     for (String responseKeyString : responseKeyStrings) {
       final String responseKey = responseKeyString;
       String campaignUrn = getCampaignUrnForSurveyKey(responseKey);
+      
       if (campaignUrn == null) {
         _logger.severe("Could not find campaign urn for survey key: " + 
                         responseKeyString + 
@@ -730,17 +790,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
 
             @Override
             public void onSuccess(String result) {
-              // response was deleted. remove it from the display
-              view.removeResponse(responseKey);
-              // remove it from the internal data structure
-              for (SurveyResponse response : responses) {
-                if (response.getResponseKey() == responseKey) {
-                  responses.remove(response);
-                  break;
-                }
-              }
-              // update count
-              view.showResponseCountInSectionHeader(view.getSelectedParticipant(), responses.size());
+              // just remove for now. ResponseDataChangedEvent will cause page to refresh
+              surveyResponseData.removeResponse(responseKey);
+              updateResponseDisplay(surveyResponseData, view.getVisibleRangeStart(), view.getSelectedPageSize());
             }
       });
     }
@@ -751,10 +803,10 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         eventBus.fireEvent(new ResponseDataChangedEvent());
       }
     };
-    t.schedule(3000); // 3 seconds
+    t.schedule(2000); // 2 seconds
   }
   
-  private void fireHistoryTokenToMatchFilterValues() {
+  private String getHistoryTokenToMatchFilterValues() {
     Subview selectedSubview = view.getSelectedSubview();
     String selectedSubviewString = selectedSubview != null ? selectedSubview.toHistoryTokenString() : null;
     String participantName = view.getSelectedParticipant();
@@ -764,153 +816,144 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     boolean onlyPhotoResponses = view.getHasPhotoToggleValue();
     Date startDate = view.getSelectedStartDate();
     Date endDate = view.getSelectedEndDate();
-    History.newItem(HistoryTokens.responseList(selectedSubviewString,
-                                               participantName, 
-                                               campaignId, 
-                                               surveyName, 
-                                               privacy,
-                                               onlyPhotoResponses,
-                                               startDate,
-                                               endDate));
+    int startIndex = view.getVisibleRangeStart();
+    int pageSize = view.getSelectedPageSize();
+    return HistoryTokens.responseList(selectedSubviewString,
+                                      participantName, 
+                                      campaignId, 
+                                      surveyName, 
+                                      privacy,
+                                      onlyPhotoResponses,
+                                      startDate,
+                                      endDate,
+                                      startIndex,
+                                      pageSize);
   }
   
-  // Gets list of campaigns from userInfo and fetches responses for each. 
-  // Args are values to filter by. Any arg set to null or "" is ignored.
-  // If campaignIdOrNull is set to null, query is done against all user's campaigns.
-  private void fetchAndShowResponses(final String userName,
-                                     final String campaignIdOrNull, 
+  private void fireHistoryTokenToMatchFilterValues() {
+    History.newItem(getHistoryTokenToMatchFilterValues());
+  }
+  
+  // Renders responses from internal data struct. Assumes the requested data is already 
+  //   loaded. If there's a possibility it might not be, use fetchAndShowResponses instead.
+  private void updateResponseDisplay(SurveyResponseData responseData, int startIndex, int pageSize) {
+    // push response data into display
+    view.renderResponses(responseData.getResponses(startIndex, pageSize));
+    
+    // make sure filter selections match loaded data. (An example of when this might not be true
+    //   is when user changes filters but clicks next on the pager instead of "show responses")
+    SurveyResponseReadParams params = responseData.getParams();
+    String participantName = (params.userList != null && !params.userList.isEmpty()) ?
+                              params.userList.get(0) : null;
+    view.selectCampaign(params.campaignUrn);
+    view.selectEndDate(params.endDate_opt);
+    view.selectParticipant(participantName);
+    view.selectPrivacyState(params.privacyState_opt);
+    view.selectStartDate(params.startDate_opt);
+    view.selectSurvey(params.surveyIdList_opt != null && !params.surveyIdList_opt.isEmpty() ? params.surveyIdList_opt.get(0) : null);
+    
+    // update counts display
+    view.showResponseCountInSectionHeader(participantName, this.surveyResponseData.getTotalResponseCount());
+    view.setRowCount(this.surveyResponseData.getTotalResponseCount());
+  }
+  
+  private int calcNumResponsesToFetch(int pageSize) {
+    // heuristically chosen. double page size so user can remove up to pageSize 
+    // responses and still have data to update the display without going to db
+    return pageSize * 2;
+  }
+  
+  /**
+   * Use this method to display responses filterd by criteria in paramsArg. If data is not
+   *   already loaded, this method will request it from the server and display when done
+   * @param paramsArg SurveyResponseReadParams object with query filter info
+   * @param startIndex Server-side index of first response to show (range.start)
+   * @param pageSize Number of responses to display
+   */
+  private void fetchAndShowResponses(final SurveyResponseReadParams paramsArg,
+                                     final int startIndex,
+                                     final int pageSize) {
+    
+    // check to see if the request can be filled using data that's already loaded
+    if (!forceReload && this.surveyResponseData.hasRequestedData(paramsArg, startIndex, pageSize)) {
+      updateResponseDisplay(this.surveyResponseData, startIndex, pageSize);
+    } else { // otherwise fetch data and show it
+      // defensive copy
+      final SurveyResponseReadParams params = new SurveyResponseReadParams(paramsArg);
+      view.showWaitIndicator();
+      params.numToSkip_opt = startIndex;
+      params.numToProcess_opt = calcNumResponsesToFetch(pageSize);
+      surveyResponseData.clear(); // clean up previous data
+      this.dataService.fetchSurveyResponseData(params, new AsyncCallback<SurveyResponseData>() {
+        @Override
+        public void onFailure(Throwable caught) {
+          view.hideWaitIndicator();
+          view.addErrorMessage("There was a problem loading responses for campaign: " + campaignName, 
+                               caught.getMessage());
+          _logger.severe(caught.getMessage());
+          AwErrorUtils.logoutIfAuthException(caught);        
+        }
+  
+        @Override
+        public void onSuccess(SurveyResponseData result) {
+          view.hideWaitIndicator();
+          // save the result to member variable so it can be used to look up response objects later
+          surveyResponseData = result;
+          // save filter params used to generate this result; useful for checking whether data can be re-used
+          surveyResponseData.setParams(params);
+          // fill in campaign name before displaying
+          result.setCampaignName(campaignName);
+          // update view
+          updateResponseDisplay(result, startIndex, pageSize);
+        }
+      });
+    }
+  }
+  
+  /**
+   * 
+   * @param participantName
+   * @param campaignId
+   * @param campaignName
+   * @param surveyName
+   * @param privacy
+   * @param onlyPhotoResponses
+   * @param startDate
+   * @param endDate
+   * @param startIndex
+   * @param pageSize
+   */
+  private void fetchAndShowResponses(final String participantName,
+                                     final String campaignId, 
+                                     final String campaignName,
                                      final String surveyName,
                                      final Privacy privacy,
                                      final boolean onlyPhotoResponses,
                                      final Date startDate,
-                                     final Date endDate) {
-    // clear previous display so app will show appropriate message if all
-    // the async requests return 0 responses
-    this.responses.clear();
-    view.clearResponseList();
-    
-    if (userName == null || userName.isEmpty()) return;
-
-    // set header that will be shown if all requests return 0 responses
-    view.showResponseCountInSectionHeader(userName, 0);
-    
-    Map<String, String> campaignsToQuery = new HashMap<String, String>();
-    boolean suppressCampaignErrors; 
-    if (campaignIdOrNull != null && userInfo.getCampaigns().containsKey(campaignIdOrNull)) {
-      campaignsToQuery.put(campaignIdOrNull, userInfo.getCampaigns().get(campaignIdOrNull));
-      suppressCampaignErrors = false;
+                                     final Date endDate,
+                                     final int startIndex,
+                                     final int pageSize) {
+    final SurveyResponseReadParams params = new SurveyResponseReadParams();
+    if (participantName != null && !participantName.isEmpty()) {
+      params.userList.add(participantName);
     } else {
-      campaignsToQuery.putAll(userInfo.getCampaigns());
-      suppressCampaignErrors = true; 
+      params.userList.add(AwConstants.specialAllValuesToken);
     }
-    
-    WaitIndicator.show(); // will be hidden by first result in fetchAndShowResponsesForCampaign
-    for (String campaignId : campaignsToQuery.keySet()) {
-      fetchAndShowResponsesForCampaign(userName,
-          campaignId, 
-          campaignsToQuery.get(campaignId),
-          surveyName,
-          privacy,
-          onlyPhotoResponses,
-          startDate,
-          endDate,
-          suppressCampaignErrors);
-      
-    }
+    params.campaignUrn = campaignId;
+    if (surveyName != null && !surveyName.isEmpty()) params.surveyIdList_opt.add(surveyName);
+    params.privacyState_opt = privacy;
+    params.startDate_opt = startDate;
+    params.endDate_opt = endDate;
+    params.columnList_opt = Arrays.asList("urn:ohmage:user:id",
+                                          "urn:ohmage:survey:id",
+                                          "urn:ohmage:survey:title",
+                                          "urn:ohmage:survey:description",
+                                          "urn:ohmage:survey:privacy_state",
+                                          "urn:ohmage:prompt:response",
+                                          "urn:ohmage:context:epoch_millis");
+    params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
+    params.returnId = true; // include survey key so survey can be updated in edit view
+    if (surveyName != null && !surveyName.isEmpty()) params.surveyIdList_opt.add(surveyName);
+    fetchAndShowResponses(params, startIndex, pageSize);
   }
-  
-  // Fetch responses for just one campaign, add them to existing list and refresh display.
-  // NOTE: This method exists because api only lets you query for responses for one 
-  //   campaign at a time. When showing responses for all campaigns, the app makes
-  //   multiple calls to this method.
-  private void fetchAndShowResponsesForCampaign(final String participantName,
-                                                final String campaignId, 
-                                                final String campaignName,
-                                                final String surveyName,
-                                                final Privacy privacy,
-                                                final boolean onlyPhotoResponses,
-                                                final Date startDate,
-                                                final Date endDate, 
-                                                final boolean suppressCampaignErrors) {
-    StopWatch.start("fetch");
-    // GOTCHA: when logged in user != selected participant, this only shows
-    //   responses from campaigns that both participant and logged in user belong to
-    this.dataService.fetchSurveyResponses(participantName,
-        campaignId,
-        surveyName,
-        privacy,
-        startDate,
-        endDate,
-        new AsyncCallback<List<SurveyResponse>>() {
-          @Override
-          public void onFailure(Throwable caught) {
-            StopWatch.stop("fetch");
-            WaitIndicator.hide();
-            // NOTE: When fetching all responses, we don't know ahead of time which campaigns
-            //   it makes sense to query, so we query all the user's campaigns and ignore 
-            //   certain errors  :(
-            // NOTE: if you add an error to this list you should also add it to the ErrorCode
-            //   enum and make sure it's defined as an ApiException in AndWellnessDataService
-            //   (search the file for "E0701" and add the new error in the same places)
-            if (suppressCampaignErrors && caught.getClass().equals(ApiException.class)) {
-              String errorCode = ((ApiException)caught).getErrorCode();
-              // 0701 - invalid user in query
-              // 0717 - analyst queried private campaign
-              // 0716 - participant trying to view a stopped campaign
-              if ("0701".equals(errorCode) || "0717".equals(errorCode) || "0716".equals(errorCode)) { 
-                return; // silently ignore the error
-              }
-            }
-            
-            view.addErrorMessage("There was a problem loading responses for campaign: " + campaignName, 
-                                 caught.getMessage());
-            _logger.severe(caught.getMessage());
-            AwErrorUtils.logoutIfAuthException(caught);
-          }
-          
-          @Override
-          public void onSuccess(List<SurveyResponse> result) {
-            StopWatch.stop("fetch");
-            WaitIndicator.hide();
-            if (result == null || result.isEmpty()) return; // avoid unnecessary work 
-            
-            // if successful, add the result to list of responses already
-            // fetched from other campaigns
-            
-            // fill in campaign name before displaying
-            for (SurveyResponse response : result) {
-              response.setCampaignName(campaignName);
-            }
-            
-            // if photo flag is set, keep only responses with images
-            if (onlyPhotoResponses) {
-              for (SurveyResponse response : result) {
-                if (response.hasImage()) responses.add(response);
-              }
-            } else { // otherwise, keep them all
-              responses.addAll(result);
-            }
-            
-            StopWatch.start("sort");
-            // sort by date, newest first
-            Collections.sort(responses, responseDateComparator);
-            StopWatch.stop("sort");
-            view.showResponseCountInSectionHeader(participantName, responses.size());
-            StopWatch.start("render");
-            view.setResponses(responses);
-            StopWatch.stop("render");
-            _logger.finest(StopWatch.getTotalsString());
-          }
-    });
-
-  }
-  
-  // for sorting response by date
-  private Comparator<SurveyResponse> responseDateComparator = new Comparator<SurveyResponse>() {
-    @Override
-    public int compare(SurveyResponse arg0, SurveyResponse arg1) {
-      return arg1.getResponseDate().compareTo(arg0.getResponseDate()); // recent dates first
-    }
-  };
-  
 }

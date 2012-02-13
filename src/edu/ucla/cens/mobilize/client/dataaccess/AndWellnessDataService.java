@@ -51,6 +51,7 @@ import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.model.SurveyResponseData;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
@@ -738,7 +739,6 @@ public class AndWellnessDataService implements DataService {
           } catch (Exception exception) {
             callback.onFailure(exception);
           }
-          
         }
   
         @Override
@@ -837,7 +837,6 @@ public class AndWellnessDataService implements DataService {
     
     fetchSurveyResponses(params, callback);   
   }
-  
 
   @Override
   public void fetchSurveyResponseCount(String username, 
@@ -871,7 +870,7 @@ public class AndWellnessDataService implements DataService {
           try {
             String responseText = getResponseTextOrThrowException(requestBuilder, response);
             // no exception thrown? then it was a success
-            Integer numResponses = AwDataTranslators.translateSurveyResponseReadQueryJSONToSurveyCount(responseText);
+            Integer numResponses = AwDataTranslators.translateSurveyResponseReadQueryJSONToTotalResponseCount(responseText);
             callback.onSuccess(numResponses);
           } catch (Exception exception) {
             _logger.severe(exception.getMessage());
@@ -938,6 +937,51 @@ public class AndWellnessDataService implements DataService {
     } 
   }
   
+
+  @Override
+  public void fetchSurveyResponseData(SurveyResponseReadParams params,
+                                      final AsyncCallback<SurveyResponseData> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    params.authToken = this.authToken;
+    params.client = this.client;
+    String postParams = params.toString();
+    _logger.fine("Fetching survey response data with params: " + postParams);
+    final String campaignId = params.campaignUrn;
+    final int startIndex = params.numToSkip_opt;
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getSurveyResponseReadUrl());
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {          
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            // no exception thrown? then it was a success
+            List<SurveyResponse> responses =
+              AwDataTranslators.translateSurveyResponseReadQueryJSONToSurveyResponseList(responseText, campaignId);
+            int totalResponseCount = AwDataTranslators.translateSurveyResponseReadQueryJSONToTotalResponseCount(responseText);
+            SurveyResponseData data = new SurveyResponseData();
+            data.setResponses(startIndex, responses);
+            data.setTotalResponseCount(totalResponseCount);
+            callback.onSuccess(data);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          
+        }
+  
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+  }
+  
   @Override
   public void fetchSurveyResponses(SurveyResponseReadParams params,
                                    final AsyncCallback<List<SurveyResponse>> callback) {
@@ -997,7 +1041,7 @@ public class AndWellnessDataService implements DataService {
           try {
             getResponseTextOrThrowException(requestBuilder, response);
             // no exception thrown? then it was a success
-            callback.onSuccess(""); // TODO: message?
+            callback.onSuccess(""); 
           } catch (Exception exception) {
             _logger.severe(exception.getMessage());
             callback.onFailure(exception);
@@ -1835,4 +1879,5 @@ public class AndWellnessDataService implements DataService {
 			throw new ServerException("Cannot contact server.");
 		}    
 	}
+
 }

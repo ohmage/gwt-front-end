@@ -10,11 +10,12 @@ import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.view.client.HasRows;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.*;
 
-public interface ResponseView extends IsWidget {
+public interface ResponseView extends IsWidget, HasRows {
   
   interface Presenter {
     void setView(ResponseView view);
@@ -27,6 +28,8 @@ public interface ResponseView extends IsWidget {
   void addErrorMessage(String error, String detail);
   void clearErrorMessages();
   void showConfirmDelete(ClickHandler onConfirmDelete);
+  void showWaitIndicator();
+  void hideWaitIndicator();
   
   // navigation
   Subview getSelectedSubview();
@@ -57,6 +60,7 @@ public interface ResponseView extends IsWidget {
   // get selected filters
   String getSelectedParticipant();
   String getSelectedCampaign();
+  String getSelectedCampaignName();
   String getSelectedSurvey();
   Privacy getSelectedPrivacyState();
   Date getSelectedStartDate();
@@ -68,8 +72,7 @@ public interface ResponseView extends IsWidget {
   void clearSelectedSurveyResponseKeys();
   
   // display
-  void setResponses(List<SurveyResponse> responses);
-  
+  void renderResponses(List<SurveyResponse> responses);
   void clearResponseList();
   void markShared(String responseKey);
   void markPrivate(String responseKey);
@@ -78,7 +81,13 @@ public interface ResponseView extends IsWidget {
   void disableSurveyFilter();
   void setSectionHeader(String headerText);
   void setSectionHeaderDetail(String detailText);
-  void showResponseCountInSectionHeader(String username, int responseCount);
+  void showResponseCountInSectionHeader(String username, int count);
+  
+  // paging
+  int getVisibleRangeStart();
+  void setVisibleRangeStart(int start); // no events fired
+  int getSelectedPageSize();
+  void setSelectedPageSize(int pageSize);
   
   // gui elements needed by presenter for event handling
   HasClickHandlers getViewLinkBrowse();
@@ -104,5 +113,7 @@ public interface ResponseView extends IsWidget {
       try { retval = Subview.valueOf(view.toUpperCase()); } catch (Exception e) {}
       return retval; // null if unrecognized
     }
-  };
+  }
+
+
 }

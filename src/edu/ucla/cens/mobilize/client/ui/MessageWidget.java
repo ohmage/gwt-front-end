@@ -73,12 +73,16 @@ public class MessageWidget extends Composite {
   }
 
   public void addError(String errorMsg, String errorDetail) {
-    boolean isNewError = true;
-    for (String knownError : errorList) {
-      if (knownError.equals(errorDetail)) isNewError = false;
+    // if error detail is not already listed, add it
+    if (errorDetail != null) {
+      boolean isNewError = true;
+      for (String knownError : errorList) {
+        if (knownError.equals(errorDetail)) isNewError = false;
+      }
+      if (isNewError) errorList.add(errorDetail);
     }
-    if (isNewError) errorList.add(errorDetail);
-    msg.setText(errorMsg); // overwrites existing, if any
+    // set general error message, overwriting existing message, if any
+    msg.setText(errorMsg);
     msgBox.setVisible(true);
     msgBox.setStyleName(style.msgBox() + " " + style.error());
     StringBuilder sb = new StringBuilder();

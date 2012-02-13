@@ -7,7 +7,6 @@ import java.util.List;
 import edu.ucla.cens.mobilize.client.common.LocationStatus;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;
-import edu.ucla.cens.mobilize.client.utils.DateUtils;
 
 public class SurveyResponse {
 
@@ -70,13 +69,8 @@ public class SurveyResponse {
 	public void setResponseKey(String dbKey) { this.dbKey = dbKey; } 
 	
 	public Date getResponseDate() { return this.responseDate; }
-	public void setResponseDate(String dateStringInServerFormat) {
-	  try {
-      this.responseDate = DateUtils.translateFromServerFormat(dateStringInServerFormat);
-	  } catch (Exception exception) { // FIXME: IllegalArgumentException?
-	    // TODO: log error message
-	    responseDate = new Date();
-	  }
+	public void setResponseDate(Date responseDate) {
+	  this.responseDate = responseDate;
 	}
 	
 	public void setLocation(Double latitude, Double longitude) {

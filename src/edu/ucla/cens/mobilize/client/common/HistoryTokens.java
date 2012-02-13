@@ -237,16 +237,20 @@ public class HistoryTokens {
                                     Privacy privacy,
                                     boolean onlyPhotoResponses,
                                     Date startDate,
-                                    Date endDate) {
+                                    Date endDate,
+                                    Integer startIndex,
+                                    Integer pageSize) {
     Map<String, String> params = new HashMap<String, String>();
     if (view != null) params.put("v", view);
     if (participant != null) params.put("uid", participant);
     if (campaign != null) params.put("cid", campaign);
-    if (survey != null) params.put("sid", survey);
-    if (privacy != null) params.put("privacy", privacy.toServerString());
+    if (survey != null && !survey.isEmpty()) params.put("sid", survey);
+    if (privacy != null && !privacy.equals(Privacy.UNDEFINED)) params.put("privacy", privacy.toServerString());
     if (onlyPhotoResponses) params.put("photo", "true"); 
     if (startDate != null) params.put("from", DateUtils.translateToHistoryTokenFormat(startDate));
     if (endDate != null) params.put("to", DateUtils.translateToHistoryTokenFormat(endDate));
+    if (startIndex != null) params.put("start", Integer.toString(Math.max(startIndex, 0))); // don't let index be negative
+    if (pageSize != null) params.put("page_size", Integer.toString(pageSize)); 
     return params.isEmpty() ? "responses" : "responses?" + MapUtils.translateToParameters(params);
   }
   
