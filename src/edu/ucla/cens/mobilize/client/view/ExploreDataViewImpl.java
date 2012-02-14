@@ -740,8 +740,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     }
     
     List<Marker> markers = new ArrayList<Marker>();	// markers to add to MarkerClusterer
+    LatLngBounds bounds = LatLngBounds.newInstance();
     
-    LatLngBounds bounds = LatLngBounds.newInstance();    
+    boolean hasPlottableData = false;
+    
     // Add new data points 
     for (SurveyResponse response : responses) {
       if (response.hasLocation()) {
@@ -759,8 +761,15 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
             showResponseDetail(marker);
           }
         });
+        
+        hasPlottableData = true;
       }
-    }    
+    }
+    
+    if (hasPlottableData == false) {
+      String user = this.getSelectedParticipant();
+      ErrorDialog.show("The user \'" + user + "\' does not have any plottable responses.");
+    }
 
     // pass markers list to MarkerClusterer for clustered rendering
     markerClusterer = MarkerClusterer.newInstance(mapWidget.getMap(), markers.toArray(new Marker[markers.size()]), true);
