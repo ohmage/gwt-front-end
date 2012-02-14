@@ -67,6 +67,11 @@
     	position: relative;
     	top: -6px;
     }
+    .pagerBottom {
+    	display: inline-block;
+    	position: relative;
+    	top: -3px;
+    }
     .pagerLabel {
     	padding-right: 8px;
     }
@@ -78,6 +83,9 @@
     .pagerWrapper {
     	margin: 0px auto;
     	width: 150px;
+    }
+    .pagerWrapperBottom {
+    	margin-left: 150px;
     }
     .photoCheckBox {
     	padding: 5px 0px;
@@ -291,7 +299,7 @@
     <g:south size='28'>
       <g:HTMLPanel>
       <g:HTMLPanel addStyleNames='{style.buttonPanelWrapperBottom}'>
-        <g:HorizontalPanel>
+        <g:HorizontalPanel width="100%">
           <g:HTMLPanel tag='span' ui:field='buttonPanelBottom'>
             <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
               <g:Anchor ui:field='selectAllLinkBottom' addStyleNames='{style.smallActionLink}'>
@@ -330,6 +338,10 @@
                 collapse
               </g:Anchor>
             </g:HTMLPanel>
+          </g:HTMLPanel>
+          
+          <g:HTMLPanel addStyleNames='{style.pagerWrapperBottom}'>
+            <c:SimplePager ui:field='pagerBottom' addStyleNames='{style.pagerBottom}' />
           </g:HTMLPanel>
         </g:HorizontalPanel>
        </g:HTMLPanel>

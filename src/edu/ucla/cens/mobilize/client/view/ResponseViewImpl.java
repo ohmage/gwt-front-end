@@ -102,6 +102,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField HTMLPanel buttonPanelTop;
   @UiField HTMLPanel buttonPanelBottom;
   @UiField(provided=true) AwSimplePager pager;
+  @UiField(provided=true) AwSimplePager pagerBottom;
   
   ResponseView.Presenter presenter;
   Privacy selectedPrivacy = Privacy.UNDEFINED;
@@ -113,9 +114,10 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   private boolean rowCountIsExact = true;
   
   public ResponseViewImpl() {
-    // instantiate pager here so instructor params can be passed
+    // instantiate pagers here so instructor params can be passed
     SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class); 
     pager = new AwSimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
+    pagerBottom = new AwSimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
     initWidget(uiBinder.createAndBindUi(this));
     initComponents();
     setEventHandlers();
@@ -130,6 +132,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     // set up pager
     pager.setDisplay(this);
     pager.setHeight("15px");
+    pagerBottom.setDisplay(this);
+    pagerBottom.setHeight("15px");
     setVisibleRangeMaxLength(10);
   }
   
