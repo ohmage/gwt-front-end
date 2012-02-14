@@ -22,8 +22,7 @@ public class SurveyInfo {
     }
     
     /**
-     * Copy constructor, creates a copy of the passed in SurveyInfo.
-     * 
+     * Copy constructor
      * @param survey The survey information to copy.
      */
     public SurveyInfo(SurveyInfo survey) {
@@ -32,8 +31,13 @@ public class SurveyInfo {
     }
     
     // Setters/getters, all getters copy for mtuable objects
-    public void setSurveyName(String surveyName) { this.surveyName = surveyName; }
-    public String getSurveyName() { return surveyName; }
+    public void setSurveyName(String surveyName) { 
+      this.surveyName = surveyName; 
+    }
+    
+    public String getSurveyName() { 
+      return surveyName; 
+    }
     
     public void setSurveyTitle(String surveyTitle) { this.surveyTitle = surveyTitle; }
     public String getSurveyTitle() { return surveyTitle; }
@@ -41,8 +45,14 @@ public class SurveyInfo {
     public void setSurveyDescription(String surveyDescription) { this.surveyDescription = surveyDescription; }
     public String getSurveyDescription() { return surveyDescription; }
     
-    public void addPrompt(PromptInfo prompt) { promptList.add(prompt); }
-    public void setPromptList(List<PromptInfo> promptList) { this.promptList = promptList; }
+    public void addPrompt(PromptInfo prompt) {
+      if (prompt != null) promptList.add(prompt); 
+    }
+    
+    public void setPromptList(List<PromptInfo> promptList) { 
+      this.promptList = promptList; 
+    }
+    
     public List<PromptInfo> getPromptList() {
         List<PromptInfo> copy = new ArrayList<PromptInfo>();
         for (PromptInfo prompt:promptList) {
@@ -51,7 +61,10 @@ public class SurveyInfo {
         return copy;
     }
     
-    // get a single prompt by id. returns null if prompt not found
+    /**
+     * Returns a copy of the PromptInfo object with id promptId or null 
+     * if none found
+     */
     public PromptInfo getPrompt(String promptId) {
       PromptInfo retval = null;
       for (PromptInfo pinfo : this.promptList) {

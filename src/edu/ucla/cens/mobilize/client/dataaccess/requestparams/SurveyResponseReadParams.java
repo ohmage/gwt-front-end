@@ -13,6 +13,7 @@ import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 public class SurveyResponseReadParams implements RequestParams {
+  // NOTE: if you add a new param here make sure to add it to the copy constructor as well
   public String authToken;
   public String campaignUrn;
   public String client;
@@ -39,6 +40,9 @@ public class SurveyResponseReadParams implements RequestParams {
   public Integer numToSkip_opt = null;
   public Integer numToProcess_opt = null;
   
+  // not used in api query but is needed by response presenter for bookkeeping
+  public String promptType_opt = null;
+  
   public enum OutputFormat { JSON_ROWS, JSON_COLS, CSV;
     public String toParamString() {
       if (this.equals(JSON_ROWS)) return "json-rows";
@@ -51,7 +55,7 @@ public class SurveyResponseReadParams implements RequestParams {
   public SurveyResponseReadParams() {}
   
   /**
-   * Copy constructor for creating defensive copy
+   * Copy constructor, useful when you need a defensive copy
    * @param origParams
    */
   public SurveyResponseReadParams(SurveyResponseReadParams origParams) {
@@ -78,6 +82,7 @@ public class SurveyResponseReadParams implements RequestParams {
     if (origParams.userList != null) {
       this.userList = new ArrayList<String>(origParams.userList);
     }
+    this.promptType_opt = origParams.promptType_opt;
   }
   
   @Override

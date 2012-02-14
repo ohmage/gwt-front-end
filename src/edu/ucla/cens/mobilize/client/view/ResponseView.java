@@ -30,6 +30,7 @@ public interface ResponseView extends IsWidget, HasRows {
   void showConfirmDelete(ClickHandler onConfirmDelete);
   void showWaitIndicator();
   void hideWaitIndicator();
+  void showNoPhotoResponsesMessage();
   
   // navigation
   Subview getSelectedSubview();
@@ -39,6 +40,7 @@ public interface ResponseView extends IsWidget, HasRows {
   // enabled/disable filters
   void showAllFilters();
   void hideOptionalFilters();
+  void setPhotoResponsesCheckBoxEnabled(boolean isEnabled);
   
   // load values in filters
   void setParticipantList(SortedSet<String> participantNames, boolean makeFirstItemAll);
@@ -65,7 +67,7 @@ public interface ResponseView extends IsWidget, HasRows {
   Privacy getSelectedPrivacyState();
   Date getSelectedStartDate();
   Date getSelectedEndDate();
-  boolean getHasPhotoToggleValue();
+  boolean getOnlyPhotoResponsesFlag();
   
   // response management
   List<String> getSelectedSurveyResponseKeys();
