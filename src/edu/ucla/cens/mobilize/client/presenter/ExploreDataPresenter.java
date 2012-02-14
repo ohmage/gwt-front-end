@@ -258,13 +258,13 @@ public class ExploreDataPresenter implements Presenter {
 		);
 	}
 
-	private void fetchMobilityDataAndShowOnGraph(final Date startDate, final Date endDate) {
+	private void fetchMobilityDataAndShowOnGraph(final Date startDate, final Date endDate) { //FIXME: blah
 		view.showWaitIndicator();
 		
-		dataService.fetchMobilityDataChunked(
+		dataService.fetchMobilityData(
 			startDate,
-			endDate,
-			new AsyncCallback<List<MobilityChunkedInfo>>() {
+			null,
+			new AsyncCallback<List<MobilityInfo>>() {
 				@Override
 				public void onFailure(Throwable caught) {
 					_logger.severe(caught.getMessage());
@@ -272,7 +272,7 @@ public class ExploreDataPresenter implements Presenter {
 				}
 				
 				@Override
-				public void onSuccess(List<MobilityChunkedInfo> result) {	//FIXME
+				public void onSuccess(List<MobilityInfo> result) {	//FIXME
 					// show responses on map
 					view.showMobilityDataOnGraph(result);
 					view.hideWaitIndicator();

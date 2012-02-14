@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.ajaxloader.client.ArrayHelper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ErrorEvent;
@@ -75,13 +76,16 @@ import edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 import edu.ucla.cens.mobilize.client.utils.MarkerClusterer;
+import edu.ucla.cens.mobilize.client.utils.MobilityUtils;
 
 // viz
 import com.google.gwt.visualization.client.AbstractDataTable;
+import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.visualizations.corechart.AreaChart;
 import com.google.gwt.visualization.client.visualizations.corechart.AxisOptions;
+import com.google.gwt.visualization.client.visualizations.corechart.BarChart;
 import com.google.gwt.visualization.client.visualizations.corechart.Options;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
@@ -979,17 +983,87 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	}
 	
 	@Override
-	public void showMobilityDataOnGraph(final List<MobilityChunkedInfo> mdata) {
+	public void showMobilityDataOnGraph(final List<MobilityInfo> mdata) {
 		// hide previous plot, if any
 		clearPlot(); 
 		hideWaitIndicator();
 		
 		final VerticalPanel panels = new VerticalPanel();
-		/* Vertical panel will be arranged like so:
-		 *   --------------
-		 *  |              |
-		 *   --------------
-		 */
+		final int interval = 10;	// minutes
+		final List<MobilityMode> buckets = MobilityUtils.bucketByInterval(mdata, interval);
+		
+		Runnable barChartCallback = new Runnable() {
+			public void run() {
+				DataTable data = createMobilityBarChartData(buckets, interval);
+				Options options = createMobilityBarChartOptions(buckets);
+				BarChart viz = new BarChart(data, options);
+				panels.add(viz);
+			}
+		};
+        VisualizationUtils.loadVisualizationApi(barChartCallback, BarChart.PACKAGE);
+		
+        plotContainer.add(panels);
+	}
+	
+	private Options createMobilityBarChartOptions(final List<MobilityMode> buckets) {
+		Map<MobilityMode, String> colorTable = new HashMap<MobilityMode, String>();
+		colorTable.put(MobilityMode.STILL, "#FF0000");	// Red
+		colorTable.put(MobilityMode.WALK, "#FF8800");	// Orange
+		colorTable.put(MobilityMode.RUN, "#FFFF00");	// Yellow
+		colorTable.put(MobilityMode.BIKE, "#44FF00");	// Green
+		colorTable.put(MobilityMode.DRIVE, "#0022CC");	// Blue
+		colorTable.put(MobilityMode.ERROR, "#AAAAAA");	// Gray
+		
+		Options options = Options.create();
+		options.setWidth(800);
+		options.setHeight(200);
+		options.setIsStacked(true);
+		options.setLegend(LegendPosition.NONE);
+		options.set("enableInteractivity", false);
+		
+		List<String> colors = new ArrayList<String>();
+		for (MobilityMode m : buckets) {
+			String colorStr = (colorTable.containsKey(m)) ? colorTable.get(m) : colorTable.get(MobilityMode.ERROR);
+			colors.add(colorStr);
+		}
+		options.setColors(ArrayHelper.toJsArrayString(colors.toArray(new String[colors.size()])));
+		
+		/*
+		AxisOptions hAxisOpts = AxisOptions.create();
+		hAxisOpts.setTitle("Time of Day");
+		options.setHAxisOptions(hAxisOpts);
+		AxisOptions vAxisOpts = AxisOptions.create();
+		vAxisOpts.setTitle("Data Points");
+		options.setVAxisOptions(vAxisOpts);
+		*/
+		return options;
+	}
+	
+	private DataTable createMobilityBarChartData(final List<MobilityMode> buckets, int minuteInterval) {
+		DataTable data = DataTable.create();
+		data.addColumn(AbstractDataTable.ColumnType.STRING, "Time");
+		
+		// Set up columns
+		for (MobilityMode m : buckets)
+			data.addColumn(AbstractDataTable.ColumnType.NUMBER, m.toString());
+		
+		data.addRow();
+		for (int i = 1; i <= buckets.size(); i++) {
+			data.setValue(0, 0, "Activities");
+			data.setValue(0, i, minuteInterval);
+		}
+		
+		return data;
+	}
+	
+	/*
+	 * @Override
+	public void showMobilityDataOnGraph(final List<MobilityInfo> mdata) {
+		// hide previous plot, if any
+		clearPlot(); 
+		hideWaitIndicator();
+		
+		final VerticalPanel panels = new VerticalPanel();
 		
 		//--- (1) Plot pie chart
 		final Map<MobilityMode, Integer> mc_table = tabulateMobilityChunkedModes(mdata);
@@ -1048,7 +1122,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
         
         plotContainer.add(panels);
 	}
-	
+	 * */
 	
 	private Map<MobilityMode, Integer> tabulateMobilityChunkedModes(List<MobilityChunkedInfo> data) {
 		int num_still = 0;
