@@ -9,6 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.ajaxloader.client.ArrayHelper;
+import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
+import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
+import com.google.gwt.canvas.dom.client.CssColor;
+import com.google.gwt.canvas.dom.client.FillStrokeStyle;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ErrorEvent;
@@ -248,7 +254,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     // mobility
     TreeItem mobility = getTreeItem("Mobility", style.treeItemCategory()); // category
     TreeItem mobilityMap = getTreeItem("Mobility Map", PlotType.MOBILITY_MAP, style.treeItemMap());
-    TreeItem mobilityGraph = getTreeItem("Activity Graph", PlotType.MOBILITY_GRAPH, style.treeItemMap());
+    TreeItem mobilityGraph = getTreeItem("Temporal Summary", PlotType.MOBILITY_GRAPH, style.treeItemMap());
     
     // build the tree
     plotTypeTree.addItem(surveyResponseCounts);
@@ -892,471 +898,184 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	}
 	
 	@Override
-	public void showMobilityChunkedDataOnMap(final List<MobilityChunkedInfo> mdata) {
-		// hide previous plot, if any
-		clearPlot(); 
-		
-		// add responses to map, attach it to the document to make it visible
-		if (mapWidget == null) { // lazy init map, add responses when done
-			initMap(new Runnable() {
-				@Override
-				public void run() {
-					drawMobilityChunkedDataOnMap(mdata);
-					hideWaitIndicator();
-				}
-			});
-		} else { // map already initialized
-			drawMobilityChunkedDataOnMap(mdata);
-		}
-	}
-	
-	private void drawMobilityChunkedDataOnMap(List<MobilityChunkedInfo> mdata) {
-		// Clear any previous data points    
-		clearOverlays();
-		
-		// Show error message if user has no mobility data
-		if (mdata == null || mdata.isEmpty()) {
-			ErrorDialog.show("Sorry, we couldn't find any mobility data for the selected date range.");
-			return;
-		}
-		boolean hasPlottableData = false;
-		for (MobilityChunkedInfo m : mdata) {
-			if (m.getLocationStatus() != LocationStatus.UNAVAILABLE) {
-				hasPlottableData = true;
-				break;
-			}
-		}
-		if (hasPlottableData == false) {
-			ErrorDialog.show("Sorry, we couldn't find any mobility data for the selected date range.");
-			return;
-		}
-		
-		LatLngBounds bounds = LatLngBounds.newInstance();    
-		// Add new data points 
-		for (MobilityChunkedInfo m : mdata) {
-			if (m.getLocationStatus() != LocationStatus.UNAVAILABLE) {
-				final LatLng location = LatLng.newInstance(m.getLocationLat(), m.getLocationLong());
-				bounds.extend(location);
-				
-				final Marker marker = Marker.newInstance();
-				marker.setPosition(location);
-				marker.setMap(mapWidget.getMap());
-				
-				// Select highest freq mode
-				MobilityMode mode = MobilityMode.ERROR;
-				int max_mode_count = 0;
-				for (MobilityMode key : m.getModeCount().keySet()) {
-					if (m.getModeCount().get(key) > max_mode_count) {
-						mode = key;
-						max_mode_count = m.getModeCount().get(key);
-					}
-				}
-				
-				// Pick marker corresponding to mode 
-				try {
-					MarkerImage.Builder imgBuilder;
-					if (mode == MobilityMode.STILL) {
-						imgBuilder = new MarkerImage.Builder("images/mobility/m_still.png");
-					} else if (mode == MobilityMode.WALK) {
-						imgBuilder = new MarkerImage.Builder("images/mobility/m_walk.png");
-					} else if (mode == MobilityMode.RUN) {
-						imgBuilder = new MarkerImage.Builder("images/mobility/m_run.png");
-					} else if (mode == MobilityMode.BIKE) {
-						imgBuilder = new MarkerImage.Builder("images/mobility/m_bike.png");
-					} else if (mode == MobilityMode.DRIVE) {
-						imgBuilder = new MarkerImage.Builder("images/mobility/m_drive.png");
-					} else { // "ERROR" or unknown
-						imgBuilder = new MarkerImage.Builder("images/mobility/m_error.png");
-					}
-					marker.setIcon(imgBuilder.build());
-				} catch (Exception e) {
-					//do nothing
-				}
-				
-				markerToMobilityChunkedMap.put(marker, m);
-				
-				Event.addListener(marker, "click", new EventCallback() {
-					@Override
-					public void callback() {
-						showMobilityChunkedDetail(marker);
-					}
-				});
-			}
-		}
-		
-		// Attach map before calculating zoom level or it might be incorrectly set to 0 (?)
-		if (!mapWidget.isAttached()) plotContainer.add(mapWidget);
-		
-		// Zoom and center the map to the new bounds
-		mapWidget.getMap().fitBounds(bounds); 
-	}
-	
-	@Override
 	public void showMobilityDataOnGraph(final List<MobilityInfo> mdata) {
 		// hide previous plot, if any
 		clearPlot(); 
 		hideWaitIndicator();
 		
 		final VerticalPanel panels = new VerticalPanel();
-		final int interval = 10;	// minutes
+		final int interval = 5;	// minutes
 		final List<MobilityMode> buckets = MobilityUtils.bucketByInterval(mdata, interval);
 		
-		Runnable barChartCallback = new Runnable() {
-			public void run() {
-				DataTable data = createMobilityBarChartData(buckets, interval);
-				Options options = createMobilityBarChartOptions(buckets);
-				BarChart viz = new BarChart(data, options);
-				panels.add(viz);
-			}
-		};
-        VisualizationUtils.loadVisualizationApi(barChartCallback, BarChart.PACKAGE);
+		// DEBUG: testing only
+		DateTimeFormat format = DateTimeFormat.getFormat("EEEE, MMMM dd, yyyy");
+		Date current_day_label = mdata.get(0).getDate();
+		final String day_str = format.format(current_day_label);
+		
+		Label date_label = new Label(day_str);
+		panels.add(date_label);
+		
+		Widget testViz = createMobilityBarChartCanvasWidget(buckets, interval, 750, 120, true, true);
+		panels.add(testViz);
 		
         plotContainer.add(panels);
 	}
 	
-	private Options createMobilityBarChartOptions(final List<MobilityMode> buckets) {
+	/**
+	 * Generates a widget containing a temporal summary of the bucketed mobility data. Invalid parameters returns null
+	 * @param buckets the List of MobilityMode data for an entire day
+	 * @param interval the minute duration of each bucket
+	 * @param width the output widget width
+	 * @param height the output widget height
+	 * @param showAxisLabels True to show axis time labels (e.g. 3pm) and pad borders with white space; False to hide
+	 * @param showLegend True to show a legend on the right of the plot (this would reduce the plot size); False to hide
+	 * @return the HTML5 canvas widget
+	 */
+	private Widget createMobilityBarChartCanvasWidget(final List<MobilityMode> buckets, final int interval, final int width, final int height, boolean showAxisLabels, boolean showLegend) {
+		// Color mapping for each MobilityMode; this is hardcoded here for function portability
 		Map<MobilityMode, String> colorTable = new HashMap<MobilityMode, String>();
-		colorTable.put(MobilityMode.STILL, "#FF0000");	// Red
-		colorTable.put(MobilityMode.WALK, "#FF8800");	// Orange
-		colorTable.put(MobilityMode.RUN, "#FFFF00");	// Yellow
-		colorTable.put(MobilityMode.BIKE, "#44FF00");	// Green
-		colorTable.put(MobilityMode.DRIVE, "#0022CC");	// Blue
-		colorTable.put(MobilityMode.ERROR, "#AAAAAA");	// Gray
+		colorTable.put(MobilityMode.STILL, "#ea5855");	// Earth-tone red
+		colorTable.put(MobilityMode.WALK, "#f3b359");	// Earth-tone orange
+		colorTable.put(MobilityMode.RUN, "#f4e64b");	// Earth-tone yellow
+		colorTable.put(MobilityMode.BIKE, "#95d480");	// Earth-tone green
+		colorTable.put(MobilityMode.DRIVE, "#18b3f0");	// Earth-tone blue
+		colorTable.put(MobilityMode.ERROR, "#dcdcdc");	// Earth-tone gray
 		
-		Options options = Options.create();
-		options.setWidth(800);
-		options.setHeight(200);
-		options.setIsStacked(true);
-		options.setLegend(LegendPosition.NONE);
-		options.set("enableInteractivity", false);
-		
-		List<String> colors = new ArrayList<String>();
-		for (MobilityMode m : buckets) {
-			String colorStr = (colorTable.containsKey(m)) ? colorTable.get(m) : colorTable.get(MobilityMode.ERROR);
-			colors.add(colorStr);
-		}
-		options.setColors(ArrayHelper.toJsArrayString(colors.toArray(new String[colors.size()])));
-		
-		/*
-		AxisOptions hAxisOpts = AxisOptions.create();
-		hAxisOpts.setTitle("Time of Day");
-		options.setHAxisOptions(hAxisOpts);
-		AxisOptions vAxisOpts = AxisOptions.create();
-		vAxisOpts.setTitle("Data Points");
-		options.setVAxisOptions(vAxisOpts);
-		*/
-		return options;
-	}
-	
-	private DataTable createMobilityBarChartData(final List<MobilityMode> buckets, int minuteInterval) {
-		DataTable data = DataTable.create();
-		data.addColumn(AbstractDataTable.ColumnType.STRING, "Time");
-		
-		// Set up columns
-		for (MobilityMode m : buckets)
-			data.addColumn(AbstractDataTable.ColumnType.NUMBER, m.toString());
-		
-		data.addRow();
-		for (int i = 1; i <= buckets.size(); i++) {
-			data.setValue(0, 0, "Activities");
-			data.setValue(0, i, minuteInterval);
+		//--- (0) Error checking
+		if (buckets == null || buckets.size() == 0 || interval <= 0 || width <= 0 || height <= 0) {
+			return null;
 		}
 		
-		return data;
-	}
-	
-	/*
-	 * @Override
-	public void showMobilityDataOnGraph(final List<MobilityInfo> mdata) {
-		// hide previous plot, if any
-		clearPlot(); 
-		hideWaitIndicator();
+		//--- (1) Set up canvas, determine offsets
+		Canvas canvas = Canvas.createIfSupported();
+		if (canvas == null)
+			return null;
 		
-		final VerticalPanel panels = new VerticalPanel();
+		canvas.setWidth(Integer.toString(width));
+		canvas.setHeight(Integer.toString(height));
+		canvas.setCoordinateSpaceWidth(width);
+		canvas.setCoordinateSpaceHeight(height);
 		
-		//--- (1) Plot pie chart
-		final Map<MobilityMode, Integer> mc_table = tabulateMobilityChunkedModes(mdata);
-		Runnable onLoadCallback = new Runnable() {
-			public void run() {
-				DataTable data = createMobilityPieData(mc_table);
-				PieOptions opt = createMobilityPieOptions();
-				PieChart pie = new PieChart(data, opt);
-				panels.add(pie);
-			}
-		};
-        VisualizationUtils.loadVisualizationApi(onLoadCallback, PieChart.PACKAGE);
+		Context2d context = canvas.getContext2d();
 		
-        //--- (2) Plot day charts
-        
-		// first divide up the mdata list by day (warning: assumes MobilityChunkedInfo is sorted)
-		int num_days_span = getMobilityDaysSpan(mdata);
-		if (num_days_span < 1) {
-			ErrorDialog.show("There was no mobility data found for the selected date range.");
-			return;
-		}
-		List<List<MobilityChunkedInfo>> split_data = splitMobilityChunkedByDays(mdata);
+		int axisLabelHeight = (showAxisLabels) ? 20 : 0;
+		int legendWidth = (showLegend) ? 120 : 0;
+		int plotXoffset = (showAxisLabels) ? 20 : 0;
+		int plotYoffset = (showAxisLabels) ? 10 : 0;
+		int plotWidth = width - 2*plotXoffset - legendWidth;
+		int plotHeight = height - 2*plotYoffset - axisLabelHeight;
 		
-		// get the date names for displaying
-		List<Date> split_dates_for_labels = new ArrayList<Date>();
-		Date cur_date = mdata.get(0).getDate();
-		split_dates_for_labels.add(cur_date);	//add the first date
-		for (int i = 1; i < num_days_span; i++) {	// already added 1st one, start from 2nd date
-			cur_date = split_dates_for_labels.get(i-1);
-			split_dates_for_labels.add(DateUtils.addOneDay(cur_date));
-		}
-		DateTimeFormat format = DateTimeFormat.getFormat("EEEE, MMM dd");
-		
-		// plot each day
-		for (int i = 0; i < split_data.size(); i++) {
-			Date current_day_label = split_dates_for_labels.get(i);
-			final String day_label = format.format(current_day_label);
-			final List<MobilityChunkedInfo> day_list = split_data.get(i);
-			
-			if (day_list.isEmpty()) {
-				Label notAvailableText = new Label();
-				notAvailableText.setText("No mobility data is available for " + day_label);
-				panels.add(notAvailableText);
-			} else {
-				Runnable areaChartCallback = new Runnable() {
-					public void run() {
-						DataTable data = createMobilityAreaChartData(day_list);
-						Options opt = createMobilityAreaChartOptions("Mobility for " + day_label);
-						AreaChart areaChart = new AreaChart(data, opt);
-						panels.add(areaChart);
-					}
-				};
-		        VisualizationUtils.loadVisualizationApi(areaChartCallback, AreaChart.PACKAGE);
-			}
-		}
-        
-        plotContainer.add(panels);
-	}
-	 * */
-	
-	private Map<MobilityMode, Integer> tabulateMobilityChunkedModes(List<MobilityChunkedInfo> data) {
-		int num_still = 0;
-		int num_walk = 0;
-		int num_run = 0;
-		int num_bike = 0;
-		int num_drive = 0;
-		int num_error = 0;
-		
-		// tabulate values
-		for (MobilityChunkedInfo m : data) {
-			for (MobilityMode k : m.getModeCount().keySet()) {
-				int countToAdd = m.getModeCount().get(k);
+		// --- (2) Draw X-axis
+		if (showAxisLabels) {
+			final int hourInterval = 3;	// NOTE: Must be a common factor of 24
+			for (int hour = 0; hour <= 24; hour += hourInterval) {
+				// Calculate tick mark origin
+				double x, y;
+				x = plotXoffset + (double)hour * (double)plotWidth / 24.0;
+				y = plotYoffset + plotHeight;
 				
-				if (k.equals(MobilityMode.STILL)) {
-					num_still += countToAdd;
-				} else if (k.equals(MobilityMode.WALK)) {
-					num_walk += countToAdd;
-				} else if (k.equals(MobilityMode.RUN)) {
-					num_run += countToAdd;
-				} else if (k.equals(MobilityMode.BIKE)) {
-					num_bike += countToAdd;
-				} else if (k.equals(MobilityMode.DRIVE)) {
-					num_drive += countToAdd;
-				} else { // 'ERROR' mobility mode
-					num_error += countToAdd;
-				}
+				// Draw tick mark
+				context.setLineWidth(1);
+				context.setStrokeStyle(CssColor.make("#CCCCCC"));
+				context.beginPath();
+				context.moveTo(x, y+3);
+				context.lineTo(x, y+10);
+				context.stroke();
+				
+				// Draw label underneath tick mark
+				String str = getPrettyHourStr(hour);
+				context.setFillStyle(CssColor.make("#666666"));
+				context.setFont("bold 8pt Arial");
+				context.setTextAlign(TextAlign.CENTER);
+				context.setTextBaseline(TextBaseline.TOP);
+				context.fillText(str, x, y+10);
 			}
 		}
 		
-		Map<MobilityMode, Integer> total_mc = new HashMap<MobilityMode, Integer>();
-		total_mc.put(MobilityMode.STILL, num_still);
-		total_mc.put(MobilityMode.WALK, num_walk);
-		total_mc.put(MobilityMode.RUN, num_run);
-		total_mc.put(MobilityMode.BIKE, num_bike);
-		total_mc.put(MobilityMode.DRIVE, num_drive);
-		total_mc.put(MobilityMode.ERROR, num_error);
-		
-		return total_mc;
-	}
-	
-	private int getMobilityDaysSpan(final List<MobilityChunkedInfo> mdata) {
-		if (mdata == null || mdata.isEmpty())
-			return 0;
-		
-		MobilityChunkedInfo first = mdata.get(0);
-		MobilityChunkedInfo last = mdata.get(mdata.size()-1);
-		Date first_day = first.getDate();
-		Date last_day = last.getDate();
-		return DateUtils.daysApart(first_day, last_day) + 1; // add one to count the first day
-	}
-	
-	private List<List<MobilityChunkedInfo>> splitMobilityChunkedByDays(final List<MobilityChunkedInfo> mdata) {
-		if (mdata == null || mdata.isEmpty())
-			return null;
-		
-		int num_days = getMobilityDaysSpan(mdata);
-		if (num_days < 1)
-			return null;
-		
-		List<List<MobilityChunkedInfo>> days_data = new ArrayList<List<MobilityChunkedInfo>>();
-		int m_index = 0;
-		for (int i = 0; i < num_days; i++) {
-			if (m_index >= mdata.size())
-				break;
+		// --- (3) Draw legend
+		if (showLegend) {
+			double legendYspacing = (double)plotHeight / (double)colorTable.size();
+			double legendYoffset = legendYspacing / 2.0;
+			double legendXoffset = 40;
 			
-			// split up data by day
-			List<MobilityChunkedInfo> one_day = new ArrayList<MobilityChunkedInfo>();
-			int base_index = m_index;
-			for (; m_index < mdata.size(); m_index++) {
-				// check if days are different
-				if (DateUtils.daysApart(mdata.get(base_index).getDate(), mdata.get(m_index).getDate()) > 0)
-					break;
-				one_day.add(mdata.get(m_index));
+			int keyCount = 0;
+			for (MobilityMode m : colorTable.keySet()) {
+				// Calculate offset for the color icon and text label
+				double x, y, w, h;
+				x = plotXoffset + plotWidth + legendXoffset;
+				y = plotYoffset + legendYoffset + legendYspacing*keyCount;
+				w = 30.0;
+				h = legendYspacing - 4.0;
+				
+				// Draw color icon
+				context.setFillStyle(CssColor.make(colorTable.get(m)));
+				context.fillRect(x, y - (h / 2.0), w, h);
+				
+				// Draw text label
+				String str = m.toString();
+				context.setFillStyle(CssColor.make("#000000"));
+				context.setFont("bold 8pt Arial");
+				context.setTextAlign(TextAlign.LEFT);
+				context.setTextBaseline(TextBaseline.MIDDLE);
+				context.fillText(str, x+w+4, y);
+				
+				keyCount++;
 			}
+		}
+		
+		// --- (4) Now, draw the plot
+		final int overflow = 24*60 - buckets.size()*interval;
+		final double stretchFactor = (double)plotWidth / (24*60);
+		
+		double x_pos = 0;
+		for (int i = 0; i < buckets.size(); i++) {
+			double x, y, w, h;
 			
-			days_data.add(one_day);
-		}
-		return days_data;
-	}
-	
-	private PieOptions createMobilityPieOptions() {
-		PieOptions options = PieOptions.create();
-		options.setWidth(650);
-		options.setHeight(300);
-		options.set3D(true);
-		options.setTitle("Total Mobility States");
-		options.setColors("#FF0000","#FF8800","#FFFF00","#44FF00","#0000FF","#888888");
-		return options;
-	}
-	
-	private DataTable createMobilityPieData(Map<MobilityMode, Integer> table) {
-		DataTable data = DataTable.create();
-		data.addColumn(AbstractDataTable.ColumnType.STRING, "Mobility State");
-		data.addColumn(AbstractDataTable.ColumnType.NUMBER, "Count");
-		data.addRows(6);
-		data.setValue(0, 0, "Still");
-		data.setValue(0, 1, table.get(MobilityMode.STILL));
-		data.setValue(1, 0, "Walk");
-		data.setValue(1, 1, table.get(MobilityMode.WALK));
-		data.setValue(2, 0, "Run");
-		data.setValue(2, 1, table.get(MobilityMode.RUN));
-		data.setValue(3, 0, "Bike");
-		data.setValue(3, 1, table.get(MobilityMode.BIKE));
-		data.setValue(4, 0, "Drive");
-		data.setValue(4, 1, table.get(MobilityMode.DRIVE));
-		data.setValue(5, 0, "Error");
-		data.setValue(5, 1, table.get(MobilityMode.ERROR));
-		return data;
-	}
-	
-	private Options createMobilityAreaChartOptions(String title) {
-		Options options = Options.create();
-		options.set("areaOpacity", 0.5);
-		options.set("focusTarget", "category");
-		options.set("pointSize", 3.0);
-		options.set("chartArea.left", 0.0);
-		options.set("chartArea.top", 0.0);
-		
-		options.setWidth(680);
-		options.setHeight(400);
-		options.setIsStacked(true);
-		options.setTitle(title);
-		//options.setColors("#FF0000","#FF8800","#FFFF00","#44FF00","#0000FF","#888888");
-		options.setColors("#888888","#0000FF","#44FF00","#FFFF00","#FF8800","#FF0000");	//reversed
-		
-		AxisOptions hAxisOpts = AxisOptions.create();
-		hAxisOpts.setTitle("Time of Day");
-		options.setHAxisOptions(hAxisOpts);
-		AxisOptions vAxisOpts = AxisOptions.create();
-		vAxisOpts.setTitle("Data Points");
-		options.setVAxisOptions(vAxisOpts);
-		
-		return options;
-	}
-	
-	private DataTable createMobilityAreaChartData(List<MobilityChunkedInfo> oneDayMobilityData) {
-		DataTable data = DataTable.create();
-		data.addColumn(AbstractDataTable.ColumnType.STRING, "Time");
-		data.addColumn(AbstractDataTable.ColumnType.NUMBER, "Error");	//reversed
-		data.addColumn(AbstractDataTable.ColumnType.NUMBER, "Drive");
-		data.addColumn(AbstractDataTable.ColumnType.NUMBER, "Bike");
-		data.addColumn(AbstractDataTable.ColumnType.NUMBER, "Run");
-		data.addColumn(AbstractDataTable.ColumnType.NUMBER, "Walk");
-		data.addColumn(AbstractDataTable.ColumnType.NUMBER, "Still");
-		
-		data.addRows(24);	//NOTE: this value * hour_interval must be EXACTLY 24!
-		int hour_interval = 1; //hour
-		
-		for (int hour = 0, index = 0; hour < 24; hour += hour_interval, index++) {
-			Map<MobilityMode, Integer> table = tabulateMobilityChunkedModesByTime(oneDayMobilityData, hour, hour+hour_interval-1);
-			data.setValue(index, 0, prettyTimeRangeStr(hour, hour+hour_interval));
-			data.setValue(index, 6, table.get(MobilityMode.STILL));	//reversed
-			data.setValue(index, 5, table.get(MobilityMode.WALK));
-			data.setValue(index, 4, table.get(MobilityMode.RUN));
-			data.setValue(index, 3, table.get(MobilityMode.BIKE));
-			data.setValue(index, 2, table.get(MobilityMode.DRIVE));
-			data.setValue(index, 1, table.get(MobilityMode.ERROR));
+			// Determine x,y,w,h to draw rect
+			x = plotXoffset + x_pos;
+			y = plotYoffset;
+			w = stretchFactor * (double) interval;
+			h = (double) plotHeight;
+			
+			// Determine color
+			context.setFillStyle(CssColor.make(colorTable.get(buckets.get(i))));
+			
+			// Draw rectangle
+			context.fillRect(x,y,w,h);
+			
+			// Increment position
+			x_pos += w;
 		}
 		
-		//"12am-3am", "3am-6am", "6am-9am", "9am-12pm", "12pm-3pm", "3pm-6pm", "6pm-9pm", "9pm-12am"
+		// Fill overflow (if any) with gray rectangles 
+		if (overflow > 0) {
+			double x, y, w, h;
+			x = plotYoffset + x_pos;
+			y = plotYoffset;
+			w = plotWidth - x_pos;
+			h = (double) plotHeight;
+			context.setFillStyle(CssColor.make(colorTable.get(MobilityMode.ERROR)));
+			context.fillRect(x,y,w,h);
+		}
 		
-		return data;
+		return canvas;
 	}
 	
-	private String prettyTimeRangeStr(int start_hour, int end_hour) {
-		start_hour %= 24;
-		end_hour %= 24;
+	/**
+	 * Helper function for createMobilityBarChartCanvasWidget(...)
+	 * @param hour the hour of the day represented in 24-hours (0 ~ 23), starting at 0 for midnight
+	 * @return the string representing the 12-hour format value along with meridiem notation
+	 */
+	private String getPrettyHourStr(int hour) {
+		hour %= 24;
 		String str = "";
-		if (start_hour == 0)		str += "12";
-		else if (start_hour > 12)	str += Integer.toString(start_hour-12);
-		else						str += Integer.toString(start_hour);
-		str += (start_hour < 12 || start_hour >= 24) ? "am" : "pm";
-		if (start_hour == end_hour)
-			return str;
-		str += "-";
-		if (end_hour == 0)			str += "12";
-		else if (end_hour > 12)		str += Integer.toString(end_hour-12);
-		else						str += Integer.toString(end_hour);
-		str += (end_hour < 12 || start_hour >= 24) ? "am" : "pm";
+		if (hour == 0)		str += "12";
+		else if (hour > 12)	str += Integer.toString(hour-12);
+		else						str += Integer.toString(hour);
+		str += (hour < 12 || hour >= 24) ? "am" : "pm";
 		return str;
 	}
 	
-	private Map<MobilityMode, Integer> tabulateMobilityChunkedModesByTime(List<MobilityChunkedInfo> oneDayMobilityData, int startHour, int endHour) {
-		int num_still = 0;
-		int num_walk = 0;
-		int num_run = 0;
-		int num_bike = 0;
-		int num_drive = 0;
-		int num_error = 0;
-		
-		// tabulate values
-		for (MobilityChunkedInfo m : oneDayMobilityData) {
-			if (m.getDate().getHours() >= startHour && m.getDate().getHours() <= endHour) {
-				for (MobilityMode k : m.getModeCount().keySet()) {
-					int countToAdd = m.getModeCount().get(k);
-					
-					if (k.equals(MobilityMode.STILL)) {
-						num_still += countToAdd;
-					} else if (k.equals(MobilityMode.WALK)) {
-						num_walk += countToAdd;
-					} else if (k.equals(MobilityMode.RUN)) {
-						num_run += countToAdd;
-					} else if (k.equals(MobilityMode.BIKE)) {
-						num_bike += countToAdd;
-					} else if (k.equals(MobilityMode.DRIVE)) {
-						num_drive += countToAdd;
-					} else { // 'ERROR' mobility mode
-						num_error += countToAdd;
-					}
-				}
-			}
-		}
-		
-		Map<MobilityMode, Integer> total_mc = new HashMap<MobilityMode, Integer>();
-		total_mc.put(MobilityMode.STILL, num_still);
-		total_mc.put(MobilityMode.WALK, num_walk);
-		total_mc.put(MobilityMode.RUN, num_run);
-		total_mc.put(MobilityMode.BIKE, num_bike);
-		total_mc.put(MobilityMode.DRIVE, num_drive);
-		total_mc.put(MobilityMode.ERROR, num_error);
-		
-		return total_mc;
-	}
-
   @Override
   public void renderLeaderBoard(List<UserParticipationInfo> participationInfo) {
     clearPlot();
@@ -1495,18 +1214,6 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     }
   }
   
-	@Override
-	public void showMobilityChunkedDetail(Marker location) {
-		if (markerToMobilityChunkedMap.containsKey(location)) {
-			MobilityChunkedInfo mobInfo = markerToMobilityChunkedMap.get(location);
-			final MobilityChunkedWidgetPopup displayWidget = new MobilityChunkedWidgetPopup();
-			displayWidget.setResponse(mobInfo);
-			
-			infoWindow.setContent(displayWidget.getElement());
-			infoWindow.open(mapWidget.getMap(), location);
-		}
-	}
-	
 	@Override
 	public void showMobilityDetail(Marker location) {
 		if (markerToMobilityMap.containsKey(location)) {

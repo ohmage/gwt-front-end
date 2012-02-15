@@ -67,9 +67,7 @@ public interface ExploreDataView extends IsWidget {
   void showResponsesOnMap(List<SurveyResponse> responses);
   void showResponseDetail(Marker location);
   void showMobilityDataOnMap(List<MobilityInfo> mdata);
-  void showMobilityChunkedDataOnMap(List<MobilityChunkedInfo> mdata);
   void showMobilityDetail(Marker location);
-  void showMobilityChunkedDetail(Marker location);
   void showMobilityDataOnGraph(List<MobilityInfo> mdata);
   void renderLeaderBoard(List<UserParticipationInfo> participationInfo);
   void setInfoText(String string);

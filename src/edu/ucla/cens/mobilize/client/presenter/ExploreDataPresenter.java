@@ -237,28 +237,7 @@ public class ExploreDataPresenter implements Presenter {
 		}
 	}
 	
-	private void fetchMobilityChunkedDataAndShowOnMap(final Date startDate, final Date endDate) {
-		view.showWaitIndicator();
-		dataService.fetchMobilityDataChunked(
-			startDate,
-			endDate,
-			new AsyncCallback<List<MobilityChunkedInfo>>() {
-				@Override
-				public void onFailure(Throwable caught) {
-					_logger.severe(caught.getMessage());
-					ErrorDialog.show("We were unable to fetch your mobility data from the server", caught.getMessage());
-				}
-				@Override
-				public void onSuccess(List<MobilityChunkedInfo> result) {
-					// show responses on map
-					view.showMobilityChunkedDataOnMap(result);
-					view.hideWaitIndicator();
-				}
-			}
-		);
-	}
-
-	private void fetchMobilityDataAndShowOnGraph(final Date startDate, final Date endDate) { //FIXME: blah
+	private void fetchMobilityDataAndShowOnGraph(final Date startDate, final Date endDate) {
 		view.showWaitIndicator();
 		
 		dataService.fetchMobilityData(
