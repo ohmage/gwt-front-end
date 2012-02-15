@@ -8,13 +8,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gwt.ajaxloader.client.ArrayHelper;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
 import com.google.gwt.canvas.dom.client.CssColor;
-import com.google.gwt.canvas.dom.client.FillStrokeStyle;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ErrorEvent;
@@ -76,25 +74,12 @@ import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
-import edu.ucla.cens.mobilize.client.ui.MobilityChunkedWidgetPopup;
 import edu.ucla.cens.mobilize.client.ui.MobilityWidgetPopup;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 import edu.ucla.cens.mobilize.client.utils.MarkerClusterer;
 import edu.ucla.cens.mobilize.client.utils.MobilityUtils;
-
-// viz
-import com.google.gwt.visualization.client.AbstractDataTable;
-import com.google.gwt.visualization.client.LegendPosition;
-import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.visualizations.corechart.AreaChart;
-import com.google.gwt.visualization.client.visualizations.corechart.AxisOptions;
-import com.google.gwt.visualization.client.visualizations.corechart.BarChart;
-import com.google.gwt.visualization.client.visualizations.corechart.Options;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
 
 @SuppressWarnings("deprecation")
 public class ExploreDataViewImpl extends Composite implements ExploreDataView {
