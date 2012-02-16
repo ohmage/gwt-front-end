@@ -821,7 +821,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		LatLngBounds bounds = LatLngBounds.newInstance();
 		
 		// Add new data points 
-		for (MobilityInfo m : mdata) {
+		for (int i = 0; i < mdata.size(); i++) {
+			MobilityInfo m = mdata.get(i);
+			
 			if (m.getLocationStatus() != LocationStatus.UNAVAILABLE) {
 				final LatLng location = LatLng.newInstance(m.getLocationLat(), m.getLocationLong());
 				bounds.extend(location);
@@ -835,7 +837,18 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 				MobilityMode mode = m.getMode();
 				
 				// Pick marker corresponding to mode 
+				// NOTE: To support MarkerClusterer hover info's, we store data into the title
 				try {
+					//NOTE: THIS DURATION ESTIMATION IS EXTREMELY HACKY/DANGEROUS
+					int duration = 5;
+					if (i+1 < mdata.size()) {
+						duration = MobilityUtils.getTimeInMinutes(mdata.get(i+1).getDate()) - MobilityUtils.getTimeInMinutes(mdata.get(i).getDate());
+						if (duration <= 0 || duration > 5)
+							duration = 5;
+					}
+					marker.set("mobility_duration", duration);
+					
+					// Pick mobility icon to display
 					MarkerImage.Builder imgBuilder;
 					if (mode == MobilityMode.STILL) {
 						marker.setTitle("still");

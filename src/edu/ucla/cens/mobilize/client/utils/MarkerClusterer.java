@@ -22,6 +22,8 @@
 
 package edu.ucla.cens.mobilize.client.utils;
 
+import java.util.Arrays;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.maps.client.Map;
 import com.google.gwt.maps.client.overlay.Marker;
@@ -143,17 +145,36 @@ public class MarkerClusterer extends JavaScriptObject {
 	          // Get markers in the cluster
 	          var markersInCluster = cluster.getMarkers();
 	          
+	          //var counts = {};
+	          //for (var i=0; i < markersInCluster.length; ++i) {
+	          //    var key = markersInCluster[i].getTitle();
+	          //    if (counts[key] == undefined) {
+	          //        counts[key] = 1;
+	          //    } else {
+	          //        counts[key] += 1;
+	          //    }
+	          //}
+	          
 	          var counts = {};
 	          for (var i=0; i < markersInCluster.length; ++i) {
 	              var key = markersInCluster[i].getTitle();
+	              var valueToAdd = 1;
+	              
+	              //NOTE: THIS DURATION ESTIMATION IS EXTREMELY HACKY
+	              var duration = markersInCluster[i]['mobility_duration'];
+	              if (duration !== "undefined" && typeof duration == "number") {
+	                  valueToAdd = duration;
+	              }
+	              
 	              if (counts[key] == undefined) {
-	                  counts[key] = 1;
+	                  counts[key] = valueToAdd;
 	              } else {
-	                  counts[key] += 1;
+	                  counts[key] += valueToAdd;
 	              }
 	          }
+	          
 	          var content = 'There are <b>' + markersInCluster.length + '</b> markers in this cluster.<br/><br/>';
-	          content += "Here's the distribution:<br/>";
+	          content += "Here's the estimated time distribution (hh:mm'):<br/>";
 	          content += "<table cellspacing=\"10\"><tr>";
 	          for (var key in counts) {
 	              content += "<td align=\"center\">";
@@ -169,7 +190,12 @@ public class MarkerClusterer extends JavaScriptObject {
 	              	default:       break;
 	              }
 	              
-	              content += "<b>" + counts[key] + "</b>";
+	              var str = "";
+	              str += parseInt(counts[key]/60) + ":";
+	              str += (counts[key]%60 >= 10) ? (counts[key]%60) : "0" + (counts[key]%60);
+              	  str += "\'";
+              	  content += "<b>" + str + "</b>";
+	              //content += "<b>" + counts[key] + "</b>";
 	              content += "</td>";
 	          }
 	          content += "</tr></table>";

@@ -24,6 +24,24 @@ public class MobilityUtils {
 	}
 	
 	/**
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public static Map<MobilityMode, Integer> estimatedDurationOfModes(final List<MobilityInfo> data) {
+		final int DEFAULT_INTERVAL = 2;	// Minutes
+		final List<MobilityMode> bucketed = bucketByInterval(data, DEFAULT_INTERVAL);
+		
+		Map<MobilityMode, Integer> durations = new HashMap<MobilityMode, Integer>();
+		for (MobilityMode m : bucketed) {
+			addKeyValueToModeMap(durations, m, DEFAULT_INTERVAL);
+		}
+		
+		return durations;
+	}
+	
+	/**
+	 * Buckets your single-day, time-sorted list of MobilityInfo by a specified interval in minutes
 	 * @param data Time-sorted list of MobilityInfo for a single day of data
 	 * @param intervalInMinutes Interval/resolution to bucket the data
 	 * @return List of MobilityModes, where each item represents the time interval starting from midnight (00:00)
@@ -78,18 +96,18 @@ public class MobilityUtils {
 				
 				if (j == 0 && prevData != null) {
 					// Case 1: head
-					addKeyValueToVoteMap(votes, prevData.getMode(), getTimeInMinutes(prevData.getDate()));
+					addKeyValueToModeMap(votes, prevData.getMode(), getTimeInMinutes(prevData.getDate()));
 					prevData = null;	// Clear this just to be safe
 				}
 				
 				if (j == bucket.size() - 1) {	// NOTE: This should NOT be an else-if to handle the case where there is only 1 data point in bucket
 					// Case 2: tail
 					int remainingTime = intervalInMinutes - getTimeInMinutes(bucket.get(j).getDate());
-					addKeyValueToVoteMap(votes, bucket.get(j).getMode(), remainingTime);
+					addKeyValueToModeMap(votes, bucket.get(j).getMode(), remainingTime);
 				} else {
 					// Case 3: middle
 					int elapsedTime = getTimeInMinutes(bucket.get(j+1).getDate()) - getTimeInMinutes(bucket.get(j).getDate());
-					addKeyValueToVoteMap(votes, bucket.get(j).getMode(), elapsedTime);
+					addKeyValueToModeMap(votes, bucket.get(j).getMode(), elapsedTime);
 				}
 			}
 			
@@ -117,7 +135,7 @@ public class MobilityUtils {
 	 * @param key New or existing MobilityMode
 	 * @param valueToAdd Integer value to add
 	 */
-	private static void addKeyValueToVoteMap(Map<MobilityMode,Integer> votes, MobilityMode key, int valueToAdd) {
+	private static void addKeyValueToModeMap(Map<MobilityMode,Integer> votes, MobilityMode key, int valueToAdd) {
 		if (votes == null || key == null || valueToAdd <= 0)
 			return;
 		
