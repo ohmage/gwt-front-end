@@ -66,15 +66,10 @@
       width: 75%;
     }
     .downloadButton {
-    	background-color: #AAD79F;
-      background-image: url('images/page_white_download.png');
-    	background-position: 5px 50%;
-    	background-repeat: no-repeat;
-    	border-width: 1px;
-      border-color: #58744A;
-    	color: #254117;
+		border-width: 1px;
+      	border-color: #0b9c00;
+    	color: #0b9c00;
     	cursor: pointer;
-    	padding: 5px 10px 6px 25px;
     }
     td.label {
       font-weight: bold;

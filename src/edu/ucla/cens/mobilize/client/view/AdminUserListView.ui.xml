@@ -123,7 +123,7 @@
 	      <w:AdminMenu ui:field='adminMenu' />
 	    </g:HTMLPanel>
 	  </g:west>
-	  <g:north size='77'>
+	  <g:north size='83'>
 	    <g:HTMLPanel addStyleNames='{style.north}'>
 		    <g:HTMLPanel addStyleNames='{style.filterContainer}'>
 		      <g:HorizontalPanel verticalAlignment='top'>
