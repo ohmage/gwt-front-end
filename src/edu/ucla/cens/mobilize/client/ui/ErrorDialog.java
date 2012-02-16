@@ -32,7 +32,7 @@ public class ErrorDialog {
     }
     
     // add a button that closes the dialog
-    Button dismissButton = new Button("OK");
+    Button dismissButton = new Button("Close");
     dismissButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {

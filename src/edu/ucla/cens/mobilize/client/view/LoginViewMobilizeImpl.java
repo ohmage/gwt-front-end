@@ -100,7 +100,7 @@ public class LoginViewMobilizeImpl extends Composite implements LoginView {
 
     @Override
     public void setLoginFailed(String msg) {
-      ErrorDialog.show("Login failed.", msg);
+      ErrorDialog.show("Invalid username or password", msg);
     }
 
     @Override
