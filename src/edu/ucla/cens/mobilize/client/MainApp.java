@@ -236,7 +236,7 @@ public class MainApp implements EntryPoint, HistoryListener {
       @Override
       public void onFailure(Throwable caught) {
         AwErrorUtils.logoutIfAuthException(caught);
-        ErrorDialog.show("There was a problem fetching application configuration data.");
+        ErrorDialog.show("Could not obtain server app config data", "The server may be down or undergoing maintenance. Please try again at a later time.");
       }
 
       @Override
@@ -274,7 +274,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     this.awDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
       @Override
       public void onFailure(Throwable caught) {
-        ErrorDialog.show("There was a problem fetching application configuration data.");
+        ErrorDialog.show("Could not obtain server app config data", "The server may be down or undergoing maintenance. Please try again at a later time.");
       }
 
       @Override

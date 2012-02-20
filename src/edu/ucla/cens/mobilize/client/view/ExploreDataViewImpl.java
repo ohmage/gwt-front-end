@@ -896,31 +896,34 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	}
 	
 	@Override
-	public void showMobilityDataOnGraph(final List<MobilityInfo> mdata) {
+	public void showMobilityDataOnGraph(final List<List<MobilityInfo>> mdataList) {
 		// hide previous plot, if any
 		clearPlot(); 
 		hideWaitIndicator();
 		
 		final VerticalPanel panels = new VerticalPanel();
 		final int interval = 5;	// minutes
-		final List<MobilityMode> buckets = MobilityUtils.bucketByInterval(mdata, interval);
 		
-		// DEBUG: testing only
-		DateTimeFormat format = DateTimeFormat.getFormat("EEEE, MMMM dd, yyyy");
-		Date current_day_label = mdata.get(0).getDate();
-		final String day_str = format.format(current_day_label);
-		
-		Label date_label = new Label(day_str);
-		panels.add(date_label);
-		
-		Widget testViz = createMobilityBarChartCanvasWidget(buckets, interval, 750, 120, true, true);
-		panels.add(testViz);
+		for (int i = 0; i < mdataList.size(); i++) {
+			List<MobilityInfo> mdata = mdataList.get(i);
+			List<MobilityMode> buckets = MobilityUtils.bucketByInterval(mdata, interval);
+			
+			DateTimeFormat format = DateTimeFormat.getFormat("EEEE, MMMM dd, yyyy");
+			String day_str = format.format(DateUtils.addDays(getFromDate(), i));
+			
+			Label date_label = new Label(day_str);
+			panels.add(date_label);
+			
+			Widget testViz = createMobilityBarChartCanvasWidget(buckets, interval, 750, 120, true, true);
+			
+			panels.add(testViz);
+		}
 		
         plotContainer.add(panels);
 	}
 	
 	/**
-	 * Generates a widget containing a temporal summary of the bucketed mobility data. Invalid parameters returns null
+	 * Generates a widget containing a temporal summary of the bucketed mobility data. If buckets contains all ERROR modes, this will be indicated via a text overlay on the graph. All invalid parameters returns null
 	 * @param buckets the List of MobilityMode data for an entire day
 	 * @param interval the minute duration of each bucket
 	 * @param width the output widget width
@@ -1024,7 +1027,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		// --- (4) Now, draw the plot
 		final int overflow = 24*60 - buckets.size()*interval;
 		final double stretchFactor = (double)plotWidth / (24*60);
-		
+		boolean hasPlottableData = false;
 		double x_pos = 0;
 		for (int i = 0; i < buckets.size(); i++) {
 			double x, y, w, h;
@@ -1043,6 +1046,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			
 			// Increment position
 			x_pos += w;
+			if (buckets.get(i).equals(MobilityMode.ERROR) == false)
+				hasPlottableData = true;
 		}
 		
 		// Fill overflow (if any) with gray rectangles 
@@ -1054,6 +1059,27 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			h = (double) plotHeight;
 			context.setFillStyle(CssColor.make(colorTable.get(MobilityMode.ERROR)));
 			context.fillRect(x,y,w,h);
+		}
+		
+		// Draw "No data" text if empty
+		if (hasPlottableData == false) {
+			double x, y;
+			
+			// Determine x,y,w,h to draw rect
+			x = plotXoffset + (double)plotWidth / 2.0;
+			y = plotYoffset + (double)plotHeight / 2.0;
+			
+			// Draw text label
+			String str = "(no valid mobility data for this day)";
+			context.setShadowColor("#FFFFFF");
+			context.setShadowOffsetX(0.0);
+			context.setShadowOffsetY(0.0);
+			context.setShadowBlur(8.0);
+			context.setFillStyle(CssColor.make("#333"));
+			context.setFont("bold 14pt Arial");
+			context.setTextAlign(TextAlign.CENTER);
+			context.setTextBaseline(TextBaseline.MIDDLE);
+			context.fillText(str, x, y);
 		}
 		
 		return canvas;

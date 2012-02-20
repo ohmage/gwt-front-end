@@ -48,9 +48,11 @@ public class MobilityUtils {
 	 */
 	public static List<MobilityMode> bucketByInterval(final List<MobilityInfo> data, final int intervalInMinutes) {
 		// Validate parameters
-		if (data == null || data.size() == 0 || intervalInMinutes <= 0) {
-			return null;	//FIXME
+		if (data == null || intervalInMinutes <= 0) {
+			return null;
 		}
+		
+		boolean generateBlankPlot = (data.size() == 0);
 		
 		int intervals = MINUTES_IN_DAY / intervalInMinutes;
 		//int overflow = MINUTES_IN_DAY % intervalInMinutes;	// NOTE: This should be handled by method callee
@@ -71,43 +73,45 @@ public class MobilityUtils {
 			bucket.clear();
 			votes.clear();
 			
-			// Fill up bucket with mobility data within current interval
-			while (curIndex < data.size()) {
-				MobilityInfo m = data.get(curIndex);
-				
-				// Compute the day's mobility time in minutes
-				int curTimeInMin = getTimeInMinutes(m.getDate());
-
-				// Check if the current mobility point is within the current interval
-				if (curTimeInMin < i * intervalInMinutes) {
-					bucket.add(m);
-					curIndex++;
-				} else {
-					prevData = m;
-					break;
-				}
-			}
-			
-			// Count the durations
-			for (int j = 0; j < bucket.size(); j++) {
-				// Case 1: Leading duration prior to first data point
-				// Case 2: Tailing data point duration
-				// Case 3: Calculate mid-progress duration votes
-				
-				if (j == 0 && prevData != null) {
-					// Case 1: head
-					addKeyValueToModeMap(votes, prevData.getMode(), getTimeInMinutes(prevData.getDate()));
-					prevData = null;	// Clear this just to be safe
+			if (generateBlankPlot == false) {
+				// Fill up bucket with mobility data within current interval
+				while (curIndex < data.size()) {
+					MobilityInfo m = data.get(curIndex);
+					
+					// Compute the day's mobility time in minutes
+					int curTimeInMin = getTimeInMinutes(m.getDate());
+	
+					// Check if the current mobility point is within the current interval
+					if (curTimeInMin < i * intervalInMinutes) {
+						bucket.add(m);
+						curIndex++;
+					} else {
+						prevData = m;
+						break;
+					}
 				}
 				
-				if (j == bucket.size() - 1) {	// NOTE: This should NOT be an else-if to handle the case where there is only 1 data point in bucket
-					// Case 2: tail
-					int remainingTime = intervalInMinutes - getTimeInMinutes(bucket.get(j).getDate());
-					addKeyValueToModeMap(votes, bucket.get(j).getMode(), remainingTime);
-				} else {
-					// Case 3: middle
-					int elapsedTime = getTimeInMinutes(bucket.get(j+1).getDate()) - getTimeInMinutes(bucket.get(j).getDate());
-					addKeyValueToModeMap(votes, bucket.get(j).getMode(), elapsedTime);
+				// Count the durations
+				for (int j = 0; j < bucket.size(); j++) {
+					// Case 1: Leading duration prior to first data point
+					// Case 2: Tailing data point duration
+					// Case 3: Calculate mid-progress duration votes
+					
+					if (j == 0 && prevData != null) {
+						// Case 1: head
+						addKeyValueToModeMap(votes, prevData.getMode(), getTimeInMinutes(prevData.getDate()));
+						prevData = null;	// Clear this just to be safe
+					}
+					
+					if (j == bucket.size() - 1) {	// NOTE: This should NOT be an else-if to handle the case where there is only 1 data point in bucket
+						// Case 2: tail
+						int remainingTime = intervalInMinutes - getTimeInMinutes(bucket.get(j).getDate());
+						addKeyValueToModeMap(votes, bucket.get(j).getMode(), remainingTime);
+					} else {
+						// Case 3: middle
+						int elapsedTime = getTimeInMinutes(bucket.get(j+1).getDate()) - getTimeInMinutes(bucket.get(j).getDate());
+						addKeyValueToModeMap(votes, bucket.get(j).getMode(), elapsedTime);
+					}
 				}
 			}
 			

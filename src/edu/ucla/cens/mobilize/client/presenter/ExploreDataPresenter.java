@@ -222,7 +222,7 @@ public class ExploreDataPresenter implements Presenter {
 					@Override
 					public void onFailure(Throwable caught) {
 						_logger.severe(caught.getMessage());
-						ErrorDialog.show("We were unable to fetch your mobility data from the server", caught.getMessage());
+						ErrorDialog.show("Unable to retrieve mobility data with the selected parameters", caught.getMessage());
 					}
 					@Override
 					public void onSuccess(List<MobilityInfo> result) {
@@ -240,24 +240,63 @@ public class ExploreDataPresenter implements Presenter {
 	private void fetchMobilityDataAndShowOnGraph(final Date startDate, final Date endDate) {
 		view.showWaitIndicator();
 		
-		dataService.fetchMobilityData(
-			startDate,
-			null,
-			new AsyncCallback<List<MobilityInfo>>() {
-				@Override
-				public void onFailure(Throwable caught) {
-					_logger.severe(caught.getMessage());
-					ErrorDialog.show("We were unable to fetch your mobility data from the server", caught.getMessage());
+		// Create a list of Lists for synchronization
+		final List<List<MobilityInfo>> fetchedData = new ArrayList<List<MobilityInfo>>();
+		final int numDays = DateUtils.daysApart(startDate, endDate) + 1;	// Add one to include starting date
+		for (int i = 0; i < numDays; i++) {
+			fetchedData.add(null);
+		}
+		
+		for (int i = 0; i < numDays; i++) {
+			Date dateParam = DateUtils.addDays(startDate, i);
+			final Integer indexToFill = i;
+			
+			dataService.fetchMobilityData(
+				dateParam,
+				null,	//TODO: username
+				new AsyncCallback<List<MobilityInfo>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						// Save an empty new List to indicate no data
+						List<MobilityInfo> buffer = new ArrayList<MobilityInfo>();
+						fetchedData.set(indexToFill, buffer);
+						
+						_logger.severe(caught.getMessage());
+						
+						// Check if we got absolutely no data
+						boolean finishedAndGotNoData = true;
+						for (int j = 0; j < fetchedData.size(); j++) {
+							if (fetchedData.get(j) != null && fetchedData.get(j).isEmpty() == false) {
+								finishedAndGotNoData = false;
+								break;
+							}
+						}
+						if (finishedAndGotNoData)
+							ErrorDialog.show("Unable to retrieve mobility data with the selected parameters", caught.getMessage());
+					}
+					
+					@Override
+					public void onSuccess(List<MobilityInfo> result) {	//FIXME
+						// Save the results list
+						List<MobilityInfo> buffer = new ArrayList<MobilityInfo>();
+						buffer.addAll(result);
+						fetchedData.set(indexToFill, buffer);
+						
+						// Check if all synchronized
+						for (int j = 0; j < fetchedData.size(); j++) {
+							if (fetchedData.get(j) == null) {
+								_logger.fine("Waiting for async #" + Integer.toString(j) + " to finish.");
+								return;
+							}
+						}
+						
+						// show responses on map
+						view.showMobilityDataOnGraph(fetchedData);
+						view.hideWaitIndicator();
+					}
 				}
-				
-				@Override
-				public void onSuccess(List<MobilityInfo> result) {	//FIXME
-					// show responses on map
-					view.showMobilityDataOnGraph(result);
-					view.hideWaitIndicator();
-				}
-			}
-		);
+			);
+		}
 	}
 
 
@@ -360,18 +399,18 @@ public class ExploreDataPresenter implements Presenter {
           ErrorDialog.show("Invalid prompt choice", "X and Y prompts must be different.");
         }
         else if ((fromDate == null && toDate != null) || (fromDate != null && toDate == null)) {
-          ErrorDialog.show("Invalid date range", "You must specify both a start date and an end date for date filtering. Otherwise, leave both fields blank.");
+          ErrorDialog.show("Invalid date selection", "Please select both a start and end date range, or leave both fields blank.");
         }
         else if (fromDate != null && toDate != null && fromDate.after(toDate)) {	//make sure date range is valid
-          ErrorDialog.show("Invalid date range", "Starting date must be before or equal to the end date.");
+          ErrorDialog.show("Invalid date selection", "Start date must be before or the same as the end date.");
         }
         else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_GRAPH))
         			&& (fromDate == null || toDate == null)) {
-        	ErrorDialog.show("Invalid date range", "You must specify a start and end date range to view your mobility data.");
+        	ErrorDialog.show("Invalid date selection", "Please select both a start and end date range to view your mobility data.");
         }
         else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_GRAPH))
         			&& DateUtils.daysApart(fromDate, toDate) > 7) { //FIXME: quick and dirty date check until server supports longer date range
-        	ErrorDialog.show("Invalid date range", "Mobility dates can only be up to a 7 day range.");
+        	ErrorDialog.show("Invalid date selection", "Mobility date range may only be up to 7 days.");
       	}
         else if (!view.isMissingRequiredField()) { // view marks missing fields, if any
           fireHistoryTokenToMatchSelectedSettings();

@@ -101,7 +101,7 @@ public class DateUtils {
     }
     
     /**
-     * Useful for determining the number of days difference based on only the day
+     * Determines the number of days difference using the day value in each parameter. (e.g. 3/27 23:00:00 - 3/26 12:00:00 = 1 "day")
      * @param start
      * @param end
      * @return Difference of days between the two dates. May be negative
@@ -124,7 +124,7 @@ public class DateUtils {
     /**
      * @param originalDate
      * @param numDaysToAdd (Make this negative to subtract days)
-     * @return
+     * @return new Date object with newly appended date
      */
     public static Date addDays(Date originalDate, int numDaysToAdd) {
       if (originalDate == null) return null;
