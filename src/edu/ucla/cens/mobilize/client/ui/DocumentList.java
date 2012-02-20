@@ -26,6 +26,7 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.event.DocumentDownloadHandler;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
+import edu.ucla.cens.mobilize.client.resources.FrontendResources;
 
 public class DocumentList extends Composite {
   
@@ -72,6 +73,7 @@ public class DocumentList extends Composite {
   }
   
   public DocumentList() {
+    FrontendResources.INSTANCE.sprite().ensureInjected();
     initWidget(uiBinder.createAndBindUi(this));
     initComponents();
   }
@@ -100,7 +102,7 @@ public class DocumentList extends Composite {
   }
 
   public void setDocuments(List<DocumentInfo> documents) {
-    List<DocumentInfo> sortedDocuments = new ArrayList(documents);
+    List<DocumentInfo> sortedDocuments = new ArrayList<DocumentInfo>(documents);
     Collections.sort(sortedDocuments, new DocumentNameComparator());
     this.documentGrid.resizeRows(sortedDocuments.size() + 1); // one extra row for header
     int row = 1; // 0th row is header
@@ -142,6 +144,9 @@ public class DocumentList extends Composite {
     this.documentGrid.setWidget(row, Column.DOCUMENT_NAME, documentNameLink);
     this.documentGrid.getCellFormatter().setStyleName(row, 
                                                       Column.DOCUMENT_NAME, 
+                                                      FrontendResources.INSTANCE.sprite().small());
+    this.documentGrid.getCellFormatter().addStyleName(row, 
+                                                      Column.DOCUMENT_NAME, 
                                                       style.documentName());
 
     // size
@@ -153,6 +158,9 @@ public class DocumentList extends Composite {
     // privacy 
     this.documentGrid.setText(row, Column.PRIVACY, documentInfo.getPrivacy().toString());
     this.documentGrid.getCellFormatter().setStyleName(row, 
+                                                      Column.PRIVACY,
+                                                      FrontendResources.INSTANCE.sprite().small());
+    this.documentGrid.getCellFormatter().addStyleName(row, 
                                                       Column.PRIVACY, 
                                                       getPrivacyStyle(documentInfo.getPrivacy()));    
     
@@ -180,18 +188,21 @@ public class DocumentList extends Composite {
     // link to view document details
     InlineHyperlink detailsLink = 
       new InlineHyperlink("details", HistoryTokens.documentDetail(documentId));
-    detailsLink.setStyleName(style.detailsLink());
+    detailsLink.setStyleName(FrontendResources.INSTANCE.sprite().small());
+    detailsLink.addStyleName(style.detailsLink());
     panel.add(detailsLink);
     // link to edit document (only visible to creator/supervisor)
     if (canEdit) {      
       InlineHyperlink editLink = 
         new InlineHyperlink("edit", HistoryTokens.documentEdit(documentId));
-      editLink.setStyleName(style.editLink());
+      editLink.setStyleName(FrontendResources.INSTANCE.sprite().small());
+      editLink.addStyleName(style.editLink());
       panel.add(editLink);
     }
     
     InlineLabel downloadLink = new InlineLabel("download");
-    downloadLink.setStyleName(style.downloadLink());
+    downloadLink.setStyleName(FrontendResources.INSTANCE.sprite().small());
+    downloadLink.addStyleName(style.downloadLink());
     downloadLink.addStyleName("link");
     downloadLink.addClickHandler(new ClickHandler() {
       @Override

@@ -22,6 +22,7 @@ import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.event.DocumentDownloadHandler;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
+import edu.ucla.cens.mobilize.client.resources.FrontendResources;
 
 public class DocumentDetail extends Composite {
 
@@ -60,6 +61,7 @@ public class DocumentDetail extends Composite {
   private String documentId;
   
   public DocumentDetail() {
+    FrontendResources.INSTANCE.sprite().ensureInjected();
     initWidget(uiBinder.createAndBindUi(this));
     initComponents();
   }
@@ -151,20 +153,20 @@ public class DocumentDetail extends Composite {
 
       Privacy privacy = documentInfo.getPrivacy();
       privacyLabel.setText(privacy.toUserFriendlyString());
-      // privacy style is set dynamically
-      String privacyLabelStyle = null;
       switch (privacy) {
       case PRIVATE:
-        privacyLabelStyle = style.privacyPrivate();
+        privacyLabel.removeStyleName(style.privacyShared());
+        privacyLabel.addStyleName(style.privacyPrivate());
         break;
       case SHARED:
-        privacyLabelStyle = style.privacyShared();
+        privacyLabel.removeStyleName(style.privacyPrivate());
+        privacyLabel.addStyleName(style.privacyShared());
         break;
-      default: 
-        privacyLabelStyle = "";
+      default:
+        privacyLabel.removeStyleName(style.privacyPrivate());
+        privacyLabel.removeStyleName(style.privacyShared());
         break;
       }
-      privacyLabel.setStyleName(privacyLabelStyle);
       
       if (canEdit) {
         this.actionLinkEditDocument.setVisible(true);

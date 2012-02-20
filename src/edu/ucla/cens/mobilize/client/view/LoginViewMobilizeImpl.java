@@ -3,7 +3,6 @@ package edu.ucla.cens.mobilize.client.view;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -14,8 +13,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -34,11 +31,6 @@ public class LoginViewMobilizeImpl extends Composite implements LoginView {
     @UiField TextBox userNameTextBox;
     @UiField PasswordTextBox passwordTextBox;
     @UiField Button loginButton;
-    // dynamically fill html here depending on the installation
-    @UiField Image logo;
-    @UiField UListElement linkList;
-    @UiField HTMLPanel linkListDiv;
-    @UiField HTMLPanel descriptionPanel;
     
     private Presenter presenter;
     

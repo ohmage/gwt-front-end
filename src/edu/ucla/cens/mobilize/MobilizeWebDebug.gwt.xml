@@ -4,6 +4,8 @@
   <inherits name='com.google.gwt.user.User'/>
   <inherits name='com.google.gwt.maps.Maps' />
   <inherits name='com.google.gwt.visualization.Visualization' />
+  <inherits name='com.google.gwt.resources.Resources' />
+  <set-property name='ClientBundle.enableInlining' value='false' /> <!-- so sprites won't be inlined -->
 
   <!-- GWT logging -->
   <inherits name='com.google.gwt.logging.Logging' />    

@@ -68,6 +68,7 @@ import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
+import edu.ucla.cens.mobilize.client.resources.FrontendResources;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.MobilityChunkedWidgetPopup;
 import edu.ucla.cens.mobilize.client.ui.MobilityWidgetPopup;
@@ -148,6 +149,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   private FlowPanel startarrow;
   
   public ExploreDataViewImpl() {
+    FrontendResources.INSTANCE.sprite().ensureInjected();
     initWidget(uiBinder.createAndBindUi(this));
     loadPlotTypeTree();
     
@@ -199,8 +201,13 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   
   // display text, value associated with item, css class name for wrapper span
   private TreeItem getTreeItem(String text, PlotType plotType, String cssStyle) {
+    String spriteCss = plotType == null ? 
+        FrontendResources.INSTANCE.sprite().med() : // category node, will show folder
+        FrontendResources.INSTANCE.sprite().small(); // plot node
+    
     StringBuilder sb = new StringBuilder();
-    sb.append("<span class=").append(cssStyle).append(">").append(text).append("</span>");
+    sb.append("<span class='").append(spriteCss + " " + cssStyle);
+    sb.append("'>").append(text).append("</span>");
     TreeItem treeItem = new TreeItem(sb.toString());
     if (plotType != null) treeItem.setUserObject(plotType);
     return treeItem;    

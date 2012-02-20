@@ -2,6 +2,9 @@
 
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:d="urn:import:com.google.gwt.dom.client">
+	
+  <ui:with field="res" type="edu.ucla.cens.mobilize.client.resources.FrontendResources" />
+
   <ui:style type="edu.ucla.cens.mobilize.client.ui.CampaignDetail.CampaignDetailStyle">
     .actionLinks {
     	font-size: 0.9em;
@@ -26,18 +29,7 @@
    .detailText, .actionLinks {
    	  padding-left: 20px;
     }
-    .exportCsvLink {
-    	background-image: url('images/page_white_go.png');
-    }
-    .editButton {
-    	background-image: url('images/page_white_edit.png');
-    }
-    .exportCsvLink, .editButton {
-    	background-repeat: no-repeat;
-      background-position: 2px 50%;
-      margin-right: 20px;
-      padding: 2px 2px 2px 23px;
-    }
+    
     td.label {
     	font-weight: bold;
     	height: 25px;
@@ -48,15 +40,22 @@
     .classList, .authorList {
     	margin-bottom: 10px;
     }
+    
+    @eval LOCK_OFFSET SpriteHelper.lock_small()+"px";
     .privacyPrivate {
-    	background-image: url('images/lock.png');
+    	/*background-image: url('images/lock_small.png');*/
+    	background-position: 4px LOCK_OFFSET;
       background-color: #EEE;
       border: solid 1px #BBB;
     }
+    
+    @eval GROUP_OFFSET SpriteHelper.group_small()+"px";
     .privacyShared {
-    	background-image: url('images/group.png');
+    	/*background-image: url('images/group_small.png');*/
+    	background-position: 4px GROUP_OFFSET;
     	background-color: #FFF7D7;
     	border: solid thin #DDD6A4;
+    	height: auto;
     }
     .sectionHeader {
       background: #EAEFF3 repeat-x url("images/bg_white_transparent_50.png");
@@ -70,21 +69,23 @@
     	font-weight: bold;
     }
     .running, .stopped, .other, .privacyShared, .privacyPrivate {
-    	background-repeat: no-repeat;
-      background-position: 2px 50%;
     	font-weight: bold;
     	display: inline-block;
     	padding: 3px 20px 3px 20px;
     	text-align: center;
     	width: 55px;
     }
+    @eval BULLET_RED_OFFSET SpriteHelper.bullet_red()+"px";
     .stopped {
-    	background-image: url('images/bullet_red.png');
+    	/*background-image: url('images/bullet_red.png');*/
+    	background-position: 4px BULLET_RED_OFFSET;
     	background-color: #EEE;
     	border: solid 1px #BBB;
     }
+    @eval BULLET_GREEN_OFFSET SpriteHelper.bullet_green()+"px";
     .running {
-    	background-image: url('images/bullet_green.png');
+    	/*background-image: url('images/bullet_green.png');*/
+    	background-position: 4px BULLET_GREEN_OFFSET;
     	background-color: #E3F5CB;
     	border: solid 1px #99D999;
     }
@@ -96,22 +97,29 @@
     .actionViewXml, .actionDownloadXml, .actionExportCsv, .actionEdit {
     	color: #238;
     	cursor: pointer;
-    	padding: 3px 20px;
+    	padding: 1px 20px;
     	text-decoration: underline;
     	background-repeat: no-repeat;
-      background-position: 2px 50%;
     }
+    @eval EDIT_OFFSET SpriteHelper.page_white_edit_small()+"px";
     .actionEdit {
-    	background-image: url('images/page_white_edit_small.png');
+    	/*background-image: url('images/page_white_edit_small.png');*/
+    	background-position: 2px EDIT_OFFSET; 
     }
+    @eval MAGNIFY_OFFSET SpriteHelper.page_white_magnify_small()+"px";
     .actionViewXml {
-      background-image: url('images/page_white_magnify_small.png');
+      /*background-image: url('images/page_white_magnify_small.png');*/
+      background-position: 2px MAGNIFY_OFFSET;
     }
+    @eval COG_GO_OFFSET SpriteHelper.cog_go_small()+"px";
     .actionDownloadXml {
-    	background-image: url('images/cog_go_small.png');
+    	/*background-image: url('images/cog_go_small.png');*/
+    	background-position: 2px COG_GO_OFFSET;
     }
+    @eval PAGE_GO_OFFSET SpriteHelper.page_white_go_small()+"px";
     .actionExportCsv {
-    	background-image: url('images/page_white_go_small.png');
+    	/*background-image: url('images/page_white_go_small.png');*/
+    	background-position: 2px PAGE_GO_OFFSET; 
     }
     .actionBar {
     	background-color: #FFF;
@@ -144,20 +152,19 @@
 
       <g:HTMLPanel addStyleNames='{style.actionBar}'>
         <g:InlineLabel addStyleNames='{style.actionLabel}'>Actions:</g:InlineLabel>
-	     <g:Anchor addStyleNames='{style.actionViewXml}'
+	     <g:Anchor addStyleNames='{res.sprite.small} {style.actionViewXml}'
 	               ui:field='actionLinkViewXml'>
 	       View&nbsp;Xml&nbsp;Config
 	     </g:Anchor>
-	     <g:Anchor addStyleNames='{style.actionDownloadXml}'
+	     <g:Anchor addStyleNames='{res.sprite.small} {style.actionDownloadXml}'
 	               ui:field='actionLinkDownloadXml'>
 	       Download&nbsp;Xml&nbsp;Config
 	     </g:Anchor>
-	     <g:InlineHyperlink addStyleNames='{style.actionEdit}' 
-                           ui:field='actionLinkEditCampaign' 
-                           targetHistoryToken='campaigns?v=edit'>
+	     <g:InlineHyperlink addStyleNames='{res.sprite.small} {style.actionEdit}' 
+                          ui:field='actionLinkEditCampaign'>
             Edit&nbsp;Campaign
         </g:InlineHyperlink>
-	     <g:Anchor addStyleNames='{style.actionExportCsv}'
+	     <g:Anchor addStyleNames='{res.sprite.small} {style.actionExportCsv}'
 	               ui:field='actionLinkExportResponses'>
 	       Export&nbsp;Responses&nbsp;(.csv) 
 	     </g:Anchor>
@@ -233,7 +240,7 @@
 	            <label>Running State:</label>
 	          </td>
 	          <td>
-	            <span ui:field='runningStateSpan' class='{style.other}'></span>
+	            <span ui:field='runningStateSpan' class='{res.sprite.small}'></span>
 	          </td>
 	        </tr>
 	        <tr>
@@ -241,8 +248,7 @@
 	            <label>Privacy Setting:</label>
 	          </td>
 	          <td>
-	            <span ui:field='privacySpan' 
-	                  class='{style.privacyPrivate}'>
+	            <span ui:field='privacySpan' class='{res.sprite.small}'>
 	             PRIVATE
 	            </span>
 	          </td>

@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Widget;
@@ -32,10 +33,6 @@ public class DashboardViewImpl extends Composite implements DashboardView {
   interface DashboardUiBinder extends UiBinder<Widget, DashboardViewImpl> {
   }
 
-  public DashboardViewImpl() {
-    initWidget(uiBinder.createAndBindUi(this));
-  }
-
   @UiField HTMLPanel notificationResponses;
   @UiField HTMLPanel notificationParticipant;
   @UiField HTMLPanel notificationAuthor;
@@ -45,15 +42,27 @@ public class DashboardViewImpl extends Composite implements DashboardView {
   @UiField InlineHyperlink privateResponsesLink;
   @UiField InlineHyperlink participantCampaignsLink;
   @UiField InlineHyperlink authorCampaignsLink;
-  @UiField MenuItem quickLinkCreate;
-  @UiField MenuItem quickLinkEdit;
-  @UiField MenuItem quickLinkUpload;
+  @UiField Hyperlink quickLinkCreate;
+  @UiField Hyperlink quickLinkEdit;
+  @UiField Hyperlink quickLinkBrowse;
+  @UiField Hyperlink quickLinkResponses;
+  @UiField Hyperlink quickLinkUpload;
   
   boolean canEdit = false;
   boolean canUpload = false;  
   
-  public DashboardViewImpl(String firstName) {
+
+  public DashboardViewImpl() {
     initWidget(uiBinder.createAndBindUi(this));
+    initComponents();
+  }
+  
+  private void initComponents() {
+    this.quickLinkBrowse.setTargetHistoryToken(HistoryTokens.campaignList());
+    this.quickLinkCreate.setTargetHistoryToken(HistoryTokens.campaignCreate());
+    this.quickLinkEdit.setTargetHistoryToken(HistoryTokens.campaignList());
+    this.quickLinkResponses.setTargetHistoryToken(HistoryTokens.responseList());
+    this.quickLinkUpload.setTargetHistoryToken(HistoryTokens.documentCreate());
   }
   
   private void updateRoleSpecificDisplay() {

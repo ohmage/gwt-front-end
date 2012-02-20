@@ -2,6 +2,8 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
+
+  <ui:with field="res" type="edu.ucla.cens.mobilize.client.resources.FrontendResources" />
 	
   <ui:style type="edu.ucla.cens.mobilize.client.view.ExploreDataViewImpl.ExploreDataStyles">
     .hidden {
@@ -82,16 +84,18 @@
       border-width: 1px 2px;
       border-color: #BD4020;
       border-style: solid;
-      /* padding-right: 20px; */
     }
+    @eval EXCLAMATION_OFFSET edu.ucla.cens.mobilize.client.ui.SpriteHelper.exclamation()+"px";
     .requiredFieldMissingMsg {
-    	background: 0px 50% no-repeat url('images/exclamation.png');
+    	/*background: 0px 50% no-repeat url('images/exclamation.png');*/
+    	background-position: 0px EXCLAMATION_OFFSET;
+    	background-repeat: no-repeat;
     	color: #BD4020;
     	font-weight: bold;
-    	padding: 5px 20px;
+    	margin-bottom: 3px;
+    	padding: 2px 20px;
     }
     .dataControlSideBar {
-    	/*height: 100%; */
     	padding: 10px;
     }
     .topNav {
@@ -104,20 +108,27 @@
     .treeItemCategory, .treeItemPlotType, .treeItemMap, .treeItemHist, .treeItemTimeseries, .treeItemTable {
     	padding-left: 20px;
     }
+    @eval FOLDER_OFFSET edu.ucla.cens.mobilize.client.ui.SpriteHelper.folder()+"px";
     .treeItemCategory {
-    	background: 0px 50% no-repeat url('images/folder.png');
+    	/*background: 0px 50% no-repeat url('images/folder.png');*/
+    	background-position: 0px FOLDER_OFFSET;
+    	padding-top: 2px;
     }
-    .treeItemPlotType {
-    	background: 0px 50% no-repeat url('images/table_small.png');
+    @eval TABLE_OFFSET edu.ucla.cens.mobilize.client.ui.SpriteHelper.table_small()+"px";
+    .treeItemPlotType, .treeItemTable {
+    	/*background: 0px 50% no-repeat url('images/table_small.png');*/
+    	background-position: 0px TABLE_OFFSET;
     }
+    @eval MAP_OFFSET edu.ucla.cens.mobilize.client.ui.SpriteHelper.map_small()+"px";
     .treeItemMap {
-    	background: 0px 50% no-repeat url('images/map_small.png');
+    	/*background: 0px 50% no-repeat url('images/map_small.png');*/
+    	background-position: 0px MAP_OFFSET;
     }
+    @eval CHART_BAR_OFFSET edu.ucla.cens.mobilize.client.ui.SpriteHelper.chart_bar_small()+"px";
     .treeItemHist, .treeItemTimeseries {
-    	background: 0px 50% no-repeat url('images/chart_bar_small.png');
-    }
-    .treeItemTable {
-    	background: 0px 50% no-repeat url('images/table_small.png');
+    	/*background: 0px 50% no-repeat url('images/chart_bar_small.png');*/
+    	background-position: 0px CHART_BAR_OFFSET;
+    	padding-top: 2px;
     }
     .waiting {
     	background: 50% 50% no-repeat url('images/loading_text.gif');
@@ -139,19 +150,9 @@
   </ui:style>
     <g:DockLayoutPanel addStyleNames='{style.layout}' unit='PX' ui:field='layoutPanel'>
      
-     <!-- filters -->
      <g:north size='25'>
-       <g:HTMLPanel addStyleNames='{style.topNav}'>
-       <!--
-		     <g:InlineHyperlink ui:field='rWebLink'>R-Web</g:InlineHyperlink>
-		     <span class='{style.menuSeparator}'>|</span>
-		     <g:InlineHyperlink ui:field='mobilityLink'>Mobility</g:InlineHyperlink>
-		     <span class='{style.menuSeparator}'>|</span>
-		     <g:InlineHyperlink ui:field='chartsLink'>Charts</g:InlineHyperlink>
-		     -->
-       </g:HTMLPanel>
+       <g:HTMLPanel addStyleNames='{style.topNav}' />
      </g:north>
-     
      
      <g:center addStyleNames='{style.plotPanel}'>
       <g:FlowPanel ui:field='plotContainer' addStyleNames='{style.plotPanelInnerContainer}'>
@@ -172,7 +173,7 @@
 	         <g:HTMLPanel>
 	           <g:Label ui:field='requiredFieldMissingMsg' 
 	                    visible='false' 
-	                    addStyleNames='{style.requiredFieldMissingMsg}'>
+	                    addStyleNames='{res.sprite.med} {style.requiredFieldMissingMsg}'>
 	             Required options
 	           </g:Label>
 	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
@@ -203,7 +204,6 @@
          </g:CaptionPanel>
          <g:HTMLPanel addStyleNames='{style.buttonDiv}'>
            <g:Button ui:field='drawPlotButton'>Draw Plot</g:Button>
-           <!--<g:Button ui:field='pdfButton'>PDF</g:Button>-->
            <g:Button ui:field='exportButton'>Export</g:Button>
          </g:HTMLPanel>
          <g:HTMLPanel ui:field='hiddenFormContainer' addStyleNames='hidden'>

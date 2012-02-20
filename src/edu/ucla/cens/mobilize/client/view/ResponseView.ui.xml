@@ -4,6 +4,9 @@
 	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui"
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client"
 	xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+	
+	<ui:with field="res" type="edu.ucla.cens.mobilize.client.resources.FrontendResources" />
+	
   <ui:style type="edu.ucla.cens.mobilize.client.view.ResponseViewImpl.ResponseViewStyles">
     .actionButton {
     	box-shadow: none;
@@ -139,18 +142,28 @@
     .separator {
       padding-right: 2px;
     }
-    .shareButton{
-      background: #EEEEEE url('images/group_small.png') no-repeat;
+    @eval GROUP_OFFSET edu.ucla.cens.mobilize.client.ui.SpriteHelper.group_small_MINUS_TWO()+"px";
+    .shareButton {
+      /*background: #EEEEEE url('images/group_small.png') no-repeat;*/
+      background-position: 2px GROUP_OFFSET;
     }
+    @eval DELETE_OFFSET edu.ucla.cens.mobilize.client.ui.SpriteHelper.delete()+"px";
     .deleteButton {
-      background: #EEEEEE url('images/delete.png') no-repeat;
+      /*background: #EEEEEE url('images/delete.png') no-repeat;*/
+      background-position: 0px DELETE_OFFSET;
     }
+    @eval LOCK_OFFSET edu.ucla.cens.mobilize.client.ui.SpriteHelper.lock_small_MINUS_TWO()+"px";
     .makePrivateButton {
-      background: #EEEEEE url('images/lock_small.png') no-repeat;
+      /*background: #EEEEEE url('images/lock_small.png') no-repeat;*/
+      background-position: 2px LOCK_OFFSET;
     }
     .shareButton, .deleteButton, .makePrivateButton {
-      background-position: 2px 50%;
-      padding: 2px 2px 2px 18px;
+      /*background-position: 2px 50%;*/
+      display: inline-block; 
+      height: 16px;
+      padding: 0px 0px 0px 15px;
+      margin: 0px 0px 2px 0px;
+      vertical-align: middle;
     }
     .smallActionLink, .smallActionLink:hover {
     	color: #551A8B;
@@ -268,15 +281,15 @@
 	              </g:Anchor>
 	            </g:HTMLPanel>
 	            <g:Button ui:field='shareButtonTop' addStyleNames='{style.actionButton}'>
-	              <img src='images/group_small.png' class='{style.actionButtonImage}' />
+	              <span class='{res.sprite.small} {style.shareButton}' />
 	              Share
 	            </g:Button> 
 	            <g:Button ui:field='makePrivateButtonTop' addStyleNames='{style.actionButton}'>
-	              <img src='images/lock_small.png' class='{style.actionButtonImage}' />
+	              <span class='{res.sprite.small} {style.makePrivateButton}' />
 	              Make Private
 	            </g:Button>
 	            <g:Button ui:field='deleteButtonTop' addStyleNames='{style.actionButton}'>
-	              <img src='images/delete.png' class='{style.actionButtonImage}' />
+	              <span class='{res.sprite.med} {style.deleteButton}' />
 	              Delete
 	            </g:Button>
 	          </g:HTMLPanel>
@@ -307,7 +320,7 @@
     <g:south size='28'>
       <g:HTMLPanel>
       <g:HTMLPanel addStyleNames='{style.buttonPanelWrapperBottom}'>
-        <g:HorizontalPanel width="100%">
+        <g:HorizontalPanel>
           <g:HTMLPanel tag='span' ui:field='buttonPanelBottom'>
             <g:HTMLPanel tag='span' addStyleNames='{style.actionLinkWrapper}'>
               <g:Anchor ui:field='selectAllLinkBottom' addStyleNames='{style.smallActionLink}'>
@@ -321,15 +334,15 @@
               </g:Anchor>
             </g:HTMLPanel>
             <g:Button ui:field='shareButtonBottom' addStyleNames='{style.actionButton}'>
-              <img src='images/group_small.png' class='{style.actionButtonImage}' />
+              <span class='{res.sprite.small} {style.shareButton}' />
               Share
             </g:Button> 
             <g:Button ui:field='makePrivateButtonBottom' addStyleNames='{style.actionButton}'>
-              <img src='images/lock_small.png' class='{style.actionButtonImage}' />
+              <span class='{res.sprite.small} {style.makePrivateButton}' />
               Make Private
             </g:Button>
             <g:Button ui:field='deleteButtonBottom' addStyleNames='{style.actionButton}'>
-              <img src='images/delete.png' class='{style.actionButtonImage}' />
+              <span class='{res.sprite.med} {style.deleteButton}' />
               Delete
             </g:Button>
           </g:HTMLPanel>

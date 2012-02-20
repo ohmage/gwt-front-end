@@ -33,16 +33,6 @@
       padding: 5px;
       width: 50px;
     }
-    .linkList {
-    	list-style-type: none; /* use images for bullets instead */
-    	padding: 0px;
-    }
-    .linkList li {
-    	background-image: url('images/bullet_black.png');
-    	background-position: 2px 50%;
-    	background-repeat: no-repeat;
-    	padding: 2px 20px;
-    }
     .linkListDiv {
     	padding-left: 15px;
     }
@@ -85,23 +75,17 @@
        width: 58%;
      }
      .right {
-     	min-width: 200px;
-     	width: 40%;
-     }
-     .leftBottom, .rightBottom {
-       display: inline-block;
-       vertical-align: top;
-       white-space: normal;
+     	 min-width: 200px;
+     	 width: 40%;
      }
      .leftBottom {
-     	background-color: #CCECFC;
-     	border: solid thin #25AAE1;
-     	min-width: 500px;
-     	width: 56%;
-     }
-     .rightBottom {
-     	 min-width: 200px;
-       width: 40%;
+       background-color: #CCECFC;
+       border: solid thin #25AAE1;
+       display: inline-block;
+       min-width: 500px;
+       vertical-align: top;
+       white-space: normal;
+       width: 56%;
      }
 
   </ui:style>
@@ -133,7 +117,8 @@
 			
 			<g:HTMLPanel ui:field='linkListDiv' addStyleNames='{style.linkListDiv}'>
         Find out more about...
-        <ul class='{style.linkList}' ui:field='linkList'>
+        
+        <ul class='sprite-ul' ui:field='linkList'>
           <li>
             <a href='http://www.exploringcs.org/about/related-grants/mobilize'>
               The Mobilize Project

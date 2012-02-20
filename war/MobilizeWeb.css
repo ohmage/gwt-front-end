@@ -332,3 +332,92 @@ a.header, a.header td, a.header table, a.header tr {
 }
 
 /********* end list widget styles *****************/
+
+/********* Sprites: 13x13 *****************/
+/*** DEPRECATED: use sprites from client.resources instead ***/
+/* http://spritegen.website-performance.org/ */
+/* Filename: images/sprite13.png */
+
+.sprite-ul {
+	list-style-type: none; /* use images for bullets instead */
+  padding: 0px;
+}
+
+.sprite-ul li { 
+	background: 0 -25px url('images/sprite13.png') no-repeat; /* bullet_black */
+	padding: 2px 18px;
+}
+
+/*** DEPRECATED: use sprites from client.resources instead ***/
+.sprite-asterisk_orange_small{ background-position: 0 0;  } 
+.sprite-bullet_black{ background-position: 0 -26px;  } 
+.sprite-bullet_green{ background-position: 0 -55px;  } 
+.sprite-bullet_red{ background-position: 0 -84px;  } 
+.sprite-chart_bar_small{ background-position: 0 -113px;  } 
+.sprite-cog_go_small{ background-position: 0 -140px;  } 
+.sprite-eye_bw_small{ background-position: 0 -166px;  } 
+.sprite-group_small{ background-position: 0 -192px;  } 
+.sprite-lock_small{ background-position: 0 -218px;  } 
+.sprite-map_small{ background-position: 0 -244px;  } 
+.sprite-page_white_download_small{ background-position: 0 -270px;  } 
+.sprite-page_white_edit_small{ background-position: 0 -296px;  } 
+.sprite-page_white_go_small{ background-position: 0 -322px;  } 
+.sprite-page_white_magnify_small{ background-position: 0 -348px;  } 
+.sprite-page_white_upload_small{ background-position: 0 -374px;  } 
+.sprite-table_small{ background-position: 0 -400px;  }
+
+/********* End Sprites: 13x13 *****************/
+
+/********* Sprites: 16x16 *****************/
+/*** DEPRECATED: use sprites from client.resources instead ***/
+/* http://spritegen.website-performance.org/ */
+/* Filename: images/sprite16.png */
+
+/* Use on linkMenuItem along with a sprite class on a Hyperlink item in a link menu.
+   Sprite becomes background of the anchor element (not the outer div) so the image 
+   will be included in the clickable region.
+   Example: <g:Hyperlink addStyleNames='linkMenuItem sprite-add_blue'>... */
+.linkMenuItem a {
+	background-image: url('images/sprite16.png');
+	background-position: inherit; /* so you can add style to gwt-Hyperlink and sprite pos will carry over */
+	background-repeat: no-repeat;
+	cursor: pointer;
+	display: inline-block;
+	height: 16px;
+	outline: none; /* get rid of annoying glow border when selected */
+  padding-left: 22px;
+  padding-top: 1px;
+  vertical-align: middle;
+}
+
+/*** DEPRECATED: use sprites from client.resources instead ***/
+
+.sprite-add_blue{ background-position: 0 0;  } 
+.sprite-add_green{ background-position: 0 -21px;  } 
+.sprite-add_orange{ background-position: 0 -42px;  } 
+.sprite-chart_bar{ background-position: 0 -63px;  } 
+.sprite-cog{ background-position: 0 -84px;  } 
+.sprite-cross{ background-position: 0 -105px;  } 
+.sprite-delete{ background-position: 0 -126px;  } 
+.sprite-error{ background-position: 0 -147px;  } 
+.sprite-exclamation{ background-position: 0 -168px;  } 
+.sprite-eye{ background-position: 0 -189px;  } 
+.sprite-folder{ background-position: 0 -210px;  } 
+.sprite-folder_explore{ background-position: 0 -231px;  } 
+.sprite-group{ background-position: 0 -252px;  } 
+.sprite-group_add{ background-position: 0 -273px;  } 
+.sprite-key{ background-position: 0 -294px;  } 
+.sprite-lock{ background-position: 0 -315px;  } 
+.sprite-magnifier{ background-position: 0 -336px;  } 
+.sprite-page_white_download{ background-position: 0 -357px;  } 
+.sprite-page_white_edit{ background-position: 0 -378px;  } 
+.sprite-page_white_go{ background-position: 0 -399px;  } 
+.sprite-page_white_upload{ background-position: 0 -420px;  } 
+.sprite-phone{ background-position: 0 -441px;  } 
+.sprite-star{ background-position: 0 -462px;  } 
+.sprite-table{ background-position: 0 -483px;  } 
+.sprite-table_multiple{ background-position: 0 -504px;  } 
+.sprite-tick{ background-position: 0 -525px;  } 
+.sprite-user_red{ background-position: 0 -546px;  } 
+
+/********* End Sprites: 16x16 *****************/

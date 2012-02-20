@@ -49,45 +49,60 @@
 		.oddRow { /* stripe odd rows for easier viewing */
 			background-color: #EEE;
 		}
+		@eval LOCK_OFFSET SpriteHelper.lock_small()+"px";
 		.privacyPrivate {
-      background-image: url('images/lock_small.png');
+      /*background-image: url('images/lock_small.png');*/
+      background-position: 2px LOCK_OFFSET;
     }
+    @eval GROUP_OFFSET SpriteHelper.group_small()+"px";
     .privacyShared {
-      background-image: url('images/group_small.png');
+      /*background-image: url('images/group_small.png');*/
+      background-position: 2px GROUP_OFFSET;
     }
     .running, .stopped, .other, .privacyShared, .privacyPrivate {
       background-repeat: no-repeat;
-      background-position: 2px 50%;
       font-size: 0.8em;
       padding: 3px 18px;
     }
     .privacyShared, .privacyPrivate {
     	padding-left: 20px;
     }
+    @eval BULLET_GREEN_OFFSET SpriteHelper.bullet_green()+"px";
     .running {
-      background-image: url('images/bullet_green.png');
+      /*background-image: url('images/bullet_green.png');*/
+      background-position: 2px BULLET_GREEN_OFFSET;
     }
+    @eval BULLET_RED_OFFSET SpriteHelper.bullet_red()+"px";
     .stopped {
-      background-image: url('images/bullet_red.png');
+      /*background-image: url('images/bullet_red.png');*/
+      background-position: 2px BULLET_RED_OFFSET;
     }
     /* action links are all small text with icons */
     .analyzeLink, .detailsLink, .editLink, .exportLink {
     	background-repeat: no-repeat;
-      background-position: 2px 50%;
+      /*background-position: 2px 50%;*/
       font-size: 0.8em;
       padding: 2px 5px 2px 18px;
     } 
+    @eval CHART_BAR_OFFSET SpriteHelper.chart_bar_small()+"px";
     .analyzeLink {
-      background-image: url('images/chart_bar_small.png');
+      /*background-image: url('images/chart_bar_small.png');*/
+      background-position: 2px CHART_BAR_OFFSET;
     }
+    @eval PAGE_MAGNIFY_OFFSET SpriteHelper.page_white_magnify_small()+"px";
     .detailsLink {
-      background-image: url('images/page_white_magnify_small.png'); 
+      /*background-image: url('images/page_white_magnify_small.png');*/
+      background-position: 2px PAGE_MAGNIFY_OFFSET; 
     }
+    @eval PAGE_EDIT_OFFSET SpriteHelper.page_white_edit_small()+"px";
     .editLink {
-      background-image: url('images/page_white_edit_small.png');
+      /*background-image: url('images/page_white_edit_small.png');*/
+      background-position: 2px PAGE_EDIT_OFFSET;
     }
+    @eval PAGE_GO_OFFSET SpriteHelper.page_white_go_small()+"px";
     .exportLink {
-    	background-image: url('images/page_white_go_small.png');
+    	/*background-image: url('images/page_white_go_small.png');*/
+    	background-position: 2px PAGE_GO_OFFSET;
     }
 	</ui:style>
 	<g:HTMLPanel ui:field='mainPanel'>

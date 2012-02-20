@@ -1,6 +1,9 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	
+<ui:with field="res" type="edu.ucla.cens.mobilize.client.resources.FrontendResources" />
+	
 <ui:style type="edu.ucla.cens.mobilize.client.ui.DocumentList.DocumentListStyle">
     .documentGrid {
     	white-space: nowrap;
@@ -32,35 +35,44 @@
     /* action links are all small text with icons */
     .downloadLink, .detailsLink, .editLink {
       background-repeat: no-repeat;
-      background-position: 2px 50%;
       font-size: 0.8em;
       padding: 2px 5px 2px 18px;
     } 
+    @eval PAGE_DOWNLOAD_OFFSET SpriteHelper.page_white_download_small()+"px";
     .downloadLink {
-    	background-image: url('images/page_white_download_small.png');
+    	/*background-image: url('images/page_white_download_small.png');*/
+    	background-position: 2px PAGE_DOWNLOAD_OFFSET;
     }
+    @eval PAGE_MAGNIFY_OFFSET SpriteHelper.page_white_magnify_small()+"px";
     .detailsLink {
-      background-image: url('images/page_white_magnify_small.png'); 
+      /*background-image: url('images/page_white_magnify_small.png');*/
+      background-position: 2px PAGE_MAGNIFY_OFFSET; 
     }
+    @eval PAGE_EDIT_OFFSET SpriteHelper.page_white_edit_small()+"px";
     .editLink {
-      background-image: url('images/page_white_edit_small.png');
+      /*background-image: url('images/page_white_edit_small.png');*/
+      background-position: 2px PAGE_EDIT_OFFSET;
     }
     .privacyShared, .privacyPrivate {
       background-repeat: no-repeat;
-      background-position: 2px 50%;
       font-size: 0.8em;
       padding: 3px 18px;
     }
+    @eval LOCK_OFFSET SpriteHelper.lock_small()+"px";
     .privacyPrivate {
-      background-image: url('images/lock_small.png');
+      /*background-image: url('images/lock_small.png');*/
+      background-position: 2px LOCK_OFFSET;
     }
+    @eval GROUP_OFFSET SpriteHelper.group_small()+"px";
     .privacyShared {
-      background-image: url('images/group_small.png');
+      /*background-image: url('images/group_small.png');*/
+      background-position: 2px GROUP_OFFSET;
     }
+    @eval BULLET_BLACK_OFFSET SpriteHelper.bullet_black()+"px";
     .documentName {
     	background-repeat: no-repeat;
-      background-position: 2px 50%;
-    	background-image: url('images/bullet_black.png');
+      background-position: 2px -23px; /* gotcha; hard-coded sprite position */
+    	/*background-image: url('images/bullet_black.png');*/
     	padding-left: 20px;
     }
     .documentSize {

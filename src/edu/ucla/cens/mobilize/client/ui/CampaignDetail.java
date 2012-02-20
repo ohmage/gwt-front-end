@@ -32,6 +32,7 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.resources.FrontendResources;
 import edu.ucla.cens.mobilize.client.utils.XmlUtils;
 
 public class CampaignDetail extends Composite {
@@ -72,6 +73,7 @@ public class CampaignDetail extends Composite {
   String campaignXml;
   
   public CampaignDetail() {
+    FrontendResources.INSTANCE.sprite().ensureInjected();
     initWidget(uiBinder.createAndBindUi(this));
     bind();
   }
@@ -208,7 +210,7 @@ public class CampaignDetail extends Composite {
       // build class list
       this.classes.clear();
       for (String s : campaign.getClasses()) {
-        this.classes.add(new HTML("<span>" + s + "</span>")); //fixme
+        this.classes.add(new HTML("<span>" + s + "</span>")); //fixme: SafeHtmlBuilder?
       }
       
       // build author list
@@ -219,23 +221,28 @@ public class CampaignDetail extends Composite {
       
       // running state style is set dynamically
       if (campaign.getRunningState().equals(RunningState.STOPPED)) {
-        this.runningStateSpan.setClassName(style.stopped());
+        this.runningStateSpan.removeClassName(style.running());
+        this.runningStateSpan.addClassName(style.stopped());
         this.runningStateSpan.setInnerText("STOPPED");
       } else if (campaign.getRunningState().equals(RunningState.RUNNING)) { 
-        this.runningStateSpan.setClassName(style.running());
+        this.runningStateSpan.removeClassName(style.stopped());
+        this.runningStateSpan.addClassName(style.running());
         this.runningStateSpan.setInnerText("RUNNING");
       } else {
-        this.runningStateSpan.setClassName("");
+        this.runningStateSpan.removeClassName(style.running());
+        this.runningStateSpan.removeClassName(style.stopped());
         this.runningStateSpan.setInnerText(campaign.getRunningState().toString());
       }
       
       // privacy style is set dynamically
       if (campaign.getPrivacy().equals(Privacy.PRIVATE)) {
         privacySpan.setInnerText("PRIVATE");
-        privacySpan.setClassName(style.privacyPrivate());
+        privacySpan.removeClassName(style.privacyShared());
+        privacySpan.addClassName(style.privacyPrivate());
       } else if (campaign.getPrivacy().equals(Privacy.SHARED)) {
         privacySpan.setInnerText("SHARED");
-        privacySpan.setClassName(style.privacyShared());
+        privacySpan.removeClassName(style.privacyPrivate());
+        privacySpan.addClassName(style.privacyShared());
       } else {
         // "INVISIBLE" OR UNRECOGNIZED
         privacySpan.setClassName("");        

@@ -2,6 +2,9 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+	
+	<ui:with field="res" type="edu.ucla.cens.mobilize.client.resources.FrontendResources" />
+	
 	<ui:style type="edu.ucla.cens.mobilize.client.ui.ClassDetail.ClassDetailStyle">
    .backLink {
      display: inline-block;
@@ -34,11 +37,10 @@
      margin-top: 10px;
    }
    .membersTable {
-     margin: auto;
-     margin-bottom: 20px;
+     margin: 20px auto 20px;
    }
    .membersTable td {
-   	padding-left: 22px;
+   	padding: 0px 0px 3px 22px;
    	white-space: nowrap;
    }
    .membersTableHeader {
@@ -48,8 +50,10 @@
      color: #AAA;
      font-style: italic;
    }
+   @eval ASTERISK_OFFSET SpriteHelper.asterisk_orange_small();
    .rolePrivileged {
-     background: 5px 50% no-repeat url("images/asterisk_orange_small.png");
+     /*background: 5px 50% no-repeat url("images/asterisk_orange_small.png");*/
+     background-position: 4px ASTERISK_OFFSET;
      padding-left: 22px;
    }
    .rolePrivilegedRow {
@@ -97,7 +101,9 @@
       <g:HTMLPanel addStyleNames='{style.membersRow}'>
         <g:InlineLabel addStyleNames='{style.detailLabel}'>Members:</g:InlineLabel>
         <g:HTMLPanel tag='span' ui:field='legend' addStyleNames='{style.legend}'>
-        <g:InlineLabel addStyleNames='{style.rolePrivileged} {style.legendItem}'>privileged</g:InlineLabel>
+        <g:InlineLabel addStyleNames='{style.rolePrivileged} {style.legendItem} {res.sprite.small}'>
+          privileged
+        </g:InlineLabel>
         <g:InlineLabel addStyleNames='{style.missingValue}'>---</g:InlineLabel>
         <g:InlineLabel addStyleNames='{style.legendItem}'>missing value</g:InlineLabel>
         </g:HTMLPanel>

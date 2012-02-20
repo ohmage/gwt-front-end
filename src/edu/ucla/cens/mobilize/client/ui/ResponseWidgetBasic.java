@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.resources.FrontendResources;
 import edu.ucla.cens.mobilize.client.utils.AwUrlBasedResourceUtils;
 
 public class ResponseWidgetBasic extends Composite implements ResponseDisplayWidget {
@@ -60,6 +61,7 @@ public class ResponseWidgetBasic extends Composite implements ResponseDisplayWid
   private SurveyResponse surveyResponseData;
   
   public ResponseWidgetBasic() {
+    FrontendResources.INSTANCE.sprite().ensureInjected();
     initWidget(uiBinder.createAndBindUi(this));
     bind();
   }
@@ -108,13 +110,16 @@ public class ResponseWidgetBasic extends Composite implements ResponseDisplayWid
     privacyLabel.setText(privacy.toUserFriendlyString());
     switch (privacy) {
     case PRIVATE:
-      privacyLabel.setStyleName(style.privacyPrivate());
+      privacyLabel.setStyleName(FrontendResources.INSTANCE.sprite().small());
+      privacyLabel.addStyleName(style.privacyPrivate());
       break;
     case SHARED:
-      privacyLabel.setStyleName(style.privacyShared());
+      privacyLabel.setStyleName(FrontendResources.INSTANCE.sprite().small());
+      privacyLabel.addStyleName(style.privacyShared());
       break;
     case INVISIBLE:
-      privacyLabel.setStyleName(style.privacyInvisible());
+      privacyLabel.setStyleName(FrontendResources.INSTANCE.sprite().small());
+      privacyLabel.addStyleName(style.privacyInvisible());
       break;
     default:
       privacyLabel.setStyleName("");

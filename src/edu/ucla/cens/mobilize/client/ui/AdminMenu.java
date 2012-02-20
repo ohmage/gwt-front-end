@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
+import edu.ucla.cens.mobilize.client.resources.FrontendResources;
 
 public class AdminMenu extends Composite {
 
@@ -43,6 +44,7 @@ public class AdminMenu extends Composite {
   @UiField HTMLPanel manageCampaignsContainer;
   
   public AdminMenu() {
+    FrontendResources.INSTANCE.sprite().ensureInjected();
     initWidget(uiBinder.createAndBindUi(this));
     setLinkTargetUrls();
   }

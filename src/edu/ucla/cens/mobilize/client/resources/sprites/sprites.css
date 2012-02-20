@@ -1,0 +1,59 @@
+@sprite .small {
+	gwt-image: 'sprite13';
+}
+
+@sprite .med {
+	gwt-image: 'sprite16';
+}
+
+.small, .med {
+	background-repeat: no-repeat;
+}
+
+/* vertical offset of each item in sprite13.png */
+@def asterisk_orange_small 0; 
+@def bullet_black -26px; 
+@def bullet_green -53px; 
+@def bullet_red -82px; 
+@def chart_bar_small -113px; 
+@def cog_go_small -140px; 
+@def eye_bw_small -166px; 
+@def group_small -189px; 
+@def lock_small -215px; 
+@def map_small -244px; 
+@def page_white_download_small -270px; 
+@def page_white_edit_small -296px; 
+@def page_white_go_small -322px; 
+@def page_white_magnify_small -348px; 
+@def page_white_upload_small -374px; 
+@def table_small -400px;
+
+/* vertical offset of each item in sprite16.png */
+@def add_blue 0; 
+@def add_green -21px; 
+@def add_orange -42px; 
+@def chart_bar -63px; 
+@def cog -84px; 
+@def cross -105px; 
+@def delete -126px; 
+@def error -147px; 
+@def exclamation -168px; 
+@def eye -189px; 
+@def folder -210px; 
+@def folder_explore -231px; 
+@def group -252px; 
+@def group_add -273px; 
+@def key -294px; 
+@def lock -315px; 
+@def magnifier -336px; 
+@def page_white_download -357px; 
+@def page_white_edit -378px; 
+@def page_white_go -399px; 
+@def page_white_upload -420px; 
+@def phone -441px; 
+@def star -462px; 
+@def table -483px; 
+@def table_multiple -504px; 
+@def tick -525px; 
+@def user_red -546px;
+

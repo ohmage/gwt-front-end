@@ -36,6 +36,7 @@ import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
+import edu.ucla.cens.mobilize.client.resources.FrontendResources;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
@@ -69,7 +70,7 @@ public class CampaignList extends Composite {
 
   @UiTemplate("CampaignList.ui.xml")
   interface CampaignListWidgetUiBinder extends
-      UiBinder<Widget, CampaignList> {
+    UiBinder<Widget, CampaignList> {
   }
   
   // declare uibinder fields
@@ -88,6 +89,7 @@ public class CampaignList extends Composite {
   private DateTimeFormat dateTimeFormat = DateUtils.getTableDisplayFormat();
   
   public CampaignList() {
+    FrontendResources.INSTANCE.sprite().ensureInjected();
     initWidget(uiBinder.createAndBindUi(this));
     initComponents();
   }
@@ -274,6 +276,9 @@ public class CampaignList extends Composite {
     RunningState state = campaignInfo.getRunningState();
     this.campaignGrid.setText(row, Column.RUNNING_STATE.ordinal(), state.toString());
     this.campaignGrid.getCellFormatter().setStyleName(row, 
+                                                      Column.RUNNING_STATE.ordinal(),
+                                                      FrontendResources.INSTANCE.sprite().small());
+    this.campaignGrid.getCellFormatter().addStyleName(row, 
                                                       Column.RUNNING_STATE.ordinal(), 
                                                       getRunningStateStyle(state));
     
@@ -281,6 +286,9 @@ public class CampaignList extends Composite {
     Privacy privacy = campaignInfo.getPrivacy();
     this.campaignGrid.setText(row, Column.PRIVACY.ordinal(), privacy.toString());
     this.campaignGrid.getCellFormatter().setStyleName(row, 
+                                                      Column.PRIVACY.ordinal(),
+                                                      FrontendResources.INSTANCE.sprite().small());
+    this.campaignGrid.getCellFormatter().addStyleName(row, 
                                                       Column.PRIVACY.ordinal(), 
                                                       getPrivacyStyle(privacy));
 
@@ -297,7 +305,8 @@ public class CampaignList extends Composite {
     if (campaign.userCanViewDetails()) {
       InlineHyperlink detailsLink = 
         new InlineHyperlink("view", HistoryTokens.campaignDetail(campaignId));
-      detailsLink.setStyleName(style.detailsLink());
+      detailsLink.setStyleName(FrontendResources.INSTANCE.sprite().small());
+      detailsLink.addStyleName(style.detailsLink());
       panel.add(detailsLink);
     }
     /*
@@ -305,18 +314,21 @@ public class CampaignList extends Composite {
     if (campaign.userCanAnalyze()) {
       InlineHyperlink analyzeLink = 
         new InlineHyperlink("analyze", HistoryTokens.campaignAnalyze(campaignId));
-      analyzeLink.setStyleName(style.analyzeLink());
+      analyzeLink.setStyleName(FrontendResources.INSTANCE.sprite().small());  
+      analyzeLink.addStyleName(style.analyzeLink());
       panel.add(analyzeLink);
     }*/
     if (campaign.userCanEdit()) {
       InlineHyperlink editLink = 
         new InlineHyperlink("edit", HistoryTokens.campaignEdit(campaignId));
-      editLink.setStyleName(style.editLink());
+      editLink.setStyleName(FrontendResources.INSTANCE.sprite().small());
+      editLink.addStyleName(style.editLink());
       panel.add(editLink);
     }
     if (campaign.userCanAnalyze()) {
       Anchor exportLink = new Anchor("export");
-      exportLink.setStyleName(style.exportLink());
+      exportLink.setStyleName(FrontendResources.INSTANCE.sprite().small());
+      exportLink.addStyleName(style.exportLink());
       panel.add(exportLink);
       exportLink.addClickHandler(new ClickHandler() {
         @Override

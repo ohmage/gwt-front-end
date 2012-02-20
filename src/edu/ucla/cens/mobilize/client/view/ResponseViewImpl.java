@@ -40,6 +40,7 @@ import com.google.gwt.view.client.RangeChangeEvent.Handler;
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.resources.FrontendResources;
 import edu.ucla.cens.mobilize.client.ui.MessageWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseDisplayWidget;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetBasic;
@@ -121,6 +122,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class); 
     pager = new AwSimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
     pagerBottom = new AwSimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
+    FrontendResources.INSTANCE.sprite().ensureInjected();
     initWidget(uiBinder.createAndBindUi(this));
     initComponents();
     setEventHandlers();

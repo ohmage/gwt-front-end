@@ -76,14 +76,14 @@
 	    <g:HorizontalPanel ui:field='adminDashboard' addStyleNames='{style.adminDashboard}'>
 	      <g:HTMLPanel addStyleNames='{style.dashboardBlockUsers}'>
 	        <g:HTML addStyleNames='{style.dashboardBlockTitleUsers}'>Manage Users</g:HTML>
-	        <ul>
+	        <ul class='sprite-ul'>
 	          <li><a href='#admin_user_create'>Create a new user</a></li>
 	          <li><a href='#admin_user_list'>View and edit existing users</a></li>
 	        </ul>
 	      </g:HTMLPanel>
 	      <g:HTMLPanel addStyleNames='{style.dashboardBlockClasses}'>
 	        <g:HTML addStyleNames='{style.dashboardBlockTitleClasses}'>Manage Classes</g:HTML>
-	        <ul>
+	        <ul class='sprite-ul'>
 	          <li><a href='#admin_class_create'>Create a new class</a></li>
 	          <li><a href='#admin_class_list'>View and edit existing classes</a></li>
 	        </ul>

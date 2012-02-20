@@ -1,6 +1,9 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
   xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  
+  <ui:with field="res" type="edu.ucla.cens.mobilize.client.resources.FrontendResources" />
+  
   <ui:style type="edu.ucla.cens.mobilize.client.ui.DocumentDetail.DocumentDetailStyle">
     .actionBar {
       background-color: #FFF;
@@ -21,16 +24,19 @@
     .actionDownloadDocument, .actionEdit {
       color: #238;
       cursor: pointer;
-      padding: 3px 20px;
+      padding: 1px 20px;
       text-decoration: underline;
       background-repeat: no-repeat;
-      background-position: 2px 50%;
     }
+    @eval PAGE_EDIT_OFFSET SpriteHelper.page_white_edit_small()+"px";
     .actionEdit {
-      background-image: url('images/page_white_edit_small.png');
+      /*background-image: url('images/page_white_edit_small.png');*/
+      background-position: 2px PAGE_EDIT_OFFSET;
     }
+    @eval PAGE_DOWNLOAD SpriteHelper.page_white_download_small()+"px";
     .actionDownloadDocument {
-      background-image: url('images/page_white_download_small.png');
+      /*background-image: url('images/page_white_download_small.png');*/
+      background-position: 2px PAGE_DOWNLOAD;
     }
     .backLink {
     	cursor: pointer;
@@ -65,10 +71,11 @@
       text-align: right;
       width: 75%;
     }
+    @eval PAGE_DOWNLOAD_OFFSET SpriteHelper.page_white_download_PLUS_TWO()+"px";
     .downloadButton {
     	background-color: #AAD79F;
-      background-image: url('images/page_white_download.png');
-    	background-position: 5px 50%;
+      /*background-image: url('images/page_white_download.png');*/
+    	background-position: 5px PAGE_DOWNLOAD_OFFSET;
     	background-repeat: no-repeat;
     	border-width: 1px;
       border-color: #58744A;
@@ -86,13 +93,17 @@
     .classList, .campaignList {
       margin-bottom: 10px;
     }
+    @eval LOCK_OFFSET SpriteHelper.lock_PLUS_TWO()+"px";
     .privacyPrivate {
-      background-image: url('images/lock.png');
+      /*background-image: url('images/lock.png');*/
+      background-position: 2px LOCK_OFFSET;
       background-color: #EEE;
       border: solid 1px #BBB;
     }
+    @eval GROUP_OFFSET SpriteHelper.group_PLUS_TWO()+"px";
     .privacyShared {
-      background-image: url('images/group.png');
+      /*background-image: url('images/group.png');*/
+      background-position: 2px GROUP_OFFSET;
       background-color: #FFF7D7;
       border: solid thin #DDD6A4;
     }
@@ -109,7 +120,6 @@
     }
     .privacyShared, .privacyPrivate {
       background-repeat: no-repeat;
-      background-position: 2px 50%;
       font-weight: bold;
       display: inline-block;
       padding: 3px 20px 3px 20px;
@@ -124,7 +134,7 @@
      
       <g:HorizontalPanel addStyleNames='{style.sectionHeader}'>
         <g:HTMLPanel addStyleNames='{style.backLink}'>
-            <g:Anchor ui:field='backLinkTop' addStyleNames='link'>&laquo;&nbsp;Back</g:Anchor>
+          <g:Anchor ui:field='backLinkTop' addStyleNames='link'>&laquo;&nbsp;Back</g:Anchor>
         </g:HTMLPanel>
         <g:HTMLPanel addStyleNames='{style.sectionHeaderTitle}'>
           Document&nbsp;Details
@@ -133,11 +143,11 @@
 
       <g:HTMLPanel addStyleNames='{style.actionBar}'>
         <g:InlineLabel addStyleNames='{style.actionLabel}'>Actions:</g:InlineLabel>
-        <g:Anchor addStyleNames='{style.actionDownloadDocument}'
+        <g:Anchor addStyleNames='{res.sprite.small} {style.actionDownloadDocument}'
                   ui:field='actionLinkDownloadDocument'>
           Download
         </g:Anchor>
-        <g:InlineHyperlink addStyleNames='{style.actionEdit}' 
+        <g:InlineHyperlink addStyleNames='{res.sprite.small} {style.actionEdit}' 
                            ui:field='actionLinkEditDocument'>
             Edit&nbsp;Document
         </g:InlineHyperlink>
@@ -191,7 +201,7 @@
               <label>Privacy:</label>
             </td>
             <td>
-              <g:InlineLabel ui:field='privacyLabel'  /> 
+              <g:InlineLabel ui:field='privacyLabel' addStyleNames='{res.sprite.med}'  /> 
             </td>
           </tr>
           <tr>
@@ -213,7 +223,7 @@
           <tr>
             <td colspan='2'>
 				      <g:HTMLPanel addStyleNames='{style.downloadDiv}'>
-				        <g:Button ui:field='downloadButton' addStyleNames='{style.downloadButton}'>
+				        <g:Button ui:field='downloadButton' addStyleNames='{res.sprite.med} {style.downloadButton}'>
 				          Download&nbsp;Document
 				        </g:Button>
 				      </g:HTMLPanel>

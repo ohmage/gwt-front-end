@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.Widget;
 import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
+import edu.ucla.cens.mobilize.client.resources.FrontendResources;
 
 public class ClassDetail extends Composite {
 
@@ -61,6 +62,7 @@ public class ClassDetail extends Composite {
   }
   
   public ClassDetail() {
+    FrontendResources.INSTANCE.sprite().ensureInjected();
     initWidget(uiBinder.createAndBindUi(this));
     bind();
   }
@@ -178,8 +180,9 @@ public class ClassDetail extends Composite {
     // display username with css style to indicate whether user is privileged
     this.membersTable.setText(row, Column.USERNAME, userInfo.getUsername());
     if (RoleClass.PRIVILEGED.equals(role)) {
-      this.membersTable.getCellFormatter().setStyleName(row, Column.USERNAME, style.rolePrivileged());
-      this.membersTable.getRowFormatter().setStyleName(row, style.rolePrivilegedRow());
+      this.membersTable.getCellFormatter().setStyleName(row, Column.USERNAME, FrontendResources.INSTANCE.sprite().small());
+      this.membersTable.getCellFormatter().addStyleName(row, Column.USERNAME, style.rolePrivileged());
+      this.membersTable.getRowFormatter().addStyleName(row, style.rolePrivilegedRow());
     }
     
     // fill in personal info or default value if it's missing

@@ -15,30 +15,10 @@
     }
     .linkMenu {
       margin: 0px;
-      padding: 0px;
+      padding: 0px 0px 0px 8px;
     }
-    .linkBrowse, .linkCreate, .linkEdit, .linkExplore, .linkResponses, .linkDocuments {
-    	padding: 4px 5px 4px 30px;
-    	background-repeat: no-repeat;
-    	background-position: 5px 50%;
-    }
-    .linkBrowse {
-    	background-image: url('images/folder_explore.png');
-    }
-    .linkCreate {
-    	background-image: url('images/phone.png');
-    }
-    .linkEdit {
-    	background-image: url('images/page_white_edit.png');
-    }
-    .linkExplore {
-    	background-image: url('images/chart_bar.png');
-    }
-    .linkResponses {
-    	background-image: url('images/table_multiple.png');
-    }
-    .linkDocuments {
-    	background-image: url('images/page_white_upload.png');
+    .linkMenu div {
+    	height: 20px;
     }
     .notify {
     	margin: 15px 5px;
@@ -94,28 +74,23 @@
      
      <g:HTMLPanel ui:field='leftPanel' addStyleNames='{style.leftPanel}'>
        <p class='{style.question}'>What would you like to do?</p>
-       <g:MenuBar vertical='true' addStyleNames='{style.linkMenu}'>
-         <g:MenuItem ui:field='quickLinkCreate' addStyleNames='{style.linkCreate}'>
-           <a href='#campaigns?v=create'>Create a new campaign</a>
-         </g:MenuItem>
-         <g:MenuItem ui:field='quickLinkEdit' addStyleNames='{style.linkEdit}'>
-           <a href="#campaigns?v=list">Edit an existing campaign</a>
-         </g:MenuItem>
-         <g:MenuItem ui:field='quickLinkBrowse' addStyleNames='{style.linkBrowse}'>
-           <a href="#campaigns">Browse campaigns</a>
-         </g:MenuItem>
-         <g:MenuItem ui:field='quickLinkResponses' addStyleNames='{style.linkResponses}'>
-           <a href="#responses">Share or delete survey responses</a>
-         </g:MenuItem>
-         <!--
-         <g:MenuItem ui:field='quickLinkExplore' addStyleNames='{style.linkExplore}'>
-           <a href="#explore_data">Plot campaign data</a>
-         </g:MenuItem>
-         -->
-         <g:MenuItem ui:field='quickLinkUpload' addStyleNames='{style.linkDocuments}'>
-           <a href="#documents?v=create">Upload documents</a>
-         </g:MenuItem>
-       </g:MenuBar>
+       <g:HTMLPanel addStyleNames='{style.linkMenu}'>
+         <g:Hyperlink ui:field='quickLinkCreate' addStyleNames='linkMenuItem sprite-phone'>
+           Create a new campaign
+         </g:Hyperlink>
+         <g:Hyperlink ui:field='quickLinkEdit' addStyleNames='linkMenuItem sprite-page_white_edit'>
+           Edit an existing campaign
+         </g:Hyperlink>
+         <g:Hyperlink ui:field='quickLinkBrowse' addStyleNames='linkMenuItem sprite-folder_explore'>
+           Browse campaigns
+         </g:Hyperlink>
+         <g:Hyperlink ui:field='quickLinkResponses' addStyleNames='linkMenuItem sprite-table_multiple'>
+           Share or delete survey responses
+         </g:Hyperlink>
+         <g:Hyperlink ui:field='quickLinkUpload' addStyleNames='linkMenuItem sprite-page_white_upload'>
+           Upload documents
+         </g:Hyperlink>
+       </g:HTMLPanel>
      </g:HTMLPanel>
      
      <g:HTMLPanel ui:field='rightPanel' addStyleNames='{style.rightPanel}'>
