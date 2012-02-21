@@ -236,7 +236,7 @@ public class MainApp implements EntryPoint, HistoryListener {
       @Override
       public void onFailure(Throwable caught) {
         AwErrorUtils.logoutIfAuthException(caught);
-        ErrorDialog.show("Could not obtain server app config data", "The server may be down or undergoing maintenance. Please try again at a later time.");
+        ErrorDialog.show("Could not obtain server app config data", "The server may be unavailable or undergoing maintenance. Please try again at a later time.");
       }
 
       @Override
