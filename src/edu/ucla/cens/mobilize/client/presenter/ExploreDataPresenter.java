@@ -383,7 +383,6 @@ public class ExploreDataPresenter implements Presenter {
     view.getDrawPlotButton().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-    	view.clearPlot(); // prev plot is cleared even if inputs are invalid
         String promptX = view.getSelectedPromptX();
         String promptY = view.getSelectedPromptY();
         Date fromDate = view.getFromDate();
@@ -413,7 +412,7 @@ public class ExploreDataPresenter implements Presenter {
         	ErrorDialog.show("Invalid date selection", "Mobility date range may only be up to 7 days.");
       	}
         else if (!view.isMissingRequiredField()) { // view marks missing fields, if any
-          fireHistoryTokenToMatchSelectedSettings();
+        	fireHistoryTokenToMatchSelectedSettings();
         }
       }
     });
