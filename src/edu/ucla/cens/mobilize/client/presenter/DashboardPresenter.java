@@ -149,7 +149,10 @@ public class DashboardPresenter implements DashboardView.Presenter, Presenter {
           _campaignIdToPrivateResponseCountMap.put(campaignIdKey, result);
           int privateResponseCount = 0;
           for (String key : _campaignIdToPrivateResponseCountMap.keySet()) {
-            privateResponseCount += _campaignIdToPrivateResponseCountMap.get(key);
+        	  int toAdd = _campaignIdToPrivateResponseCountMap.get(key);
+        	  if (toAdd > 0) {
+                privateResponseCount += toAdd;
+        	  }
           }
           view.showPrivateResponseCount(privateResponseCount);
         }
