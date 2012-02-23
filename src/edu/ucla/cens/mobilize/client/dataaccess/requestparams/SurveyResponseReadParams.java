@@ -124,11 +124,11 @@ public class SurveyResponseReadParams implements RequestParams {
     }
     
     if (this.numToSkip_opt != null) {
-      params.put("num_survey_responses_to_skip", Integer.toString(this.numToSkip_opt));
+      params.put("num_to_skip", Integer.toString(this.numToSkip_opt));
     }
     
     if (this.numToProcess_opt != null) {
-      params.put("num_survey_responses_to_process", Integer.toString(this.numToProcess_opt));
+      params.put("num_to_return", Integer.toString(this.numToProcess_opt));
     }
     
     return MapUtils.translateToParameters(params);

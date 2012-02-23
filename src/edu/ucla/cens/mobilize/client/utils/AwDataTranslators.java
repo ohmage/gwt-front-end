@@ -126,7 +126,7 @@ public class AwDataTranslators {
         JSONValue value = JSONParser.parseStrict(surveyResponseReadQueryJSON);
         JSONObject responseHash = value.isObject();
         if (responseHash == null ) throw new RuntimeException("Invalid json response: " + surveyResponseReadQueryJSON);
-        JSONNumber numberOfSurveys = responseHash.get("metadata").isObject().get("total_num_survey_responses").isNumber();
+        JSONNumber numberOfSurveys = responseHash.get("metadata").isObject().get("total_num_results").isNumber();
         retval = (int)numberOfSurveys.doubleValue();
       } catch (Exception e) {
         _logger.severe("Could not extract survey count. Json was: " + surveyResponseReadQueryJSON);
