@@ -1,14 +1,10 @@
 package edu.ucla.cens.mobilize.client.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import edu.ucla.cens.mobilize.client.common.Privacy;
-import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.utils.XmlConfigTranslator;
@@ -133,10 +129,6 @@ public class CampaignDetailedInfo {
     return this.configTranslator.getSurveyIds();
   }
   
-  public List<SurveyInfo> getSurveys(List<String> surveyIds) {
-    return this.configTranslator.getSurveyInfos(surveyIds);
-  }
-  
   public List<String> getPromptIds() {
     return this.configTranslator.getPromptIds(); 
   }
@@ -221,7 +213,6 @@ public class CampaignDetailedInfo {
     if (this.configTranslator.loadFromXml(xmlConfig)) {
       this.xmlConfig = xmlConfig;
     } else {
-      // TODO: how should error be handled?
       this.xmlConfig = "there was a problem loading the xml config";
     }
   }
@@ -242,4 +233,7 @@ public class CampaignDetailedInfo {
     this.creationTime = time;
   }
 
+  public List<String> getSurveyIdsByPromptType(String promptType) { 
+    return this.configTranslator.getSurveyIdsByPromptType(promptType);
+  }
 }

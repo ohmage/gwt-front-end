@@ -35,13 +35,27 @@ public class SurveyResponseData {
   /**
    * Saves defensive copy of params used to fetch this data. Useful for testing
    *   whether a data request can be served from the data in this object instead
-   *   of going to the server
+   *   of going to the server 
    * @param params
    */
   public void setParams(SurveyResponseReadParams params) {
-    this.params = new SurveyResponseReadParams(params); 
+    this.params = new SurveyResponseReadParams(params);
   }
   
+  /**
+   * @return campaign urn of all responses in this set or null if set is empty
+   */
+  public String getCampaignUrn() {
+    String urn = null;
+    if (this.surveyResponses != null && !this.surveyResponses.isEmpty()) {
+      urn = this.surveyResponses.get(0).getCampaignId();
+    }
+    return urn;
+  }
+  
+  /**
+   * @return SurveyResponseReadParams object used in the api query that filled this object
+   */
   public SurveyResponseReadParams getParams() {
     return this.params;
   }
@@ -157,17 +171,6 @@ public class SurveyResponseData {
     this.totalResponses = 0;
     if (this.surveyResponses != null) this.surveyResponses.clear();
     this.params = null;
-  }
-  
-  /**
-   * @return campaign urn of all responses in this set or null if set is empty
-   */
-  public String getCampaignUrn() {
-    String urn = null;
-    if (this.surveyResponses != null && !this.surveyResponses.isEmpty()) {
-      urn = this.surveyResponses.get(0).getCampaignId();
-    }
-    return urn;
   }
   
   public SurveyResponse getSurveyResponse(String responseKey) {

@@ -41,6 +41,14 @@
     .dateBox {
     	width: 100px;
     }
+    .disabled {
+    	color: #AAA;
+    }
+    .emptyResponseListMessage {
+      color: #777;
+      font-size: 1.1em;
+      padding: 18px 25px;
+    }
     .expandCollapseLinkMenu {
     	padding-left: 5px;
     }
@@ -228,8 +236,8 @@
 	        <dp:DateBox ui:field='fromDateBox' addStyleNames='{style.dateBox}' />
 	        <g:Label addStyleNames='{style.label}'>End Date:</g:Label>
 	        <dp:DateBox ui:field='toDateBox' addStyleNames='{style.dateBox}' />
-	        <g:HTMLPanel addStyleNames='{style.photoCheckBox}'>
-	          <g:CheckBox ui:field='hasPhotoCheckBox'>Only photo responses</g:CheckBox>
+	        <g:HTMLPanel addStyleNames='{style.photoCheckBox}' ui:field='onlyPhotoResponsesPanel'>
+	          <g:CheckBox ui:field='onlyPhotoResponsesCheckBox'>Only photo responses</g:CheckBox>
 	        </g:HTMLPanel>
         </g:HTMLPanel>
         <g:Button ui:field='applyFiltersButton'>Show Responses</g:Button>

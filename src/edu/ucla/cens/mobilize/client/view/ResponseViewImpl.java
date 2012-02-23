@@ -58,6 +58,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
 
   public interface ResponseViewStyles extends CssResource {
+    String disabled();
+    String emptyResponseListMessage();
     String selectedTopNav();
   }
 
@@ -76,7 +78,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField ListBox privacyFilter;
   @UiField DateBox fromDateBox;
   @UiField DateBox toDateBox;
-  @UiField CheckBox hasPhotoCheckBox;
+  @UiField HTMLPanel onlyPhotoResponsesPanel;
+  @UiField CheckBox onlyPhotoResponsesCheckBox;
   @UiField Button applyFiltersButton;
   @UiField MessageWidget messageWidget;
   @UiField Label sectionHeaderTitle;
@@ -386,7 +389,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @Override
   public void setPhotoFilter(boolean showOnlyResponsesWithPhotos) {
-    hasPhotoCheckBox.setValue(showOnlyResponsesWithPhotos);
+    onlyPhotoResponsesCheckBox.setValue(showOnlyResponsesWithPhotos);
   }
 
   @Override
@@ -397,6 +400,14 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void hideWaitIndicator() {
     WaitIndicator.hide();
+  }
+  
+  @Override
+  public void showNoPhotoResponsesMessage() {
+    HTMLPanel panel = new HTMLPanel("The selected campaign has no photo prompts.");
+    panel.setStyleName(style.emptyResponseListMessage());
+    this.responseList.clear();
+    this.responseList.add(panel);
   }
   
   @Override
@@ -500,8 +511,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   }
   
   @Override
-  public boolean getHasPhotoToggleValue() {
-    return this.hasPhotoCheckBox.getValue();
+  public boolean getOnlyPhotoResponsesFlag() {
+    return this.onlyPhotoResponsesCheckBox.isEnabled() ? this.onlyPhotoResponsesCheckBox.getValue() : false;
   }
 
   @Override
@@ -758,6 +769,19 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @Override
   public void hideOptionalFilters() {
     this.optionalFilters.setVisible(false);
+  }
+  
+  @Override
+  public void setPhotoResponsesCheckBoxEnabled(boolean isEnabled) {
+    if (isEnabled) {
+      this.onlyPhotoResponsesCheckBox.setEnabled(true);
+      this.onlyPhotoResponsesPanel.removeStyleName(style.disabled());
+      this.onlyPhotoResponsesPanel.setTitle(null);
+    } else {
+      this.onlyPhotoResponsesCheckBox.setEnabled(false);
+      this.onlyPhotoResponsesPanel.addStyleName(style.disabled());
+      this.onlyPhotoResponsesPanel.setTitle("Set survey filter to 'All' to use this option");
+    }
   }
 
   @Override

@@ -41,7 +41,6 @@ import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
 import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
-import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponseData;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -61,8 +60,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   
   UserInfo userInfo;
   String campaignName;
-  //List<CampaignShortInfo> campaigns;
-  
+  CampaignDetailedInfo selectedCampaignInfo;
 
   // when forceRefetch is true, every history token change causes data to be refetched
   private boolean forceReload = false; // (useful for troubleshooting)
@@ -276,6 +274,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   
         @Override
         public void onSuccess(CampaignDetailedInfo campaignInfo) {
+          // save campaign data
+          selectedCampaignInfo = campaignInfo;
           // set up survey filter with survey ids from campaign info (comes from xml config)
           view.enableSurveyFilter();
           view.setSurveyList(campaignInfo.getSurveyIds());
@@ -364,6 +364,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
   
         @Override
         public void onSuccess(CampaignDetailedInfo campaignInfo) {
+          selectedCampaignInfo = campaignInfo;
           boolean includeAllChoice = true;
           fetchParticipantsWithResponsesAndAddToList(selectedCampaign,
                                                      selectedParticipant,
@@ -564,6 +565,14 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
         } else { // default is browse
           fetchAndFillFiltersForBrowseView();
         }
+      }
+    });
+    
+    this.view.getSurveyFilter().addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        // "only photo responses" filter is only valid when "All" is selected in survey dropdown
+        view.setPhotoResponsesCheckBoxEnabled("".equals(view.getSelectedSurvey()));
       }
     });
     
@@ -813,7 +822,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     String campaignId = view.getSelectedCampaign();
     String surveyName = view.getSelectedSurvey();
     Privacy privacy = view.getSelectedPrivacyState();
-    boolean onlyPhotoResponses = view.getHasPhotoToggleValue();
+    boolean onlyPhotoResponses = view.getOnlyPhotoResponsesFlag();
     Date startDate = view.getSelectedStartDate();
     Date endDate = view.getSelectedEndDate();
     int startIndex = view.getVisibleRangeStart();
@@ -850,7 +859,17 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     view.selectParticipant(participantName);
     view.selectPrivacyState(params.privacyState_opt);
     view.selectStartDate(params.startDate_opt);
-    view.selectSurvey(params.surveyIdList_opt != null && !params.surveyIdList_opt.isEmpty() ? params.surveyIdList_opt.get(0) : null);
+    
+    boolean onlyPhotoResponses = params.promptType_opt != null && params.promptType_opt.equals("photo");
+    view.setPhotoFilter(onlyPhotoResponses);
+    
+    // if "only photos" flag is set, then survey id list was chosen programmatically
+    //   and "All" should be selected in the survey filter
+    view.selectSurvey(onlyPhotoResponses ? null : params.getSurvey());
+    
+    // photo checkbox is disabled if a specific survey is selected
+    String selectedSurvey = view.getSelectedSurvey();
+    view.setPhotoResponsesCheckBoxEnabled(selectedSurvey == null || selectedSurvey.isEmpty());
     
     // update counts display
     view.showResponseCountInSectionHeader(participantName, this.surveyResponseData.getTotalResponseCount());
@@ -883,6 +902,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
       view.showWaitIndicator();
       params.numToSkip_opt = startIndex;
       params.numToProcess_opt = calcNumResponsesToFetch(pageSize);
+      
       surveyResponseData.clear(); // clean up previous data
       this.dataService.fetchSurveyResponseData(params, new AsyncCallback<SurveyResponseData>() {
         @Override
@@ -953,7 +973,29 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                           "urn:ohmage:context:epoch_millis");
     params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
     params.returnId = true; // include survey key so survey can be updated in edit view
-    if (surveyName != null && !surveyName.isEmpty()) params.surveyIdList_opt.add(surveyName);
+    params.promptType_opt = onlyPhotoResponses ? "photo" : null; // needed to reconstruct filter values
+    
+    // If a survey is selected, fetch responses from that survey and ignore the onlyPhotoResponses flag
+    // (OnlyPhotoResponses is only valid when "All" is selected in the survey dropdown)
+    if (surveyName != null && !surveyName.isEmpty()) {
+      params.surveyIdList_opt.add(surveyName);
+    } else if (onlyPhotoResponses) {
+      // There's  no "with photos" option in the surveyresponse/read api, so we fake it by
+      //   checking the campaign xml to find out which surveys contain at least one photo
+      //   prompt and fetch responses from only those surveys
+      List<String> surveyIds = selectedCampaignInfo.getSurveyIdsByPromptType("photo");
+      if (surveyIds != null && !surveyIds.isEmpty()) {
+        params.surveyIdList_opt.addAll(surveyIds);
+      } else {
+        // Campaign has no photo responses. No need to query the server, just update display
+        //   with current params so filters will be set and show an info message
+        this.surveyResponseData.clear();
+        this.surveyResponseData.setParams(params);
+        updateResponseDisplay(this.surveyResponseData, 0, 0);
+        view.showNoPhotoResponsesMessage();
+        return;
+      }
+    }
     fetchAndShowResponses(params, startIndex, pageSize);
   }
 }
