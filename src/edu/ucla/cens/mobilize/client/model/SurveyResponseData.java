@@ -27,7 +27,7 @@ public class SurveyResponseData {
    */
   public List<SurveyResponse> getResponses(int startIndex, int pageSize) {
     int localStartIndex = startIndex - this.startIndex;
-    int localEndIndex = Math.min(startIndex + pageSize, this.getNumResponsesLoaded());
+    int localEndIndex = Math.min(localStartIndex + pageSize, this.getNumResponsesLoaded());
     // TODO: handle case where diff is negative (meaning requested data is not loaded)
     return this.surveyResponses.subList(localStartIndex, localEndIndex);
   }
