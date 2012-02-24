@@ -7,19 +7,20 @@ public class WaitIndicator {
   private static PopupPanel panel;
   private static Image loadingImage;
   
-  public static void show() {
+  static {
     panel = new PopupPanel();
     loadingImage = new Image();
     loadingImage.setUrl("images/loading.gif");
     panel.setGlassEnabled(true);
     panel.setModal(true);
     panel.add(loadingImage);
+  }
+  
+  public static void show() {
     panel.center();
   }
   
   public static void hide() {
     if (panel != null) panel.hide();
-    loadingImage = null;
-    panel = null;
   }
 }

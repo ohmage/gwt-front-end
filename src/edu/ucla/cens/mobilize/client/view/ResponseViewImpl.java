@@ -61,6 +61,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     String disabled();
     String emptyResponseListMessage();
     String selectedTopNav();
+    String waiting();
   }
 
   @UiField ResponseViewStyles style;
@@ -84,6 +85,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   @UiField MessageWidget messageWidget;
   @UiField Label sectionHeaderTitle;
   @UiField Label sectionHeaderDetail;
+  @UiField HTMLPanel centerPanel;
   @UiField HTMLPanel scrollPanel;
   @UiField FlowPanel responseList;
   @UiField Button shareButtonTop;
@@ -115,6 +117,8 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   private int visibleRangeMaxLength;
   private int rowCount;
   private boolean rowCountIsExact = true;
+
+  private FlowPanel loading;
   
   public ResponseViewImpl() {
     // instantiate pagers here so instructor params can be passed
@@ -138,6 +142,10 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     pagerBottom.setDisplay(this);
     pagerBottom.setHeight("15px");
     setVisibleRangeMaxLength(10);
+    
+    // set up wait indicator
+    loading = new FlowPanel();
+    loading.setStyleName(style.waiting());
   }
   
   private void setEventHandlers() {
@@ -394,12 +402,12 @@ public class ResponseViewImpl extends Composite implements ResponseView {
 
   @Override
   public void showWaitIndicator() {
-    WaitIndicator.show();
+    this.centerPanel.add(loading);
   }
 
   @Override
   public void hideWaitIndicator() {
-    WaitIndicator.hide();
+    this.centerPanel.remove(loading);
   }
   
   @Override
