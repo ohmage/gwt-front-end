@@ -74,6 +74,7 @@ import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
+import edu.ucla.cens.mobilize.client.ui.MobilityVizDailySummary;
 import edu.ucla.cens.mobilize.client.ui.MobilityWidgetPopup;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
@@ -238,8 +239,9 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     
     // mobility
     TreeItem mobility = getTreeItem("Mobility", style.treeItemCategory()); // category
+    TreeItem mobilityDashboard = getTreeItem("Daily Summary", PlotType.MOBILITY_DASHBOARD, style.treeItemMap());
     TreeItem mobilityMap = getTreeItem("Mobility Map", PlotType.MOBILITY_MAP, style.treeItemMap());
-    TreeItem mobilityGraph = getTreeItem("Temporal Summary", PlotType.MOBILITY_GRAPH, style.treeItemMap());
+    TreeItem mobilityGraph = getTreeItem("Temporal Summary", PlotType.MOBILITY_TEMPORAL, style.treeItemMap());
     
     // build the tree
     plotTypeTree.addItem(surveyResponseCounts);
@@ -258,6 +260,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     geographic.addItem(googleMap);
     if (AppConfig.getMobilityEnabled()) {
         plotTypeTree.addItem(mobility);
+        mobility.addItem(mobilityDashboard);
         mobility.addItem(mobilityMap);
         mobility.addItem(mobilityGraph);
     }
@@ -796,6 +799,12 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		}
 	}
 	
+	@Override
+	public void showMobilityDashboard(final List<MobilityInfo> mdata) {
+		MobilityVizDailySummary widget = new MobilityVizDailySummary(mdata);
+		plotContainer.add(widget);
+	}
+	
 	private void drawMobilityDataOnMap(final List<MobilityInfo> mdata) {
 		// Clear any previous data points    
 		clearOverlays();
@@ -896,7 +905,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	}
 	
 	@Override
-	public void showMobilityDataOnGraph(final List<List<MobilityInfo>> mdataList) {
+	public void showMobilityTemporalSummary(final List<List<MobilityInfo>> mdataList) {
 		// hide previous plot, if any
 		clearPlot(); 
 		hideWaitIndicator();
@@ -914,190 +923,12 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			Label date_label = new Label(day_str);
 			panels.add(date_label);
 			
-			Widget testViz = createMobilityBarChartCanvasWidget(buckets, interval, 750, 120, true, true);
+			Widget testViz = MobilityUtils.createMobilityBarChartCanvasWidget(buckets, interval, 750, 120, true, true);
 			
 			panels.add(testViz);
 		}
 		
         plotContainer.add(panels);
-	}
-	
-	/**
-	 * Generates a widget containing a temporal summary of the bucketed mobility data. If buckets contains all ERROR modes, this will be indicated via a text overlay on the graph. All invalid parameters returns null
-	 * @param buckets the List of MobilityMode data for an entire day
-	 * @param interval the minute duration of each bucket
-	 * @param width the output widget width
-	 * @param height the output widget height
-	 * @param showAxisLabels True to show axis time labels (e.g. 3pm) and pad borders with white space; False to hide
-	 * @param showLegend True to show a legend on the right of the plot (this would reduce the plot size); False to hide
-	 * @return the HTML5 canvas widget
-	 */
-	private Widget createMobilityBarChartCanvasWidget(final List<MobilityMode> buckets, final int interval, final int width, final int height, boolean showAxisLabels, boolean showLegend) {
-		// Color mapping for each MobilityMode; this is hardcoded here for function portability
-		Map<MobilityMode, String> colorTable = new HashMap<MobilityMode, String>();
-		colorTable.put(MobilityMode.STILL, "#ea5855");	// Earth-tone red
-		colorTable.put(MobilityMode.WALK, "#f3b359");	// Earth-tone orange
-		colorTable.put(MobilityMode.RUN, "#f4e64b");	// Earth-tone yellow
-		colorTable.put(MobilityMode.BIKE, "#95d480");	// Earth-tone green
-		colorTable.put(MobilityMode.DRIVE, "#18b3f0");	// Earth-tone blue
-		colorTable.put(MobilityMode.ERROR, "#dcdcdc");	// Earth-tone gray
-		
-		//--- (0) Error checking
-		if (buckets == null || buckets.size() == 0 || interval <= 0 || width <= 0 || height <= 0) {
-			return null;
-		}
-		
-		//--- (1) Set up canvas, determine offsets
-		Canvas canvas = Canvas.createIfSupported();
-		if (canvas == null)
-			return null;
-		
-		canvas.setWidth(Integer.toString(width));
-		canvas.setHeight(Integer.toString(height));
-		canvas.setCoordinateSpaceWidth(width);
-		canvas.setCoordinateSpaceHeight(height);
-		
-		Context2d context = canvas.getContext2d();
-		
-		int axisLabelHeight = (showAxisLabels) ? 20 : 0;
-		int legendWidth = (showLegend) ? 120 : 0;
-		int plotXoffset = (showAxisLabels) ? 20 : 0;
-		int plotYoffset = (showAxisLabels) ? 10 : 0;
-		int plotWidth = width - 2*plotXoffset - legendWidth;
-		int plotHeight = height - 2*plotYoffset - axisLabelHeight;
-		
-		// --- (2) Draw X-axis
-		if (showAxisLabels) {
-			final int hourInterval = 3;	// NOTE: Must be a common factor of 24
-			for (int hour = 0; hour <= 24; hour += hourInterval) {
-				// Calculate tick mark origin
-				double x, y;
-				x = plotXoffset + (double)hour * (double)plotWidth / 24.0;
-				y = plotYoffset + plotHeight;
-				
-				// Draw tick mark
-				context.setLineWidth(1);
-				context.setStrokeStyle(CssColor.make("#CCCCCC"));
-				context.beginPath();
-				context.moveTo(x, y+3);
-				context.lineTo(x, y+10);
-				context.stroke();
-				
-				// Draw label underneath tick mark
-				String str = getPrettyHourStr(hour);
-				context.setFillStyle(CssColor.make("#666666"));
-				context.setFont("bold 8pt Arial");
-				context.setTextAlign(TextAlign.CENTER);
-				context.setTextBaseline(TextBaseline.TOP);
-				context.fillText(str, x, y+10);
-			}
-		}
-		
-		// --- (3) Draw legend
-		if (showLegend) {
-			double legendYspacing = (double)plotHeight / (double)colorTable.size();
-			double legendYoffset = legendYspacing / 2.0;
-			double legendXoffset = 40;
-			
-			int keyCount = 0;
-			for (MobilityMode m : colorTable.keySet()) {
-				// Calculate offset for the color icon and text label
-				double x, y, w, h;
-				x = plotXoffset + plotWidth + legendXoffset;
-				y = plotYoffset + legendYoffset + legendYspacing*keyCount;
-				w = 30.0;
-				h = legendYspacing - 4.0;
-				
-				// Draw color icon
-				context.setFillStyle(CssColor.make(colorTable.get(m)));
-				context.fillRect(x, y - (h / 2.0), w, h);
-				
-				// Draw text label
-				String str = m.toString();
-				context.setFillStyle(CssColor.make("#000000"));
-				context.setFont("bold 8pt Arial");
-				context.setTextAlign(TextAlign.LEFT);
-				context.setTextBaseline(TextBaseline.MIDDLE);
-				context.fillText(str, x+w+4, y);
-				
-				keyCount++;
-			}
-		}
-		
-		// --- (4) Now, draw the plot
-		final int overflow = 24*60 - buckets.size()*interval;
-		final double stretchFactor = (double)plotWidth / (24*60);
-		boolean hasPlottableData = false;
-		double x_pos = 0;
-		for (int i = 0; i < buckets.size(); i++) {
-			double x, y, w, h;
-			
-			// Determine x,y,w,h to draw rect
-			x = plotXoffset + x_pos;
-			y = plotYoffset;
-			w = stretchFactor * (double) interval;
-			h = (double) plotHeight;
-			
-			// Determine color
-			context.setFillStyle(CssColor.make(colorTable.get(buckets.get(i))));
-			
-			// Draw rectangle
-			context.fillRect(x,y,w,h);
-			
-			// Increment position
-			x_pos += w;
-			if (buckets.get(i).equals(MobilityMode.ERROR) == false)
-				hasPlottableData = true;
-		}
-		
-		// Fill overflow (if any) with gray rectangles 
-		if (overflow > 0) {
-			double x, y, w, h;
-			x = plotYoffset + x_pos;
-			y = plotYoffset;
-			w = plotWidth - x_pos;
-			h = (double) plotHeight;
-			context.setFillStyle(CssColor.make(colorTable.get(MobilityMode.ERROR)));
-			context.fillRect(x,y,w,h);
-		}
-		
-		// Draw "No data" text if empty
-		if (hasPlottableData == false) {
-			double x, y;
-			
-			// Determine x,y,w,h to draw rect
-			x = plotXoffset + (double)plotWidth / 2.0;
-			y = plotYoffset + (double)plotHeight / 2.0;
-			
-			// Draw text label
-			String str = "(no valid mobility data for this day)";
-			context.setShadowColor("#FFFFFF");
-			context.setShadowOffsetX(0.0);
-			context.setShadowOffsetY(0.0);
-			context.setShadowBlur(8.0);
-			context.setFillStyle(CssColor.make("#333"));
-			context.setFont("bold 14pt Arial");
-			context.setTextAlign(TextAlign.CENTER);
-			context.setTextBaseline(TextBaseline.MIDDLE);
-			context.fillText(str, x, y);
-		}
-		
-		return canvas;
-	}
-	
-	/**
-	 * Helper function for createMobilityBarChartCanvasWidget(...)
-	 * @param hour the hour of the day represented in 24-hours (0 ~ 23), starting at 0 for midnight
-	 * @return the string representing the 12-hour format value along with meridiem notation
-	 */
-	private String getPrettyHourStr(int hour) {
-		hour %= 24;
-		String str = "";
-		if (hour == 0)		str += "12";
-		else if (hour > 12)	str += Integer.toString(hour-12);
-		else						str += Integer.toString(hour);
-		str += (hour < 12 || hour >= 24) ? "am" : "pm";
-		return str;
 	}
 	
   @Override

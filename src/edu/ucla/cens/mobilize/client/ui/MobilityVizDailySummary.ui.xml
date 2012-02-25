@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.MobilityVizDailySummary.MobilityVizDailySummaryStyle">
+		.wrapper {
+		}
+		.header {
+		}
+		.header-text {
+		}
+		.date-selector {
+		}
+		.container {
+		}
+		.top-box {
+		}
+		.right-box {
+		}
+		.left-box {
+		}
+		.footer {
+		}
+		.footer-text {
+		}
+		.hidden {
+			display:none;
+		}
+		.visible {
+			display:block;
+		}
+	</ui:style>
+
+	<g:HTMLPanel ui:field='wrapper'>
+		<g:HTMLPanel addStyleNames='{style.header}'>
+			<g:InlineLabel addStyleNames='{style.header-text}'>Daily Summary</g:InlineLabel>
+		</g:HTMLPanel>
+		
+		<g:HTMLPanel addStyleNames='{style.date-selector}'>
+		</g:HTMLPanel>
+		
+		<g:HTMLPanel addStyleNames='{style.container}'>
+			<g:HTMLPanel addStyleNames='{style.top-box}'>
+				<g:VerticalPanel ui:field="mobilityStats"></g:VerticalPanel>
+			</g:HTMLPanel>
+			
+			<g:HTMLPanel addStyleNames='{style.top-box}'>
+				<g:FlowPanel ui:field="temporalPlot"></g:FlowPanel>
+			</g:HTMLPanel>
+			
+			<g:HTMLPanel addStyleNames='{style.right-box}'>
+				<g:FlowPanel ui:field="durationPlot"></g:FlowPanel>
+				<g:VerticalPanel ui:field="durationInfo"></g:VerticalPanel>
+			</g:HTMLPanel>
+			
+			<g:HTMLPanel addStyleNames='{style.left-box}'>
+				<g:FlowPanel ui:field="distancePlot"></g:FlowPanel>
+				<g:VerticalPanel ui:field="distanceInfo"></g:VerticalPanel>
+			</g:HTMLPanel>
+			
+			<g:HTMLPanel addStyleNames='{style.left-box}'>
+			</g:HTMLPanel>
+		</g:HTMLPanel>
+		
+		<g:HTMLPanel addStyleNames='{style.footer}'>
+			<g:InlineLabel addStyleNames='{style.footer-text}'>Compare with your past data (link)</g:InlineLabel>
+		</g:HTMLPanel>
+	</g:HTMLPanel>
+
+</ui:UiBinder> 

@@ -11,8 +11,10 @@ public enum PlotType {
   SCATTER_PLOT,
   DENSITY_PLOT,
   MAP,
+  MOBILITY_DASHBOARD,
   MOBILITY_MAP,
-  MOBILITY_GRAPH;
+  MOBILITY_TEMPORAL,
+  MOBILITY_HISTORICAL;
   
   public String toHistoryTokenString() {
     return this.toString().toLowerCase();
