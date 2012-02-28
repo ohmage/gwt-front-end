@@ -5,8 +5,6 @@
 	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
 	<ui:style type="edu.ucla.cens.mobilize.client.view.AdminAuditLogView.AdminAuditLogViewStyles">
-	  .auditLogCellTable {
-	  }
 	  .emptyLogMessage {
 	  	background-color: #EEE;
       border: solid thin #AAA;

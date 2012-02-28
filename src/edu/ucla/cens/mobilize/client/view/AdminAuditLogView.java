@@ -32,6 +32,7 @@ import com.google.gwt.view.client.ListDataProvider;
 
 import edu.ucla.cens.mobilize.client.AwConstants.AwUri;
 import edu.ucla.cens.mobilize.client.model.AuditLogEntry;
+import edu.ucla.cens.mobilize.client.resources.cellwidgets.CellTableResources;
 import edu.ucla.cens.mobilize.client.ui.AdminMenu;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
@@ -141,9 +142,10 @@ public class AdminAuditLogView extends Composite {
   }
   
   private void initCellTable() {
-    this.auditLogCellTable = new CellTable<AuditLogEntry>();
+    int pageSize = 1000;
+    CellTable.Resources resources = GWT.create(CellTableResources.class);
+    this.auditLogCellTable = new CellTable<AuditLogEntry>(pageSize, resources);
     this.auditLogCellTable.setWidth("100%");
-    this.auditLogCellTable.setPageSize(1000);
     SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
     this.pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
     this.pager.setDisplay(this.auditLogCellTable);    
