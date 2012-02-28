@@ -91,7 +91,7 @@ public class MobilityUtils {
 		Context2d context = canvas.getContext2d();
 		
 		int axisLabelHeight = (showAxisLabels) ? 20 : 0;
-		int legendWidth = (showLegend) ? 120 : 0;
+		int legendWidth = (showLegend) ? 110 : 0;
 		int plotXoffset = (showAxisLabels) ? 20 : 0;
 		int plotYoffset = (showAxisLabels) ? 10 : 0;
 		int plotWidth = width - 2*plotXoffset - legendWidth;

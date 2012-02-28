@@ -1,11 +1,11 @@
 package edu.ucla.cens.mobilize.client.ui;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -14,24 +14,29 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
-import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
+import com.google.gwt.visualization.client.visualizations.corechart.AxisOptions;
+import com.google.gwt.visualization.client.visualizations.corechart.ComboChart;
+import com.google.gwt.visualization.client.visualizations.corechart.ComboChart.Options;
+import com.google.gwt.visualization.client.visualizations.corechart.Series.Type;
 
 import edu.ucla.cens.mobilize.client.common.MobilityMode;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MobilityUtils;
 
 public class MobilityVizDailySummary extends Composite {
-	private static final int PIE_CHART_HEIGHT_PX = 200;
-	private static final int PIE_CHART_WIDTH_PX = 200;
-	private static final int TEMPORAL_WIDTH_PX = 750;
+	private static final int CHART_HEIGHT_PX = 200;
+	private static final int CHART_WIDTH_PX = 200;
+	private static final int TEMPORAL_WIDTH_PX = 800;
 	private static final int TEMPORAL_HEIGHT_PX = 120;
 
 	private static MobilityVizDailySummaryUiBinder uiBinder = GWT
@@ -58,7 +63,13 @@ public class MobilityVizDailySummary extends Composite {
 	@UiField FlowPanel temporalPlot;
 	@UiField VerticalPanel distanceInfo;
 	@UiField VerticalPanel durationInfo;
-	@UiField VerticalPanel mobilityStats;
+	
+	@UiField Label date_label;
+	@UiField Label stat_total_time_ambulatory;
+	@UiField Label stat_total_time_sedentary;
+	@UiField Label stat_total_foot_distance;
+	@UiField Label stat_average_walking_speed;
+	@UiField Label stat_total_time_tracked;
 
 	public MobilityVizDailySummary(List<MobilityInfo> data) {
 		// Init stuff
@@ -81,6 +92,15 @@ public class MobilityVizDailySummary extends Composite {
 	public void loadAndDisplayMobilityData(List<MobilityInfo> data) {
 		clearData();
 		
+		// --- (0) Set date
+		if (data.isEmpty())
+			date_label.setText("Daily summary for unknown date");
+		else {
+			DateTimeFormat format = DateTimeFormat.getFormat("EEEE, MMMM dd, yyyy");
+			String day_str = format.format(data.get(0).getDate());
+			date_label.setText("Daily summary for " + day_str);
+		}
+		
 		Map<MobilityMode, List<Float>> speedsMap = MobilityUtils.getModeSpeeds(data);
 		
 		// --- (2) Temporal Summary
@@ -92,18 +112,18 @@ public class MobilityVizDailySummary extends Composite {
 		// --- (3a) Duration distribution
 		// Calculate duration of each mode & tabulate in a map
 		Map<MobilityMode, Integer> durationMap = getModeDurations(data);
-		// Generate pie widget, generate duration estimates
-		Widget durationPieViz = createDurationPieChart(durationMap, "minutes");
-		durationPlot.add(durationPieViz);
+		// Generate column widget, generate duration estimates
+		Widget durationColumnViz = createDurationComboChart(durationMap);
+		durationPlot.add(durationColumnViz);
 		// Set text info
 		setDurationInfo(durationMap);
 
 		// --- (3b) Distance distribution
 		// Calculate miles of each mode & tabulate in a map
 		Map<MobilityMode, Float> distanceMap = getModeDistances(data);
-		// Generate pie widget, generate duration estimates
-		Widget distancePieViz = createDistancePieChart(distanceMap, "meters");
-		distancePlot.add(distancePieViz);
+		// Generate column widget, generate duration estimates
+		Widget distanceColumnViz = createDistanceComboChart(distanceMap);
+		distancePlot.add(distanceColumnViz);
 		// Set text info
 		setDistanceInfo(distanceMap);
 		
@@ -117,11 +137,8 @@ public class MobilityVizDailySummary extends Composite {
 		// Display distance traveled -- by foot/bike
 		// Display avg walking speed
 		// Display avg running speed
-
-		// (1) "mPulse"
-		InlineLabel label1 = new InlineLabel();
 		
-		// (2) Ambulatory duration + of the total records available
+		// (1 & 2) Ambulatory duration + of the total records available
 		int ambulatoryMin = 0;
 		int sedentaryMin = 0;
 		if (durationMap.containsKey(MobilityMode.STILL))
@@ -135,9 +152,9 @@ public class MobilityVizDailySummary extends Composite {
 		if (durationMap.containsKey(MobilityMode.DRIVE))
 			sedentaryMin += durationMap.get(MobilityMode.DRIVE);
 		
-		InlineLabel label2 = new InlineLabel();
-		label2.setText("You were ambulatory for " + Integer.toString(ambulatoryMin) + " minutes of the " + Integer.toString(sedentaryMin) + " minutes tracked.");
-		mobilityStats.add(label2);
+		stat_total_time_ambulatory.setText(MobilityUtils.getPrettyHoursMinutesStr(ambulatoryMin));
+		stat_total_time_sedentary.setText(MobilityUtils.getPrettyHoursMinutesStr(sedentaryMin));
+		stat_total_time_tracked.setText(MobilityUtils.getPrettyHoursMinutesStr(ambulatoryMin+sedentaryMin));
 		
 		// (3) Distanced traveled by foot
 		float distanceRunWalked = 0.0f;
@@ -146,9 +163,7 @@ public class MobilityVizDailySummary extends Composite {
 		if (distanceMap.containsKey(MobilityMode.RUN))
 			distanceRunWalked += distanceMap.get(MobilityMode.RUN);
 		
-		InlineLabel label3 = new InlineLabel();
-		label3.setText("You trekked " + Float.toString(distanceRunWalked) + " meters by foot today.");
-		mobilityStats.add(label3);
+		stat_total_foot_distance.setText(NumberFormat.getFormat("0").format(distanceRunWalked) + " meters");
 		
 		// (4) Average walking speed
 		float avgWalkingSpeed = 0.0f;
@@ -159,9 +174,7 @@ public class MobilityVizDailySummary extends Composite {
 			avgWalkingSpeed /= (float)speedsMap.get(MobilityMode.WALK).size();
 		}
 		
-		InlineLabel label4 = new InlineLabel();
-		label4.setText("You average walking pace was " + Float.toString(avgWalkingSpeed) + " m/s.");
-		mobilityStats.add(label4);
+		stat_average_walking_speed.setText(NumberFormat.getFormat("0").format(avgWalkingSpeed) + " meters/sec");
 	}
 	
 	private Map<MobilityMode, Integer> getModeDurations(final List<MobilityInfo> data) {
@@ -173,18 +186,20 @@ public class MobilityVizDailySummary extends Composite {
 			if (mode.equals(MobilityMode.ERROR))
 				continue;
 			
+			String hexColorStr = MobilityUtils.getMobilityHTMLHexColor(mode);
+			
 			HTML label = new HTML();
 			String txt = "";
 			if (mode.equals(MobilityMode.STILL))
-				txt += "You <b>sat</b> for ";
+				txt += "You <b><font color=\""+ hexColorStr + "\">sat</font></b> for ";
 			else if (mode.equals(MobilityMode.WALK))
-				txt += "You <b>walked</b> for ";
+				txt += "You <b><font color=\""+ hexColorStr + "\">walked</font></b> for ";
 			else if (mode.equals(MobilityMode.RUN))
-				txt += "You <b>ran</b> for ";
+				txt += "You <b><font color=\""+ hexColorStr + "\">ran</font></b> for ";
 			else if (mode.equals(MobilityMode.BIKE))
-				txt += "You <b>biked</b> for ";
+				txt += "You <b><font color=\""+ hexColorStr + "\">biked</font></b> for ";
 			else if (mode.equals(MobilityMode.DRIVE))
-				txt += "You <b>drove</b> for ";
+				txt += "You <b><font color=\""+ hexColorStr + "\">drove</font></b> for ";
 			else
 				txt += "Your mode was <b>\"" + mode.toString().toLowerCase() + "\"</b> for ";
 			txt += MobilityUtils.getPrettyHoursMinutesStr(durationMap.get(mode));
@@ -204,16 +219,18 @@ public class MobilityVizDailySummary extends Composite {
 			if (mode.equals(MobilityMode.STILL) || mode.equals(MobilityMode.ERROR))
 				continue;
 			
+			String hexColorStr = MobilityUtils.getMobilityHTMLHexColor(mode);
+			
 			HTML label = new HTML();
 			String txt = "";
 			if (mode.equals(MobilityMode.WALK))
-				txt += "You <b>walked</b> for ";
+				txt += "You <b><font color=\""+ hexColorStr + "\">walked</font></b> for ";
 			else if (mode.equals(MobilityMode.RUN))
-				txt += "You <b>ran</b> for ";
+				txt += "You <b><font color=\""+ hexColorStr + "\">ran</font></b> for ";
 			else if (mode.equals(MobilityMode.BIKE))
-				txt += "You <b>biked</b> for ";
+				txt += "You <b><font color=\""+ hexColorStr + "\">biked</font></b> for ";
 			else if (mode.equals(MobilityMode.DRIVE))
-				txt += "You <b>drove</b> for ";
+				txt += "You <b><font color=\""+ hexColorStr + "\">drove</font></b> for ";
 			else
 				txt += "Your mode was <b>\"" + mode.toString().toLowerCase() + "\"</b> for ";
 			if (distanceMap.get(mode) > 1000.0)
@@ -227,97 +244,125 @@ public class MobilityVizDailySummary extends Composite {
 		}
 	}
 
-	private Widget createDurationPieChart(final Map<MobilityMode,Integer> dMap, final String unitLabel) {
+	private Widget createDurationComboChart(final Map<MobilityMode,Integer> dMap) {
 		if (dMap == null)
 			return null;
 		
-		final SimplePanel pieWidgetWrapper = new SimplePanel();
+		final SimplePanel columnWidgetWrapper = new SimplePanel();
 		
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
 				DataTable data = DataTable.create();
-				data.addColumn(AbstractDataTable.ColumnType.STRING, "Mobility Mode");
-				data.addColumn(AbstractDataTable.ColumnType.NUMBER, unitLabel);
-				data.addRows(dMap.size());	//FIXME: this might include any modes we exclude in the for loop
+				
+				data.addColumn(AbstractDataTable.ColumnType.STRING, "X-axis");
+				if (dMap.containsKey(MobilityMode.STILL))
+					data.addColumn(AbstractDataTable.ColumnType.NUMBER, MobilityMode.STILL.toString());
+				if (dMap.containsKey(MobilityMode.WALK))
+					data.addColumn(AbstractDataTable.ColumnType.NUMBER, MobilityMode.WALK.toString());
+				if (dMap.containsKey(MobilityMode.RUN))
+					data.addColumn(AbstractDataTable.ColumnType.NUMBER, MobilityMode.RUN.toString());
+				if (dMap.containsKey(MobilityMode.BIKE))
+					data.addColumn(AbstractDataTable.ColumnType.NUMBER, MobilityMode.BIKE.toString());
+				if (dMap.containsKey(MobilityMode.DRIVE))
+					data.addColumn(AbstractDataTable.ColumnType.NUMBER, MobilityMode.DRIVE.toString());
+				
+				data.addRow();
+				data.setValue(0, 0, "Activity");
+				int columnIndex = 1;
+				if (dMap.containsKey(MobilityMode.STILL))	data.setValue(0, columnIndex++, (float)dMap.get(MobilityMode.STILL) / 60.0);
+				if (dMap.containsKey(MobilityMode.WALK))	data.setValue(0, columnIndex++, (float)dMap.get(MobilityMode.WALK) / 60.0);
+				if (dMap.containsKey(MobilityMode.RUN))		data.setValue(0, columnIndex++, (float)dMap.get(MobilityMode.RUN) / 60.0);
+				if (dMap.containsKey(MobilityMode.BIKE))	data.setValue(0, columnIndex++, (float)dMap.get(MobilityMode.BIKE) / 60.0);
+				if (dMap.containsKey(MobilityMode.DRIVE))	data.setValue(0, columnIndex++, (float)dMap.get(MobilityMode.DRIVE) / 60.0);
 				
 				List<String> colors = new ArrayList<String>();
-				int index = 0;
-				for (MobilityMode mode : dMap.keySet()) {
-					// Skip ERROR modes
-					if (mode.equals(MobilityMode.ERROR))
-						continue;
-					
-					// Set data point
-					data.setValue(index, 0, mode.toString());
-					data.setValue(index, 1, dMap.get(mode));
-					
-					// Set color
-					colors.add(MobilityUtils.getMobilityHTMLHexColor(mode));
-					
-					// Increment index
-					index++;
-				}
+				if (dMap.containsKey(MobilityMode.STILL))	colors.add(MobilityUtils.getMobilityHTMLHexColor(MobilityMode.STILL));
+				if (dMap.containsKey(MobilityMode.WALK))	colors.add(MobilityUtils.getMobilityHTMLHexColor(MobilityMode.WALK));
+				if (dMap.containsKey(MobilityMode.RUN))		colors.add(MobilityUtils.getMobilityHTMLHexColor(MobilityMode.RUN));
+				if (dMap.containsKey(MobilityMode.BIKE))	colors.add(MobilityUtils.getMobilityHTMLHexColor(MobilityMode.BIKE));
+				if (dMap.containsKey(MobilityMode.DRIVE))	colors.add(MobilityUtils.getMobilityHTMLHexColor(MobilityMode.DRIVE));
 				
-				// Generate piechart options
-				PieOptions options = PieOptions.create();
-				options.setWidth(PIE_CHART_WIDTH_PX);
-				options.setHeight(PIE_CHART_HEIGHT_PX);
+				// Generate ComboChart options
+				Options options = Options.create();
+				options.setWidth(CHART_WIDTH_PX);
+				options.setHeight(CHART_HEIGHT_PX);
 				options.setColors(colors.toArray(new String[colors.size()]));
 				options.setLegend(LegendPosition.NONE);
+				options.setBackgroundColor("transparent");
+				options.setSeriesType(Type.BARS);	//for some reason we need this here
 				
-				PieChart staticPieWidget = new PieChart(data, options);
-				pieWidgetWrapper.add(staticPieWidget);
+				AxisOptions vOptions = AxisOptions.create();
+				vOptions.set("viewWindowMode", "explicit");
+			    Options viewWindowOption = Options.create();
+			    viewWindowOption.set("max", 6.0);	//set 6 hours as the max plot height
+			    vOptions.set("viewWindow",viewWindowOption);
+			    vOptions.setTitle("Hours");
+				options.setVAxisOptions(vOptions);
+				
+				ComboChart staticColumnWidget = new ComboChart(data, options);
+				columnWidgetWrapper.add(staticColumnWidget);
 			}
 		};
-		VisualizationUtils.loadVisualizationApi(onLoadCallback, PieChart.PACKAGE);
+		VisualizationUtils.loadVisualizationApi(onLoadCallback, ComboChart.PACKAGE);
 
-		return pieWidgetWrapper;
+		return columnWidgetWrapper;
 	}
 	
-	private Widget createDistancePieChart(final Map<MobilityMode,Float> dMap, final String unitLabel) {
+	private Widget createDistanceComboChart(final Map<MobilityMode,Float> dMap) {
 		if (dMap == null)
 			return null;
 		
-		final SimplePanel pieWidgetWrapper = new SimplePanel();
+		final SimplePanel columnWidgetWrapper = new SimplePanel();
 		
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
 				DataTable data = DataTable.create();
-				data.addColumn(AbstractDataTable.ColumnType.STRING, "Mobility Mode");
-				data.addColumn(AbstractDataTable.ColumnType.NUMBER, unitLabel);
-				data.addRows(dMap.size());	//FIXME: this might include any modes we exclude in the for loop
+
+				data.addColumn(AbstractDataTable.ColumnType.STRING, "X-axis");
+				if (dMap.containsKey(MobilityMode.WALK))
+					data.addColumn(AbstractDataTable.ColumnType.NUMBER, MobilityMode.WALK.toString());
+				if (dMap.containsKey(MobilityMode.RUN))
+					data.addColumn(AbstractDataTable.ColumnType.NUMBER, MobilityMode.RUN.toString());
+				if (dMap.containsKey(MobilityMode.BIKE))
+					data.addColumn(AbstractDataTable.ColumnType.NUMBER, MobilityMode.BIKE.toString());
+				if (dMap.containsKey(MobilityMode.DRIVE))
+					data.addColumn(AbstractDataTable.ColumnType.NUMBER, MobilityMode.DRIVE.toString());
+				
+				data.addRow();
+				data.setValue(0, 0, "Activity");
+				int columnIndex = 1;
+				if (dMap.containsKey(MobilityMode.WALK))	data.setValue(0, columnIndex++, dMap.get(MobilityMode.WALK).intValue());
+				if (dMap.containsKey(MobilityMode.RUN))		data.setValue(0, columnIndex++, dMap.get(MobilityMode.RUN).intValue());
+				if (dMap.containsKey(MobilityMode.BIKE))	data.setValue(0, columnIndex++, dMap.get(MobilityMode.BIKE).intValue());
+				if (dMap.containsKey(MobilityMode.DRIVE))	data.setValue(0, columnIndex++, dMap.get(MobilityMode.DRIVE).intValue());
 				
 				List<String> colors = new ArrayList<String>();
-				int index = 0;
-				for (MobilityMode mode : dMap.keySet()) {
-					// Skip ERROR modes
-					if (mode.equals(MobilityMode.STILL) || mode.equals(MobilityMode.ERROR))
-						continue;
-					
-					// Set data point
-					data.setValue(index, 0, mode.toString());
-					data.setValue(index, 1, dMap.get(mode));
-					
-					// Set color
-					colors.add(MobilityUtils.getMobilityHTMLHexColor(mode));
-					
-					// Increment index
-					index++;
-				}
+				if (dMap.containsKey(MobilityMode.WALK))	colors.add(MobilityUtils.getMobilityHTMLHexColor(MobilityMode.WALK));
+				if (dMap.containsKey(MobilityMode.RUN))		colors.add(MobilityUtils.getMobilityHTMLHexColor(MobilityMode.RUN));
+				if (dMap.containsKey(MobilityMode.BIKE))	colors.add(MobilityUtils.getMobilityHTMLHexColor(MobilityMode.BIKE));
+				if (dMap.containsKey(MobilityMode.DRIVE))	colors.add(MobilityUtils.getMobilityHTMLHexColor(MobilityMode.DRIVE));
 				
-				// Generate piechart options
-				PieOptions options = PieOptions.create();
-				options.setWidth(PIE_CHART_WIDTH_PX);
-				options.setHeight(PIE_CHART_HEIGHT_PX);
+				// Generate ComboChart options
+				Options options = Options.create();
+				options.setWidth(CHART_WIDTH_PX);
+				options.setHeight(CHART_HEIGHT_PX);
 				options.setColors(colors.toArray(new String[colors.size()]));
 				options.setLegend(LegendPosition.NONE);
+				options.setBackgroundColor("transparent");
+				options.setSeriesType(Type.BARS);	//for some reason we need this here
 				
-				PieChart staticPieWidget = new PieChart(data, options);
-				pieWidgetWrapper.add(staticPieWidget);
+				AxisOptions vOptions = AxisOptions.create();
+			    vOptions.setTitle("Meters");
+				options.setVAxisOptions(vOptions);
+				
+				ComboChart staticColumnWidget = new ComboChart(data, options);
+				columnWidgetWrapper.add(staticColumnWidget);
 			}
 		};
-		VisualizationUtils.loadVisualizationApi(onLoadCallback, PieChart.PACKAGE);
+		VisualizationUtils.loadVisualizationApi(onLoadCallback, ComboChart.PACKAGE);
 
-		return pieWidgetWrapper;
+		return columnWidgetWrapper;
 	}
+	
+	
 }
