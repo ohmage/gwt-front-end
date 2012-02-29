@@ -705,12 +705,33 @@ public class ResponseViewImpl extends Composite implements ResponseView {
     this.surveyFilter.setEnabled(false);
   }
   
+  @Override
+  public void enableParticipantFilter() {
+    this.participantFilter.setEnabled(true);
+  }
+
+  @Override
+  public void disableParticipantFilter() {
+    this.participantFilter.setSelectedIndex(-1);
+    this.participantFilter.setEnabled(false);
+  }
+
   @Override 
   public void clearParticipantList() {
     this.participantFilter.clear();
     this.singleParticipantLabel.setText("");
   }
 
+  @Override
+  public void enableShowResponsesButton() {
+	this.applyFiltersButton.setEnabled(true);
+  }
+  
+  @Override
+  public void disableShowResponsesButton() {
+	this.applyFiltersButton.setEnabled(false);
+  }
+  
   @Override
   public void setSectionHeader(String headerText) {
     this.sectionHeaderTitle.setText(headerText);

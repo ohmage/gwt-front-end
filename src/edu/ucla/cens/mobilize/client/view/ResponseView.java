@@ -81,6 +81,10 @@ public interface ResponseView extends IsWidget, HasRows {
   void removeResponse(String responseKey);
   void enableSurveyFilter();
   void disableSurveyFilter();
+  void enableParticipantFilter();
+  void disableParticipantFilter();
+  void enableShowResponsesButton();
+  void disableShowResponsesButton();
   void setSectionHeader(String headerText);
   void setSectionHeaderDetail(String detailText);
   void showResponseCountInSectionHeader(String username, int count);

@@ -256,6 +256,8 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.surveys.clear();
     this.view.clearSurveyList();
     this.view.disableSurveyFilter(); // disabled if campaign not selected
+    if (view.getSelectedCampaign() != surveyResponseData.getCampaignUrn())
+    	surveyResponseData.clear();
     
     // campaign must be selected in edit view
     if (selectedCampaignId == null || selectedCampaignId.isEmpty()) return;
@@ -350,6 +352,9 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     this.surveys.clear();
     this.view.clearSurveyList();
     this.view.disableSurveyFilter(); // disabled if campaign not selected
+    this.view.disableShowResponsesButton();
+    if (view.getSelectedCampaign() != surveyResponseData.getCampaignUrn())
+    	surveyResponseData.clear();
     
     // campaign must be selected in browse view
     if (selectedCampaign == null || selectedCampaign.isEmpty()) return;
@@ -424,6 +429,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
           // there will be no effect. if not, the view will update display to indicate no participants
           view.setParticipantList(participants, includeAllChoice);
         }
+        view.enableShowResponsesButton();
       }
     });
   }
