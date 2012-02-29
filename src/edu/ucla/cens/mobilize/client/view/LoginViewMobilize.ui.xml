@@ -189,9 +189,9 @@
     
     <g:HTMLPanel addStyleNames='{style.footer}'>
       <span class='{style.footerCopyright}'>Copyright &#169; 2012 CENS</span>
-      <span class='{style.footerSpan}'><a href='#'>Help</a></span>
+      <span class='{style.footerSpan}'><a href='http://mobilizingcs.wikispaces.com/help'>Help</a></span>
       <span>|</span>
-      <span class='{style.footerSpan}'><a href='#'>Contact Us</a></span>
+      <span class='{style.footerSpan}'><a href='http://mobilizingcs.wikispaces.com/contact'>Contact Us</a></span>
       <span>|</span>
       <span class='{style.footerSpan}'>Powered by ohmage</span>
     </g:HTMLPanel>
