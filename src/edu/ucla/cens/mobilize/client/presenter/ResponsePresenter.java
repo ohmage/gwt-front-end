@@ -101,7 +101,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     Subview selectedSubview = Subview.fromHistoryTokenString(selectedSubViewString);
     String selectedParticipant = params.containsKey("uid") ? params.get("uid") : null;
     String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
-    String selectedSurvey = params.containsKey("sid") ? params.get("sid") : null;
+    String selectedSurvey = params.containsKey("sid") ? unescapeStr(params.get("sid")) : null;
     String selectedPrivacyString = params.containsKey("privacy") ? params.get("privacy") : null;
     boolean onlyPhotoResponses = params.containsKey("photo") ? params.get("photo").equals("true") : false;
     String startDateString = params.containsKey("from") ? params.get("from") : null;
@@ -773,6 +773,12 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
                                                startDate,
                                                endDate));
   }
+  
+  public static native String unescapeStr(String text) /*-{
+  	return text.replace( '&amp;', '&' )
+           .replace( '&nbsp;', ' ')
+           .replace( /%20/g, ' ');
+	}-*/;
   
   // Gets list of campaigns from userInfo and fetches responses for each. 
   // Args are values to filter by. Any arg set to null or "" is ignored.
