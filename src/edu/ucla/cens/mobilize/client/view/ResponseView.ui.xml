@@ -177,10 +177,10 @@
     }
     .waiting {
       background: 50% 50% no-repeat url('images/loading_text.gif');
-      position: absolute;
-      top: 0;
-      right: 0;
       height: 100px;
+      position: absolute;
+      right: 0;
+      top: 0;
       width: 180px;
     }
   </ui:style>

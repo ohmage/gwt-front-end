@@ -12,9 +12,14 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.HasKeyDownHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -25,21 +30,28 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineHyperlink;
+import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.HasRows;
+import com.google.gwt.view.client.Range;
+import com.google.gwt.view.client.RangeChangeEvent;
+import com.google.gwt.view.client.RangeChangeEvent.Handler;
+import com.google.gwt.view.client.RowCountChangeEvent;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.ui.AdminAddUsersToClass;
 import edu.ucla.cens.mobilize.client.ui.AdminMenu;
+import edu.ucla.cens.mobilize.client.ui.AwSimplePager;
 import edu.ucla.cens.mobilize.client.ui.ConfirmDeleteDialog;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.UserSearchFilterWidget;
 import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 
-public class AdminUserListView extends Composite {
+public class AdminUserListView extends Composite implements HasRows {
 
   private static AdminUserListViewUiBinder uiBinder = GWT
       .create(AdminUserListViewUiBinder.class);
@@ -49,8 +61,10 @@ public class AdminUserListView extends Composite {
   }
   
   public AdminUserListView() {
+    initPager(); // must come before initWidget
     initWidget(uiBinder.createAndBindUi(this));
     initComponents();
+    setEventHandlers();
   }
 
   //***********************
@@ -61,13 +75,19 @@ public class AdminUserListView extends Composite {
     String detailsLink();
     String editLink();
     String userListHeaderRow();
+    String waiting();
   }
 
   @UiField AdminMenu adminMenu;
   @UiField Grid userListHeader;
+  @UiField HTMLPanel centerPanel;
+  @UiField HTMLPanel scrollPanel;
   @UiField HTMLPanel instructionsPanel;
   @UiField InlineHyperlink showAllUsersLink;
   @UiField Grid userListGrid;
+  @UiField MenuItem resultsPerPage100MenuItem;
+  @UiField MenuItem resultsPerPage500MenuItem;
+  @UiField MenuItem resultsPerPage1000MenuItem;
   @UiField AdminUserListViewStyle style;
   @UiField TextBox searchUsernameTextBox;
   @UiField Button searchUsernameButton;
@@ -80,16 +100,23 @@ public class AdminUserListView extends Composite {
   @UiField Button enableButton;
   @UiField Button addToClassButton;
   @UiField InlineHyperlink manageClassesLink;
+  @UiField(provided = true) AwSimplePager pager;
   
 
   private DialogBox addUsersToClassDialog;
   private AdminAddUsersToClass addUsersToClassWidget;
   private UserSearchFilterWidget advancedSearchWidget;
-
+  private FlowPanel loading;
+  
   private final String cellWidthCheckBox = "30px";
   private final String cellWidthEnabled = "60px";
   private final String cellWidthPersonalInfo = "130px";
   private final String cellWidthUsername = "100px";
+
+  private int pageSize = 0;
+  private int startIndex = 0;
+  private int totalRows = 0;
+
   
   private static class Columns {
     static final int CHECKBOX = 0;
@@ -103,9 +130,17 @@ public class AdminUserListView extends Composite {
     static final int columnCount = 7;
   }
   
+  private void initPager() {
+    SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class); 
+    this.pager = new AwSimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
+    pager.setDisplay(this);
+    pager.setHeight("15px");
+  }
+  
   private void initComponents() {
     // set target history token for show all link
-    this.showAllUsersLink.setTargetHistoryToken(HistoryTokens.adminUserList("*", null, null, null, null, null, null, null, null, null));
+    this.showAllUsersLink.setTargetHistoryToken(HistoryTokens.adminUserList(
+        "*", null, null, null, null, null, null, null, null, null, 0, this.pageSize));
     // select item in left nav
     this.adminMenu.selectManageUsers();
     // set up hyperlinks
@@ -123,7 +158,6 @@ public class AdminUserListView extends Composite {
         }
       }
     });
-    //this.userListHeader.setStyleName(style.headerRow());
     this.userListHeader.getRowFormatter().setStyleName(0, style.userListHeaderRow());
     this.userListHeader.setWidget(0, Columns.CHECKBOX, selectAllCheckBox);
     this.userListHeader.setText(0, Columns.USERNAME, "Username");
@@ -155,6 +189,35 @@ public class AdminUserListView extends Composite {
     this.errorLink.setVisible(false);
     // create advanced search widget so any search strings from the history token can be filled in
     this.advancedSearchWidget = new UserSearchFilterWidget();
+    // set up wait indicator
+    this.loading = new FlowPanel();
+    this.loading.setStyleName(style.waiting());
+  }
+  
+  private void setEventHandlers() {
+    resultsPerPage100MenuItem.setCommand(new Command() {
+      @Override
+      public void execute() {
+        setPageSize(100);
+        setVisibleRange(startIndex, pageSize);
+      }
+    });
+    
+    resultsPerPage500MenuItem.setCommand(new Command() {
+      @Override
+      public void execute() {
+        setPageSize(500);
+        setVisibleRange(startIndex, pageSize);
+      }
+    });
+    
+    resultsPerPage1000MenuItem.setCommand(new Command() {
+      @Override
+      public void execute() {
+        setPageSize(1000);
+        setVisibleRange(startIndex, pageSize);
+      }
+    });
   }
   
   public void setFilters(String searchString) {
@@ -187,6 +250,7 @@ public class AdminUserListView extends Composite {
       }
       row++;
     }
+    this.scrollPanel.getElement().setScrollTop(0);
   }
   
   public void clearUserList() {
@@ -288,6 +352,7 @@ public class AdminUserListView extends Composite {
     return usernames;
   }
 
+
   /**
    * Shows delete confirmation dialog. Executes onConfirmDelete if the user clicks Delete.
    */
@@ -302,11 +367,11 @@ public class AdminUserListView extends Composite {
   }
   
   public void showWaitIndicator() {
-    WaitIndicator.show();
+    this.centerPanel.add(this.loading);
   }
   
   public void hideWaitIndicator() {
-    WaitIndicator.hide();
+    this.centerPanel.remove(this.loading);
   }
   
   public void showAdvancedSearchPopup(final ClickHandler handler) {
@@ -534,4 +599,101 @@ public class AdminUserListView extends Composite {
     this.instructionsPanel.setVisible(false);
     this.userListGrid.setVisible(true);
   }
+
+/************ Has Rows Methods (needed for pager) **************/
+  // NOTE(vhajdik, Feb2012): Should we convert this page to use a GWT CellTable
+  //   instead of Grid? CellTable comes with paging for free but it wasn't 
+  //   immediately obvious how to convert a couple of things so for now I'm
+  //   just copying the way it's done in ResponseView
+  // Questions about CellTable:
+  //   - How to set a frozen header in CellTable
+  //   - How to put "Select All" checkbox in CellTable header
+  //   - How to make CellTable pager change save history token so a particular page
+  //     can be bookmarked
+  
+  @Override
+  public void fireEvent(GwtEvent<?> event) {
+    super.fireEvent(event);
+  }
+
+  @Override
+  public HandlerRegistration addRangeChangeHandler(Handler handler) {
+    return this.addHandler(handler, RangeChangeEvent.getType());
+  }
+
+  @Override
+  public HandlerRegistration addRowCountChangeHandler(RowCountChangeEvent.Handler handler) {
+    return this.addHandler(handler, RowCountChangeEvent.getType());
+  }
+
+  @Override
+  public int getRowCount() {
+    return this.totalRows;
+  }
+
+  @Override
+  public Range getVisibleRange() {
+    return new Range(this.startIndex, this.pageSize);
+  }
+
+  @Override
+  public boolean isRowCountExact() {
+    return true; // this view always shows exact row count
+  }
+
+  @Override
+  public void setRowCount(int count) {
+    setRowCount(count, true);
+  }
+
+  @Override
+  public void setRowCount(int count, boolean isExact) { // isExact is ignored
+    this.totalRows = count;
+    RowCountChangeEvent.fire(this, count, true);
+  }
+
+  @Override
+  public void setVisibleRange(int start, int length) {
+    this.startIndex = start;
+    RangeChangeEvent.fire(this, new Range(start, length));
+  }
+
+  @Override
+  public void setVisibleRange(Range range) {
+    setVisibleRange(range.getStart(), range.getLength());
+  }
+
+  public void fireRangeChangeEvent(int start, int length) {
+    RangeChangeEvent.fire(this, new Range(start, length));
+  }
+  
+  public int getStartIndex() {
+    return this.startIndex;
+  }
+  
+  public void setStartIndex(int startIndex) {
+    this.startIndex = startIndex;
+  }
+  
+  public int getPageSize() {
+    return this.pageSize;
+  }
+  
+  /**
+   * Sets pageSize to closest allowed page size (100, 500, or 1000) and updates
+   *   pager display
+   * @param newPageSize
+   */
+  public void setPageSize(int newPageSize) {
+    if (newPageSize <= 100) newPageSize = 100;
+    else if (newPageSize >= 100 && newPageSize <= 500) newPageSize = 500;
+    else newPageSize = 1000;
+    this.pageSize = newPageSize;
+    // remove underline from selected number 
+    this.resultsPerPage100MenuItem.setStyleName(pageSize == 100 ? "" : "link");
+    this.resultsPerPage500MenuItem.setStyleName(pageSize == 500 ? "" : "link");
+    this.resultsPerPage1000MenuItem.setStyleName(pageSize == 1000 ? "" : "link");
+  }
+  
+/************ END HAS ROWS METHODS **************/
 }

@@ -42,6 +42,7 @@ import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponseData;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserSearchData;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
@@ -668,6 +669,13 @@ public class MockDataService implements DataService {
   @Override
   public void fetchSurveyResponseData(SurveyResponseReadParams params,
       AsyncCallback<SurveyResponseData> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void fetchUserSearchData(UserSearchParams params,
+      AsyncCallback<UserSearchData> callback) {
     // TODO Auto-generated method stub
     
   }

@@ -595,7 +595,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     });
    
     // pager next/prev fires history token to reload data. (allows bookmarking a page)
-    this.view.addRangeChangeHandler(new Handler() {
+    this.view.addRangeChangeHandler(new RangeChangeEvent.Handler() {
       @Override
       public void onRangeChange(RangeChangeEvent event) {
         // save history token so page can be bookmarked, but don't fire it b/c that would reload everything
