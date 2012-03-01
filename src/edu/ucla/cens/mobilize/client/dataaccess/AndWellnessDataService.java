@@ -53,6 +53,7 @@ import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponseData;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserSearchData;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 import edu.ucla.cens.mobilize.client.utils.AwDataTranslators;
@@ -548,6 +549,47 @@ public class AndWellnessDataService implements DataService {
           
         }
 
+        @Override
+        public void onError(Request request, Throwable exception) {
+          _logger.severe(exception.getMessage());
+          callback.onFailure(exception);
+        }
+      });
+    } catch (RequestException e) {
+      _logger.severe(e.getMessage());
+      throw new ServerException("Cannot contact server.");
+    }
+  }
+  
+
+  @Override
+  public void fetchUserSearchData(UserSearchParams params, final AsyncCallback<UserSearchData> callback) {
+    assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
+    final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserSearchUrl());
+    params.authToken = this.authToken();
+    params.client = this.client();
+    String postParams = params.toString();
+    final int startIndex = params.startIndex_opt;
+    _logger.fine("Attempting to query user search api with parameters: " + postParams);
+    try {
+      requestBuilder.sendRequest(postParams, new RequestCallback() {
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          try {
+            String responseText = getResponseTextOrThrowException(requestBuilder, response);
+            List<UserSearchInfo> userInfos = AwDataTranslators.translateUserSearchQueryJSONToUserSearchInfoList(responseText);
+            int totalUserCount = AwDataTranslators.translateUserSearchQueryJSONToUserCount(responseText);
+            UserSearchData data = new UserSearchData();
+            data.setUserSearchInfo(startIndex, userInfos);
+            data.setTotalUserCount(totalUserCount);
+            callback.onSuccess(data);
+          } catch (Exception exception) {
+            _logger.severe(exception.getMessage());
+            callback.onFailure(exception);
+          }
+          
+        }
+  
         @Override
         public void onError(Request request, Throwable exception) {
           _logger.severe(exception.getMessage());
@@ -1879,5 +1921,6 @@ public class AndWellnessDataService implements DataService {
 			throw new ServerException("Cannot contact server.");
 		}    
 	}
+
 
 }

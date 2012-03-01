@@ -437,6 +437,20 @@ public class AwDataTranslators {
       return users;
     }
     
+    public static int translateUserSearchQueryJSONToUserCount(String userSearchQueryJSON) {
+      int retval = -1;
+      try {
+        JSONValue value = JSONParser.parseStrict(userSearchQueryJSON);
+        JSONObject responseHash = value.isObject();
+        if (responseHash == null ) throw new RuntimeException("Invalid json response: " + userSearchQueryJSON);
+        JSONNumber numberOfUsers = responseHash.get("metadata").isObject().get("total_num_results").isNumber();
+        retval = (int)numberOfUsers.doubleValue();
+      } catch (Exception e) {
+        _logger.severe("Could not extract user count. Exception: " + e.getMessage());
+      }
+      return retval;
+    }
+    
     // {"result":"success","data":{"urn:andwellness:nih":{"user_roles":["supervisor"],"name":"NIH","privacy_state":"private","creation_timestamp":"2011-04-12 15:33:34.0","running_state":"active"}},"metadata":{"items":["urn:andwellness:nih"],"number_of_results":1}}
     public static List<CampaignShortInfo> translateCampaignReadQueryJSONtoCampaignShortInfoList(
         String responseText) {
@@ -830,4 +844,6 @@ public class AwDataTranslators {
 		
 		return mobilityDates;
 	}
+
+
 }

@@ -14,6 +14,8 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.view.client.Range;
+import com.google.gwt.view.client.RangeChangeEvent;
 
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.common.RoleClass;
@@ -21,10 +23,10 @@ import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserSearchParams;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserSearchData;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
-import edu.ucla.cens.mobilize.client.utils.StopWatch;
 import edu.ucla.cens.mobilize.client.view.AdminUserListView;
 
 public class AdminUserListPresenter implements Presenter {
@@ -32,9 +34,10 @@ public class AdminUserListPresenter implements Presenter {
   UserInfo userInfo;
   EventBus eventBus;
   DataService dataService;
+  Range lastLoadedRange;
 
   private List<String> errors = new ArrayList<String>();
-  
+  private final static int DEFAULT_PAGE_SIZE = 100;
   private Logger _logger = Logger.getLogger(AdminUserListPresenter.class.getName());
   
   public AdminUserListPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
@@ -52,9 +55,29 @@ public class AdminUserListPresenter implements Presenter {
   public void go(Map<String, String> params) {
     view.clearSearchBoxes();
     view.showUserList();
+    
+    // Set up paging params first, b/c they're needed for "all users" special case
+    int startIndex = 0;
+    int pageSize = DEFAULT_PAGE_SIZE;
+    if (params.containsKey("start_index")) {
+      try {
+        startIndex = Integer.parseInt(params.get("start_index"));
+      } catch (NumberFormatException e) {} // keep default
+    }
+    if (params.containsKey("page_size")) {
+      try {
+        int pageSizeParam = Integer.parseInt(params.get("page_size"));
+        if (pageSizeParam > 0) {
+          pageSize = pageSizeParam;
+        }
+      } catch (NumberFormatException e) {} // keep default 
+    }
+    view.setStartIndex(startIndex);
+    view.setPageSize(pageSize);
+    
     // special case: username=* means show all users
     if (params.containsKey("username") && params.get("username").equals("*")) {
-      fetchAndShowAllUsers();
+      fetchAndShowAllUsers(startIndex, pageSize);
       return;
     }
     // special case: if no search terms are given, show instructions
@@ -62,6 +85,7 @@ public class AdminUserListPresenter implements Presenter {
       view.showInstructions();
       return;
     }
+
     String username = null;
     if (params.containsKey("username")) {
       username = params.get("username");
@@ -107,11 +131,13 @@ public class AdminUserListPresenter implements Presenter {
                               lastNameSearchString,
                               emailSearchString, 
                               organizationSearchString, 
-                              jsonSearchString);
+                              jsonSearchString,
+                              startIndex,
+                              pageSize);
   }
 
-  private void fetchAndShowAllUsers() {
-    this.fetchAndShowUserList(null, null, null, null, null, null, null, null, null, null);
+  private void fetchAndShowAllUsers(int startIndex, int pageSize) {
+    this.fetchAndShowUserList(null, null, null, null, null, null, null, null, null, null, startIndex, pageSize);
   }
 
   private void bind() {
@@ -156,7 +182,8 @@ public class AdminUserListPresenter implements Presenter {
       @Override
       public void onClick(ClickEvent event) {
         fireHistoryTokenToMatchSearchQuery(view.getUsernameSearchString(), 
-                                           null, null, null, null, null, null, null, null, null);
+                                           null, null, null, null, null, null, null, null, null,
+                                           view.getStartIndex(), view.getPageSize());
       }
     });
     
@@ -165,7 +192,8 @@ public class AdminUserListPresenter implements Presenter {
       public void onKeyDown(KeyDownEvent event) {
         if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
           fireHistoryTokenToMatchSearchQuery(view.getUsernameSearchString(), 
-              null, null, null, null, null, null, null, null, null);
+              null, null, null, null, null, null, null, null, null, 
+              view.getStartIndex(), view.getPageSize());
         }
       }
     });
@@ -175,7 +203,8 @@ public class AdminUserListPresenter implements Presenter {
       public void onClick(ClickEvent event) {
         fireHistoryTokenToMatchSearchQuery(null, // username
                                            view.getPersonalIdSearchString(),
-                                           null, null, null, null, null, null, null, null);
+                                           null, null, null, null, null, null, null, null,
+                                           view.getStartIndex(), view.getPageSize());
       }
     });
     
@@ -185,7 +214,8 @@ public class AdminUserListPresenter implements Presenter {
         if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
           fireHistoryTokenToMatchSearchQuery(null, // username
                                              view.getPersonalIdSearchString(),
-                                             null, null, null, null, null, null, null, null);          
+                                             null, null, null, null, null, null, null, null,
+                                             view.getStartIndex(), view.getPageSize());          
         }
       }
     });
@@ -210,6 +240,41 @@ public class AdminUserListPresenter implements Presenter {
         view.hideErrorLink();
       }
     });
+    
+    view.addRangeChangeHandler(new RangeChangeEvent.Handler() {
+      @Override
+      public void onRangeChange(RangeChangeEvent event) {
+        Range newRange = event.getNewRange();
+        if (!newRange.equals(lastLoadedRange)) {
+          refreshUserList();
+        }
+      }
+    });
+  }
+  
+  // Gets current filter values, bookmarks them as a history token, and reloads user data.
+  private void refreshUserList() {
+    String username = view.getUsernameSearchString();
+    String personalId = view.getPersonalIdSearchString();
+    Boolean isEnabled = view.getAdvancedSearchEnabled();
+    Boolean canCreateCampaigns = view.getAdvancedSearchCanCreateCampaigns();
+    Boolean isAdmin = view.getAdvancedSearchIsAdmin();
+    String firstName = view.getAdvancedSearchFirstNameSearchString();
+    String lastName = view.getAdvancedSearchLastNameSearchString();
+    String email = view.getAdvancedSearchEmailSearchString();
+    String organization = view.getAdvancedSearchOrganizationSearchString();
+    String json = view.getAdvancedSearchJsonSearchString();
+    int startIndex = view.getStartIndex();
+    int pageSize = view.getPageSize(); 
+    
+    String historyToken = HistoryTokens.adminUserList(username, personalId, isEnabled, canCreateCampaigns, 
+      isAdmin, firstName, lastName, email, organization, json, startIndex, pageSize);
+    
+    // save history token so page can be bookmarked, but don't fire it b/c that would reload everything
+    History.newItem(historyToken, false);
+    
+    fetchAndShowUserList(username, personalId, isEnabled, canCreateCampaigns, isAdmin, firstName, lastName,
+                         email, organization, json, startIndex, pageSize);
   }
   
   private void fireHistoryTokenToMatchSearchQuery(String username,
@@ -221,7 +286,9 @@ public class AdminUserListPresenter implements Presenter {
                                                   String lastNameSearchString,
                                                   String emailSearchString,
                                                   String organizationSearchString,
-                                                  String jsonSearchString) {
+                                                  String jsonSearchString,
+                                                  int startIndex,
+                                                  int pageSize) {
     History.newItem(HistoryTokens.adminUserList(username,
                                                 personalId,
                                                 isEnabled, 
@@ -231,7 +298,9 @@ public class AdminUserListPresenter implements Presenter {
                                                 lastNameSearchString,
                                                 emailSearchString, 
                                                 organizationSearchString, 
-                                                jsonSearchString));
+                                                jsonSearchString, 
+                                                startIndex,
+                                                pageSize));
   }
   
   private void fireHistoryTokenToMatchAdvancedSearchQuery() {
@@ -243,6 +312,8 @@ public class AdminUserListPresenter implements Presenter {
     String emailSearchString = view.getAdvancedSearchEmailSearchString();
     String organizationSearchString = view.getAdvancedSearchOrganizationSearchString();
     String jsonSearchString = view.getAdvancedSearchJsonSearchString();
+    int startIndex = view.getStartIndex();
+    int pageSize = view.getPageSize();
     History.newItem(HistoryTokens.adminUserList(null, // username 
                                                 null, // personal id
                                                 isEnabled, 
@@ -252,7 +323,9 @@ public class AdminUserListPresenter implements Presenter {
                                                 lastNameSearchString,
                                                 emailSearchString, 
                                                 organizationSearchString, 
-                                                jsonSearchString));  
+                                                jsonSearchString,
+                                                startIndex,
+                                                pageSize));  
   }
   
   private void fetchAndShowUserList(String username,
@@ -264,7 +337,9 @@ public class AdminUserListPresenter implements Presenter {
                                     String lastNameSearchString,
                                     String emailSearchString,
                                     String organizationSearchString,
-                                    String jsonSearchString) {
+                                    String jsonSearchString,
+                                    final int startIndex,
+                                    final int pageSize) {
     view.showWaitIndicator();
     UserSearchParams params = new UserSearchParams();
     params.username_opt = username;
@@ -277,8 +352,10 @@ public class AdminUserListPresenter implements Presenter {
     params.email_opt = emailSearchString;
     params.organization_opt = organizationSearchString;
     params.jsonData_opt = jsonSearchString;
-    StopWatch.start("fetch_users");
-    dataService.fetchUserSearchResults(params, new AsyncCallback<List<UserSearchInfo>>() {
+    params.startIndex_opt = startIndex;
+    params.pageSize_opt = pageSize;
+    
+    dataService.fetchUserSearchData(params, new AsyncCallback<UserSearchData>() {
       @Override
       public void onFailure(Throwable caught) {
         view.hideWaitIndicator();
@@ -287,17 +364,14 @@ public class AdminUserListPresenter implements Presenter {
       }
 
       @Override
-      public void onSuccess(List<UserSearchInfo> result) {
-        StopWatch.stop("fetch_users");
+      public void onSuccess(UserSearchData result) {
+        lastLoadedRange = new Range(startIndex, pageSize);
         view.hideWaitIndicator();
-        StopWatch.start("sort_users");
-        Collections.sort(result);
-        StopWatch.stop("sort_users");
-        StopWatch.start("render_users");
-        view.setUserList(result);
-        StopWatch.stop("render_users");
-        _logger.finest(StopWatch.getTotalsString());
-        StopWatch.resetAll();
+        List<UserSearchInfo> userInfos = result.getUserSearchInfos();
+        Collections.sort(userInfos); // FIXME: why aren't these sorted on the server?
+        view.setUserList(userInfos);
+        view.setVisibleRange(startIndex, pageSize);        
+        view.setRowCount(result.getTotalUserCount());
       }
     });
   }
@@ -313,7 +387,7 @@ public class AdminUserListPresenter implements Presenter {
 
       @Override
       public void onSuccess(String result) {
-        History.newItem(HistoryTokens.adminUserList());
+        refreshUserList();
       }
     });
   }

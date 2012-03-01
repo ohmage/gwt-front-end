@@ -29,6 +29,7 @@ import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponseData;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
+import edu.ucla.cens.mobilize.client.model.UserSearchData;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 
@@ -120,6 +121,8 @@ public interface DataService {
    * @param callback
    */
   void fetchUserSearchResults(UserSearchParams params, final AsyncCallback<List<UserSearchInfo>> callback);
+  
+  void fetchUserSearchData(UserSearchParams params, final AsyncCallback<UserSearchData> callback);
   
   /**
    * Lets admin query search api for detailed info about a single user. Same as 

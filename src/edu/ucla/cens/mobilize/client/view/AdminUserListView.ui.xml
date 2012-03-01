@@ -1,7 +1,8 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
-	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
+	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui"
+	xmlns:c="urn:import:com.google.gwt.user.cellview.client">
 	<ui:style type="edu.ucla.cens.mobilize.client.view.AdminUserListView.AdminUserListViewStyle">
 		.container {
       margin: auto;
@@ -25,6 +26,24 @@
     }
     .filterContainer {
       border-color: #AAA;
+    }
+    .footer {
+    	background-color: #EEE;
+    	border-top: solid 1px #CCC;
+    }
+    .pager {
+    	margin: auto;
+    }
+    .pagerLabel {
+      padding-left: 8px;
+    }
+    .pagerMenuBarWrapper {
+      position: absolute;
+      right: 0;
+      top: 3px;
+    }
+    .pagerWrapper {
+    	width: 100%;
     }
     .userListHeader {
     	width: 100%;
@@ -116,6 +135,14 @@
       text-decoration: underline;
       padding-left: 23px;
     }
+    .waiting {
+    	background: 50% 50% no-repeat url('images/loading_text.gif');
+    	height: 100px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 180px;
+    }
 	</ui:style>
 	<g:DockLayoutPanel unit='PX'>
 	  <g:west size='150'>
@@ -175,8 +202,8 @@
 	    <g:Grid addStyleNames='{style.userListHeader}' ui:field='userListHeader'></g:Grid>
 	  </g:north>
 	  <g:center>
-	    <g:HTMLPanel>
-		    <g:HTMLPanel addStyleNames='{style.scrollable}'>
+	    <g:HTMLPanel ui:field='centerPanel'>
+		    <g:HTMLPanel ui:field='scrollPanel' addStyleNames='{style.scrollable}'>
 	       <g:HTMLPanel ui:field='instructionsPanel' addStyleNames='{style.userListEmptyMessage}'>
 	          Enter a search term above or
 	          <g:InlineHyperlink ui:field='showAllUsersLink'>
@@ -187,5 +214,30 @@
 		    </g:HTMLPanel>
 	    </g:HTMLPanel>
 	  </g:center>
+	  <g:south size='25'>
+	    <g:HTMLPanel addStyleNames='{style.footer}'>
+	      <g:HTMLPanel addStyleNames='{style.pagerMenuBarWrapper}'>
+            <g:MenuBar vertical='false'>
+              <g:MenuItem addStyleNames='{style.pagerLabel}'>Results per page:</g:MenuItem>
+              <g:MenuItem ui:field='resultsPerPage100MenuItem' addStyleNames='link'>
+                100
+              </g:MenuItem>
+              <g:MenuItemSeparator />
+              <g:MenuItem ui:field='resultsPerPage500MenuItem' addStyleNames='link'>
+                500
+              </g:MenuItem>
+              <g:MenuItemSeparator />
+              <g:MenuItem ui:field='resultsPerPage1000MenuItem' addStyleNames='link'>
+                1000
+              </g:MenuItem>
+              <g:MenuItemSeparator />
+              <g:MenuItem></g:MenuItem>
+            </g:MenuBar>
+          </g:HTMLPanel>
+        <g:HTMLPanel addStyleNames='{style.pagerWrapper}'>
+	        <c:SimplePager ui:field='pager' addStyleNames='{style.pager}' />
+	      </g:HTMLPanel>
+	    </g:HTMLPanel>
+	  </g:south>
 	</g:DockLayoutPanel>
 </ui:UiBinder> 

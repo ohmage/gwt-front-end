@@ -20,6 +20,8 @@ public class UserSearchParams implements RequestParams {
   public String personalId_opt;
   public String email_opt;
   public String jsonData_opt;
+  public Integer startIndex_opt;
+  public Integer pageSize_opt;
   
   public String toString() {
     assert client != null : "client is required";
@@ -60,6 +62,12 @@ public class UserSearchParams implements RequestParams {
     }
     if (jsonData_opt != null && !jsonData_opt.isEmpty()) {
       params.put("json_data", jsonData_opt);
+    }
+    if (startIndex_opt != null) {
+      params.put("num_to_skip", Integer.toString(startIndex_opt));
+    }
+    if (pageSize_opt != null) {
+      params.put("num_to_return", Integer.toString(pageSize_opt));
     }
     return MapUtils.translateToParameters(params);
   }
