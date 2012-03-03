@@ -298,21 +298,43 @@ public class MobilityUtils {
 		Map<MobilityMode, Float> distanceMap = new HashMap<MobilityMode, Float>();
 		
 		// thresholds before we consider it as max travel speeds
-		final int timeLimit = 15; //minutes
-		final float distanceLimit = 35*timeLimit;	//meters
+		final int timeLimit = 10; //minutes
+		final float distanceLimit = 25000;	//meters
 		
 		// consider classifications as backward-looking
 		// noise reduction (later)
+		
+		MobilityInfo lastGoodPoint = null;
 		
 		for (int i = 1; i < data.size(); i++) {
 			// consecutive check
 			MobilityInfo a = data.get(i-1);
 			MobilityInfo b = data.get(i);
 			
-			if (a.getLocationStatus().equals(LocationStatus.UNAVAILABLE)
-					|| b.getLocationStatus().equals(LocationStatus.UNAVAILABLE)) {
+			if (b.getLocationStatus().equals(LocationStatus.UNAVAILABLE))
 				continue;
+			else
+				lastGoodPoint = b;
+			
+			//if a has location then proceed
+			//else if a has no location and lastGoodMobilityPoint still valid
+			//else continue
+			
+			if (a.getLocationStatus().equals(LocationStatus.UNAVAILABLE)) {
+				if (lastGoodPoint == null)
+					continue;
+				
+				int diff = MobilityUtils.getTimeInMinutes(b.getDate()) - MobilityUtils.getTimeInMinutes(lastGoodPoint.getDate());
+				if (diff <= timeLimit)
+					a = lastGoodPoint;
+				else {
+					lastGoodPoint = null;	//clear since it's an invalid/outdated point
+					continue;
+				}
 			}
+			
+			if (a.getMode() != b.getMode())
+				continue;
 			
 			int timeDiff = MobilityUtils.getTimeInMinutes(b.getDate()) - MobilityUtils.getTimeInMinutes(a.getDate());
 			if (timeDiff < 0 || timeDiff > timeLimit)

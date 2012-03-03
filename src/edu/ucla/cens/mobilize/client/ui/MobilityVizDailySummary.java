@@ -43,12 +43,6 @@ public class MobilityVizDailySummary extends Composite {
 			.create(MobilityVizDailySummaryUiBinder.class);
 
 	interface MobilityVizDailySummaryStyle extends CssResource {
-		// TODO: CSS references
-		/* OLD
-		String membersTableHeader();
-		String missingValue();
-		String rolePrivileged();
-		*/
 		String hidden();
 		String visible();
 	}
