@@ -191,6 +191,7 @@ public class ExploreDataPresenter implements Presenter {
           @Override
           public void onFailure(Throwable caught) {
             _logger.severe(caught.getMessage());
+            AwErrorUtils.logoutIfAuthException(caught);
             ErrorDialog.show("We were unable to fetch any geo-location data from the server",
                              caught.getMessage());
           }
@@ -222,6 +223,7 @@ public class ExploreDataPresenter implements Presenter {
 					@Override
 					public void onFailure(Throwable caught) {
 						_logger.severe(caught.getMessage());
+						AwErrorUtils.logoutIfAuthException(caught);
 						ErrorDialog.show("Unable to retrieve mobility data with the selected parameters", caught.getMessage());
 					}
 					@Override
@@ -257,6 +259,8 @@ public class ExploreDataPresenter implements Presenter {
 				new AsyncCallback<List<MobilityInfo>>() {
 					@Override
 					public void onFailure(Throwable caught) {
+						AwErrorUtils.logoutIfAuthException(caught);
+						
 						// Save an empty new List to indicate no data
 						List<MobilityInfo> buffer = new ArrayList<MobilityInfo>();
 						fetchedData.set(indexToFill, buffer);
@@ -561,6 +565,7 @@ public class ExploreDataPresenter implements Presenter {
       @Override
       public void onFailure(Throwable caught) {
         _logger.severe("Could not load prompt list: " + caught.getMessage());
+        AwErrorUtils.logoutIfAuthException(caught);
       }
 
       @Override
@@ -645,6 +650,7 @@ public class ExploreDataPresenter implements Presenter {
           new AsyncCallback<String>() {
             @Override
             public void onFailure(Throwable caught) {
+              AwErrorUtils.logoutIfAuthException(caught);
               ErrorDialog.show("There was a problem loading the visualization.", caught.getMessage());
             }
             
