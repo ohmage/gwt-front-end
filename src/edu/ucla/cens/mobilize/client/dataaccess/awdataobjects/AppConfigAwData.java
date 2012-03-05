@@ -21,11 +21,11 @@ public class AppConfigAwData extends JavaScriptObject {
   }-*/;
   
   public final native boolean documentUploadMaxSizeFlagExists() /*-{
-    return this.data['document_upload_max_size'] !== undefined;
+    return this.data['maximum_parameter_size'] !== undefined;
   }-*/;
   
   public final native int getDocumentUploadMaxSize() /*-{
-    return this.data['document_upload_max_size'];
+    return this.data['maximum_parameter_size'];
   }-*/;
   
   /*

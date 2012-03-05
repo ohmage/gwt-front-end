@@ -10,6 +10,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -87,9 +88,24 @@ public class DocumentEditView extends Composite {
     // update max file size warning label if server has parameter
     if (AppConfig.getDocumentUploadMaxSize() > 0) {
       fileSizeWarningPanel.clear();
-      InlineLabel maxFileSizeLabel = new InlineLabel("Note: There is a max file size limit of " + Integer.toString(AppConfig.getDocumentUploadMaxSize()) + " MB. If you encounter an error, the file may be too large.");
+      String sizeStr = getPrettySizeStr((float)AppConfig.getDocumentUploadMaxSize() / 1000);
+      InlineLabel maxFileSizeLabel = new InlineLabel("Note: There is a max file size limit of " + sizeStr + ". If you encounter an error, the file may be too large.");
       fileSizeWarningPanel.add(maxFileSizeLabel);
     }
+  }
+  
+  private String getPrettySizeStr(float size_in_kb) {
+	  String postfix = "KB";
+	  if (size_in_kb < 1000) {
+		  postfix = "KB";
+	  } else if (size_in_kb < 1000000) {
+		  size_in_kb /= 1000;
+		  postfix = "MB";
+	  } else {
+		  size_in_kb /= 1000000;
+		  postfix = "GB";
+	  }
+	  return NumberFormat.getFormat("#####0.00").format(size_in_kb) + " " + postfix;
   }
   
   // serialize list into format expected by server in form submission
