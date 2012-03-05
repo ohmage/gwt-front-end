@@ -56,6 +56,7 @@ public class DocumentEditView extends Composite {
   @UiField Hidden clientHiddenField;
   @UiField Hidden documentIdHiddenField;
   @UiField HTMLPanel fileSizeWarningPanel;
+  @UiField InlineLabel fileSizeWarningLabel;
   @UiField HTMLPanel fileUploadPanel;
   @UiField FileUpload fileUploadInput;
   @UiField TextBox documentNameTextBox;
@@ -87,10 +88,8 @@ public class DocumentEditView extends Composite {
     
     // update max file size warning label if server has parameter
     if (AppConfig.getDocumentUploadMaxSize() > 0) {
-      fileSizeWarningPanel.clear();
       String sizeStr = getPrettySizeStr((float)AppConfig.getDocumentUploadMaxSize() / 1000);
-      InlineLabel maxFileSizeLabel = new InlineLabel("Note: There is a max file size limit of " + sizeStr + ". If you encounter an error, the file may be too large.");
-      fileSizeWarningPanel.add(maxFileSizeLabel);
+      fileSizeWarningLabel.setText("Note: Maximum file size allowed is " + sizeStr + "");
     }
   }
   
