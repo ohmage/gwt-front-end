@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
@@ -30,6 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 
@@ -52,6 +54,7 @@ public class DocumentEditView extends Composite {
   @UiField Hidden authTokenHiddenField;
   @UiField Hidden clientHiddenField;
   @UiField Hidden documentIdHiddenField;
+  @UiField HTMLPanel fileSizeWarningPanel;
   @UiField HTMLPanel fileUploadPanel;
   @UiField FileUpload fileUploadInput;
   @UiField TextBox documentNameTextBox;
@@ -80,6 +83,13 @@ public class DocumentEditView extends Composite {
     
     privacyListBox.addItem(Privacy.PRIVATE.toUserFriendlyString(), Privacy.PRIVATE.toServerString());
     privacyListBox.addItem(Privacy.SHARED.toUserFriendlyString(), Privacy.SHARED.toServerString());
+    
+    // update max file size warning label if server has parameter
+    if (AppConfig.getDocumentUploadMaxSize() > 0) {
+      fileSizeWarningPanel.clear();
+      InlineLabel maxFileSizeLabel = new InlineLabel("Note: There is a max file size limit of " + Integer.toString(AppConfig.getDocumentUploadMaxSize()) + " MB. If you encounter an error, the file may be too large.");
+      fileSizeWarningPanel.add(maxFileSizeLabel);
+    }
   }
   
   // serialize list into format expected by server in form submission
@@ -208,6 +218,7 @@ public class DocumentEditView extends Composite {
   }
   
   public void setUploadPanelVisible(boolean isVisible) {
+    fileSizeWarningPanel.setVisible(isVisible);
     fileUploadPanel.setVisible(isVisible);
     fileUploadInput.setEnabled(isVisible);
   }

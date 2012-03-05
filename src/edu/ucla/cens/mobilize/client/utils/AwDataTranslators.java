@@ -698,6 +698,11 @@ public class AwDataTranslators {
       } else { // Default behavior is "true" if no flag exists
     	AppConfig.setMobilityEnabled(true);
       }
+      if (awData.documentUploadMaxSizeFlagExists()) {
+        AppConfig.setDocumentUploadMaxSize(awData.getDocumentUploadMaxSize());
+      } else {
+        AppConfig.setDocumentUploadMaxSize(-1);
+      }
       return appConfig;
     }
 

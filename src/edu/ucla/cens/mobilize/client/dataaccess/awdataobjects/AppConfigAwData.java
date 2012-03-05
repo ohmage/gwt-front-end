@@ -20,6 +20,14 @@ public class AppConfigAwData extends JavaScriptObject {
     return this.data['mobility_enabled'];
   }-*/;
   
+  public final native boolean documentUploadMaxSizeFlagExists() /*-{
+    return this.data['document_upload_max_size'] !== undefined;
+  }-*/;
+  
+  public final native int getDocumentUploadMaxSize() /*-{
+    return this.data['document_upload_max_size'];
+  }-*/;
+  
   /*
   private final native JsArrayString getPrivacyStateStrings() /*-{
     return this.data.privacy_states;

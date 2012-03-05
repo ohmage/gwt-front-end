@@ -29,7 +29,11 @@
       float: left;
       margin-top: 5px;
     }
-    
+    .sizeWarningLabel {
+	  text-align: center;
+      color: maroon;
+      width: 90%;
+    }
     .detailRow {
       padding: 5px;
     }
@@ -98,10 +102,13 @@
 				  <g:Hidden ui:field='authTokenHiddenField' name='auth_token' />
 				  <g:Hidden ui:field='clientHiddenField' name='client' />
 				  <g:Hidden ui:field='documentIdHiddenField' name='document_id' />
+				  <g:HTMLPanel ui:field='fileSizeWarningPanel' addStyleNames='{style.detailRow} {style.sizeWarningLabel}'>
+                    <g:InlineLabel>Note: There is a file size limit for each file uploaded. If you encounter an error, the file may be too large.</g:InlineLabel>
+				  </g:HTMLPanel>
 				  <g:HTMLPanel ui:field='fileUploadPanel' addStyleNames='{style.detailRow}'>
-	          <g:InlineLabel addStyleNames='{style.detailLabel}'>Choose File:</g:InlineLabel>
-	          <g:FileUpload ui:field='fileUploadInput' name='document' />
-	        </g:HTMLPanel>
+			        <g:InlineLabel addStyleNames='{style.detailLabel}'>Choose File:</g:InlineLabel>
+			        <g:FileUpload ui:field='fileUploadInput' name='document' />
+			      </g:HTMLPanel>
 				  <g:HTMLPanel addStyleNames='{style.detailRow}'>
 				    <g:InlineLabel addStyleNames='{style.detailLabel}'>Document Name:</g:InlineLabel>
 				    <g:TextBox ui:field='documentNameTextBox' name='document_name' />
