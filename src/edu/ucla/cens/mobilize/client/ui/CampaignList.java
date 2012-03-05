@@ -258,9 +258,17 @@ public class CampaignList extends Composite {
     }
     
     // campaign name links to campaign detail page
+    // truncate the name with ellipses if too long
+    final int MAX_NAME_LENGTH = 80;
+    String truncatedName = campaignInfo.getCampaignName();
+    if (truncatedName.length() > MAX_NAME_LENGTH)
+    	truncatedName = truncatedName.substring(0, MAX_NAME_LENGTH-3) + "...";
+    
     Hyperlink campaignDetailLink = 
-      new Hyperlink(campaignInfo.getCampaignName(), 
+      new Hyperlink(truncatedName, 
                     HistoryTokens.campaignDetail(campaignInfo.getCampaignId()));
+    campaignDetailLink.setTitle(campaignInfo.getCampaignName());
+    
     this.campaignGrid.setWidget(row, Column.NAME.ordinal(), campaignDetailLink); 
     this.campaignGrid.getCellFormatter().setStyleName(row, 
                                                       Column.NAME.ordinal(), 
