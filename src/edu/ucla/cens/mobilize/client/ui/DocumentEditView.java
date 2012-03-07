@@ -10,6 +10,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -22,6 +23,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
@@ -30,6 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
 
@@ -52,6 +55,8 @@ public class DocumentEditView extends Composite {
   @UiField Hidden authTokenHiddenField;
   @UiField Hidden clientHiddenField;
   @UiField Hidden documentIdHiddenField;
+  @UiField HTMLPanel fileSizeWarningPanel;
+  @UiField InlineLabel fileSizeWarningLabel;
   @UiField HTMLPanel fileUploadPanel;
   @UiField FileUpload fileUploadInput;
   @UiField TextBox documentNameTextBox;
@@ -80,6 +85,26 @@ public class DocumentEditView extends Composite {
     
     privacyListBox.addItem(Privacy.PRIVATE.toUserFriendlyString(), Privacy.PRIVATE.toServerString());
     privacyListBox.addItem(Privacy.SHARED.toUserFriendlyString(), Privacy.SHARED.toServerString());
+    
+    // update max file size warning label if server has parameter
+    if (AppConfig.getDocumentUploadMaxSize() > 0) {
+      String sizeStr = getPrettySizeStr((float)AppConfig.getDocumentUploadMaxSize() / 1000);
+      fileSizeWarningLabel.setText("Note: Maximum file size allowed is " + sizeStr + "");
+    }
+  }
+  
+  private String getPrettySizeStr(float size_in_kb) {
+	  String postfix = "KB";
+	  if (size_in_kb < 1000) {
+		  postfix = "KB";
+	  } else if (size_in_kb < 1000000) {
+		  size_in_kb /= 1000;
+		  postfix = "MB";
+	  } else {
+		  size_in_kb /= 1000000;
+		  postfix = "GB";
+	  }
+	  return NumberFormat.getFormat("#####0.00").format(size_in_kb) + " " + postfix;
   }
   
   // serialize list into format expected by server in form submission
@@ -208,6 +233,7 @@ public class DocumentEditView extends Composite {
   }
   
   public void setUploadPanelVisible(boolean isVisible) {
+    fileSizeWarningPanel.setVisible(isVisible);
     fileUploadPanel.setVisible(isVisible);
     fileUploadInput.setEnabled(isVisible);
   }

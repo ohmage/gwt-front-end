@@ -3,8 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
   <ui:style>
     .buttonDiv {
-      background-color: #AAA;
-      border-top: solid 1px #666;
+      
     }
     .buttonDiv button {
       float: right;

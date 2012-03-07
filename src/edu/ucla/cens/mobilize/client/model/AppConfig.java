@@ -11,6 +11,7 @@ public class AppConfig {
   private static boolean responsePrivacyIsEditable;
   private static List<Privacy> privacyStates;
   private static boolean mobilityEnabled;
+  private static int documentUploadMaxSize;
   
   public static boolean isLoaded() {
     return appName != null && privacyStates != null;
@@ -69,5 +70,12 @@ public class AppConfig {
   }
   public static void setMobilityEnabled(boolean isEnabled) {
     AppConfig.mobilityEnabled = isEnabled;
+  }
+  
+  public static int getDocumentUploadMaxSize() {
+    return documentUploadMaxSize;
+  }
+  public static void setDocumentUploadMaxSize(int maxSize) {
+    AppConfig.documentUploadMaxSize = maxSize;
   }
 }
