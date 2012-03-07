@@ -19,6 +19,7 @@
     <copy todir="war/WEB-INF/lib" file="${libdir}/gwt-google-maps-v3.jar" />
     <copy todir="war/WEB-INF/lib" file="${libdir}/totoe-0.2.2.jar" />
   	<copy todir="war/WEB-INF/lib" file="${libdir}/gwt-visualization.jar" />
+  	<copy todir="war/WEB-INF/lib" file="${libdir}/org.moxieapps.gwt.highcharts-1.2.0.jar" />
   </target>
 
   <target name="javac" depends="libs" description="Compile java source to bytecode">

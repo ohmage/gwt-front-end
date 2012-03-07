@@ -50,7 +50,6 @@ public class MobilityVizDailySummary extends Composite {
 	interface MobilityVizDailySummaryUiBinder extends UiBinder<Widget, MobilityVizDailySummary> {
 	}
 
-	// TODO: UiFields
 	@UiField MobilityVizDailySummaryStyle style;
 	@UiField FlowPanel distancePlot;
 	@UiField FlowPanel durationPlot;

@@ -846,7 +846,7 @@ public class AndWellnessDataService implements DataService {
   public void fetchSurveyResponses(String usernameOrNull,
                                    final String campaignId,
                                    String surveyName, // ignored if null or ""
-                                   Privacy privacy,
+                                   Privacy privacy,	// ignored if null
                                    Date startDate,
                                    Date endDate,
                                    final AsyncCallback<List<SurveyResponse>> callback) {
@@ -857,10 +857,10 @@ public class AndWellnessDataService implements DataService {
     params.campaignUrn = campaignId;
     params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
     String username = usernameOrNull != null ? usernameOrNull : AwConstants.specialAllValuesToken;
-    params.userList.add(username != null ? username: AwConstants.specialAllValuesToken);
+    params.userList.add(username != null ? username : AwConstants.specialAllValuesToken);
     // if surveyName is omitted, readparams object sends special token for all surveys
-    if (surveyName != null && !surveyName.isEmpty())  params.surveyIdList_opt.add(surveyName);
-    params.privacyState_opt = privacy;
+    if (surveyName != null && !surveyName.isEmpty())	params.surveyIdList_opt.add(surveyName);
+    if (privacy != null)	params.privacyState_opt = privacy;
     params.startDate_opt = startDate;
     params.endDate_opt = DateUtils.addOneDay(endDate); // add one to make range inclusive
     

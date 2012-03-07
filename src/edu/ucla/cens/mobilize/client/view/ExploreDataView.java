@@ -17,6 +17,7 @@ import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
+import edu.ucla.cens.mobilize.client.model.SurveyResponseData;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 
 public interface ExploreDataView extends IsWidget {
@@ -26,6 +27,11 @@ public interface ExploreDataView extends IsWidget {
 	void setSelectedCampaign(String campaignId);
 	String getSelectedCampaign(); // returns id
 
+	// survey drop down
+	void setSurveyList(List<String> surveyIds);
+	void setSelectedSurvey(String surveyId);
+	String getSelectedSurvey();
+	
 	// participant drop down
 	void setParticipantList(List<String> participants);
 	void setSelectedParticipant(String participantName);
@@ -55,26 +61,26 @@ public interface ExploreDataView extends IsWidget {
 	PlotType getSelectedPlotType();
 	void setSelectedPlotType(PlotType plotType);
 
-	// TODO: add start/end dates
-
 	int getPlotPanelWidth();
 	int getPlotPanelHeight();
 
 	void setPlotUrl(String url);
 	void setPlotUrl(String url, ErrorHandler errorHandler);
 	void clearPlot();
-	// FIXME: what if there are multiple responses from the same location?
+
 	void showResponsesOnMap(List<SurveyResponse> responses);
 	void showResponseDetail(Marker location);
 	void showMobilityDataOnMap(List<MobilityInfo> mdata);
 	void showMobilityDetail(Marker location);
-	void showMobilityTemporalSummary(List<List<MobilityInfo>> mdataList);
 	void showMobilityDashboard(List<MobilityInfo> mdata);
+	void showMobilityTemporalSummary(List<List<MobilityInfo>> mdataList);
+	void showMobilityHistoricalAnalysis(List<List<MobilityInfo>> multiDayMobilityDataList, List<SurveyResponse> responseList);
 	void renderLeaderBoard(List<UserParticipationInfo> participationInfo);
 	void setInfoText(String string);
 
 	// methods for enabling/disabling form fields
 	void setCampaignDropDownEnabled(boolean isEnabled);
+	void setSurveyDropDownEnabled(boolean isEnabled);
 	void setParticipantDropDownEnabled(boolean isEnabled);
 	void setPromptXDropDownEnabled(boolean isEnabled);
 	void setPromptYDropDownEnabled(boolean isEnabled);
@@ -95,9 +101,7 @@ public interface ExploreDataView extends IsWidget {
 	SourcesTreeEvents getPlotTypeTree();
 	HasChangeHandlers getCampaignDropDown();
 	HasClickHandlers getDrawPlotButton();
-	//HasClickHandlers getPdfButton();
 	HasClickHandlers getExportDataButton();
-
 
 	// validation helpers
 	boolean isMissingRequiredField();

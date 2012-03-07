@@ -4,6 +4,7 @@
   <inherits name='com.google.gwt.user.User'/>
   <inherits name='com.google.gwt.maps.Maps' />
   <inherits name='com.google.gwt.visualization.Visualization' />
+  <inherits name='org.moxieapps.gwt.highcharts.Highcharts' />
   
   <!-- Setting English locale so DatePicker starts on Sunday -->
   <inherits name="com.google.gwt.i18n.I18N"/>
