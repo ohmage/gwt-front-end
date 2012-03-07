@@ -19,13 +19,16 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.common.RoleClass;
+
 
 public class AdminClassAddUserPopup extends Composite {
 
@@ -38,6 +41,7 @@ public class AdminClassAddUserPopup extends Composite {
   
   interface AdminClassAddUserPopupStyles extends CssResource {
     String selected();
+    String waiting();
   }
   
   private static class Columns {
@@ -49,6 +53,7 @@ public class AdminClassAddUserPopup extends Composite {
   }
 
   @UiField AdminClassAddUserPopupStyles style;
+  @UiField HTMLPanel userListContainer;
   @UiField TextBox usernameTextBox;
   @UiField Button usernameSearchButton;
   @UiField Anchor selectAllLink;
@@ -58,9 +63,12 @@ public class AdminClassAddUserPopup extends Composite {
   @UiField Button cancelButton;
 
   private List<String> allUsernames = new ArrayList<String>();
+  private FlowPanel waitIndicator;
   
   public AdminClassAddUserPopup() {
     initWidget(uiBinder.createAndBindUi(this));
+    waitIndicator = new FlowPanel();
+    waitIndicator.setStyleName(style.waiting());
     bind();
   }
   
@@ -158,7 +166,7 @@ public class AdminClassAddUserPopup extends Composite {
   }
   
   public void setUserList(List<String> usernames) {
-    if (usernames == null) return;
+    if (usernames == null) usernames = new ArrayList<String>(); // show empty list on null
     this.allUsernames = new ArrayList<String>(usernames);
     updateUserListGrid(usernames);
   }
@@ -217,4 +225,11 @@ public class AdminClassAddUserPopup extends Composite {
     return usernameToRoleMap;
   }
 
+  public void showWaitIndicator() {
+    this.userListContainer.add(waitIndicator);
+  }
+  
+  public void hideWaitIndicator() {
+    this.userListContainer.remove(waitIndicator);
+  }
 }

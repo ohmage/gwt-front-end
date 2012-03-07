@@ -22,6 +22,7 @@ import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserSearchParams;
+import edu.ucla.cens.mobilize.client.event.UserDataChangedEvent;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchData;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
@@ -387,6 +388,7 @@ public class AdminUserListPresenter implements Presenter {
 
       @Override
       public void onSuccess(String result) {
+        eventBus.fireEvent(new UserDataChangedEvent());
         refreshUserList();
       }
     });

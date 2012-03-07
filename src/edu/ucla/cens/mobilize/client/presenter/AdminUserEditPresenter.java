@@ -13,9 +13,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserUpdateParams;
+import edu.ucla.cens.mobilize.client.event.UserDataChangedEvent;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
-import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.view.AdminUserEditView;
@@ -126,6 +126,7 @@ public class AdminUserEditPresenter implements Presenter {
 
       @Override
       public void onSuccess(String result) {
+        eventBus.fireEvent(new UserDataChangedEvent());
         HistoryTokens.adminUserList();
       }
     });
@@ -199,6 +200,8 @@ public class AdminUserEditPresenter implements Presenter {
 
       @Override
       public void onSuccess(String result) {
+        // NOTE: UserDataChangedEvent is not fired here b/c (as of Mar 2012)
+        //   only create/delete require refreshing parts of the app.
         view.resetForm();
         History.newItem(HistoryTokens.adminUserDetail(username));
       }

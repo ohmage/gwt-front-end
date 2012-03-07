@@ -376,14 +376,21 @@ public class AdminClassEditView extends Composite {
     return this.isEdit;
   }
   
-  /**
-   * @param usernames List of usernames that will appear in the add new
-   * members popup
-   */
-  public void showAddMembersPopup(List<String> usernames) {
+  public void showAddMembersPopup() {
     this.addMembersWidget.clearSearchString();
-    this.addMembersWidget.setUserList(usernames);
     this.addMembersDialog.center();
+  }
+  
+  public void setAddMembersPopupUserList(List<String> usernames) {
+    this.addMembersWidget.setUserList(usernames);
+  }
+  
+  public void showAddMembersPopupWaitIndicator() {
+    this.addMembersWidget.showWaitIndicator();
+  }
+  
+  public void hideAddMembersPopupWaitIndicator() {
+    this.addMembersWidget.hideWaitIndicator();
   }
   
   public void hideAddMembersPopup() {
@@ -471,6 +478,11 @@ public class AdminClassEditView extends Composite {
   
   private int getMemberCount() {
     return this.memberListGrid.getRowCount();
+  }
+
+  public void clearAddMembersPopup() {
+    this.addMembersWidget.clearSearchString();
+    this.addMembersWidget.setUserList(null);
   }
 
   

@@ -22,15 +22,15 @@ import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.ClassUpdateParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserSearchParams;
 import edu.ucla.cens.mobilize.client.event.ClassDataChangedEvent;
+import edu.ucla.cens.mobilize.client.event.UserDataChangedEvent;
+import edu.ucla.cens.mobilize.client.event.UserDataChangedEventHandler;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.ui.ConfirmDeleteDialog;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
-import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.CollectionUtils;
-import edu.ucla.cens.mobilize.client.utils.StopWatch;
 import edu.ucla.cens.mobilize.client.view.AdminClassEditView;
 
 public class AdminClassEditPresenter implements Presenter {
@@ -39,13 +39,25 @@ public class AdminClassEditPresenter implements Presenter {
   private EventBus eventBus;
   private AdminClassEditView view;
   
+  private List<String> allUsernames; // store all usernames to avoid excesssive data loads
   private Map<String, RoleClass> currentMemberList; // used to identify deleted users
   private static Logger _logger = Logger.getLogger(AdminClassEditPresenter.class.getName());
-
+  
   public AdminClassEditPresenter(UserInfo userInfo, DataService dataService, EventBus eventBus) {
     this.userInfo = userInfo;
     this.dataService = dataService;
     this.eventBus = eventBus;
+    bind();
+  }
+  
+  private void bind() {
+    // If user was added or deleted, clear user list so it will be reloaded on next use.
+    eventBus.addHandler(UserDataChangedEvent.TYPE, new UserDataChangedEventHandler() {
+      @Override
+      public void onUserDataChanged(UserDataChangedEvent event) {
+        allUsernames = null;
+      }
+    });
   }
   
   public void setView(AdminClassEditView view) {
@@ -65,7 +77,13 @@ public class AdminClassEditPresenter implements Presenter {
     view.getAddMembersButton().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        fetchUsersAndShowAddMembersPopup();
+        if (allUsernames != null) {
+          List<String> usernames = getUsernamesMinusMemberList();
+          view.setAddMembersPopupUserList(usernames);
+          view.showAddMembersPopup();
+        } else {
+          fetchUsersAndShowAddMembersPopup();
+        }
       }
     });
     
@@ -193,41 +211,55 @@ public class AdminClassEditPresenter implements Presenter {
   }
   
   private void fetchUsersAndShowAddMembersPopup() {
-    WaitIndicator.show();
-    // TODO: FIXME: should only load users once when admin first goes to page, then re-use them everywhere
+    view.clearAddMembersPopup();
+    view.showAddMembersPopup();
+    view.showAddMembersPopupWaitIndicator();
     dataService.fetchUserSearchResults(new UserSearchParams(), new AsyncCallback<List<UserSearchInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
-        WaitIndicator.hide();
+        view.hideAddMembersPopupWaitIndicator();
+        view.hideAddMembersPopup();
         AwErrorUtils.logoutIfAuthException(caught);
         ErrorDialog.show("There was a problem fetching the user list.", caught.getMessage());
       }
 
       @Override
       public void onSuccess(List<UserSearchInfo> result) {
-        WaitIndicator.hide();
-        Map<String, RoleClass> currentMembers = view.getMembersAndRoles();
-        List<String> usernames = new ArrayList<String>();
-
-        StopWatch.start("search_and_sort");
-        for (UserSearchInfo user : result) {
-          String username = user.getUsername();
-          // popup only shows users that are not already in the class
-          if (!currentMembers.containsKey(username)) {
-            usernames.add(username);
-          }
+        // clear previous data
+        if (allUsernames != null) {
+          allUsernames.clear();
+        } else {
+          allUsernames = new ArrayList<String>();
         }
-        Collections.sort(usernames);
-        StopWatch.stop("search_and_sort");
-        StopWatch.start("render_user_list");
-        view.showAddMembersPopup(usernames);
-        StopWatch.stop("render_user_list");
-        _logger.finest(StopWatch.getTotalsString());
-        StopWatch.resetAll();
+        
+        // build a list of usernames and save it so it won't have to be reloaded
+        for (UserSearchInfo user: result) {
+          allUsernames.add(user.getUsername());
+        }
+        
+        List<String> usernames = getUsernamesMinusMemberList();
+        view.setAddMembersPopupUserList(usernames);
+        view.hideAddMembersPopupWaitIndicator();
       }
     });
   }
-
+  
+  private List<String> getUsernamesMinusMemberList() {
+    // NOTE: current members are fetched from the view and not this.currentMembers
+    //   because this.currentMembers contains list of members associated with this
+    //   class in the db, but we want to compare against members in the display,
+    //   which may have been edited since the class data was loaded
+    Map<String, RoleClass> currentMembers = view.getMembersAndRoles();
+    List<String> usernames = new ArrayList<String>();
+    for (String username : this.allUsernames) {
+      if (!currentMembers.containsKey(username)) {
+        usernames.add(username);
+      }
+    }
+    Collections.sort(usernames);
+    return usernames;
+  }
+  
   private boolean validateClassInfo() {
     view.clearValidationErrors(); // clear previous errors, if any
     boolean allFieldsAreValid = true;

@@ -11,6 +11,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserCreateParams;
+import edu.ucla.cens.mobilize.client.event.UserDataChangedEvent;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.view.AdminUserCreateView;
@@ -85,6 +86,7 @@ public class AdminUserCreatePresenter implements Presenter {
 
       @Override
       public void onSuccess(String result) {
+        eventBus.fireEvent(new UserDataChangedEvent());
         view.resetForm();
         History.newItem(HistoryTokens.adminUserDetail(username));
       }

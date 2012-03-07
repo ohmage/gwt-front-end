@@ -31,6 +31,14 @@
 		.userListContainer td {
 			white-space: nowrap;
 		}
+    .waiting {
+      background: 50% 50% no-repeat url('images/loading_text.gif');
+      height: 100px;
+      position: absolute;
+      left: 0;
+      top: 100px;
+      width: 100%;
+    }
 	</ui:style>
 	<g:HTMLPanel addStyleNames='{style.container}'>
 	  <g:HTMLPanel addStyleNames='{style.filterContainer}'>
@@ -50,7 +58,7 @@
 		    </g:HTMLPanel>
 	    </g:HorizontalPanel>
 	  </g:HTMLPanel>
-	  <g:HTMLPanel addStyleNames='{style.userListContainer}'>
+	  <g:HTMLPanel addStyleNames='{style.userListContainer}' ui:field='userListContainer'>
 	    <g:Grid ui:field='userListGrid' />
 	  </g:HTMLPanel>
 	  <g:HTMLPanel addStyleNames='{style.buttonContainer}'>

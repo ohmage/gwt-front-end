@@ -4,6 +4,12 @@ import com.google.gwt.event.shared.GwtEvent;
 
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 
+/**
+ * Fired when info about the currently logged in user changes. 
+ * 
+ * Note this event applies only to the currently logged in user. In this way, it differs from 
+ *   UserDataChangedEvent which is fired when any user changes/
+ */
 public class UserInfoUpdatedEvent extends GwtEvent<UserInfoUpdatedEventHandler> {
   public static Type<UserInfoUpdatedEventHandler> TYPE = new Type<UserInfoUpdatedEventHandler>();
 
