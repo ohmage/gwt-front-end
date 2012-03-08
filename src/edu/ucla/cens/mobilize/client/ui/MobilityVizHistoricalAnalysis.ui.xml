@@ -36,34 +36,23 @@
 			box-shadow: 0px 3px 10px rgba(0,0,0,0.5);
 			margin: 20px;
 		}
-		.left-box .right-box .horizontal-box {
-			display: block;
-			border: 1px dashed #666;
+		.half-panel {
+			width: 400px;
 			text-align: center;
+			height: 40px; 
 		}
-		.square-panel {
-			width: 200px;	/* 800 / 5 = 160, 800 / 4 = 200 */
+		.sixth-panel {
+			width: 133px;
 			text-align: center;
-			line-height: 20px; 
+			height: 40px; 
 		}
 		.horizontal-box {
 			width: 100%;
 		}
-		.right-box {
-			border-left: 1px solid #777;
-			float: right;
-			width: 50%;
-		}
-		.left-box {
-			width: 50%;
-		}
-		.bottom-text {
-			
-		}
+		
 		/* helper styles */
-		.vertical-stretch {
-			height: 100%;
-			padding-right: 10px;
+		.text-padding {
+			padding: 10px;
 		}
 		.white-bg {
 			background: rgba(255,255,255,0.7);
@@ -77,6 +66,39 @@
 		.visible {
 			display:block;
 		}
+		
+		/* button styles */
+		.button {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 10pt;
+			
+			padding: 10px;
+			-moz-border-radius: 20px;
+			border-radius: 20px;
+			
+			color: #444;
+			text-shadow: 0px 1px 0px white;
+		}
+		.faded {
+			opacity: 0.3;
+		}
+		.selected {
+			font-weight: bold;
+			
+			border-width: 1px;
+			border-style: solid;
+			
+			background-color: rgba(255,255,255,0.8);
+			-moz-box-shadow: 0px 3px 5px rgba(0,0,0,0.3);
+			-webkit-box-shadow: 0px 3px 5px rgba(0,0,0,0.3);
+			box-shadow: 0px 3px 5px rgba(0,0,0,0.3);
+		}
+		.selected-blue {
+			border-color: #15a2ea;
+		}
+		.selected-red {
+			border-color: #ea3d15;
+		}
 	</ui:style>
 
 	<g:HTMLPanel ui:field='wrapper'>
@@ -84,61 +106,91 @@
 		</g:HTMLPanel>
 		
 		<g:HTMLPanel addStyleNames='{style.container}'>
-			<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
-				<g:Label addStyleNames='{style.section-text}' ui:field="date_label"> </g:Label>
+			<g:HTMLPanel ui:field="mobilityDomainSection">
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.section-text}'>Mobility Domain</g:Label>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.content-text} {style.text-padding}'>1. Select a category</g:Label>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:HorizontalPanel horizontalAlignment="ALIGN_CENTER" verticalAlignment="ALIGN_MIDDLE">
+						<g:HTMLPanel addStyleNames='{style.half-panel} {style.content-text}'>
+							<g:RadioButton ui:field="durationButton" addStyleNames='{style.button} {style.selected-red}' ui:name="mobilityCategory"> Duration</g:RadioButton>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.half-panel} {style.content-text}'>
+							<g:RadioButton ui:field="distanceButton" addStyleNames='{style.button} {style.selected-red}' ui:name="mobilityCategory"> Distance</g:RadioButton>
+						</g:HTMLPanel>
+					</g:HorizontalPanel>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.content-text} {style.text-padding}'>2. Select a mode</g:Label>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:HorizontalPanel horizontalAlignment="ALIGN_CENTER" verticalAlignment="ALIGN_MIDDLE">
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="ambulatoryButton" addStyleNames='{style.button} {style.selected-blue}' ui:name="mobilityMode"> Ambulatory</g:RadioButton>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="stillButton" addStyleNames='{style.button} {style.selected-blue}' ui:name="mobilityMode"> Still</g:RadioButton>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="walkButton" addStyleNames='{style.button} {style.selected-blue}' ui:name="mobilityMode"> Walk</g:RadioButton>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="runButton" addStyleNames='{style.button} {style.selected-blue}' ui:name="mobilityMode"> Run</g:RadioButton>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="bikeButton" addStyleNames='{style.button} {style.selected-blue}' ui:name="mobilityMode"> Bike</g:RadioButton>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="driveButton" addStyleNames='{style.button} {style.selected-blue}' ui:name="mobilityMode"> Drive</g:RadioButton>
+						</g:HTMLPanel>
+					</g:HorizontalPanel>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:InlineLabel ui:field="ambulatoryNote" addStyleNames='{style.content-text} {style.text-padding}'>Note: Ambulatory collectively includes walk, run, and bike</g:InlineLabel>
+				</g:HTMLPanel>
 			</g:HTMLPanel>
 			
-			<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
-				<g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE">
-					<g:HTMLPanel addStyleNames='{style.square-panel} {style.content-text}'>
-						Sedentary for
-						<g:Label ui:field="stat_total_time_sedentary" addStyleNames='{style.content-number} {style.darkred-text}' />
-						based on still &amp; drive
-					</g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.square-panel} {style.content-text}'>
-						Ambulatory for
-						<g:Label ui:field="stat_total_time_ambulatory" addStyleNames='{style.content-number}' />
-						based on walk, run &amp; bike
-					</g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.square-panel} {style.content-text}'>
-						Traveled
-						<g:Label ui:field="stat_total_foot_distance" addStyleNames='{style.content-number}' />
-						by foot or bike
-					</g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.square-panel} {style.content-text} {style.hidden}'>
-						Average speed
-						<g:Label ui:field="stat_average_walking_speed" addStyleNames='{style.content-number}' />
-						walking
-					</g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.square-panel} {style.content-text}'>
-						Tracked
-						<g:Label ui:field="stat_total_time_tracked" addStyleNames='{style.content-number}' />
-						of movement
-					</g:HTMLPanel>
-				</g:HorizontalPanel>
+			<g:HTMLPanel ui:field="responseDomainSection">
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.section-text}'>Survey Question</g:Label>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.content-text} {style.text-padding}'>Select a question to compare against</g:Label>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:HorizontalPanel horizontalAlignment="ALIGN_CENTER" verticalAlignment="ALIGN_MIDDLE">
+						<g:ListBox ui:field="responseListBox"></g:ListBox>
+					</g:HorizontalPanel>
+				</g:HTMLPanel>
 			</g:HTMLPanel>
 			
-			<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
-				<g:Label addStyleNames='{style.section-text}'>Temporal Summary</g:Label>
+			<g:HTMLPanel ui:field="timeSection">
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.section-text}'>Time Analysis</g:Label>
+				</g:HTMLPanel>
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:FlowPanel ui:field="timePlot" addStyleNames="{style.white-bg}"></g:FlowPanel>
+				</g:HTMLPanel>
 			</g:HTMLPanel>
 			
-			<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
-				<g:FlowPanel ui:field="temporalPlot" addStyleNames="{style.white-bg}"></g:FlowPanel>
+			<g:HTMLPanel ui:field="distributionSection">
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.section-text}'>Distribution Analysis</g:Label>
+				</g:HTMLPanel>
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:FlowPanel ui:field="distributionPlot" addStyleNames="{style.white-bg}"></g:FlowPanel>
+				</g:HTMLPanel>
 			</g:HTMLPanel>
-			
-			<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
-				<g:Label addStyleNames='{style.section-text}'>Activity Breakdown</g:Label>
-			</g:HTMLPanel>
-			
-			<g:HorizontalPanel addStyleNames='{style.right-box}' verticalAlignment="ALIGN_MIDDLE">
-				<g:FlowPanel ui:field="durationPlot"></g:FlowPanel>
-				<g:VerticalPanel ui:field="durationInfo" addStyleNames='{style.content-text} {style.vertical-stretch}'></g:VerticalPanel>
-			</g:HorizontalPanel>
-			
-			<g:HorizontalPanel addStyleNames='{style.left-box}' verticalAlignment="ALIGN_MIDDLE">
-				<g:FlowPanel ui:field="distancePlot"></g:FlowPanel>
-				<g:VerticalPanel ui:field="distanceInfo" addStyleNames='{style.content-text} {style.vertical-stretch}'></g:VerticalPanel>
-			</g:HorizontalPanel>
 		</g:HTMLPanel>
 	</g:HTMLPanel>
 

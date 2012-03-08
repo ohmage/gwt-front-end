@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -60,7 +61,8 @@ public class ExploreDataPresenter implements Presenter {
 	private static Logger _logger = Logger.getLogger(ExploreDataPresenter.class.getName());
 
 	private String selectedParticipant;
-
+	private CampaignDetailedInfo savedCampaignDetailedInfo;
+	
 	private static List<PromptType> supportedUnivariate = Arrays.asList( 
 			PromptType.HOURS_BEFORE_NOW,
 			PromptType.MULTI_CHOICE,
@@ -160,9 +162,15 @@ public class ExploreDataPresenter implements Presenter {
 			selectedParticipant = userInfo.getUserName();
 			
 			// Case 5: Mobility Historical Analysis
-			fetchMobilitySurveyDataAndShowHistoricalAnalysis(selectedCampaign, selectedSurvey, selectedParticipant, startDate, endDate);
+			fetchMobilitySurveyDataAndShowHistoricalAnalysis(selectedParticipant, startDate, endDate);
+		} else if (PlotType.MOBILITY_HISTORICAL_RESPONSE.equals(selectedPlotType)) {
+			// TODO: username
+			selectedParticipant = userInfo.getUserName();
+			
+			// Case 6: Mobility Historical + Response Analysis
+			fetchMobilitySurveyDataAndShowHistoricalResponseAnalysis(selectedCampaign, selectedSurvey, selectedParticipant, startDate, endDate);
 		} else if (PlotType.LEADER_BOARD.equals(selectedPlotType)) {
-			// Case 6: Leaderboard table
+			// Case 7: Leaderboard table
 			fetchAndShowLeaderBoard(selectedCampaign, startDate, endDate);
 		} else {
 			// ELSE: R viz plot
@@ -345,11 +353,86 @@ public class ExploreDataPresenter implements Presenter {
 					);
 	}
 
-	private void fetchMobilitySurveyDataAndShowHistoricalAnalysis(final String campaignName, final String surveyName, final String username, final Date startDate, final Date endDate) {
+	private void fetchMobilitySurveyDataAndShowHistoricalAnalysis(final String username, final Date startDate, final Date endDate) {
+		view.showWaitIndicator();
+
+		// Create a list of Lists for synchronization
+		final List<List<MobilityInfo>> fetchedData = new ArrayList<List<MobilityInfo>>();
+		final int numDays = DateUtils.daysApart(startDate, endDate) + 1;	// Add one to include starting date
+		for (int i = 0; i < numDays; i++) {
+			fetchedData.add(null);
+		}
+
+		for (int i = 0; i < numDays; i++) {
+			Date dateParam = DateUtils.addDays(startDate, i);
+			final Integer indexToFill = i;
+
+			dataService.fetchMobilityData(
+					dateParam,
+					null,	//TODO: username
+					new AsyncCallback<List<MobilityInfo>>() {
+						@Override
+						public void onFailure(Throwable caught) {
+							AwErrorUtils.logoutIfAuthException(caught);
+							
+							// Save an empty new List to indicate no data
+							List<MobilityInfo> buffer = new ArrayList<MobilityInfo>();
+							fetchedData.set(indexToFill, buffer);
+
+							_logger.severe(caught.getMessage());
+
+							// Check if we got absolutely no data
+							boolean finishedAndGotNoData = true;
+							for (int j = 0; j < fetchedData.size(); j++) {
+								if (fetchedData.get(j) != null && fetchedData.get(j).isEmpty() == false) {
+									finishedAndGotNoData = false;
+									break;
+								}
+							}
+							if (finishedAndGotNoData)
+								ErrorDialog.show("Unable to retrieve mobility data with the selected parameters", caught.getMessage());
+						}
+
+						@Override
+						public void onSuccess(List<MobilityInfo> result) {	//FIXME
+							// Save the results list
+							List<MobilityInfo> buffer = new ArrayList<MobilityInfo>();
+							buffer.addAll(result);
+							fetchedData.set(indexToFill, buffer);
+
+							// Check if all synchronized
+							for (int j = 0; j < fetchedData.size(); j++) {
+								if (fetchedData.get(j) == null) {
+									_logger.fine("Waiting for async #" + Integer.toString(j) + " to finish.");
+									return;
+								}
+							}
+
+							// show responses on map
+							view.showMobilityHistoricalAnalysis(fetchedData);
+							view.hideWaitIndicator();
+						}
+					}
+					);
+		}
+	}
+	
+	private void fetchMobilitySurveyDataAndShowHistoricalResponseAnalysis(final String campaignName, final String surveyName, final String username, final Date startDate, final Date endDate) {
 		// NOTE: Sorry, this function is going to be ugly...
 
 		view.showWaitIndicator();
 
+		// Generate question map
+		final CampaignDetailedInfo campaignInfo = savedCampaignDetailedInfo;
+		final Map<String,String> questionMap = new LinkedHashMap<String,String>();
+		for (int i = 0; i < campaignInfo.getPrompts().size(); i++) {
+			// Skip photo
+			if (campaignInfo.getPrompts().get(i).getPromptType().equals(PromptType.PHOTO))
+				continue;
+			
+			questionMap.put(campaignInfo.getPrompts().get(i).getPromptId(), campaignInfo.getPrompts().get(i).getDisplayLabel());
+		}
+		
 		// (1) FETCH SURVEY FIRST
 		// (2) FETCH MOBILITY CHAIN DATA
 
@@ -429,7 +512,7 @@ public class ExploreDataPresenter implements Presenter {
 									}
 
 									// show responses on map
-									view.showMobilityHistoricalAnalysis(fetchedData, responseList);
+									view.showMobilityHistoricalResponseAnalysis(fetchedData, responseList, questionMap);
 									view.hideWaitIndicator();
 								}
 							}
@@ -543,11 +626,11 @@ public class ExploreDataPresenter implements Presenter {
 				else if (fromDate != null && toDate != null && fromDate.after(toDate)) {	//make sure date range is valid
 					ErrorDialog.show("Invalid date selection", "Start date must be before or the same as the end date.");
 				}
-				else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_DASHBOARD) || view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_TEMPORAL) || view.getSelectedPlotType().equals(PlotType.MOBILITY_HISTORICAL))
+				else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_DASHBOARD) || view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_TEMPORAL) || view.getSelectedPlotType().equals(PlotType.MOBILITY_HISTORICAL) || view.getSelectedPlotType().equals(PlotType.MOBILITY_HISTORICAL_RESPONSE))
 						&& (fromDate == null || toDate == null)) {
 					ErrorDialog.show("Invalid date selection", "Please select both a start and end date range to view your mobility data.");
 				}
-				else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_DASHBOARD) || view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_TEMPORAL) || view.getSelectedPlotType().equals(PlotType.MOBILITY_HISTORICAL))
+				else if ((view.getSelectedPlotType().equals(PlotType.MOBILITY_DASHBOARD) || view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_TEMPORAL) || view.getSelectedPlotType().equals(PlotType.MOBILITY_HISTORICAL) || view.getSelectedPlotType().equals(PlotType.MOBILITY_HISTORICAL_RESPONSE))
 						&& DateUtils.daysApart(fromDate, toDate) >= 14) {
 					ErrorDialog.show("Invalid date selection", "Mobility date range may only be up to 14 days.");
 				}
@@ -634,7 +717,7 @@ public class ExploreDataPresenter implements Presenter {
 				view.setEndDateRangeEnabled(false);
 				view.setExportButtonEnabled(false);
 				break;
-			case MOBILITY_HISTORICAL:
+			case MOBILITY_HISTORICAL_RESPONSE:
 				view.setCampaignDropDownEnabled(true);
 				view.setSurveyDropDownEnabled(true);
 				view.setParticipantDropDownEnabled(false);
@@ -643,6 +726,7 @@ public class ExploreDataPresenter implements Presenter {
 				view.setDateRangeEnabled(true);
 				view.setExportButtonEnabled(false);
 				break;
+			case MOBILITY_HISTORICAL:
 			case MOBILITY_TEMPORAL:
 				view.setCampaignDropDownEnabled(false);
 				view.setSurveyDropDownEnabled(false);
@@ -723,6 +807,8 @@ public class ExploreDataPresenter implements Presenter {
 
 			@Override
 			public void onSuccess(CampaignDetailedInfo result) {	//TODO: filter by date
+				savedCampaignDetailedInfo = result;
+				
 				view.setSurveyList(result.getSurveyIds());
 				view.clearPromptXList();
 				view.clearPromptYList();

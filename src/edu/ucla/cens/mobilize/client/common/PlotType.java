@@ -14,7 +14,8 @@ public enum PlotType {
   MOBILITY_DASHBOARD,
   MOBILITY_MAP,
   MOBILITY_TEMPORAL,
-  MOBILITY_HISTORICAL;
+  MOBILITY_HISTORICAL,
+  MOBILITY_HISTORICAL_RESPONSE;
   
   public String toHistoryTokenString() {
     return this.toString().toLowerCase();

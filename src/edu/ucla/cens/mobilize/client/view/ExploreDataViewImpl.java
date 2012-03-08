@@ -247,6 +247,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		TreeItem mobilityMap = getTreeItem("Mobility Map", PlotType.MOBILITY_MAP, style.treeItemMap());
 		TreeItem mobilityGraph = getTreeItem("Temporal Summary", PlotType.MOBILITY_TEMPORAL, style.treeItemMap());
 		TreeItem mobilityHistorical = getTreeItem("Historical Analysis", PlotType.MOBILITY_HISTORICAL, style.treeItemMap());
+		TreeItem mobilityHistoricalResponse = getTreeItem("Historical Response Analysis", PlotType.MOBILITY_HISTORICAL_RESPONSE, style.treeItemMap());
 		
 		// build the tree
 		plotTypeTree.addItem(surveyResponseCounts);
@@ -269,6 +270,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 			mobility.addItem(mobilityMap);
 			mobility.addItem(mobilityGraph);
 			mobility.addItem(mobilityHistorical);
+			mobility.addItem(mobilityHistoricalResponse);
 		}
 
 		// add expand/fold click handler for tree's categories
@@ -973,9 +975,14 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	}
 
 	@Override
-	public void showMobilityHistoricalAnalysis(List<List<MobilityInfo>> multiDayMobilityDataList, List<SurveyResponse> responseList) {
-		// TODO: Create way to select which constructor to call
+	public void showMobilityHistoricalAnalysis(List<List<MobilityInfo>> multiDayMobilityDataList) {
 		MobilityVizHistoricalAnalysis widget = new MobilityVizHistoricalAnalysis(multiDayMobilityDataList);
+		plotContainer.add(widget);
+	}
+	
+	@Override
+	public void showMobilityHistoricalResponseAnalysis(List<List<MobilityInfo>> multiDayMobilityDataList, List<SurveyResponse> responseList, Map<String,String> questionMap) {
+		MobilityVizHistoricalAnalysis widget = new MobilityVizHistoricalAnalysis(multiDayMobilityDataList, responseList, questionMap);
 		plotContainer.add(widget);
 	}
 	
