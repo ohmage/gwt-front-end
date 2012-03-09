@@ -169,6 +169,7 @@ public class AwDataTranslators {
           // NOTE: campaignName not included in prompt data, must be filled in later
           surveyResponse.setPrivacyState(Privacy.fromServerString(surveyResponseAwData.getPrivacy()));
           surveyResponse.setResponseDate(new Date((long) surveyResponseAwData.getTime()));
+          //surveyResponse.setResponseDate(new Date(DateUtils.translateFromServerFormat(surveyResponseAwData.getTimestamp()).getTime()));
           surveyResponse.setSurveyId(surveyResponseAwData.getSurveyId());
           surveyResponse.setSurveyName(surveyResponseAwData.getSurveyTitle());
           surveyResponse.setUserName(surveyResponseAwData.getUser());

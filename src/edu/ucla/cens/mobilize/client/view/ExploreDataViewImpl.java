@@ -973,8 +973,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	}
 
 	@Override
-	public void showMobilityHistoricalAnalysis(List<List<MobilityInfo>> multiDayMobilityDataList, List<SurveyResponse> responseList) {
-		// TODO: Create way to select which constructor to call
+	public void showMobilityHistoricalAnalysis(List<List<MobilityInfo>> multiDayMobilityDataList) {
 		MobilityVizHistoricalAnalysis widget = new MobilityVizHistoricalAnalysis(multiDayMobilityDataList);
 		plotContainer.add(widget);
 	}
