@@ -190,6 +190,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
 
     univariate.setState(true);
+    multivariate.setState(true);
   }
 
   @Override
