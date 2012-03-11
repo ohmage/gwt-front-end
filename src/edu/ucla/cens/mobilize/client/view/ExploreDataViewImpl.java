@@ -164,7 +164,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     TreeItem promptDistribution = getTreeItem("Prompt Distribution", PlotType.PROMPT_DISTRIBUTION, style.treeItemHist());
     
     // multivariate 
-    TreeItem multivariate = getTreeItem("Multivariate", style.treeItemCategory()); // category
+    TreeItem multivariate = getTreeItem("Multiple Variables", style.treeItemCategory()); // category
     TreeItem scatterplot = getTreeItem("Scatterplot", PlotType.SCATTER_PLOT, style.treeItemTable());
     TreeItem density = getTreeItem("2D Density Plot", PlotType.DENSITY_PLOT, style.treeItemTable());
     
@@ -175,7 +175,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     // build the tree
     //plotTypeTree.addItem(surveyResponseCounts);
     plotTypeTree.addItem(univariate);
-    //plotTypeTree.addItem(multivariate);
+    plotTypeTree.addItem(multivariate);
     //plotTypeTree.addItem(geographic);
     //surveyResponseCounts.addItem(totalResponses);
     //surveyResponseCounts.addItem(responsesByPrivacy);
@@ -184,8 +184,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     univariate.addItem(userTimeseries);
     univariate.addItem(promptTimeseries);
     univariate.addItem(promptDistribution);
-    //multivariate.addItem(scatterplot);
-    //multivariate.addItem(density);
+    multivariate.addItem(scatterplot);
+    multivariate.addItem(density);
     //geographic.addItem(googleMap);
 
 
