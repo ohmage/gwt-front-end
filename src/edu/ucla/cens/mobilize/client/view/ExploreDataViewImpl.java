@@ -158,7 +158,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     TreeItem leaderBoard = getTreeItem("Leader Board", PlotType.LEADER_BOARD, style.treeItemPlotType());
     
     // univariate 
-    TreeItem univariate = getTreeItem("Univariate", style.treeItemCategory());
+    TreeItem univariate = getTreeItem("Single Question", style.treeItemCategory());
     TreeItem userTimeseries = getTreeItem("User Timeseries", PlotType.USER_TIMESERIES, style.treeItemTimeseries());
     TreeItem promptTimeseries = getTreeItem("Prompt Timeseries", PlotType.PROMPT_TIMESERIES, style.treeItemTimeseries());
     TreeItem promptDistribution = getTreeItem("Prompt Distribution", PlotType.PROMPT_DISTRIBUTION, style.treeItemHist());
@@ -173,20 +173,23 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     TreeItem googleMap = getTreeItem("Google Map", PlotType.MAP, style.treeItemMap());
     
     // build the tree
-    plotTypeTree.addItem(surveyResponseCounts);
+    //plotTypeTree.addItem(surveyResponseCounts);
     plotTypeTree.addItem(univariate);
-    plotTypeTree.addItem(multivariate);
-    plotTypeTree.addItem(geographic);
-    surveyResponseCounts.addItem(totalResponses);
-    surveyResponseCounts.addItem(responsesByPrivacy);
-    surveyResponseCounts.addItem(responseTimeseries);
-    surveyResponseCounts.addItem(leaderBoard);
+    //plotTypeTree.addItem(multivariate);
+    //plotTypeTree.addItem(geographic);
+    //surveyResponseCounts.addItem(totalResponses);
+    //surveyResponseCounts.addItem(responsesByPrivacy);
+    //surveyResponseCounts.addItem(responseTimeseries);
+    //surveyResponseCounts.addItem(leaderBoard);
     univariate.addItem(userTimeseries);
     univariate.addItem(promptTimeseries);
     univariate.addItem(promptDistribution);
-    multivariate.addItem(scatterplot);
-    multivariate.addItem(density);
-    geographic.addItem(googleMap);
+    //multivariate.addItem(scatterplot);
+    //multivariate.addItem(density);
+    //geographic.addItem(googleMap);
+
+
+    univariate.setState(true);
   }
 
   @Override
