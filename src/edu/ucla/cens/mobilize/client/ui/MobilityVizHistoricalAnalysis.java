@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.moxieapps.gwt.highcharts.client.*;  
 import org.moxieapps.gwt.highcharts.client.Series.Type;
 import org.moxieapps.gwt.highcharts.client.labels.*;  
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -400,7 +401,7 @@ public class MobilityVizHistoricalAnalysis extends Composite {
 			for (PromptResponse p : prompts) {
 				if (p.getPromptId().equals(selectedPromptId)) {
 					_logger.fine("Putting in date = " + s.getResponseDate().toString());
-					result.put(s.getResponseDate(), p.getResponseRaw());
+					result.put(s.getResponseDate(), p.getResponsePrepared());
 					break;
 				}
 			}
@@ -456,7 +457,11 @@ public class MobilityVizHistoricalAnalysis extends Composite {
 		chart.setWidth(CHART_WIDTH_PX);
 		chart.setHeight(CHART_HEIGHT_PX);
 		
+		// Set title
 		chart.setChartTitleText(title);
+		chart.setColors("#15a2ea","#ea3d15");
+		
+		// Disable legend and credits
 		Legend legend = new Legend();
 		legend.setEnabled(false);
 		chart.setLegend(legend);
@@ -464,20 +469,45 @@ public class MobilityVizHistoricalAnalysis extends Composite {
 		credits.setEnabled(false);
 		chart.setCredits(credits);
 		
+		// (2) --- Setup X-Axis
 		chart.getXAxis()
-		.setAxisTitleText(xAxisLabel)
-		.setType(Axis.Type.DATE_TIME)  
-		.setDateTimeLabelFormats(new DateTimeLabelFormats()
-		.setMonth("%e %b")
-		.setDay("%e%b")
-		.setYear("%b")  // don't display the dummy year  
-				);  
+		.setAxisTitleText("Date")
+		.setType(Axis.Type.DATE_TIME)
+		.setTickInterval(24 * 3600 * 1000)  // one day
+		.setTickWidth(0)
+		.setGridLineWidth(1)
+		.setLabels(new XAxisLabels()
+		.setAlign(Labels.Align.LEFT)
+				);
 
+		// (3) --- Init Y-Axes
+		
 		//primary (left) Y-axis
 		chart.getYAxis(0)  
 		.setAxisTitleText(yAxisLabel)  
 		.setMin(0);  
 
+		//secondary (right) Y-axis
+		chart.getYAxis(1)
+		.setTickInterval(1)
+		.setOpposite(true)
+		.setLabels(new YAxisLabels()  
+                .setFormatter(new AxisLabelsFormatter() {  
+                    public String format(AxisLabelsData axisLabelsData) {
+                    	for (String str : questionIndexMapping.keySet()) {
+                    		_logger.fine("Value="+Long.toString(axisLabelsData.getValueAsLong())+";QuestionIndex="+Integer.toString(questionIndexMapping.get(str))+";QuestionStr="+str);
+                    		if (questionIndexMapping.get(str).equals((int)axisLabelsData.getValueAsLong()))
+                    			return str;
+                    	}
+                    	return Long.toString(axisLabelsData.getValueAsLong());
+                    }  
+                })  
+            )
+		.setAxisTitleText("Responses")  
+		.setMin(0);
+		
+		// (4) --- Load data
+		
 		//primary series
 		Series series1 = chart.createSeries();
 		series1.setName(yAxisLabel)
@@ -487,24 +517,6 @@ public class MobilityVizHistoricalAnalysis extends Composite {
 		}
 		series1.setType(Type.COLUMN);
 		chart.addSeries(series1);
-		
-		
-		//secondary (right) Y-axis
-		chart.getYAxis(1)  
-		.setOpposite(true)
-	/*	.setLabels(new YAxisLabels()  
-                .setFormatter(new AxisLabelsFormatter() {  
-                    public String format(AxisLabelsData axisLabelsData) {
-                    	for (String str : questionIndexMapping.keySet()) {
-                    		if (questionIndexMapping.get(str).equals((int)axisLabelsData.getValueAsLong()))
-                    			return str;
-                    	}
-                    	return Long.toString(axisLabelsData.getValueAsLong());
-                    }  
-                })  
-            )	*/
-		.setAxisTitleText("Responses")  
-		.setMin(0);
 		
 		//primary series
 		Series series2 = chart.createSeries();
