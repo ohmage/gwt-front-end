@@ -866,7 +866,7 @@ public class AndWellnessDataService implements DataService {
     
     // define which columns to fetch (comment out this line to fetch all columns)
     params.columnList_opt = Arrays.asList("urn:ohmage:user:id",
-                                          "urn:ohmage:context:timestamp", 
+                                          "urn:ohmage:context:epoch_millis", 
                                           "urn:ohmage:context:timezone",
                                           "urn:ohmage:context:location:latitude",
                                           "urn:ohmage:context:location:longitude",
