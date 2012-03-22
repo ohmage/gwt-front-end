@@ -138,6 +138,8 @@ public interface DataService {
   
   void fetchClassMembers(Collection<String> classUrn, final AsyncCallback<List<UserShortInfo>> callback);
   
+  void removePersonalUserInfo(String username, final AsyncCallback<String> callback);
+  
   void deleteUsers(Collection<String> usernames, final AsyncCallback<String> callback);
   
   void disableUser(String username, final AsyncCallback<String> callback);

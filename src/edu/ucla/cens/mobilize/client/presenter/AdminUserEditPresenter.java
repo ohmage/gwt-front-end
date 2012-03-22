@@ -68,6 +68,18 @@ public class AdminUserEditPresenter implements Presenter {
       }
     });
     
+    view.getRemovePersonalInfoButton().addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          view.showConfirmRemovePersonalInfo(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+              removePersonalInfo(view.getUsername());
+            }
+          });
+        }
+      });
+    
     view.getDeleteUserButton().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -115,6 +127,21 @@ public class AdminUserEditPresenter implements Presenter {
         view.setIsAdminFlag(result.isAdmin());
       }
     });
+  }
+  
+  private void removePersonalInfo(final String username) {
+	  dataService.removePersonalUserInfo(username, new AsyncCallback<String>() {
+		  @Override
+		  public void onFailure(Throwable caught) {
+			  ErrorDialog.show("There was a problem delete personal info for the user.", caught.getMessage());
+		  }
+
+		  @Override
+		  public void onSuccess(String result) {
+			  view.resetForm();
+			  History.newItem(HistoryTokens.adminUserDetail(username));
+		  }
+	  });
   }
   
   private void deleteUser(final String username) {

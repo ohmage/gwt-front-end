@@ -1674,6 +1674,14 @@ public class AndWellnessDataService implements DataService {
   }
 
   @Override
+  public void removePersonalUserInfo(String username, final AsyncCallback<String> callback) {
+	  UserUpdateParams params = new UserUpdateParams();
+	  params.username = username;
+	  params.deletePersonalInfo_opt = true;
+	  updateUser(params, callback);
+  }
+  
+  @Override
   public void disableUser(String username, final AsyncCallback<String> callback) {
     UserUpdateParams params = new UserUpdateParams();
     params.username = username;

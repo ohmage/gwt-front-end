@@ -14,6 +14,7 @@ public class UserUpdateParams implements RequestParams {
   public String organization_opt;
   public String personalId_opt;
   public String email_opt;
+  public Boolean deletePersonalInfo_opt;
   public Boolean enabled_opt;
   public Boolean canCreateCampaigns_opt;
   public Boolean isAdmin_opt;
@@ -41,6 +42,9 @@ public class UserUpdateParams implements RequestParams {
     }
     if (isNotEmpty(email_opt)) {
       params.put("email_address", email_opt);
+    }
+    if (deletePersonalInfo_opt != null) {
+      params.put("delete_personal_info", deletePersonalInfo_opt ? "true" : "false");
     }
     if (enabled_opt != null) {
       params.put("enabled", enabled_opt ? "true" : "false");

@@ -10,7 +10,7 @@
     }
     .buttonDelete {
     	color: maroon;
-    	margin-left: 90px;
+    	margin-left: 60px;
     }
 		.buttonPanel {
 			padding: 5px 10px;
@@ -135,7 +135,8 @@
 	    <g:HorizontalPanel addStyleNames='{style.buttonPanel}'>
 	      <g:Button ui:field='saveChangesButton'>Save Changes</g:Button>
 	      <g:Button ui:field='cancelButton'>Cancel</g:Button>
-	        <g:Button ui:field='deleteUserButton' addStyleNames='{style.buttonDelete}'>Delete User</g:Button>
+	      <g:Button ui:field='removePersonalInfoButton' addStyleNames='{style.buttonDelete}'>Remove Personal Info</g:Button>
+	      <g:Button ui:field='deleteUserButton' addStyleNames='{style.buttonDelete}'>Delete User</g:Button>
 	    </g:HorizontalPanel>
 	  </g:south>
 	</g:DockLayoutPanel>
