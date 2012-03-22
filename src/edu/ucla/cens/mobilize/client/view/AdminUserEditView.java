@@ -54,6 +54,7 @@ public class AdminUserEditView extends Composite {
   @UiField CheckBox canCreateCampaignsCheckBox;
   @UiField CheckBox isAdminCheckBox;
   @UiField Button saveChangesButton;
+  @UiField Button removePersonalInfoButton;
   @UiField Button deleteUserButton;
   @UiField Button cancelButton;
 
@@ -225,6 +226,10 @@ public class AdminUserEditView extends Composite {
     return this.saveChangesButton;
   }
   
+  public HasClickHandlers getRemovePersonalInfoButton() {
+    return this.removePersonalInfoButton;
+  }
+  
   public HasClickHandlers getDeleteUserButton() {
     return this.deleteUserButton;
   }
@@ -233,8 +238,11 @@ public class AdminUserEditView extends Composite {
     return this.cancelButton;
   }
   
+  public void showConfirmRemovePersonalInfo(ClickHandler onConfirmRemovePersonalInfo) {
+    ConfirmDeleteDialog.show("Are you sure you want to delete all personal information for this user?", onConfirmRemovePersonalInfo);
+  }
+  
   public void showConfirmDelete(ClickHandler onConfirmDelete) {
-    ConfirmDeleteDialog.show("Are you sure you want to permanently delete this user?", 
-                             onConfirmDelete);
+    ConfirmDeleteDialog.show("Are you sure you want to permanently delete this user?", onConfirmDelete);
   }
 }

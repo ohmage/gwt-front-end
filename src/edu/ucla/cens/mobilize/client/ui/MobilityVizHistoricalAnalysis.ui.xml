@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.MobilityVizHistoricalAnalysis.MobilityVizHistoricalAnalysisStyle">
+		.wrapper {
+		}
+		.section-text {
+			border-bottom: 1px solid #777;
+			border-top: 1px solid #777;
+			background-color: rgba(0, 0, 0, 0.35);
+			font-size: 11pt;
+			font-weight: bold;
+			color: #FFF;
+			padding: 6px 0px 6px 10px;
+			text-shadow: 0px 1px 0px #555;
+		}
+		.content-text {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 10pt;
+			color: #555;
+			text-shadow: 0px 1px 0px white;
+		}
+		.content-number {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 14pt;
+			color: black;
+			padding: 4px 4px;
+			text-shadow: 0px 1px 0px white;
+		}
+		.date-selector {
+		}
+		.container {
+			background-image: url('images/mobility/dashboard/fabric_plaid.png');
+			width: 800px;
+			-moz-box-shadow: 0px 3px 10px rgba(0,0,0,0.5);
+			-webkit-box-shadow: 0px 3px 10px rgba(0,0,0,0.5);
+			box-shadow: 0px 3px 10px rgba(0,0,0,0.5);
+			margin: 20px;
+		}
+		.half-panel {
+			width: 400px;
+			text-align: center;
+			height: 40px; 
+		}
+		.sixth-panel {
+			width: 133px;
+			text-align: center;
+			height: 40px; 
+		}
+		.horizontal-box {
+			position: relative;
+			width: 100%;
+		}
+		
+		/* helper styles */
+		.text-padding {
+			padding: 10px;
+		}
+		.white-bg {
+			position: relative;
+			background: rgba(255,255,255,0.7);
+		}
+		.darkred-text {
+			color: #d90b0a;
+		}
+		.hidden {
+			display:none;
+		}
+		.visible {
+			display:block;
+		}
+		
+		/* button styles */
+		.button {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 10pt;
+			
+			padding: 10px;
+			-moz-border-radius: 20px;
+			border-radius: 20px;
+			
+			color: #444;
+			text-shadow: 0px 1px 0px white;
+		}
+		.faded {
+			opacity: 0.3;
+		}
+		.selected {
+			font-weight: bold;
+			
+			border-width: 2px;
+			border-style: solid;
+			
+			background-color: rgba(255,255,255,0.8);
+			-moz-box-shadow: 0px 3px 5px rgba(0,0,0,0.3);
+			-webkit-box-shadow: 0px 3px 5px rgba(0,0,0,0.3);
+			box-shadow: 0px 3px 5px rgba(0,0,0,0.3);
+		}
+		.selected-blue {
+			border-color: #15a2ea;
+		}
+		.selected-red {
+			border-color: #ea3d15;
+		}
+		.selected-gray {
+			border-color: #666666;
+		}
+		.plot-overlay-text {
+			z-index: 10;
+			position: absolute;
+			left: 200px;
+			top: 100px;
+			width: 400px;
+			padding: 20px;
+			-moz-border-radius: 10px;
+			border-radius: 10px;
+			background: rgba(249, 245, 179, 0.5);
+			font-size: 12pt;
+			color: #444;
+			text-shadow: 0 1px 0 white;
+			text-align: center;
+			font-style: italic;
+		}
+	</ui:style>
+
+	<g:HTMLPanel ui:field='wrapper'>
+		<g:HTMLPanel addStyleNames='{style.date-selector}'>
+		</g:HTMLPanel>
+		
+		<g:HTMLPanel addStyleNames='{style.container}'>
+			<g:HTMLPanel ui:field="mobilityDomainSection">
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.section-text}'>Mobility Domain</g:Label>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.content-text} {style.text-padding}'>1. Select categories</g:Label>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:HorizontalPanel horizontalAlignment="ALIGN_CENTER" verticalAlignment="ALIGN_MIDDLE">
+						<g:HTMLPanel addStyleNames='{style.half-panel} {style.content-text}'>
+							<g:CheckBox ui:field="durationButton" addStyleNames='{style.button} {style.selected-blue}' ui:name="mobilityCategory">Duration in minutes</g:CheckBox>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.half-panel} {style.content-text}'>
+							<g:CheckBox ui:field="distanceButton" addStyleNames='{style.button} {style.selected-red}' ui:name="mobilityCategory">Distance in meters</g:CheckBox>
+						</g:HTMLPanel>
+					</g:HorizontalPanel>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.content-text} {style.text-padding}'>2. Select a mode</g:Label>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:HorizontalPanel horizontalAlignment="ALIGN_CENTER" verticalAlignment="ALIGN_MIDDLE">
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="ambulatoryButton" addStyleNames='{style.button} {style.selected-gray}' ui:name="mobilityMode">Ambulatory</g:RadioButton>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="stillButton" addStyleNames='{style.button} {style.selected-gray}' ui:name="mobilityMode">Still</g:RadioButton>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="walkButton" addStyleNames='{style.button} {style.selected-gray}' ui:name="mobilityMode">Walk</g:RadioButton>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="runButton" addStyleNames='{style.button} {style.selected-gray}' ui:name="mobilityMode">Run</g:RadioButton>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="bikeButton" addStyleNames='{style.button} {style.selected-gray}' ui:name="mobilityMode">Bike</g:RadioButton>
+						</g:HTMLPanel>
+						<g:HTMLPanel addStyleNames='{style.sixth-panel}'>
+							<g:RadioButton ui:field="driveButton" addStyleNames='{style.button} {style.selected-gray}' ui:name="mobilityMode">Drive</g:RadioButton>
+						</g:HTMLPanel>
+					</g:HorizontalPanel>
+				</g:HTMLPanel>
+				
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:InlineLabel ui:field="ambulatoryNote" addStyleNames='{style.content-text} {style.text-padding}'>Note: Ambulatory collectively includes walk, run, and bike</g:InlineLabel>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+			
+			<g:HTMLPanel ui:field="timeSection">
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.section-text}'>Time Analysis</g:Label>
+				</g:HTMLPanel>
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:FlowPanel ui:field="timePlot" addStyleNames="{style.white-bg}"></g:FlowPanel>
+					<g:Label ui:field="timePlotNotice" addStyleNames="{style.plot-overlay-text}">It doesn't look like you have enough data to display anything interesting. Try choosing a larger date range with more mobility data.</g:Label>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+			
+			<g:HTMLPanel ui:field="distributionSection">
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:Label addStyleNames='{style.section-text}'>Distribution Analysis</g:Label>
+				</g:HTMLPanel>
+				<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+					<g:FlowPanel ui:field="distributionPlot" addStyleNames="{style.white-bg}"></g:FlowPanel>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+		</g:HTMLPanel>
+	</g:HTMLPanel>
+
+</ui:UiBinder> 

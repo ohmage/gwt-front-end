@@ -846,7 +846,7 @@ public class AndWellnessDataService implements DataService {
   public void fetchSurveyResponses(String usernameOrNull,
                                    final String campaignId,
                                    String surveyName, // ignored if null or ""
-                                   Privacy privacy,
+                                   Privacy privacy,	// ignored if null
                                    Date startDate,
                                    Date endDate,
                                    final AsyncCallback<List<SurveyResponse>> callback) {
@@ -857,16 +857,16 @@ public class AndWellnessDataService implements DataService {
     params.campaignUrn = campaignId;
     params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
     String username = usernameOrNull != null ? usernameOrNull : AwConstants.specialAllValuesToken;
-    params.userList.add(username != null ? username: AwConstants.specialAllValuesToken);
+    params.userList.add(username != null ? username : AwConstants.specialAllValuesToken);
     // if surveyName is omitted, readparams object sends special token for all surveys
-    if (surveyName != null && !surveyName.isEmpty())  params.surveyIdList_opt.add(surveyName);
-    params.privacyState_opt = privacy;
+    if (surveyName != null && !surveyName.isEmpty())	params.surveyIdList_opt.add(surveyName);
+    if (privacy != null)	params.privacyState_opt = privacy;
     params.startDate_opt = startDate;
     params.endDate_opt = DateUtils.addOneDay(endDate); // add one to make range inclusive
     
     // define which columns to fetch (comment out this line to fetch all columns)
     params.columnList_opt = Arrays.asList("urn:ohmage:user:id",
-                                          "urn:ohmage:context:timestamp", 
+                                          "urn:ohmage:context:epoch_millis", 
                                           "urn:ohmage:context:timezone",
                                           "urn:ohmage:context:location:latitude",
                                           "urn:ohmage:context:location:longitude",
@@ -1673,6 +1673,14 @@ public class AndWellnessDataService implements DataService {
     }  
   }
 
+  @Override
+  public void removePersonalUserInfo(String username, final AsyncCallback<String> callback) {
+	  UserUpdateParams params = new UserUpdateParams();
+	  params.username = username;
+	  params.deletePersonalInfo_opt = true;
+	  updateUser(params, callback);
+  }
+  
   @Override
   public void disableUser(String username, final AsyncCallback<String> callback) {
     UserUpdateParams params = new UserUpdateParams();

@@ -4,6 +4,7 @@
   <inherits name='com.google.gwt.user.User'/>
   <inherits name='com.google.gwt.maps.Maps' />
   <inherits name='com.google.gwt.visualization.Visualization' />
+  <inherits name='org.moxieapps.gwt.highcharts.Highcharts' />
   
   <!-- Setting English locale so DatePicker starts on Sunday -->
   <inherits name="com.google.gwt.i18n.I18N"/>
@@ -41,6 +42,8 @@
 
   <script src="https://maps.google.com/maps/api/js?sensor=false" />
   <script src="js/markerclusterer_packed.js" />
+  <script src="js/jquery.min.js" />
+  <script src="js/highcharts.js" />
 
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->

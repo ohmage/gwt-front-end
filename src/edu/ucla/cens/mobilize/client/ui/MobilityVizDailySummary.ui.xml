@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+	<ui:style type="edu.ucla.cens.mobilize.client.ui.MobilityVizDailySummary.MobilityVizDailySummaryStyle">
+		.wrapper {
+		}
+		.section-text {
+			border-bottom: 1px solid #777;
+			border-top: 1px solid #777;
+			background-color: rgba(0, 0, 0, 0.35);
+			font-size: 11pt;
+			font-weight: bold;
+			color: #FFF;
+			padding: 6px 0px 6px 10px;
+			text-shadow: 0px 1px 0px #555;
+		}
+		.content-text {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 10pt;
+			color: #555;
+			text-shadow: 0px 1px 0px white;
+		}
+		.content-number {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 14pt;
+			color: black;
+			padding: 4px 4px;
+			text-shadow: 0px 1px 0px white;
+		}
+		.date-selector {
+		}
+		.container {
+			background-image: url('images/mobility/dashboard/fabric_plaid.png');
+			width: 800px;
+			-moz-box-shadow: 0px 3px 10px rgba(0,0,0,0.5);
+			-webkit-box-shadow: 0px 3px 10px rgba(0,0,0,0.5);
+			box-shadow: 0px 3px 10px rgba(0,0,0,0.5);
+			margin: 20px;
+		}
+		.left-box .right-box .horizontal-box {
+			display: block;
+			border: 1px dashed #666;
+			text-align: center;
+		}
+		.square-panel {
+			width: 200px;	/* 800 / 5 = 160, 800 / 4 = 200 */
+			text-align: center;
+			line-height: 20px; 
+		}
+		.horizontal-box {
+			width: 100%;
+		}
+		.right-box {
+			border-left: 1px solid #777;
+			float: right;
+			width: 50%;
+		}
+		.left-box {
+			width: 50%;
+		}
+		.bottom-text {
+			
+		}
+		/* helper styles */
+		.vertical-stretch {
+			height: 100%;
+			padding-right: 10px;
+		}
+		.white-bg {
+			background: rgba(255,255,255,0.7);
+		}
+		.darkred-text {
+			color: #d90b0a;
+		}
+		.hidden {
+			display:none;
+		}
+		.visible {
+			display:block;
+		}
+	</ui:style>
+
+	<g:HTMLPanel ui:field='wrapper'>
+		<g:HTMLPanel addStyleNames='{style.date-selector}'>
+		</g:HTMLPanel>
+		
+		<g:HTMLPanel addStyleNames='{style.container}'>
+			<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+				<g:Label addStyleNames='{style.section-text}' ui:field="date_label"> </g:Label>
+			</g:HTMLPanel>
+			
+			<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+				<g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE">
+					<g:HTMLPanel addStyleNames='{style.square-panel} {style.content-text}'>
+						Sedentary for
+						<g:Label ui:field="stat_total_time_sedentary" addStyleNames='{style.content-number} {style.darkred-text}' />
+						based on still &amp; drive
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.square-panel} {style.content-text}'>
+						Ambulatory for
+						<g:Label ui:field="stat_total_time_ambulatory" addStyleNames='{style.content-number}' />
+						based on walk, run &amp; bike
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.square-panel} {style.content-text}'>
+						Traveled
+						<g:Label ui:field="stat_total_foot_distance" addStyleNames='{style.content-number}' />
+						by foot or bike
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.square-panel} {style.content-text} {style.hidden}'>
+						Average speed
+						<g:Label ui:field="stat_average_walking_speed" addStyleNames='{style.content-number}' />
+						walking
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.square-panel} {style.content-text}'>
+						Tracked
+						<g:Label ui:field="stat_total_time_tracked" addStyleNames='{style.content-number}' />
+						of movement
+					</g:HTMLPanel>
+				</g:HorizontalPanel>
+			</g:HTMLPanel>
+			
+			<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+				<g:Label addStyleNames='{style.section-text}'>Temporal Summary</g:Label>
+			</g:HTMLPanel>
+			
+			<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+				<g:FlowPanel ui:field="temporalPlot" addStyleNames="{style.white-bg}"></g:FlowPanel>
+			</g:HTMLPanel>
+			
+			<g:HTMLPanel addStyleNames='{style.horizontal-box}'>
+				<g:Label addStyleNames='{style.section-text}'>Activity Breakdown</g:Label>
+			</g:HTMLPanel>
+			
+			<g:HorizontalPanel addStyleNames='{style.right-box}' verticalAlignment="ALIGN_MIDDLE">
+				<g:FlowPanel ui:field="durationPlot"></g:FlowPanel>
+				<g:VerticalPanel ui:field="durationInfo" addStyleNames='{style.content-text} {style.vertical-stretch}'></g:VerticalPanel>
+			</g:HorizontalPanel>
+			
+			<g:HorizontalPanel addStyleNames='{style.left-box}' verticalAlignment="ALIGN_MIDDLE">
+				<g:FlowPanel ui:field="distancePlot"></g:FlowPanel>
+				<g:VerticalPanel ui:field="distanceInfo" addStyleNames='{style.content-text} {style.vertical-stretch}'></g:VerticalPanel>
+			</g:HorizontalPanel>
+		</g:HTMLPanel>
+	</g:HTMLPanel>
+
+</ui:UiBinder> 
