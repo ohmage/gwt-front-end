@@ -28,21 +28,14 @@ public class UserUpdateParams implements RequestParams {
     params.put("username", username);
     params.put("auth_token", authToken);
     params.put("client", client);
-    if (isNotEmpty(firstName_opt)) {
-      params.put("first_name", firstName_opt);
-    }
-    if (isNotEmpty(lastName_opt)) {
-      params.put("last_name", lastName_opt);
-    }
-    if (isNotEmpty(organization_opt)) {
-      params.put("organization", organization_opt);
-    }
-    if (isNotEmpty(personalId_opt)) {
-      params.put("personal_id", personalId_opt);
-    }
-    if (isNotEmpty(email_opt)) {
-      params.put("email_address", email_opt);
-    }
+    
+    // Force all values to be entered
+    params.put("first_name", (firstName_opt != null) ? firstName_opt : "");
+    params.put("last_name", (lastName_opt != null) ? lastName_opt : "");
+    params.put("organization", (organization_opt != null) ? organization_opt : "");
+    params.put("personal_id", (personalId_opt != null) ? personalId_opt : "");
+    params.put("email_address", (email_opt != null) ? email_opt : "");
+    
     if (deletePersonalInfo_opt != null) {
       params.put("delete_personal_info", deletePersonalInfo_opt ? "true" : "false");
     }

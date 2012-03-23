@@ -65,7 +65,7 @@ public class UserSearchInfoAwData extends JavaScriptObject {
    * @return String or null
    */
   public final native String getEmailAddress() /*-{
-    return (this.personal != undefined) ? this.personal.email_address : null;
+    return this.email_address;
   }-*/;
   
   /**

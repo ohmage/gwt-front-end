@@ -239,7 +239,7 @@ public class AdminUserEditView extends Composite {
   }
   
   public void showConfirmRemovePersonalInfo(ClickHandler onConfirmRemovePersonalInfo) {
-    ConfirmDeleteDialog.show("Are you sure you want to delete all personal information for this user?", onConfirmRemovePersonalInfo);
+    ConfirmDeleteDialog.show("This will delete the user's first name, last name, organization, and personal ID. Are you sure you want to delete all personal information for this user?", onConfirmRemovePersonalInfo);
   }
   
   public void showConfirmDelete(ClickHandler onConfirmDelete) {

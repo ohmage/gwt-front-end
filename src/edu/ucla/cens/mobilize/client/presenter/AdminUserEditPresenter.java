@@ -178,11 +178,10 @@ public class AdminUserEditPresenter implements Presenter {
       allPersonalInfoIsRequired = true;
     }
     
-    // if an email is given all personal info fields must be given and email must be valid format
-    if (!email.isEmpty()) {
-      allPersonalInfoIsRequired = true;
+    // if an email is given, email must be valid format
+    //if (!email.isEmpty()) {
       // TODO: validate email format
-    }
+    //}
     
     if (allPersonalInfoIsRequired) {
       if (firstName.isEmpty()) {
@@ -214,10 +213,16 @@ public class AdminUserEditPresenter implements Presenter {
     params.lastName_opt = view.getLastName();
     params.organization_opt = view.getOrganization();
     params.personalId_opt = view.getPersonalId();
+    
+    // Remove personal info if all 4 personal fields are empty
+    if (view.getFirstName().isEmpty() && view.getLastName().isEmpty() && view.getOrganization().isEmpty() && view.getPersonalId().isEmpty())
+    	params.deletePersonalInfo_opt = true;
+    
     params.email_opt = view.getEmail();
     params.enabled_opt = view.getEnabledFlag();
     params.canCreateCampaigns_opt = view.getCanCreateCampaignsFlag();
     params.isAdmin_opt = view.getIsAdminFlag();
+    
     dataService.updateUser(params, new AsyncCallback<String>() {
       @Override
       public void onFailure(Throwable caught) {
