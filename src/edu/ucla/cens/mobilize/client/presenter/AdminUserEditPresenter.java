@@ -18,6 +18,7 @@ import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
+import edu.ucla.cens.mobilize.client.utils.InputValidationUtils;
 import edu.ucla.cens.mobilize.client.view.AdminUserEditView;
 
 public class AdminUserEditPresenter implements Presenter {
@@ -179,9 +180,12 @@ public class AdminUserEditPresenter implements Presenter {
     }
     
     // if an email is given, email must be valid format
-    //if (!email.isEmpty()) {
-      // TODO: validate email format
-    //}
+    if (!email.isEmpty()) {
+      if (InputValidationUtils.isValidEmail(email) == false) {
+    	  view.markEmailInvalid("E-mail address is invalid");
+    	  allFieldsAreValid = false;
+      }
+    }
     
     if (allPersonalInfoIsRequired) {
       if (firstName.isEmpty()) {
