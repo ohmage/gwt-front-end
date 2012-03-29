@@ -4,7 +4,7 @@
 	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
   <ui:style>
     .topNav {
-      background-color: #DDD;
+      background-color: #FFF;
       border-bottom: solid thin #AAA;
       font-size: 0.9em;
       margin: 0px;
@@ -70,9 +70,10 @@
   <g:DockLayoutPanel unit="PX" ui:field="mainLayout">
     
     <!-- Top menu bar. Items change depending on role. (e.g., Author Center)-->
+    <!-- 
     <g:north size='25'>
       <g:MenuBar ui:field='topMenuBar' addStyleNames='{style.topNav}'>
-      <!--
+      
         <g:MenuItem ui:field='browseMenuItem'>
           <a href='#campaigns'>Browse Campaigns</a>
         </g:MenuItem>
@@ -80,9 +81,10 @@
           <span class='{style.separator}'>|</span>
           <a href='#campaigns?v=author_center'>Author Center</a>
         </g:MenuItem>
-      -->
+      
       </g:MenuBar>
     </g:north>
+    -->
     
     <g:west size='150'>
       <g:HTMLPanel addStyleNames='{style.leftSideBar}'>

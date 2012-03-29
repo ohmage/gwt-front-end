@@ -27,18 +27,13 @@ import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 public class LoginViewOhmageImpl extends Composite implements LoginView {
     @UiTemplate("LoginViewOhmage.ui.xml")
     interface LoginBoxViewUiBinder extends UiBinder<Widget, LoginViewOhmageImpl> {}
-    private static LoginBoxViewUiBinder uiBinder =
-      GWT.create(LoginBoxViewUiBinder.class);
+    private static LoginBoxViewUiBinder uiBinder = GWT.create(LoginBoxViewUiBinder.class);
     
     // Fields defined in the ui XML
     @UiField TextBox userNameTextBox;
     @UiField PasswordTextBox passwordTextBox;
     @UiField Button loginButton;
     // dynamically fill html here depending on the installation
-    @UiField Image logo;
-    @UiField UListElement linkList;
-    @UiField HTMLPanel linkListDiv;
-    @UiField HTMLPanel descriptionPanel;
     
     private Presenter presenter;
     
@@ -100,7 +95,7 @@ public class LoginViewOhmageImpl extends Composite implements LoginView {
 
     @Override
     public void setLoginFailed(String msg) {
-      ErrorDialog.show("Invalid username or password", msg);
+      ErrorDialog.show("The login information you entered is incorrect", msg);
     }
 
     @Override

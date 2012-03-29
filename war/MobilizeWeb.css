@@ -209,28 +209,31 @@ td.datePickerMonth {
 
 }
 
+/*** Tab bar styling ***/
 .gwt-TabBar {
-	background-color: #003;
-	padding: 10px 0px 0px 20px;
+	background: white repeat-x url('images/theme-ohmage/dashboard-tab-bg.png');
+	padding-left: 10px;
+	height: 34px;
+	vertical-align: top;
 }
 
-.gwt-TabBarItem   {
-  background: #BBB top repeat-x url('images/bg_white_transparent_10.png');
-  cursor: pointer;
-  border: solid 1px #DDD;
-  border-bottom: none;
-  font-weight: bold;
-  padding: 4px 15px;
-  margin: 0px 5px;
+.gwt-TabBarItem {
+	cursor: pointer;
+	/* background: #FFF; */
+	font-weight: bold;
+	font-size: 12px;
+	color: white;
+	text-shadow: 0px 1px 1px #000;
+	
+	padding: 5px 5px;
+	padding-bottom: 9px;
+	margin-right: 20px;
 }
 
 .gwt-TabBarItem-selected {
-	background: #999 top repeat-x url('images/bg_white_transparent_50.png');
-  /*background-color: #DDD;*/
-  border: solid 1px #FFF;
-  border-bottom: none;
-  padding: 5px 15px 6px;
-  text-weight: bold;
+	color: #bce9f9;
+	border: none;
+	background: center bottom no-repeat url('images/theme-ohmage/dashboard-tab-selector.png');
 }
 
 /* don't outline tab bar when first selected */
@@ -248,10 +251,7 @@ td.datePickerMonth {
 }
 
 .gwt-TabPanelBottom { 
-	border: solid 1px #BBB;
-	border-bottom: none;
-	-moz-border-radius: 2px;
-	border-radius: 2px;
+	border: none;
 	height: 100%; /* both TabPanel and TabPanel bottom need 100% height */
 	margin-bottom: 50px;
 }

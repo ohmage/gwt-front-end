@@ -95,7 +95,7 @@
     	padding: 10px;
     }
     .topNav {
-      background-color: #DDD;
+      background-color: #FFF;
       border-bottom: solid thin #AAA;
       font-size: 0.9em;
       margin: 0px;
@@ -140,18 +140,19 @@
     <g:DockLayoutPanel addStyleNames='{style.layout}' unit='PX' ui:field='layoutPanel'>
      
      <!-- filters -->
+     <!-- 
      <g:north size='25'>
        <g:HTMLPanel addStyleNames='{style.topNav}'>
-       <!--
+       
 		     <g:InlineHyperlink ui:field='rWebLink'>R-Web</g:InlineHyperlink>
 		     <span class='{style.menuSeparator}'>|</span>
 		     <g:InlineHyperlink ui:field='mobilityLink'>Mobility</g:InlineHyperlink>
 		     <span class='{style.menuSeparator}'>|</span>
 		     <g:InlineHyperlink ui:field='chartsLink'>Charts</g:InlineHyperlink>
-		     -->
+		     
        </g:HTMLPanel>
      </g:north>
-     
+     -->
      
      <g:center addStyleNames='{style.plotPanel}'>
       <g:FlowPanel ui:field='plotContainer' addStyleNames='{style.plotPanelInnerContainer}'>

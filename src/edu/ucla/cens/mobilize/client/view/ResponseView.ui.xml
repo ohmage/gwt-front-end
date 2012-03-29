@@ -162,7 +162,7 @@
       text-decoration: underline;
     }
     .topNav {
-      background-color: #DDD;
+      background-color: #FFF;
       border-bottom: solid thin #AAA;
       font-size: 0.9em;
       margin: 0px;

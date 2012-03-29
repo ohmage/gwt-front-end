@@ -281,6 +281,7 @@ public class MainApp implements EntryPoint, HistoryListener {
       public void onSuccess(AppConfig appConfig) {
         Window.setTitle(AppConfig.getAppDisplayName());
         String appName = AppConfig.getAppName();
+        
         if (appName.equalsIgnoreCase("mobilize")) { // show "mobilize" login page
           loginView = new LoginViewMobilizeImpl();
         }
@@ -391,7 +392,9 @@ public class MainApp implements EntryPoint, HistoryListener {
     tabHistoryTokens = new ArrayList<String>();
     
     // header
-    header.setAppName(AppConfig.getAppDisplayName()); 
+    header.setAppName(AppConfig.getAppDisplayName());
+    boolean useLogo = AppConfig.getAppDisplayName().equalsIgnoreCase("ohmage");
+    header.useAppLogo(useLogo);
     header.setUserName(loginManager.getLoggedInUserName());
     
     // views
@@ -461,21 +464,21 @@ public class MainApp implements EntryPoint, HistoryListener {
     tabPanel.add(dashboardView, "Dashboard");
     tabHistoryTokens.add("dashboard");
     TabIndex.DASHBOARD = index++;
-    tabPanel.add(campaignView, "Campaigns");
-    tabHistoryTokens.add("campaigns");    
-    TabIndex.CAMPAIGNS = index++;
     tabPanel.add(responseView, "Responses");
     tabHistoryTokens.add("responses");
     TabIndex.RESPONSES = index++;
     tabPanel.add(exploreDataView, "Explore Data");
     tabHistoryTokens.add("explore_data");
     TabIndex.EXPLORE_DATA = index++;
-    tabPanel.add(documentView, "Documents");
-    tabHistoryTokens.add("documents");
-    TabIndex.DOCUMENTS = index++;
+    tabPanel.add(campaignView, "Campaigns");
+    tabHistoryTokens.add("campaigns");    
+    TabIndex.CAMPAIGNS = index++;
     tabPanel.add(classView, "Classes");
     tabHistoryTokens.add("classes");
     TabIndex.CLASSES = index++;
+    tabPanel.add(documentView, "Documents");
+    tabHistoryTokens.add("documents");
+    TabIndex.DOCUMENTS = index++;
     if (userInfo.isAdmin()) {
       tabPanel.add(adminView, "Admin"); 
       tabHistoryTokens.add("admin");
@@ -495,7 +498,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     }
     
     mainDockLayoutPanel = new DockLayoutPanel(Unit.PX);
-    mainDockLayoutPanel.addNorth(header, 66);
+    mainDockLayoutPanel.addNorth(header, 56);
     mainDockLayoutPanel.add(tabPanel);
     RootLayoutPanel.get().add(mainDockLayoutPanel);
 

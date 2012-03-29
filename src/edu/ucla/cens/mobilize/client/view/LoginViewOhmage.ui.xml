@@ -1,189 +1,297 @@
-<ui:UiBinder
-  xmlns:ui="urn:ui:com.google.gwt.uibinder"
-  xmlns:g="urn:import:com.google.gwt.user.client.ui">
-  
-  <ui:style>
-    body {
-    	min-width: 800px;
-    	padding: 10px 20px;
-    }
-    .buttonDiv {
-    	padding: 5px 5px 0px 0px;
-    	text-align: right;
-    }
-    .description {
-    	background: white;
-    	border: solid thin #25AAE1;
-    	margin: 10px 50px 10px 40px;
-    	padding: 10px 20px;
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 
-    }
-    .footer {
-    	color: #AAA;
-    	padding-top: 5px;
-    }
-    .footerCopyright {
-    	padding-right: 10px;
-    }
-    .footerSpan {
-    	padding: 2px;
-    }
-    .label {
-      display: inline-block;
-      padding: 5px;
-      width: 50px;
-    }
-    .linkList {
-    	list-style-type: none; /* use images for bullets instead */
-    	padding: 0px;
-    }
-    .linkList li {
-    	background-image: url('images/bullet_black.png');
-    	background-position: 2px 50%;
-    	background-repeat: no-repeat;
-    	padding: 2px 20px;
-    }
-    .linkListDiv {
-    	padding-left: 15px;
-    }
-    .loginForm {
-    	display: inline-block;
-    	vertical-align: middle;
-    	margin: 40px auto;
-    }
-    .loginFormInnerContainer {
-    	background-color: #D7E8AB;
-    	border: solid 1px #A5CD3A;
-    	margin: auto;
-    	padding: 10px 10px 5px 10px;
-    	width: 250px;
-     }
-     .logoPanel {
-       background-image: url('images/ohmage_logo_300x100.png');
-       background-repeat: no-repeat;
-       background-position: 40px 50%;
-       display: inline-block;
-       width: 100%;
-       height: 100%;     	
-     }
-     .mainPanel { 
-     	 height: 150px;
-     	 margin: 0px auto 0px auto;
-       white-space: nowrap; 
-       width: 90%;
-     }    
-     .textBox {
-     	width: 175px;
-     }
-     .left, .right {
-       display: inline-block;
-       height: 140px;
-       vertical-align: middle;
-     }
-     .left {
-       min-width: 500px;
-       width: 58%;
-     }
-     .right {
-     	min-width: 200px;
-     	width: 40%;
-     }
-     .leftBottom, .rightBottom {
-       display: inline-block;
-       vertical-align: top;
-       white-space: normal;
-     }
-     .leftBottom {
-     	background-color: #CCECFC;
-     	border: solid thin #25AAE1;
-     	min-width: 500px;
-     	width: 56%;
-     }
-     .rightBottom {
-     	 min-width: 200px;
-       width: 40%;
-     }
-
+	<ui:style>
+	/*** style reset ***/
+	html, body, div, h1, h2, h3, h4, h5, h6, p, img, dl, dt, dd, ol, ul, li, table, tr, td, form, object, embed, article, aside, canvas, command, details, fieldset, figcaption, figure, footer, group, header, hgroup, legend, mark, menu, meter, nav, output, progress, section, summary, time, audio, video {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	
+	.wrapper {
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		font-size: 10pt;
+		color: #333;
+		line-height: 1;
+		
+		position: absolute;
+		height: 100%;
+		min-width: 100%;
+		min-height: 100%;
+		
+		overflow: auto;
+	}
+	.wrapper ol, ul {
+		list-style: none;
+		line-height: 17px;
+		margin: 0 0 1em;
+	}
+	.wrapper li {
+		margin: 0 0 .5em;
+	}
+	.wrapper div {
+		/* display: block; */
+	}
+	.wrapper a {
+		color: #307fbc;
+		text-decoration: none;
+	}
+	.wrapper a:hover {
+		color: #f1831e;
+		text-decoration: none;
+	}
+	.wrapper p, h1, h2 {
+		padding: 0 0 15px 0;
+	}
+	.wrapper h1 {
+		font-size: 18pt;
+		font-weight: normal;
+		text-shadow: 0px -1px 1px #FFF;
+	}
+	.wrapper h2 {
+		font-size: 10pt;
+		font-weight: bold;
+		text-shadow: 0px -1px 1px #FFF;
+	}
+	
+	/*** top panel ***/
+	.ohmage-header-bar {
+		background-image: url('images/theme-ohmage/login-header-bg.png');
+		background-repeat: repeat-x;
+		height: 117px;
+		/* TODO: shadow; fix background, fix bottom border shadow */
+		overflow: hidden;
+	}
+	.header-box {
+		width: auto;
+		max-width: 900px;
+		min-width: 750px;
+		margin: 0 auto;
+		height: 105px;
+		padding-top: 18px;
+	}
+	.logo {
+		height: 79px;
+	}
+	
+	/*** main container ***/
+	.main {
+		width: auto;
+		max-width: 900px;
+		min-width: 750px;
+		margin: 0 auto;
+		padding-top: 30px;
+	}
+	.content {
+		padding-left: 50px;
+		padding-right: 50px;
+	}
+	.clearfix::after {
+		visibility: hidden;
+		display: block;
+		font-size: 0;
+		content: '.';
+		clear: both;
+		height: 0;
+	}
+	
+	/*** right panel ***/
+	.right-panel {
+		width: 285px;
+		float: right;
+	}
+	.signin-box {
+		padding: 20px;
+		background: #f4f9fd;
+		border: 1px solid #d2eafd;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-khtml-border-radius: 2px;
+		border-radius: 2px;
+	}
+	.signin-label {
+		display: block;
+		color: #999;
+		margin-bottom: 5px;
+	}
+	.signin-textbox {
+		display: block;
+		padding: 5px;
+		width: 95%;
+		border: 1px solid #51aff9;
+		margin-bottom: 10px;
+	}
+	.signin-button {
+		background-image: url('images/theme-ohmage/login-button-bg.png');
+		background-repeat: repeat-x;
+		height: 28px;
+		width: 50%;
+		font-size: 100%;
+		font-weight: bold;
+		color: #FFF;
+		text-shadow: 0px -1px 1px #666;
+		text-align: center;
+		margin-bottom: 10px;
+	}
+	/* TODO: other signin-box elements */
+	
+	/*** left panel ***/
+	.left-panel {
+		height: 100%;
+		margin: 0 295px 0 0;
+	}
+	.description-box {
+		line-height: 1.2;
+		padding: 20px;
+		background: #fdfbfb;
+		border: 1px solid #fde5d3;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-khtml-border-radius: 2px;
+		border-radius: 2px;
+	}
+	
+	/*** links panel ***/
+	.links-box {
+		padding-top: 10px;
+		white-space: nowrap;
+	}
+	.links-box ul {
+		float: left;
+		display: inline;
+		color: #AAA;
+	}
+	.links-box ul li {
+		display: inline;
+		padding-right: 0px;
+	}
+	.links-box img {
+		border: 1px solid;
+	}
+	
+	/*** footer panel ***/
+	.ohmage-footer-bar {	/* footer panel */
+		padding-top: 10px;
+		position: block;
+		width: 100%;
+		overflow: hidden;
+	}
+	.footer-box {
+		padding-top: 10px;
+		white-space: nowrap;
+		border-top: 1px solid #AAA;
+	}
+	.footer-box ul {
+		float: left;
+		display: inline;
+		color: #AAA;
+	}
+	.footer-box ul li {
+		display: inline;
+		padding-right: 0px;
+	}
+	
+	/*** toolbox styles ***/
+	.float-right {
+		float: right;
+		text-align: right;
+	}
   </ui:style>
 
-  <g:HTMLPanel addStyleNames='{style.mainPanel}'>
+	<g:HTMLPanel addStyleNames='{style.wrapper}'>
 
-    <g:HTMLPanel addStyleNames='{style.left}'>
-		  <g:HTMLPanel tag='span' ui:field='logoPanel' addStyleNames='{style.logoPanel}'>
-		    <g:Image ui:field='logo' />
-		  </g:HTMLPanel>
-	  </g:HTMLPanel>
-	  
-	  <g:HTMLPanel addStyleNames='{style.right}'>
-			<g:FormPanel addStyleNames='{style.loginForm}'>
-			  <g:FlowPanel addStyleNames='{style.loginFormInnerContainer}'>
-			    <g:HTMLPanel>
-					  <g:InlineLabel addStyleNames='{style.label}'>User:</g:InlineLabel>
-					  <g:TextBox ui:field='userNameTextBox' addStyleNames='{style.textBox}'/>
-				  </g:HTMLPanel>
-				  <g:HTMLPanel>
-					  <g:InlineLabel addStyleNames='{style.label}'>Password:</g:InlineLabel>
-					  <g:PasswordTextBox ui:field='passwordTextBox' addStyleNames='{style.textBox}' />
-				  </g:HTMLPanel>
-				  <g:HTMLPanel addStyleNames='{style.buttonDiv}'>
-				    <g:SubmitButton ui:field='loginButton'>Login</g:SubmitButton>
-				  </g:HTMLPanel>
-			  </g:FlowPanel>
-			</g:FormPanel>
+		<!-- HEADER BAR -->
+		<g:HTMLPanel addStyleNames='{style.ohmage-header-bar}'>
+			<g:HTMLPanel addStyleNames='{style.header-box} {style.content} {style.clearfix}'>
+				<g:Image addStyleNames='{style.logo}' url="images/theme-ohmage/login-logo.png" />
+			</g:HTMLPanel>
+		</g:HTMLPanel>
+
+		<g:HTMLPanel addStyleNames='{style.main} {style.content} {style.clearfix}'>
+			<!-- RIGHT PANEL -->
+			<g:HTMLPanel addStyleNames='{style.right-panel}'>
+				<g:HTMLPanel addStyleNames='{style.signin-box}'>
+					<h2>Log in to ohmage</h2>
+					<g:HTMLPanel>
+						<g:InlineLabel addStyleNames='{style.signin-label}'>Username:</g:InlineLabel>
+						<g:TextBox ui:field='userNameTextBox' addStyleNames='{style.signin-textbox}' />
+					</g:HTMLPanel>
+					<g:HTMLPanel>
+						<g:InlineLabel addStyleNames='{style.signin-label}'>Password:</g:InlineLabel>
+						<g:PasswordTextBox ui:field='passwordTextBox' addStyleNames='{style.signin-textbox}' />
+					</g:HTMLPanel>
+					<g:HTMLPanel>
+						<g:SubmitButton ui:field='loginButton' addStyleNames='{style.signin-button}'>Sign in</g:SubmitButton>
+					</g:HTMLPanel>
+					<h2>Don't have an account? <a href="#">Sign up</a></h2>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+
+			<!-- LEFT PANEL -->
+			<g:HTMLPanel addStyleNames='{style.left-panel}'>
+				<g:HTMLPanel addStyleNames='{style.description-box}'>
+					<h1><font color="#ff4e10">PARTICIPATE.</font> <font color="#5ccf00">VISUALIZE.</font> <font color="#00bee7">CHANGE.</font></h1>
+					<h2>What is ohmage?</h2>
+					<p>
+						<b>ohmage</b> is an open-source participatory sensing technology platform. It
+						supports expressive campaign authoring; mobile phone-based data
+						capture through both inquiry-based surveys and automated data
+						capture as well as temporally/spatially triggered reminders, data
+						visualization and real-time feedback; privacy respecting data
+						management; and extensible data exploration. All captured data are
+						automatically timestamped, geocoded and uploaded for analysis and
+						visualization.
+					</p>
+					<p>
+						This platform is used in pilot health studies (<a href="http://www.andwellness.org/">www.andwellness.org</a>) 
+						and will be used as a pedagogical tool in LAUSD schools for learning data representation, collection and analysis 
+						(<a href="http://www.mobilizingcs.org/">www.mobilizingcs.org</a>).
+					</p>
+					<h2>
+						For more information, visit ohmage at <a href="http://www.lecs.cs.ucla.edu/ohmage">www.lecs.cs.ucla.edu/ohmage</a>
+					</h2>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
+
+			<!-- LINKS BAR (FOOTER #1) -->
+			<g:HTMLPanel addStyleNames='{style.ohmage-footer-bar}'>
+				<g:HTMLPanel addStyleNames='{style.links-box}'>
+					<h2>Related Links</h2>
+					<ul>
+						<li><a href="http://www.exploringcs.org/about/related-grants/mobilize" title="Mobilize Project"><img src="images/theme-ohmage/link_mobilize.png" /></a></li>
+						<li><a href="http://www.exploringcs.org/" title="Exploring Computer Science Educational Initiative"><img src="images/theme-ohmage/link_exploringcs.png" /></a></li>
+						<!-- <li><a href="http://research.cens.ucla.edu/" title="UCLA Center for Embedded Networked Sensing"><img src="images/theme-ohmage/link_cens.png" /></a></li> -->
+					</ul>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
 			
-			<g:HTMLPanel ui:field='linkListDiv' addStyleNames='{style.linkListDiv}'>
-        Find out more about...
-        <ul class='{style.linkList}' ui:field='linkList'>
-          <li>
-            <a href='http://www.exploringcs.org/about/related-grants/mobilize'>
-              The Mobilize Project
-            </a>
-          </li>
-          <li>
-            <a href='http://www.exploringcs.org'>
-              Exploring Computer Science Educational Initiative
-            </a>
-          </li>
-          <li>
-            <a href='http://research.cens.ucla.edu'>
-              UCLA: Center For Embedded Networked Sensing
-            </a>
-          </li>
-          <li>
-            <a href='http://www.exploringcs.org/about/ecs-now'>
-              How you can get involved
-            </a>
-          </li>
-        </ul>
-      </g:HTMLPanel>
+			<!-- FOOTER BAR (FOOTER #2) -->
+			<g:HTMLPanel addStyleNames='{style.ohmage-footer-bar}'>
+				<g:HTMLPanel addStyleNames='{style.footer-box} {style.float-right}'>
+					<ul>
+						<li>Powered by <b>ohmage</b></li>
+					</ul>
+				</g:HTMLPanel>
+				<g:HTMLPanel addStyleNames='{style.footer-box}'>
+					<ul>
+						<li>Copyright &#169; 2012 MobilizeLab</li>
+						<li>&#183;</li>
+						<li>All rights reserved</li>
+						<li>&#183;</li>
+						<li><a href="#">Contact Us</a></li>
+					</ul>
+				</g:HTMLPanel>
+			</g:HTMLPanel>
 		</g:HTMLPanel>
 		
-		<div class='floatstop' />
-	
-		<g:HTMLPanel addStyleNames='{style.leftBottom}'>
-	    <g:HTMLPanel ui:field='descriptionPanel' addStyleNames='{style.description}'>
-        <p>Participatory Sensing is an approach to data collection and interpretation in which individuals, acting alone or in groups, 
-          use their personal mobile devices and web services to systematically explore interesting aspects of their worlds ranging from 
-          health to culture. A data campaign is used to define a collection of prompted inputs or questions. The answers to these questions 
-          provide insight into the subject of the campaign, organizing the capture of facts and personal observations from participants.</p>
-          <p><b>ohmage</b> is an open-source participatory sensing technology platform. It supports expressive campaign authoring; mobile phone-based data 
-          capture through both inquiry-based surveys and automated data capture as well as temporally/spatially triggered reminders, data 
-          visualization and real-time feedback; privacy respecting data management; and extensible data exploration. All captured data are 
-          automatically timestamped, geocoded and uploaded for analysis and visualization. Ohmage has been used in pilot health studies 
-          (<a href="http://www.andwellness.org/">www.andwellness.org</a>) and will be used as a pedagogical tool in LAUSD schools for learning data representation, collection and analysis (<a href="http://www.mobilizingcs.org/">www.mobilizingcs.org</a>).</p>
-          <p>For more information, visit ohmage at <a href="http://www.lecs.cs.ucla.edu/ohmage">http://www.lecs.cs.ucla.edu/ohmage</a></p>
-      </g:HTMLPanel>
-    </g:HTMLPanel>
-    
-    <g:HTMLPanel addStyleNames='{style.footer}'>
-      <span class='{style.footerCopyright}'>Copyright &#169; 2012 CENS</span>
-      <span class='{style.footerSpan}'><a href='http://mobilizingcs.wikispaces.com/help'>Help</a></span>
-      <span>|</span>
-      <span class='{style.footerSpan}'><a href='http://mobilizingcs.wikispaces.com/contact'>Contact Us</a></span>
-      <span>|</span>
-      <span class='{style.footerSpan}'>Powered by ohmage</span>
-    </g:HTMLPanel>
-  </g:HTMLPanel>
-  
+		<!-- Preload dashboard images -->
+		<div style="display:none;">
+			<img src="images/theme-ohmage/dashboard-header-bg.png" />
+			<img src="images/theme-ohmage/dashboard-header-logo.png" />
+			<img src="images/theme-ohmage/dashboard-tab-bg.png" />
+		</div>
+	</g:HTMLPanel>
 
 </ui:UiBinder>
