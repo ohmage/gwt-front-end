@@ -408,7 +408,7 @@ public class MainApp implements EntryPoint, HistoryListener {
     dashboardPresenter = new DashboardPresenter(userInfo, awDataService, eventBus);
     campaignPresenter = new CampaignPresenter(userInfo, awDataService, eventBus);
     responsePresenter = new ResponsePresenter(userInfo, awDataService, eventBus);
-    exploreDataPresenter = new ExploreDataPresenter(userInfo, awDataService, eventBus, campaigns);
+    exploreDataPresenter = new ExploreDataPresenter(userInfo, awDataService, eventBus, campaigns, new ArrayList<String>(userInfo.getClassIds()));
     documentPresenter = new DocumentPresenter(userInfo, awDataService, eventBus);
     classPresenter = new ClassPresenter(userInfo, awDataService, eventBus);
     accountPresenter = new AccountPresenter(userInfo, awDataService, eventBus);

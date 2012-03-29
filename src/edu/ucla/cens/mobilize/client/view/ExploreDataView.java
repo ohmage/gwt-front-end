@@ -32,6 +32,11 @@ public interface ExploreDataView extends IsWidget {
 	void setSelectedSurvey(String surveyId);
 	String getSelectedSurvey();
 	
+	// class drop down
+	void setClassList(List<String> classIds);
+	void setSelectedClass(String classId);
+	String getSelectedClass();
+	
 	// participant drop down
 	void setParticipantList(List<String> participants);
 	void setSelectedParticipant(String participantName);
@@ -81,6 +86,7 @@ public interface ExploreDataView extends IsWidget {
 	// methods for enabling/disabling form fields
 	void setCampaignDropDownEnabled(boolean isEnabled);
 	void setSurveyDropDownEnabled(boolean isEnabled);
+	void setClassDropDownEnabled(boolean isEnabled);
 	void setParticipantDropDownEnabled(boolean isEnabled);
 	void setPromptXDropDownEnabled(boolean isEnabled);
 	void setPromptYDropDownEnabled(boolean isEnabled);
@@ -100,6 +106,7 @@ public interface ExploreDataView extends IsWidget {
 	@SuppressWarnings("deprecation")
 	SourcesTreeEvents getPlotTypeTree();
 	HasChangeHandlers getCampaignDropDown();
+	HasChangeHandlers getClassDropDown();
 	HasClickHandlers getDrawPlotButton();
 	HasClickHandlers getExportDataButton();
 

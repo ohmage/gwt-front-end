@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -37,11 +36,13 @@ import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
+import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
+import edu.ucla.cens.mobilize.client.model.UserShortInfo;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.DateUtils;
@@ -53,6 +54,7 @@ public class ExploreDataPresenter implements Presenter {
 	// data that's shared across presenters
 	UserInfo userInfo;
 	private List<CampaignShortInfo> campaigns;
+	private List<String> classUrns;
 	DataService dataService;
 	EventBus eventBus;
 
@@ -79,11 +81,12 @@ public class ExploreDataPresenter implements Presenter {
 	public ExploreDataPresenter(UserInfo userInfo, 
 			DataService dataService, 
 			EventBus eventBus,
-			List<CampaignShortInfo> campaigns) {
+			List<CampaignShortInfo> campaigns, List<String> classUrns) {
 		this.userInfo = userInfo;
 		this.dataService = dataService;
 		this.eventBus = eventBus;
 		this.campaigns = campaigns;
+		this.classUrns = classUrns;
 		bind();
 	}
 
@@ -121,15 +124,18 @@ public class ExploreDataPresenter implements Presenter {
 
 		Date startDate = view.getFromDate();
 		Date endDate = view.getToDate();
-
+		
+		// fill class choices based on user's role
+		fetchAndFillMobilityClassChoices(this.classUrns, userInfo.getUserName());
 		// fill campaign choices based on user's role and campaign privacy
 		fillCampaignChoices(this.campaigns);
-		// enable/disable filters based on plot selection
-		setEnabledFiltersForPlotType(selectedPlotType);
 		// fetch and fill participant choices based on selected campaign (if appropriate for plot)
 		fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
 		// fill prompt choices based on selected campaign (if appropriate for plot)
 		fetchAndFillPromptChoices(selectedCampaign, selectedPlotType, selectedX, selectedY, startDate, endDate);
+
+		// enable/disable filters based on plot selection
+		setEnabledFiltersForPlotType(selectedPlotType);
 
 		view.setSelectedCampaign(selectedCampaign);
 		view.setSelectedParticipant(selectedParticipant);
@@ -489,6 +495,14 @@ public class ExploreDataPresenter implements Presenter {
 				fetchAndFillParticipantChoices(campaignId, null);
 			}
 		});
+		
+		view.getClassDropDown().addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent event) {
+				String classId = view.getSelectedClass();
+				fetchAndFillMobilityParticipantChoices(classId);
+			}
+		});
 
 		view.getDrawPlotButton().addClickHandler(new ClickHandler() {
 			@Override
@@ -550,6 +564,7 @@ public class ExploreDataPresenter implements Presenter {
 			case LEADER_BOARD:
 				view.setCampaignDropDownEnabled(true);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(false);
 				view.setParticipantDropDownEnabled(false);
 				view.setPromptXDropDownEnabled(false);
 				view.setPromptYDropDownEnabled(false);
@@ -559,6 +574,7 @@ public class ExploreDataPresenter implements Presenter {
 			case USER_TIMESERIES:
 				view.setCampaignDropDownEnabled(true);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(false);
 				view.setParticipantDropDownEnabled(true);
 				view.setPromptXDropDownEnabled(true);
 				view.setPromptYDropDownEnabled(false);
@@ -569,6 +585,7 @@ public class ExploreDataPresenter implements Presenter {
 			case PROMPT_DISTRIBUTION:
 				view.setCampaignDropDownEnabled(true);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(false);
 				view.setParticipantDropDownEnabled(false);
 				view.setPromptXDropDownEnabled(true);
 				view.setPromptYDropDownEnabled(false);
@@ -579,6 +596,7 @@ public class ExploreDataPresenter implements Presenter {
 			case DENSITY_PLOT:
 				view.setCampaignDropDownEnabled(true);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(false);
 				view.setParticipantDropDownEnabled(false);
 				view.setPromptXDropDownEnabled(true);
 				view.setPromptYDropDownEnabled(true);
@@ -588,6 +606,7 @@ public class ExploreDataPresenter implements Presenter {
 			case MAP:
 				view.setCampaignDropDownEnabled(true);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(false);
 				view.setParticipantDropDownEnabled(true);
 				view.setPromptXDropDownEnabled(false);
 				view.setPromptYDropDownEnabled(false);
@@ -598,7 +617,8 @@ public class ExploreDataPresenter implements Presenter {
 			case MOBILITY_MAP:
 				view.setCampaignDropDownEnabled(false);
 				view.setSurveyDropDownEnabled(false);
-				view.setParticipantDropDownEnabled(false);
+				view.setClassDropDownEnabled(true);
+				view.setParticipantDropDownEnabled(true);
 				view.setPromptXDropDownEnabled(false);
 				view.setPromptYDropDownEnabled(false);
 				view.setStartDateRangeEnabled(true);
@@ -609,7 +629,8 @@ public class ExploreDataPresenter implements Presenter {
 			case MOBILITY_TEMPORAL:
 				view.setCampaignDropDownEnabled(false);
 				view.setSurveyDropDownEnabled(false);
-				view.setParticipantDropDownEnabled(false);
+				view.setClassDropDownEnabled(true);
+				view.setParticipantDropDownEnabled(true);
 				view.setPromptXDropDownEnabled(false);
 				view.setPromptYDropDownEnabled(false);
 				view.setDateRangeEnabled(true);
@@ -652,6 +673,55 @@ public class ExploreDataPresenter implements Presenter {
 		}
 	}
 
+	private void fetchAndFillMobilityClassChoices(final List<String> classIds, final String username) {
+		if (username == null || username.isEmpty())
+			return;
+		
+		List<String> classIdList = new ArrayList<String>();
+		for (String c : classIds) {
+			classIdList.add(c);
+		}
+		
+		// TODO: only show classes which the user is privileged
+		// FIXME
+		/*
+		Map<String,String> classIdToNameMap = result.getClasses();
+		for (String classId : classIdToNameMap.keySet()) {
+			if (userInfo.isPrivileged(classId))
+				classIdList.add(classId);
+		}
+		*/
+		
+		view.setClassList(classIdList);
+		view.setParticipantList(Arrays.asList(username));
+		view.setSelectedParticipant(username);	//always select self
+	}
+	
+	private void fetchAndFillMobilityParticipantChoices(final String classId) {
+		if (classId == null || classId.isEmpty()) {
+			view.setParticipantList(Arrays.asList(userInfo.getUserName()));
+			return;
+		}
+		
+		dataService.fetchClassMembers(Arrays.asList(classId), new AsyncCallback<List<UserShortInfo>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				_logger.severe("Could not load class members list: " + caught.getMessage());
+				AwErrorUtils.logoutIfAuthException(caught);
+			}
+
+			@Override
+			public void onSuccess(List<UserShortInfo> result) {
+				List<String> usersList = new ArrayList<String>();
+				for (UserShortInfo usi : result) {
+					usersList.add(usi.getUsername());
+				}
+				
+				view.setParticipantList(usersList);
+				view.setSelectedParticipant(userInfo.getUserName());	//always select self
+			}
+		});
+	}
 
 	// callback that populates participant dialog
 	private AsyncCallback<List<String>> participantFetchCallback = new AsyncCallback<List<String>>() {
