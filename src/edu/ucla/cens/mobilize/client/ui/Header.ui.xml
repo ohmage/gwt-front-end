@@ -47,7 +47,7 @@
 				<span class='{style.menu}'>
 					<g:InlineLabel ui:field='userNameLabel' addStyleNames='{style.userName}' />
 					|
-					<g:InlineHyperlink targetHistoryToken='dashboard'>Dashboard</g:InlineHyperlink>
+					<g:InlineHyperlink targetHistoryToken='dashboard'>Home</g:InlineHyperlink>
 					|
 					<g:InlineHyperlink targetHistoryToken='account'>Account</g:InlineHyperlink>
 					|

@@ -464,15 +464,15 @@ public class MainApp implements EntryPoint, HistoryListener {
     tabPanel.add(dashboardView, "Dashboard");
     tabHistoryTokens.add("dashboard");
     TabIndex.DASHBOARD = index++;
+    tabPanel.add(campaignView, "Campaigns");
+    tabHistoryTokens.add("campaigns");    
+    TabIndex.CAMPAIGNS = index++;
     tabPanel.add(responseView, "Responses");
     tabHistoryTokens.add("responses");
     TabIndex.RESPONSES = index++;
     tabPanel.add(exploreDataView, "Explore Data");
     tabHistoryTokens.add("explore_data");
     TabIndex.EXPLORE_DATA = index++;
-    tabPanel.add(campaignView, "Campaigns");
-    tabHistoryTokens.add("campaigns");    
-    TabIndex.CAMPAIGNS = index++;
     tabPanel.add(classView, "Classes");
     tabHistoryTokens.add("classes");
     TabIndex.CLASSES = index++;

@@ -313,7 +313,7 @@ public class AndWellnessDataService implements DataService {
               AppConfig.setResponsePrivacyIsEditable(true);
             } else if ("ohmage".equals(appName)) { 
               List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);    
-              AppConfig.setAppDisplayName("Ohmage");
+              AppConfig.setAppDisplayName("ohmage");
               AppConfig.setPrivacyStates(privacyStates);
               AppConfig.setSharedResponsesOnly(false); // show everything
               AppConfig.setResponsePrivacyIsEditable(true);
@@ -331,7 +331,7 @@ public class AndWellnessDataService implements DataService {
               AppConfig.setResponsePrivacyIsEditable(true);
             } else { // default settings
               List<Privacy> privacyStates = Arrays.asList(Privacy.PRIVATE, Privacy.SHARED);    
-              AppConfig.setAppDisplayName("Ohmage");
+              AppConfig.setAppDisplayName("ohmage");
               AppConfig.setPrivacyStates(privacyStates);
               AppConfig.setSharedResponsesOnly(false); // show everything
               AppConfig.setResponsePrivacyIsEditable(true);
