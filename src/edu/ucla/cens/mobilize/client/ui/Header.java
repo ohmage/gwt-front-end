@@ -28,6 +28,13 @@ public class Header extends Composite {
   public Header() {
     initWidget(uiBinder.createAndBindUi(this));
     
+    appNameImage.addClickHandler(new ClickHandler() {
+    	@Override
+    	public void onClick(ClickEvent event) {
+    		History.newItem("dashboard");
+    	}
+    });
+    
     logoutButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
