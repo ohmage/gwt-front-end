@@ -85,7 +85,6 @@ public class HistoryTokens {
                                      String lastName,
                                      String email,
                                      String organization,
-                                     String json,
                                      int startIndex,
                                      int pageSize) {
     Map<String, String> params = new HashMap<String, String>();
@@ -115,9 +114,6 @@ public class HistoryTokens {
     }
     if (organization != null && !organization.isEmpty()) {
       params.put("organization", organization);
-    }
-    if (json != null && !json.isEmpty()) {
-      params.put("json", json);
     }
     params.put("start_index", Integer.toString(startIndex));
     params.put("page_size", Integer.toString(pageSize));

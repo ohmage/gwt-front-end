@@ -116,13 +116,11 @@ public class AdminUserListPresenter implements Presenter {
     String lastNameSearchString = params.containsKey("last_name") ? params.get("last_name") : null;
     String emailSearchString = params.containsKey("email") ? params.get("email") : null;
     String organizationSearchString = params.containsKey("org") ? params.get("org") : null;
-    String jsonSearchString = params.containsKey("json") ? params.get("json") : null;
     // set search terms in the advanced popup so user can open it to see what results are being displayed
     view.setAdvancedSearchFirstNameSearchString(firstNameSearchString);
     view.setAdvancedSearchLastNameSearchString(lastNameSearchString);
     view.setAdvancedSearchEmailSearchString(emailSearchString);
     view.setAdvancedSearchOrganizationSearchString(organizationSearchString);
-    view.setAdvancedSearchJsonSearchString(jsonSearchString);
     this.fetchAndShowUserList(username,
                               personalId,
                               isEnabled, 
@@ -132,13 +130,12 @@ public class AdminUserListPresenter implements Presenter {
                               lastNameSearchString,
                               emailSearchString, 
                               organizationSearchString, 
-                              jsonSearchString,
                               startIndex,
                               pageSize);
   }
 
   private void fetchAndShowAllUsers(int startIndex, int pageSize) {
-    this.fetchAndShowUserList(null, null, null, null, null, null, null, null, null, null, startIndex, pageSize);
+    this.fetchAndShowUserList(null, null, null, null, null, null, null, null, null, startIndex, pageSize);
   }
 
   private void bind() {
@@ -183,7 +180,7 @@ public class AdminUserListPresenter implements Presenter {
       @Override
       public void onClick(ClickEvent event) {
         fireHistoryTokenToMatchSearchQuery(view.getUsernameSearchString(), 
-                                           null, null, null, null, null, null, null, null, null,
+                                           null, null, null, null, null, null, null, null,
                                            view.getStartIndex(), view.getPageSize());
       }
     });
@@ -193,7 +190,7 @@ public class AdminUserListPresenter implements Presenter {
       public void onKeyDown(KeyDownEvent event) {
         if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
           fireHistoryTokenToMatchSearchQuery(view.getUsernameSearchString(), 
-              null, null, null, null, null, null, null, null, null, 
+              null, null, null, null, null, null, null, null, 
               view.getStartIndex(), view.getPageSize());
         }
       }
@@ -204,7 +201,7 @@ public class AdminUserListPresenter implements Presenter {
       public void onClick(ClickEvent event) {
         fireHistoryTokenToMatchSearchQuery(null, // username
                                            view.getPersonalIdSearchString(),
-                                           null, null, null, null, null, null, null, null,
+                                           null, null, null, null, null, null, null,
                                            view.getStartIndex(), view.getPageSize());
       }
     });
@@ -215,7 +212,7 @@ public class AdminUserListPresenter implements Presenter {
         if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
           fireHistoryTokenToMatchSearchQuery(null, // username
                                              view.getPersonalIdSearchString(),
-                                             null, null, null, null, null, null, null, null,
+                                             null, null, null, null, null, null, null,
                                              view.getStartIndex(), view.getPageSize());          
         }
       }
@@ -264,18 +261,17 @@ public class AdminUserListPresenter implements Presenter {
     String lastName = view.getAdvancedSearchLastNameSearchString();
     String email = view.getAdvancedSearchEmailSearchString();
     String organization = view.getAdvancedSearchOrganizationSearchString();
-    String json = view.getAdvancedSearchJsonSearchString();
     int startIndex = view.getStartIndex();
     int pageSize = view.getPageSize(); 
     
     String historyToken = HistoryTokens.adminUserList(username, personalId, isEnabled, canCreateCampaigns, 
-      isAdmin, firstName, lastName, email, organization, json, startIndex, pageSize);
+      isAdmin, firstName, lastName, email, organization, startIndex, pageSize);
     
     // save history token so page can be bookmarked, but don't fire it b/c that would reload everything
     History.newItem(historyToken, false);
     
     fetchAndShowUserList(username, personalId, isEnabled, canCreateCampaigns, isAdmin, firstName, lastName,
-                         email, organization, json, startIndex, pageSize);
+                         email, organization, startIndex, pageSize);
   }
   
   private void fireHistoryTokenToMatchSearchQuery(String username,
@@ -287,7 +283,6 @@ public class AdminUserListPresenter implements Presenter {
                                                   String lastNameSearchString,
                                                   String emailSearchString,
                                                   String organizationSearchString,
-                                                  String jsonSearchString,
                                                   int startIndex,
                                                   int pageSize) {
     History.newItem(HistoryTokens.adminUserList(username,
@@ -298,8 +293,7 @@ public class AdminUserListPresenter implements Presenter {
                                                 firstNameSearchString,
                                                 lastNameSearchString,
                                                 emailSearchString, 
-                                                organizationSearchString, 
-                                                jsonSearchString, 
+                                                organizationSearchString,
                                                 startIndex,
                                                 pageSize));
   }
@@ -312,7 +306,6 @@ public class AdminUserListPresenter implements Presenter {
     String lastNameSearchString = view.getAdvancedSearchLastNameSearchString();
     String emailSearchString = view.getAdvancedSearchEmailSearchString();
     String organizationSearchString = view.getAdvancedSearchOrganizationSearchString();
-    String jsonSearchString = view.getAdvancedSearchJsonSearchString();
     int startIndex = view.getStartIndex();
     int pageSize = view.getPageSize();
     History.newItem(HistoryTokens.adminUserList(null, // username 
@@ -324,7 +317,6 @@ public class AdminUserListPresenter implements Presenter {
                                                 lastNameSearchString,
                                                 emailSearchString, 
                                                 organizationSearchString, 
-                                                jsonSearchString,
                                                 startIndex,
                                                 pageSize));  
   }
@@ -338,7 +330,6 @@ public class AdminUserListPresenter implements Presenter {
                                     String lastNameSearchString,
                                     String emailSearchString,
                                     String organizationSearchString,
-                                    String jsonSearchString,
                                     final int startIndex,
                                     final int pageSize) {
     view.showWaitIndicator();
@@ -352,7 +343,6 @@ public class AdminUserListPresenter implements Presenter {
     params.lastName_opt = lastNameSearchString;
     params.email_opt = emailSearchString;
     params.organization_opt = organizationSearchString;
-    params.jsonData_opt = jsonSearchString;
     params.startIndex_opt = startIndex;
     params.pageSize_opt = pageSize;
     

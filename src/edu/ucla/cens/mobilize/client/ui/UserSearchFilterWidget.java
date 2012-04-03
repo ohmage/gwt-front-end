@@ -24,7 +24,6 @@ public class UserSearchFilterWidget extends Composite {
   @UiField TextBox lastNameTextBox;
   @UiField TextBox emailTextBox;
   @UiField TextBox organizationTextBox;
-  @UiField TextBox jsonTextBox;
   @UiField ListBox enabledListBox;
   @UiField ListBox canCreateListBox;
   @UiField ListBox adminListBox;
@@ -50,8 +49,7 @@ public class UserSearchFilterWidget extends Composite {
     this.textBoxes = Arrays.asList(this.firstNameTextBox, 
                                    this.lastNameTextBox,
                                    this.emailTextBox,
-                                   this.organizationTextBox,
-                                   this.jsonTextBox);
+                                   this.organizationTextBox);
   }
   
   public void clearFields() {
@@ -169,13 +167,5 @@ public class UserSearchFilterWidget extends Composite {
   
   public void setOrganizationSearchString(String organizationSearchString) {
     this.organizationTextBox.setText(organizationSearchString);
-  }
-  
-  public String getJsonSearchString() {
-    return this.jsonTextBox.getText();
-  }
-  
-  public void setJsonSearchString(String jsonSearchString) {
-    this.jsonTextBox.setText(jsonSearchString);
   }
 }

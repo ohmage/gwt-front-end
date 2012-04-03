@@ -19,7 +19,6 @@ public class UserSearchParams implements RequestParams {
   public String organization_opt;
   public String personalId_opt;
   public String email_opt;
-  public String jsonData_opt;
   public Integer startIndex_opt;
   public Integer pageSize_opt;
   
@@ -59,9 +58,6 @@ public class UserSearchParams implements RequestParams {
     }
     if (email_opt != null && !email_opt.isEmpty()) {
       params.put("email_address", email_opt);
-    }
-    if (jsonData_opt != null && !jsonData_opt.isEmpty()) {
-      params.put("json_data", jsonData_opt);
     }
     if (startIndex_opt != null) {
       params.put("num_to_skip", Integer.toString(startIndex_opt));

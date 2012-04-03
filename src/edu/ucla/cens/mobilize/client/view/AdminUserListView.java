@@ -140,7 +140,7 @@ public class AdminUserListView extends Composite implements HasRows {
   private void initComponents() {
     // set target history token for show all link
     this.showAllUsersLink.setTargetHistoryToken(HistoryTokens.adminUserList(
-        "*", null, null, null, null, null, null, null, null, null, 0, this.pageSize));
+        "*", null, null, null, null, null, null, null, null, 0, this.pageSize));
     // select item in left nav
     this.adminMenu.selectManageUsers();
     // set up hyperlinks
@@ -518,10 +518,6 @@ public class AdminUserListView extends Composite implements HasRows {
     return this.advancedSearchWidget.getOrganizationSearchString();
   }
   
-  public String getAdvancedSearchJsonSearchString() {
-    return this.advancedSearchWidget.getJsonSearchString();
-  }
-
   /**
    * @ true, false, or null
    */
@@ -557,10 +553,6 @@ public class AdminUserListView extends Composite implements HasRows {
   
   public void setAdvancedSearchOrganizationSearchString(String str) {
      this.advancedSearchWidget.setOrganizationSearchString(str);
-  }
-  
-  public void setAdvancedSearchJsonSearchString(String str) {
-     this.advancedSearchWidget.setJsonSearchString(str);
   }
   
   public void clearSearchBoxes() {

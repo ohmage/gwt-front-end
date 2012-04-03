@@ -19,8 +19,6 @@
       <g:TextBox ui:field='emailTextBox' />
       <g:Label>Organization contains:</g:Label>
       <g:TextBox ui:field='organizationTextBox' />
-      <g:Label>JSON contains:</g:Label>
-      <g:TextBox ui:field='jsonTextBox' />
     </g:HTMLPanel>
     <g:HTMLPanel>
       <g:Label>Enabled:</g:Label>
