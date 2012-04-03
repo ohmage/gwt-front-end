@@ -41,17 +41,22 @@ public class AwConstants {
     public enum AwUri {
      AUTHORIZATION("/app/user/auth_token"),
      APP_CONFIG_READ("/app/config/read"),
-     USER_INFO_READ ("/app/user_info/read"),
-     USER_READ("/app/user/read"),
+     USER_ACTIVATE("/app/user/activate"),
+     USER_AUTH("/app/user/auth"),
      USER_CHANGE_PASSWORD("/app/user/change_password"),
      USER_CREATE("/app/user/create"),
-     USER_UPDATE("/app/user/update"),
      USER_DELETE("/app/user/delete"),
+     USER_INFO_READ ("/app/user_info/read"),
+     USER_READ("/app/user/read"),
+     USER_REGISTER("/app/user/register"),
      USER_SEARCH("/app/user/search"),
+     USER_UPDATE("/app/user/update"),
+     REGISTRATION_READ("/app/registration/read"),
      CAMPAIGN_READ("/app/campaign/read"),
      CAMPAIGN_CREATE("/app/campaign/create"),
      CAMPAIGN_UPDATE("/app/campaign/update"),
      CAMPAIGN_DELETE("/app/campaign/delete"),
+     CAMPAIGN_SEARCH("/app/campaign/search"),
      SURVEY_RESPONSE_READ("/app/survey_response/read"),
      SURVEY_RESPONSE_UPDATE("/app/survey_response/update"),
      SURVEY_RESPONSE_DELETE("/app/survey_response/delete"),
@@ -73,7 +78,7 @@ public class AwConstants {
      AUDIT_READ("/app/audit/read"),
      MOBILITY_READ("/app/mobility/read"),
      MOBILITY_READ_CHUNKED("/app/mobility/read/chunked"),
-     MOBILITY_DATES_READ("mobility/dates/read");
+     MOBILITY_DATES_READ("/app/mobility/dates/read");
      
      private AwUri(String uri) {
        this.uriString = uri;
