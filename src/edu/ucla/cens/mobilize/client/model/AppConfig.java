@@ -12,6 +12,7 @@ public class AppConfig {
   private static List<Privacy> privacyStates;
   private static boolean mobilityEnabled;
   private static int documentUploadMaxSize;
+  private static boolean selfRegistrationAllowed;
   
   public static boolean isLoaded() {
     return appName != null && privacyStates != null;
@@ -77,5 +78,13 @@ public class AppConfig {
   }
   public static void setDocumentUploadMaxSize(int maxSize) {
     AppConfig.documentUploadMaxSize = maxSize;
+  }
+  
+  public static boolean getSelfRegistrationEnabled() {
+    return selfRegistrationAllowed;
+  }
+  
+  public static void setSelfRegistrationEnabled(boolean isEnabled) {
+    AppConfig.selfRegistrationAllowed = isEnabled;
   }
 }

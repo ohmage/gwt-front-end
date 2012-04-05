@@ -56,6 +56,7 @@ import edu.ucla.cens.mobilize.client.presenter.LoginPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ResponsePresenter;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.Header;
+import edu.ucla.cens.mobilize.client.ui.LoginSelfRegistration;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.StopWatch;
 import edu.ucla.cens.mobilize.client.view.AccountViewImpl;
@@ -110,6 +111,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   TokenLoginManager loginManager = new TokenLoginManager(eventBus);
   LoginView loginView;
   LoginPresenter loginPresenter;
+  LoginSelfRegistration loginSelfRegistrationView;
   
   // data that's used throughout the app
   UserInfo userInfo;
@@ -173,39 +175,40 @@ public class MainApp implements EntryPoint, HistoryListener {
    * This is the entry point method.
    */
   public void onModuleLoad() {
-    // MobilizeWeb.html#logout will log user out immediately (useful for troubleshooting)
-    String initialToken = History.getToken(); 
-    if ("logout".equals(initialToken)) {
-      logout(); // logout and refresh
-    } 
-    
-    // enable stopwatch for debug mode. (all stopwatch methods are no-ops otherwise)
-    //if (AwConstants.status.getStatus().equals(Status.DEBUG)) StopWatch.enable();
-    //StopWatch.enable();
-    
-    if (loginManager.isCurrentlyLoggedIn()) {
-      
-      initDataService(loginManager.getLoggedInUserName(), loginManager.getAuthorizationToken());
-      loadAppConfigAndInitApp();
-      bind();
-    } else {
-      initLogin();
-    }
-    
-    // if user is looking at explore_data tab when the window is resized,
-    // refresh so the plot will be redrawn in the new size
-    // FIXME: is this fired continuously while the window resizes or just at
-    // the end? (don't want to send a big stream of unneeded queries to the db...)
-    /*
-    Window.addResizeHandler(new ResizeHandler() {
-      @Override
-      public void onResize(ResizeEvent event) {
-        if (History.getToken().contains("explore_data")) {
-          History.fireCurrentHistoryState();
-        }
-      }
-    });*/
-    
+	  // Initialize History manager *** MUST BE CALLED ***
+	  initHistory();
+	  
+	  String initialToken = History.getToken();
+
+	  // MobilizeWeb.html#logout will log user out immediately (useful for troubleshooting) 
+	  if ("logout".equals(initialToken)) {
+		  logout(); // logout and refresh
+	  }
+
+	  // enable stopwatch for debug mode. (all stopwatch methods are no-ops otherwise)
+	  //if (AwConstants.status.getStatus().equals(Status.DEBUG)) StopWatch.enable();
+	  //StopWatch.enable();
+	  
+	  if (loginManager.isCurrentlyLoggedIn()) {
+		  initDataService(loginManager.getLoggedInUserName(), loginManager.getAuthorizationToken());
+		  loadAppConfigAndInitApp();
+		  bind();
+	  } else {
+		  // NOTE: These tokens need to be handled here because they are separate from the main dashboard tokens
+		  if (HistoryTokens.register().equals(initialToken)) {
+			  History.newItem(HistoryTokens.register());
+		  } else if (HistoryTokens.activated().equals(initialToken)) {
+			  History.newItem(HistoryTokens.activated());
+		  } else if (HistoryTokens.notactivated().equals(initialToken)) {
+			  History.newItem(HistoryTokens.notactivated());
+		  } else {
+			  History.newItem(HistoryTokens.login());
+		  }
+		  
+		  // If the user redirects from root --> login, we don't want the token to fire twice
+		  if (initialToken.isEmpty() == false)
+			  History.fireCurrentHistoryState();
+	  }
   }
   
   private void bind() {
@@ -257,20 +260,39 @@ public class MainApp implements EntryPoint, HistoryListener {
       _logger.fine("Exception in initComponents: " + e.getMessage());
     }
     initLayoutAndNavigation(userInfo);
-    initHistory();
-  }
-  
-  private void initHistory() {
-    String initialToken = History.getToken();
-    if (initialToken.length() == 0) {
-      History.newItem("dashboard", false);
-    }
-    History.addHistoryListener(this);
+    
+    // Set "dashboard" as first view after login
+ 	History.newItem("dashboard", false);
     History.fireCurrentHistoryState();
   }
   
+  private void initHistory() {
+	History.addHistoryListener(this);
+  }
+  
+  private void initLoginSelfRegistration() {
+	  this.awDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
+		  @Override
+		  public void onFailure(Throwable caught) {
+			  ErrorDialog.show("Could not obtain server app config data", "The server may be down or undergoing maintenance. Please try again at a later time.");
+		  }
+
+		  @Override
+		  public void onSuccess(AppConfig appConfig) {
+			  if (appConfig.getSelfRegistrationEnabled() == false) {
+				  showLogin(null);
+				  return;
+			  }
+			  
+			  Window.setTitle(AppConfig.getAppDisplayName());
+			  loginSelfRegistrationView = new LoginSelfRegistration(awDataService);
+			  RootLayoutPanel.get().add(loginSelfRegistrationView);
+		  }
+	  });
+  }
+  
   // Loads app config from db and uses it to construct login page 
-  private void initLogin() {
+  private void initLogin(final String loginMessage) {
     this.awDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
       @Override
       public void onFailure(Throwable caught) {
@@ -294,6 +316,11 @@ public class MainApp implements EntryPoint, HistoryListener {
         else { // DEFAULT: show "ohmage" login page
           loginView = new LoginViewOhmageImpl();
         } 
+        
+        // Set login message and self registration modes
+        loginView.setNotificationMessage(loginMessage);
+        loginView.setSelfRegistrationEnabled(appConfig.getSelfRegistrationEnabled());
+        
         loginPresenter = new LoginPresenter(awDataService, 
                                             eventBus, 
                                             loginView, 
@@ -702,14 +729,45 @@ public class MainApp implements EntryPoint, HistoryListener {
     if (!helpView.isAttached()) mainDockLayoutPanel.add(helpView);
   }
   
+  private void showSelfRegistration() {
+	  _logger.fine("Called: showSelfRegistration()");
+
+	  if (loginView != null)	loginView.asWidget().removeFromParent();
+
+	  if (loginSelfRegistrationView == null) {
+		  initLoginSelfRegistration();
+	  } else {
+		  loginSelfRegistrationView.resetAll();
+		  
+		  if (!loginSelfRegistrationView.isAttached())
+			  RootLayoutPanel.get().add(loginSelfRegistrationView);
+	  }
+  }
+  
+  private void showLogin(String message) {
+	  _logger.fine("Called: showLogin()");
+
+	  if (loginSelfRegistrationView != null)	loginSelfRegistrationView.removeFromParent();
+
+	  if (loginView == null || loginPresenter == null) {
+		  initLogin(message);
+	  } else {
+		  loginView.setNotificationMessage(message);
+		  if (!loginView.asWidget().isAttached())
+			  RootLayoutPanel.get().add(loginView);
+	  }
+  }
+  
   /******** End methods to control visible widgets ********/
 
   /********* History Management ***********/
   @Override
   public void onHistoryChanged(String historyToken) {
-    String view = extractView(historyToken); 
+    String view = extractView(historyToken);
     final Map<String, String> params = extractParams(historyToken);
 
+    _logger.fine("History Token Fired = \'" + view + "\'");
+    
     if (view.equals("dashboard")) {
       dashboardPresenter.go(params);
       showDashboard();
@@ -772,6 +830,14 @@ public class MainApp implements EntryPoint, HistoryListener {
       showHelp();
     } else if (view.equals("logout")) {
       logout();
+    } else if (view.equals("register")) {
+      showSelfRegistration();
+    } else if (view.equals("login")) {
+      showLogin(null);
+    } else if (view.equals("activated")) {
+	  showLogin("Your account has been successfully activated. You may now sign into ohmage. Welcome!");
+    } else if (view.equals("notactivated")) {
+	  showLogin("Your account was not created because your activation link has expired. You may register again to create an account.");
     }
   }
   

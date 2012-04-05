@@ -31,6 +31,7 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.MobilityChunkedDat
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.MobilityDataPointAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.MobilityLocationAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.PromptResponseAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.RegistrationInfoAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.SurveyResponseAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
@@ -45,6 +46,7 @@ import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.PromptResponse;
+import edu.ucla.cens.mobilize.client.model.RegistrationInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
@@ -688,16 +690,32 @@ public class AwDataTranslators {
       return documentInfos;
     }
 
+    public static RegistrationInfo translateRegistrationReadQueryToRegistrationInfo(String result) {
+    	RegistrationInfo regInfo = new RegistrationInfo();
+    	RegistrationInfoAwData awData = RegistrationInfoAwData.fromJsonString(result);
+    	regInfo.setRecaptchaKey(awData.getRecaptchaKey());
+    	regInfo.setTermsOfService(awData.getTermsOfService());
+    	return regInfo;
+    }
+    
     // {"result":"success","data":{"application_build":"55e80e9","application_name":"ohmage","application_version":"2.5","default_survey_response_sharing_state":"private"}}
     public static AppConfig translateAppConfigReadQueryToAppConfig(String result) {
       AppConfig appConfig = new AppConfig();
       AppConfigAwData awData = AppConfigAwData.fromJsonString(result);
       AppConfig.setAppName(awData.getApplicationName());
+      
       if (awData.mobilityEnabledFlagExists()) {
         AppConfig.setMobilityEnabled(awData.getMobilityEnabled());
       } else { // Default behavior is "true" if no flag exists
-    	AppConfig.setMobilityEnabled(true);
+        AppConfig.setMobilityEnabled(true);
       }
+        
+      if (awData.selfRegistrationAllowedFlagExists()) {
+        AppConfig.setSelfRegistrationEnabled(awData.getSelfRegistrationAllowed());
+      } else { // Default behavior is "true" if no flag exists
+  	    AppConfig.setSelfRegistrationEnabled(false);
+      }
+      
       if (awData.documentUploadMaxSizeFlagExists()) {
         AppConfig.setDocumentUploadMaxSize(awData.getDocumentUploadMaxSize());
       } else {

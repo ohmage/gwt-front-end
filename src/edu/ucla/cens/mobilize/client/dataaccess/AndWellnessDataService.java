@@ -50,6 +50,7 @@ import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
+import edu.ucla.cens.mobilize.client.model.RegistrationInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponseData;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -1930,5 +1931,75 @@ public class AndWellnessDataService implements DataService {
 		}    
 	}
 
+	@Override
+	public void fetchRegistrationInfo(final AsyncCallback<RegistrationInfo> callback) {
+		// NOTE: this api call doesn't need auth token so it's ok to call before initializing data service
+		final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getRegistrationReadUrl());
+		_logger.fine("Fetching registration info.");
+		String postParams = ""; // no params for this call
+		try {
+			requestBuilder.sendRequest(postParams, new RequestCallback() {
+				@Override
+				public void onResponseReceived(Request request, Response response) {
+					try {
+						String result = getResponseTextOrThrowException(requestBuilder, response);
+						RegistrationInfo regInfo = AwDataTranslators.translateRegistrationReadQueryToRegistrationInfo(result);
+						callback.onSuccess(regInfo);
+					} catch (Exception exception) {
+						_logger.severe(exception.getMessage());
+						callback.onFailure(exception);
+					}
+				}
 
+				@Override
+				public void onError(Request request, Throwable exception) {
+					_logger.severe(exception.getMessage());
+					callback.onFailure(exception);
+				}
+			});
+		} catch (RequestException e) {
+			_logger.severe(e.getMessage());
+			throw new ServerException("Cannot contact server.");
+		}
+	}
+
+	@Override
+	public void registerUser(String username, String password, String email,
+			String recaptcha_challenge_field, String recaptcha_response_field,
+			final AsyncCallback<String> callback) {
+		final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserRegisterUrl());
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("client", this.client);
+		params.put("username", username);
+		params.put("password", password);
+		params.put("email_address", email);
+		params.put("recaptcha_challenge_field", recaptcha_challenge_field);
+		params.put("recaptcha_response_field", recaptcha_response_field);
+		String postParams = MapUtils.translateToParameters(params);
+		_logger.fine("Attempting to register new user with parameters: " + postParams);
+		try {
+			requestBuilder.sendRequest(postParams, new RequestCallback() {
+				@Override
+				public void onResponseReceived(Request request, Response response) {
+					try {
+						getResponseTextOrThrowException(requestBuilder, response);
+						// no exception? then it was successful
+						callback.onSuccess("");
+					} catch (Exception exception) {
+						_logger.severe(exception.getMessage());
+						callback.onFailure(exception);
+					}
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					_logger.severe(exception.getMessage());
+					callback.onFailure(exception);
+				}
+			});
+		} catch (RequestException e) {
+			_logger.severe(e.getMessage());
+			throw new ServerException("Cannot contact server.");
+		}
+	}
 }

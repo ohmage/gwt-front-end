@@ -28,6 +28,14 @@ public class AppConfigAwData extends JavaScriptObject {
     return this.data['maximum_parameter_size'];
   }-*/;
   
+  public final native boolean selfRegistrationAllowedFlagExists() /*-{
+    return this.data['self_registration_allowed'] !== undefined;
+  }-*/;
+
+  public final native boolean getSelfRegistrationAllowed() /*-{
+    return this.data['self_registration_allowed'];
+  }-*/;
+  
   /*
   private final native JsArrayString getPrivacyStateStrings() /*-{
     return this.data.privacy_states;

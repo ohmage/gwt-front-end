@@ -39,6 +39,7 @@ import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
+import edu.ucla.cens.mobilize.client.model.RegistrationInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponseData;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -686,4 +687,19 @@ public void removePersonalUserInfo(String username,
 	// TODO Auto-generated method stub
 	
 }
+
+@Override
+public void fetchRegistrationInfo(AsyncCallback<RegistrationInfo> asyncCallback) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void registerUser(String username, String password, String email,
+		String recaptcha_challenge_field, String recaptcha_response_field,
+		AsyncCallback<String> callback) {
+	// TODO Auto-generated method stub
+	
+}
+
 }

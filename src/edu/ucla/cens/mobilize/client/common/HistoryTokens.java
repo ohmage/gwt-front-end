@@ -17,6 +17,22 @@ import edu.ucla.cens.mobilize.client.utils.MapUtils;
  *
  */
 public class HistoryTokens {
+  public static String login() {
+    return "login";
+  }
+  
+  public static String register() {
+    return "register";
+  }
+  
+  public static String activated() {
+    return "activated";
+  }
+  
+  public static String notactivated() {
+    return "notactivated";
+  }
+  
   public static String logout() {
     return "logout";
   }

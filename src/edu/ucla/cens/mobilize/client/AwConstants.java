@@ -130,6 +130,10 @@ public class AwConstants {
       return getServerLocation() + AwUri.USER_READ;
     }
     
+    public static String getUserRegisterUrl() {
+      return getServerLocation() + AwUri.USER_REGISTER;
+    }
+    
     public static String getUserCreateUrl() {
       return getServerLocation() + AwUri.USER_CREATE;
     }
@@ -256,6 +260,10 @@ public class AwConstants {
     
     public static String getMobilityDatesReadUrl() {
       return getServerLocation() + AwUri.MOBILITY_DATES_READ;
+    }
+    
+    public static String getRegistrationReadUrl() {
+      return getServerLocation() + AwUri.REGISTRATION_READ;
     }
     
     /**

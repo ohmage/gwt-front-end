@@ -128,4 +128,16 @@ public class LoginViewAndWellnessImpl extends Composite implements LoginView {
     public void showError(String errorMsg) {
       ErrorDialog.show(errorMsg);
     }
+
+	@Override
+	public void setNotificationMessage(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setSelfRegistrationEnabled(boolean isEnabled) {
+		// TODO Auto-generated method stub
+		
+	}
 }

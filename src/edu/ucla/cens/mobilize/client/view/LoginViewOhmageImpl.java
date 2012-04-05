@@ -12,14 +12,18 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineHyperlink;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 
@@ -33,13 +37,20 @@ public class LoginViewOhmageImpl extends Composite implements LoginView {
     @UiField TextBox userNameTextBox;
     @UiField PasswordTextBox passwordTextBox;
     @UiField Button loginButton;
-    // dynamically fill html here depending on the installation
+    @UiField HTMLPanel selfRegistrationText;
+    @UiField HTMLPanel messagePanel;
+    @UiField HTMLPanel messageBox;
+    @UiField InlineHyperlink selfRegisterLink;
     
     private Presenter presenter;
     
     public LoginViewOhmageImpl() {
         initWidget(uiBinder.createAndBindUi(this)); 
         initEventHandlers();
+        
+        // Defaults
+        setNotificationMessage(null);
+        setSelfRegistrationEnabled(false);
         
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             public void execute () {
@@ -48,7 +59,8 @@ public class LoginViewOhmageImpl extends Composite implements LoginView {
         });
     }
     
-    private void initEventHandlers() {
+    @SuppressWarnings("deprecation")
+	private void initEventHandlers() {
       // clicking login button submits (note: pressing enter
       //  while login has focus also submits)
       loginButton.addClickHandler(new ClickHandler() {
@@ -128,5 +140,21 @@ public class LoginViewOhmageImpl extends Composite implements LoginView {
     public void showError(String errorMsg) {
       ErrorDialog.show(errorMsg);
     }
-    
+
+	@Override
+	public void setNotificationMessage(String message) {
+		if (message == null || message == "") {
+			messagePanel.setVisible(false);
+			return;
+		}
+		
+		messageBox.clear();
+		messageBox.add(new InlineLabel(message));
+		messagePanel.setVisible(true);
+	}
+
+	@Override
+	public void setSelfRegistrationEnabled(boolean isEnabled) {
+		selfRegistrationText.setVisible(isEnabled);
+	}
 }

@@ -25,11 +25,9 @@ public interface LoginView extends IsWidget {
     void disableLoginForm();
     void enableLoginForm();
     
-    /*
-    // app-specific display
-    void setAppName(String appName);
-    void setLogoUrl(String url);
-    void setLinks(List<String> linkTexts, List<String> linkUrls);
-    void setDescriptionHtml(String loginPageHtml);
-    */
+    // Login Notification Message
+    void setNotificationMessage(String message);
+    
+    // Registration
+    void setSelfRegistrationEnabled(boolean isEnabled);
 }

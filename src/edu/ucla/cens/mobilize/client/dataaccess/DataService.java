@@ -26,6 +26,7 @@ import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityChunkedInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
+import edu.ucla.cens.mobilize.client.model.RegistrationInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.SurveyResponseData;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -453,4 +454,21 @@ public interface DataService {
                           Date end_date,
                           String username,
                           AsyncCallback<List<Date>> callback);
+  
+  /**
+   * Retrieves self-registration information
+   * @param asyncCallback returns RegistrationInfo object on success
+   */
+  void fetchRegistrationInfo(final AsyncCallback<RegistrationInfo> asyncCallback);
+  
+  /**
+   * Registers a new username with server. User will receive an activation email from the server.
+   * @param username username
+   * @param password password
+   * @param email e-mail address
+   * @param recaptcha_challenge_field recaptcha challenge field
+   * @param recaptcha_response_field recaptcha response field
+   * @param callback returns success/error message (if any)
+   */
+  void registerUser(String username, String password, String email, String recaptcha_challenge_field, String recaptcha_response_field, AsyncCallback<String> callback);
 }
