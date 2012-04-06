@@ -194,20 +194,17 @@ public class MainApp implements EntryPoint, HistoryListener {
 		  loadAppConfigAndInitApp();
 		  bind();
 	  } else {
-		  // NOTE: These tokens need to be handled here because they are separate from the main dashboard tokens
-		  if (HistoryTokens.register().equals(initialToken)) {
-			  History.newItem(HistoryTokens.register());
-		  } else if (HistoryTokens.activated().equals(initialToken)) {
-			  History.newItem(HistoryTokens.activated());
-		  } else if (HistoryTokens.notactivated().equals(initialToken)) {
-			  History.newItem(HistoryTokens.notactivated());
-		  } else {
-			  History.newItem(HistoryTokens.login());
-		  }
-		  
-		  // If the user redirects from root --> login, we don't want the token to fire twice
-		  if (initialToken.isEmpty() == false)
+		  // NOTE #1: These tokens need to be handled here because they are separate from the main dashboard tokens
+		  // NOTE #2: History will fire the initial token, so we call History.fireCurrentHistoryState() manually
+		  if (HistoryTokens.register().equals(extractView(initialToken))) {
 			  History.fireCurrentHistoryState();
+		  } else if (HistoryTokens.activate().equals(extractView(initialToken))) {
+			  History.fireCurrentHistoryState();
+		  } else if (HistoryTokens.login().equals(extractView(initialToken))){
+			  History.fireCurrentHistoryState();
+		  } else {	// All unrecognized tokens go to "login"
+			  History.newItem(HistoryTokens.login());	// Special case: newItem(...) fires automatically
+		  }
 	  }
   }
   
@@ -730,8 +727,6 @@ public class MainApp implements EntryPoint, HistoryListener {
   }
   
   private void showSelfRegistration() {
-	  _logger.fine("Called: showSelfRegistration()");
-
 	  if (loginView != null)	loginView.asWidget().removeFromParent();
 
 	  if (loginSelfRegistrationView == null) {
@@ -744,18 +739,33 @@ public class MainApp implements EntryPoint, HistoryListener {
 	  }
   }
   
-  private void showLogin(String message) {
-	  _logger.fine("Called: showLogin()");
-
+  private void showLogin(final String message) {
 	  if (loginSelfRegistrationView != null)	loginSelfRegistrationView.removeFromParent();
 
 	  if (loginView == null || loginPresenter == null) {
 		  initLogin(message);
 	  } else {
 		  loginView.setNotificationMessage(message);
-		  if (!loginView.asWidget().isAttached())
-			  RootLayoutPanel.get().add(loginView);
+		  
+		  loginView.asWidget().removeFromParent();
+		  RootLayoutPanel.get().add(loginView);
 	  }
+  }
+  
+  private void activateUserAndShowLogin(String registration_id) {
+	  this.awDataService.activateUser(registration_id, new AsyncCallback<String>() {
+		  @Override
+		  public void onFailure(Throwable caught) {
+			  String message = "Sorry, your activation link has expired (" + caught.getMessage() + "). Please register again to create an account.";
+			  showLogin(message);
+		  }
+
+		  @Override
+		  public void onSuccess(String result) {
+			  String message = "Your account has been successfully activated. You may now sign into ohmage. Welcome!";
+			  showLogin(message);
+		  }
+	  });
   }
   
   /******** End methods to control visible widgets ********/
@@ -834,16 +844,17 @@ public class MainApp implements EntryPoint, HistoryListener {
       showSelfRegistration();
     } else if (view.equals("login")) {
       showLogin(null);
-    } else if (view.equals("activated")) {
-	  showLogin("Your account has been successfully activated. You may now sign into ohmage. Welcome!");
-    } else if (view.equals("notactivated")) {
-	  showLogin("Your account was not created because your activation link has expired. You may register again to create an account.");
+    } else if (view.equals("activate")) {
+      if (params.containsKey("registration_id"))
+    	  activateUserAndShowLogin(params.get("registration_id"));
+      else
+    	  showLogin(null);
     }
   }
   
   private void logout() {
     loginManager.logOut();
-    History.newItem("dashboard", false); // logging in again will show dashboard
+    History.newItem("login", false); // logging in again will show dashboard
     Window.Location.reload(); // reload to clear state
   }
   

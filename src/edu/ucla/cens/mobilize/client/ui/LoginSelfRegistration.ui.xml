@@ -151,7 +151,7 @@
 	}
 	
 	/*** footer panel ***/
-	.ohmage-footer-bar {	/* footer panel */
+	.ohmage-fullwidth-panel {	/* footer panel */
 		padding-top: 10px;
 		position: block;
 		width: 100%;
@@ -193,10 +193,10 @@
 			<g:Hyperlink targetHistoryToken='login'>&#8592; Return to ohmage login</g:Hyperlink>
 			
 			<!-- REGISTRATION PANEL -->
-			<g:HTMLPanel ui:field='registrationPanel' addStyleNames='{style.ohmage-footer-bar} {style.registration-panel}'>
+			<g:HTMLPanel ui:field='registrationPanel' addStyleNames='{style.ohmage-fullwidth-panel} {style.registration-panel}'>
 				<!-- TITLE TEXT -->
-				<g:Label>Create your ohmage account in seconds</g:Label>
-				<g:Hyperlink targetHistoryToken='login'>Already have an account?</g:Hyperlink>
+				<h1>Create your ohmage account in seconds</h1>
+				<h2><g:Hyperlink targetHistoryToken='login'>Already have an account?</g:Hyperlink></h2>
 				
 				<!-- REGISTRATION FORM -->
 				<g:HTMLPanel addStyleNames='{style.registration-box}'>
@@ -219,9 +219,9 @@
 			</g:HTMLPanel>
 			
 			<!-- SUBMISSION PANEL -->
-			<g:HTMLPanel ui:field='submissionPanel' addStyleNames='{style.ohmage-footer-bar} {style.registration-panel}'>
+			<g:HTMLPanel ui:field='submissionPanel' addStyleNames='{style.ohmage-fullwidth-panel} {style.registration-panel}'>
 				<!-- TITLE TEXT -->
-				<g:Label>Just one more step...</g:Label>
+				<h1>Just one more step...</h1>
 				
 				<!-- SUBMISSION TEXT -->
 				<g:HTMLPanel addStyleNames='{style.registration-box}'>
@@ -233,7 +233,7 @@
 			</g:HTMLPanel>
 			
 			<!-- FOOTER BAR (FOOTER #2) -->
-			<g:HTMLPanel addStyleNames='{style.ohmage-footer-bar}'>
+			<g:HTMLPanel addStyleNames='{style.ohmage-fullwidth-panel}'>
 				<g:HTMLPanel addStyleNames='{style.footer-box} {style.float-right}'>
 					<ul>
 						<li>Powered by <b>ohmage</b></li>

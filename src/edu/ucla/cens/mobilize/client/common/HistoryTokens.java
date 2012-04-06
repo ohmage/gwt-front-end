@@ -25,12 +25,8 @@ public class HistoryTokens {
     return "register";
   }
   
-  public static String activated() {
-    return "activated";
-  }
-  
-  public static String notactivated() {
-    return "notactivated";
+  public static String activate() {
+    return "activate";
   }
   
   public static String logout() {

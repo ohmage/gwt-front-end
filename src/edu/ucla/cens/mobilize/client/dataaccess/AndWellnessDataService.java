@@ -2002,4 +2002,38 @@ public class AndWellnessDataService implements DataService {
 			throw new ServerException("Cannot contact server.");
 		}
 	}
+	
+	@Override
+	public void activateUser(final String registration_id, final AsyncCallback<String> callback) {
+		final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserActivateUrl());
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("client", this.client);
+		params.put("registration_id", registration_id);
+		String postParams = MapUtils.translateToParameters(params);
+		_logger.fine("Attempting to activate user with parameters: " + postParams);
+		try {
+			requestBuilder.sendRequest(postParams, new RequestCallback() {
+				@Override
+				public void onResponseReceived(Request request, Response response) {
+					try {
+						getResponseTextOrThrowException(requestBuilder, response);
+						// no exception? then it was successful
+						callback.onSuccess("");
+					} catch (Exception exception) {
+						_logger.severe(exception.getMessage());
+						callback.onFailure(exception);
+					}
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					_logger.severe(exception.getMessage());
+					callback.onFailure(exception);
+				}
+			});
+		} catch (RequestException e) {
+			_logger.severe(e.getMessage());
+			throw new ServerException("Cannot contact server.");
+		}
+	}
 }

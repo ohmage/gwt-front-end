@@ -134,6 +134,10 @@ public class AwConstants {
       return getServerLocation() + AwUri.USER_REGISTER;
     }
     
+    public static String getUserActivateUrl() {
+      return getServerLocation() + AwUri.USER_ACTIVATE;
+    }
+    
     public static String getUserCreateUrl() {
       return getServerLocation() + AwUri.USER_CREATE;
     }

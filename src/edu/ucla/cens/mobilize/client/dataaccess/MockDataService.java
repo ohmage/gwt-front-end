@@ -702,4 +702,10 @@ public void registerUser(String username, String password, String email,
 	
 }
 
+@Override
+public void activateUser(String registration_id, AsyncCallback<String> callback) {
+	// TODO Auto-generated method stub
+	
+}
+
 }

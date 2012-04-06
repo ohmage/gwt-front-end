@@ -471,4 +471,11 @@ public interface DataService {
    * @param callback returns success/error message (if any)
    */
   void registerUser(String username, String password, String email, String recaptcha_challenge_field, String recaptcha_response_field, AsyncCallback<String> callback);
+  
+  /**
+   * Submits self-registration verification id to server. Returns success if successfully registered.
+   * @param registration_id
+   * @param callback
+   */
+  void activateUser(String registration_id, AsyncCallback<String> callback);
 }

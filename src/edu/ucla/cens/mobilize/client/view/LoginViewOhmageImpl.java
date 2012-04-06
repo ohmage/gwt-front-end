@@ -143,7 +143,7 @@ public class LoginViewOhmageImpl extends Composite implements LoginView {
 
 	@Override
 	public void setNotificationMessage(String message) {
-		if (message == null || message == "") {
+		if (message == null || message.isEmpty()) {
 			messagePanel.setVisible(false);
 			return;
 		}
