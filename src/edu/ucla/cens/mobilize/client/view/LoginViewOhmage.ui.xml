@@ -129,7 +129,6 @@
 	}
 	.signin-label {
 		display: block;
-		color: #999;
 		margin-bottom: 5px;
 	}
 	.signin-textbox {

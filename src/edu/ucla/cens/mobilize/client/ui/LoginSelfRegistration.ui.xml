@@ -97,10 +97,11 @@
 		height: 0;
 	}
 	
-	/*** left panel ***/
+	/*** registration panel ***/
 	.registration-panel {
 		padding-bottom: 10px;
 	}
+	/*
 	.registration-box {
 		padding: 20px;
 		background: #f4f9fd;
@@ -112,11 +113,39 @@
 		
 		margin-bottom: 10px;
 	}
+	*/
 	
+	/*** left panel ***/
+	.registration-left {
+		margin: 0 325px 0 0;
+		height: auto;
+		
+		padding: 20px;
+		background: #f4f9fd;
+		border: 1px solid #d2eafd;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-khtml-border-radius: 2px;
+		border-radius: 2px;
+		margin-bottom: 10px;
+	}
 	/*** right panel ***/
-	.right-panel {
-		width: 285px;
+	.registration-right {
+		width: 280px;
+		height: auto;
 		float: right;
+		
+		padding: 20px;
+		color: #75818A;
+		/*
+		background: #f4f9fd;
+		border: 1px solid #d2eafd;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		-khtml-border-radius: 2px;
+		border-radius: 2px;
+		*/
+		margin-bottom: 10px;
 	}
 	
 	/*** registration elements ***/
@@ -140,7 +169,7 @@
 		padding-bottom: 8px;
 	}
 	.input-box, .tos-box {
-		width: 500px;
+		width: 515px;
 		border-width: 1px;
 		border-style: solid;
 		border-color: #C6D9E9;
@@ -200,11 +229,11 @@
 		border-radius: 2px;
 	}
 	.submission-text {
-		font-size: 14px;
-		color: #555;
+		font-size: 16px;
+		color: #666;
 		font-family: Georgia, serif;
 		font-style: italic;
-		padding-bottom: 8px;
+		padding-bottom: 24px;
 	}
 	
 	/*** footer panel ***/
@@ -234,6 +263,14 @@
 		float: right;
 		text-align: right;
 	}
+	.helpPanelSpecialChars {
+      margin: auto;
+    }
+    .helpPanelSpecialChars td {
+      border: solid thin #DDD;
+      margin: 0px;
+      padding: 0px 3px;
+    }
   </ui:style>
 
 	<g:HTMLPanel addStyleNames='{style.wrapper}'>
@@ -256,37 +293,75 @@
 				<h2><g:Hyperlink targetHistoryToken='login'>Already have an account?</g:Hyperlink></h2>
 				
 				<!-- REGISTRATION FORM -->
-				<g:HTMLPanel addStyleNames='{style.registration-box}'>
-					<g:Label addStyleNames='{style.input-label}'>Username:</g:Label>
-					<g:TextBox ui:field='username' addStyleNames='{style.input-box}' />
+				<g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-right}'>
+						Your username must be 4 ~ 25 characters long and begin with a letter. You may use alphanumeric and special characters: 
+						<g:HTMLPanel addStyleNames='{style.helpPanelSpecialChars}'>
+							<g:Grid><g:row>
+								<g:cell>.</g:cell><g:cell>_</g:cell><g:cell>@</g:cell><g:cell>+</g:cell><g:cell>-</g:cell>
+							</g:row></g:Grid>
+						</g:HTMLPanel>
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+						<g:Label addStyleNames='{style.input-label}'>Username:</g:Label>
+						<g:TextBox ui:field='username' addStyleNames='{style.input-box}' />
+					</g:HTMLPanel>
 				</g:HTMLPanel>
-				<g:HTMLPanel addStyleNames='{style.registration-box}'>
-					<g:Label addStyleNames='{style.input-label}'>Password:</g:Label>
-					<g:PasswordTextBox ui:field='password' addStyleNames='{style.input-box}' />
-					<g:Label addStyleNames='{style.input-label}'>Confirm:</g:Label>
-					<g:PasswordTextBox ui:field='passwordConfirm' addStyleNames='{style.input-box}' />
+				<g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-right}'>
+						Your password must be 8 ~ 16 characters long and contain at least:<br/>
+						- one lower case letter,<br/>
+						- one upper case letter,<br/>
+						- one number, AND<br/>
+						- one special character: 
+						<g:HTMLPanel addStyleNames='{style.helpPanelSpecialChars}'>
+							<g:Grid><g:row>
+								<g:cell>,</g:cell><g:cell>.</g:cell><g:cell>&#60;</g:cell><g:cell>&#62;</g:cell><g:cell>!</g:cell><g:cell>@</g:cell><g:cell>#</g:cell><g:cell>$</g:cell><g:cell>%</g:cell><g:cell>^</g:cell><g:cell>&amp;</g:cell><g:cell>*</g:cell><g:cell>+</g:cell><g:cell>-</g:cell><g:cell>:</g:cell>
+							</g:row></g:Grid>
+						</g:HTMLPanel>
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+						<g:Label addStyleNames='{style.input-label}'>Password:</g:Label>
+						<g:PasswordTextBox ui:field='password' addStyleNames='{style.input-box}' />
+						<g:Label addStyleNames='{style.input-label}'>Confirm:</g:Label>
+						<g:PasswordTextBox ui:field='passwordConfirm' addStyleNames='{style.input-box}' />
+					</g:HTMLPanel>
 				</g:HTMLPanel>
-				<g:HTMLPanel addStyleNames='{style.registration-box}'>
-					<g:Label addStyleNames='{style.input-label}'>Email Address:</g:Label>
-					<g:TextBox ui:field='email' addStyleNames='{style.input-box}' />
+				<g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-right}'>
+						Your email address (e.g. fake@example.com). We will send you a verification email to this address after you register.
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+						<g:Label addStyleNames='{style.input-label}'>Email Address:</g:Label>
+						<g:TextBox ui:field='email' addStyleNames='{style.input-box}' />
+					</g:HTMLPanel>
 				</g:HTMLPanel>
-				<g:HTMLPanel addStyleNames='{style.registration-box}'>
-					<g:Label addStyleNames='{style.input-label}'>Are you human?</g:Label>
-					<g:HTMLPanel ui:field='recaptchaContainer' addStyleNames='{style.recaptcha-box}'></g:HTMLPanel>
+				<g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-right}'>
+						Type in the letters you see in the ReCaptcha image. If you have trouble, try refreshing the captcha to see another image.
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+						<g:Label addStyleNames='{style.input-label}'>Are you human?</g:Label>
+						<g:HTMLPanel ui:field='recaptchaContainer' addStyleNames='{style.recaptcha-box}'></g:HTMLPanel>
+					</g:HTMLPanel>
 				</g:HTMLPanel>
-				<g:HTMLPanel addStyleNames='{style.registration-box}'>
-					<g:Label addStyleNames='{style.input-label}'>Terms of Service:</g:Label>
-					<g:TextArea ui:field='tos' height="200px" addStyleNames='{style.tos-box}'>Loading terms of service...</g:TextArea>
-					<br/><br/>
-					<g:CheckBox ui:field='agree' addStyleNames='{style.input-label}'>I agree to the terms of service</g:CheckBox>
-					<br/><br/>
+				<g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-right}'>
+						Please review the terms of service carefully. You must agree to these terms in order to register.
+					</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+						<g:Label addStyleNames='{style.input-label}'>Terms of Service:</g:Label>
+						<g:TextArea ui:field='tos' height="200px" addStyleNames='{style.tos-box}'>Loading terms of service...</g:TextArea>
+						<br/><br/>
+						<g:CheckBox ui:field='agree' addStyleNames='{style.input-label}'>I agree to the terms of service</g:CheckBox>
+						<br/><br/>
+						
+						<!-- ERROR MSG TEXT -->
+						<g:Label ui:field='errorText' addStyleNames='{style.error-box}'></g:Label>
 					
-					<!-- ERROR MSG TEXT -->
-					<g:Label ui:field='errorText' addStyleNames='{style.error-box}'></g:Label>
-				
-					<g:Button ui:field='submit' addStyleNames='{style.signin-button}'>Create my account</g:Button>
+						<g:Button ui:field='submit' addStyleNames='{style.signin-button}'>Create my account</g:Button>
+					</g:HTMLPanel>
 				</g:HTMLPanel>
-				
 			</g:HTMLPanel>
 			
 			<!-- SUBMISSION PANEL -->
@@ -296,10 +371,11 @@
 				
 				<!-- SUBMISSION TEXT -->
 				<g:HTMLPanel addStyleNames='{style.submission-box}'>
-					<g:Label>We got your registration!</g:Label>
-					<g:Label>A confirmation link has been sent to the email address you provided (it may take a few minutes). Simply click that link to activate your account, and you're ready to go.</g:Label>
-					<g:Label>Thank you, and welcome to ohmage!</g:Label>
-					<g:Label>- the ohmage team</g:Label>
+					<h1>Please activate your account</h1>
+					<g:Label addStyleNames='{style.submission-text}'>We got your registration.</g:Label>
+					<g:Label addStyleNames='{style.submission-text}'>A confirmation link has been sent to the email address you provided (it may take a few minutes). Simply click that link to activate your account, and you're ready to go.</g:Label>
+					<g:Label addStyleNames='{style.submission-text}'>Thank you, and welcome to ohmage!</g:Label>
+					<g:Label addStyleNames='{style.submission-text}'>- the ohmage team</g:Label>
 				</g:HTMLPanel>
 			</g:HTMLPanel>
 			
