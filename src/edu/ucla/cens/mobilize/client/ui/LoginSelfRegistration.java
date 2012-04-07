@@ -10,7 +10,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
@@ -20,6 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.model.RegistrationInfo;
+import edu.ucla.cens.mobilize.client.utils.InputValidationUtils;
 
 public class LoginSelfRegistration extends Composite {
 	private static LoginSelfRegistrationUiBinder uiBinder = GWT
@@ -82,6 +82,10 @@ public class LoginSelfRegistration extends Composite {
 
 			@Override
 			public void onSuccess(RegistrationInfo result) {
+				if (result.getRecaptchaKey().isEmpty()) {
+					
+				}
+				
 				setRecaptchaKey(result.getRecaptchaKey());
 				setTermsOfServiceText(result.getTermsOfService());
 			}
@@ -91,23 +95,43 @@ public class LoginSelfRegistration extends Composite {
 	// --- Form submission
 
 	private void validateAndSubmitRegistration() {
-		if (captcha == null)	return;	// TODO: Display recaptcha error
-		
-		// Validate
-		// TODO: Validate on front-end first
-		
-		// Submit
+		if (captcha == null) {
+			displayRegistrationError("Sorry, ReCaptcha is unavailable at this time. Please try again later or contact us if the problem persists.");
+			return;
+		}
+
+		// Get values from UI and captcha
 		final String username = this.getUsername();
 		final String password = this.getPassword();
+		final String passwordConfirm = this.getPasswordConfirm();
 		final String email = this.getEmail();
 		final String recaptcha_challenge_field = this.captcha.getChallenge();
 		final String recaptcha_response_field = this.captcha.getResponse();
 		
+		// Validate
+		// NOTE: We let the server report back errors in the username and password formats, in case we decide to change them
+		if (username.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty() || email.isEmpty()) {
+			displayRegistrationError("Looks like you're missing something. Please fill in all fields and try again.");
+			return;
+		}
+		if (!agree.getValue()) {
+			displayRegistrationError("Whoops! You must read and agree to the terms of service to register.");
+			return;
+		}
+		if (!InputValidationUtils.isValidEmail(email)) {
+			displayRegistrationError("The e-mail you provided is invalid. Please re-enter and try again.");
+			return;
+		}
+		if (!password.equals(passwordConfirm)) {
+			displayRegistrationError("Your passwords do not match. Please re-enter both carefully and try again.");
+			return;
+		}
+		
+		// Submit
 		dataService.registerUser(username, password, email, recaptcha_challenge_field, recaptcha_response_field, new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				errorText.setText(caught.getMessage());
-				errorText.setVisible(true);
+				displayRegistrationError(caught.getMessage());
 				captcha.reload();
 			}
 
@@ -125,21 +149,30 @@ public class LoginSelfRegistration extends Composite {
 		submissionPanel.setVisible(isFinished);
 	}
 	
-	public void clearFields() {
-		// TODO
+	public void displayRegistrationError(String msg) {
+		if (msg != null && !msg.isEmpty()) {
+			errorText.setText(msg);
+			errorText.setVisible(true);
+		} else {
+			errorText.setVisible(false);
+		}
 	}
 	
-	public void highlightErrors() {
-		// TODO
-	}
-
 	public void setRecaptchaKey(String recaptchaKey) {
-		captcha = new RecaptchaWidget(recaptchaKey, "en", "clean");
-		recaptchaContainer.add(captcha);
+		if (recaptchaKey == null || recaptchaKey.isEmpty()) {
+			recaptchaContainer.add(new Label("(this ReCaptcha is currently unavailable at this time)"));
+		} else {
+			captcha = new RecaptchaWidget(recaptchaKey, "en", "clean");
+			recaptchaContainer.add(captcha);
+		}
 	}
 	
 	public void setTermsOfServiceText(String tosText) {
-		tos.setText(tosText);
+		if (tosText == null || tosText.isEmpty()) {
+			tos.setText("(the terms of service is currently unavailable at this time)");
+		} else {
+			tos.setText(tosText);
+		}
 	}
 	
 	// --- Input controls

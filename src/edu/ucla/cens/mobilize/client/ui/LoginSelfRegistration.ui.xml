@@ -97,7 +97,7 @@
 		height: 0;
 	}
 	
-	/*** message panel ***/
+	/*** left panel ***/
 	.registration-panel {
 		padding-bottom: 10px;
 	}
@@ -109,6 +109,8 @@
 		-webkit-border-radius: 2px;
 		-khtml-border-radius: 2px;
 		border-radius: 2px;
+		
+		margin-bottom: 10px;
 	}
 	
 	/*** right panel ***/
@@ -116,7 +118,79 @@
 		width: 285px;
 		float: right;
 	}
-	.signin-box {
+	
+	/*** registration elements ***/
+	.error-box {
+		color: #FF4E10;
+		background-color: #FDFBFA;
+		padding: 10px;
+		margin-bottom: 20px;
+		border: 1px solid #FFA788;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		border-radius: 5px;
+		-moz-box-shadow: 0px 0px 10px rgba(255,20,0,0.2);
+		-webkit-box-shadow: 0px 0px 10px rgba(255,20,0,0.2);
+		box-shadow: 0px 0px 10px rgba(255,20,0,0.2);
+	}
+	.input-label {
+		font-size: 12pt;
+		font-weight: normal;
+		text-shadow: 0 -1px 1px white;
+		padding-bottom: 8px;
+	}
+	.input-box, .tos-box {
+		width: 500px;
+		border-width: 1px;
+		border-style: solid;
+		border-color: #C6D9E9;
+		/* margin-bottom: 4px; */
+	}
+	.input-box {
+		font-size: 12pt;
+		height: 30px;
+		padding: 4px 4px 4px 10px;
+		border-width: 1px;
+		border-style: solid;
+		border-color: #C6D9E9;
+		margin-bottom: 4px;
+	}
+	.recaptcha-box {
+		background-color: white;
+		padding: 10px;
+		
+		border: 1px solid #C6D9E9;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		-khtml-border-radius: 5px;
+		border-radius: 5px;
+	}
+	.tos-box {
+		font-family: 'Courier New', Courier, monospace;
+		font-size: 11px;
+		height: 200px;
+		padding: 4px 4px 4px 10px;
+	}
+	
+	.signin-button {
+		background-image: url(images/theme-ohmage/login-button-bg.png);
+		background-repeat: repeat-x;
+		height: 40px;
+		width: 250px;
+		font-size: 16px;
+		font-weight: bold;
+		color: white;
+		text-shadow: 0 -1px 1px #666;
+		text-align: center;
+		margin-bottom: 10px;
+		box-shadow: 0px 1px 16px rgba(4,180,246,0.6);
+	}
+	
+	/*** submission panel ***/
+	.submission-panel {
+		padding-bottom: 10px;
+	}
+	.submission-box {
 		padding: 20px;
 		background: #f4f9fd;
 		border: 1px solid #d2eafd;
@@ -125,29 +199,12 @@
 		-khtml-border-radius: 2px;
 		border-radius: 2px;
 	}
-	.signin-label {
-		display: block;
-		color: #999;
-		margin-bottom: 5px;
-	}
-	.signin-textbox {
-		display: block;
-		padding: 5px;
-		width: 95%;
-		border: 1px solid #51aff9;
-		margin-bottom: 10px;
-	}
-	.signin-button {
-		background-image: url('images/theme-ohmage/login-button-bg.png');
-		background-repeat: repeat-x;
-		height: 28px;
-		width: 50%;
-		font-size: 100%;
-		font-weight: bold;
-		color: #FFF;
-		text-shadow: 0px -1px 1px #666;
-		text-align: center;
-		margin-bottom: 10px;
+	.submission-text {
+		font-size: 14px;
+		color: #555;
+		font-family: Georgia, serif;
+		font-style: italic;
+		padding-bottom: 8px;
 	}
 	
 	/*** footer panel ***/
@@ -190,7 +247,7 @@
 
 		<g:HTMLPanel addStyleNames='{style.main} {style.content} {style.clearfix}'>
 			<!-- BACK TO LOGIN PAGE LINK -->
-			<g:Hyperlink targetHistoryToken='login'>&#8592; Return to ohmage login</g:Hyperlink>
+			<g:Hyperlink targetHistoryToken='login'>&#8592; Back to ohmage login</g:Hyperlink>
 			
 			<!-- REGISTRATION PANEL -->
 			<g:HTMLPanel ui:field='registrationPanel' addStyleNames='{style.ohmage-fullwidth-panel} {style.registration-panel}'>
@@ -200,31 +257,45 @@
 				
 				<!-- REGISTRATION FORM -->
 				<g:HTMLPanel addStyleNames='{style.registration-box}'>
-					<g:Label ui:field='errorText'></g:Label>
-					<g:Label>Username:</g:Label>
-					<g:TextBox ui:field='username' />
-					<g:Label>Password:</g:Label>
-					<g:PasswordTextBox ui:field='password' />
-					<g:Label>Confirm:</g:Label>
-					<g:PasswordTextBox ui:field='passwordConfirm' />
-					<g:Label>Email Address:</g:Label>
-					<g:TextBox ui:field='email' />
-					<g:Label>Are you human?</g:Label>
-					<g:HTMLPanel ui:field='recaptchaContainer'></g:HTMLPanel>
-					<g:Label>Terms of Service</g:Label>
-					<g:TextArea ui:field='tos'>Loading terms of service...</g:TextArea>
-					<g:CheckBox ui:field='agree'>I agree to the terms of service</g:CheckBox>
-					<g:Button ui:field='submit'>Register</g:Button>
+					<g:Label addStyleNames='{style.input-label}'>Username:</g:Label>
+					<g:TextBox ui:field='username' addStyleNames='{style.input-box}' />
 				</g:HTMLPanel>
+				<g:HTMLPanel addStyleNames='{style.registration-box}'>
+					<g:Label addStyleNames='{style.input-label}'>Password:</g:Label>
+					<g:PasswordTextBox ui:field='password' addStyleNames='{style.input-box}' />
+					<g:Label addStyleNames='{style.input-label}'>Confirm:</g:Label>
+					<g:PasswordTextBox ui:field='passwordConfirm' addStyleNames='{style.input-box}' />
+				</g:HTMLPanel>
+				<g:HTMLPanel addStyleNames='{style.registration-box}'>
+					<g:Label addStyleNames='{style.input-label}'>Email Address:</g:Label>
+					<g:TextBox ui:field='email' addStyleNames='{style.input-box}' />
+				</g:HTMLPanel>
+				<g:HTMLPanel addStyleNames='{style.registration-box}'>
+					<g:Label addStyleNames='{style.input-label}'>Are you human?</g:Label>
+					<g:HTMLPanel ui:field='recaptchaContainer' addStyleNames='{style.recaptcha-box}'></g:HTMLPanel>
+				</g:HTMLPanel>
+				<g:HTMLPanel addStyleNames='{style.registration-box}'>
+					<g:Label addStyleNames='{style.input-label}'>Terms of Service:</g:Label>
+					<g:TextArea ui:field='tos' height="200px" addStyleNames='{style.tos-box}'>Loading terms of service...</g:TextArea>
+					<br/><br/>
+					<g:CheckBox ui:field='agree' addStyleNames='{style.input-label}'>I agree to the terms of service</g:CheckBox>
+					<br/><br/>
+					
+					<!-- ERROR MSG TEXT -->
+					<g:Label ui:field='errorText' addStyleNames='{style.error-box}'></g:Label>
+				
+					<g:Button ui:field='submit' addStyleNames='{style.signin-button}'>Create my account</g:Button>
+				</g:HTMLPanel>
+				
 			</g:HTMLPanel>
 			
 			<!-- SUBMISSION PANEL -->
-			<g:HTMLPanel ui:field='submissionPanel' addStyleNames='{style.ohmage-fullwidth-panel} {style.registration-panel}'>
+			<g:HTMLPanel ui:field='submissionPanel' addStyleNames='{style.ohmage-fullwidth-panel} {style.submission-panel}'>
 				<!-- TITLE TEXT -->
 				<h1>Just one more step...</h1>
 				
 				<!-- SUBMISSION TEXT -->
-				<g:HTMLPanel addStyleNames='{style.registration-box}'>
+				<g:HTMLPanel addStyleNames='{style.submission-box}'>
 					<g:Label>We got your registration!</g:Label>
 					<g:Label>A confirmation link has been sent to the email address you provided (it may take a few minutes). Simply click that link to activate your account, and you're ready to go.</g:Label>
 					<g:Label>Thank you, and welcome to ohmage!</g:Label>
