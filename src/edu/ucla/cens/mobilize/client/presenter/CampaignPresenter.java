@@ -16,6 +16,8 @@ import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.RunningState;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.CampaignReadParams;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
@@ -52,8 +54,20 @@ public class CampaignPresenter implements Presenter {
     this.dataService = dataService;
     this.canCreate = this.userInfo.canCreate();
     
+    bind();
+    
     this.campaignEditPresenter = new CampaignEditFormPresenter(userInfo, dataService, eventBus);
     
+  }
+  
+  private void bind() {
+    eventBus.addHandler(UserInfoUpdatedEvent.TYPE, new UserInfoUpdatedEventHandler() {
+      @Override
+      public void onUserInfoChanged(UserInfoUpdatedEvent event) {
+        // makes sure userInfo is up to date b/c class list view uses it
+        userInfo = event.getUserInfo();
+      }
+    });
   }
   
   @Override

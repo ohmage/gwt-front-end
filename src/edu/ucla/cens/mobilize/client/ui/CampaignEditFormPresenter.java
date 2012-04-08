@@ -21,6 +21,8 @@ import edu.ucla.cens.mobilize.client.AwConstants;
 import edu.ucla.cens.mobilize.client.common.HistoryTokens;
 import edu.ucla.cens.mobilize.client.dataaccess.DataService;
 import edu.ucla.cens.mobilize.client.event.CampaignDataChangedEvent;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEvent;
+import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.exceptions.AuthenticationException;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
@@ -43,6 +45,18 @@ public class CampaignEditFormPresenter {
     this.userInfo = userInfo;
     this.dataService = dataService;
     this.eventBus = eventBus;
+    
+    bind();
+  }
+  
+  private void bind() {
+    eventBus.addHandler(UserInfoUpdatedEvent.TYPE, new UserInfoUpdatedEventHandler() {
+      @Override
+      public void onUserInfoChanged(UserInfoUpdatedEvent event) {
+        // makes sure userInfo is up to date b/c class list view uses it
+        userInfo = event.getUserInfo();
+      }
+    });
   }
   
   public void setView(CampaignEditFormView view) {

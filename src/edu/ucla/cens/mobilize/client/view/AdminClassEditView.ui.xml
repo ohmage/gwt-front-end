@@ -127,7 +127,7 @@
     	color: #950;
     }
     .memberPrivilegedRoleCell {
-    	background: url(http://127.0.0.1:8888/images/asterisk_orange_small.png) no-repeat 5px 50%;
+    	background: url(images/asterisk_orange_small.png) no-repeat 5px 50%;
     }
     .memberRemoved {
     	color: #AAA;
