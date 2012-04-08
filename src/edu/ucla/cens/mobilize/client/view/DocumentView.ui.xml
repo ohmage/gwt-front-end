@@ -59,7 +59,7 @@
     .plotSideBarTitle {
     }
     .scrollable {
-      overflow-x: hidden;
+      overflow-x: auto;
       overflow-y: auto;
     }
     .separator {
