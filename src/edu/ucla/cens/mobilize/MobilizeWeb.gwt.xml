@@ -4,6 +4,12 @@
   <inherits name='com.google.gwt.user.User'/>
   <inherits name='com.google.gwt.maps.Maps' />
 
+  <!-- Setting English locale so DatePicker starts on Sunday -->
+  <inherits name="com.google.gwt.i18n.I18N"/>
+  <extend-property name='locale' values='en'/>
+  <set-property-fallback name='locale' value='en'/> 
+  <set-property name='locale' value='en'/>
+
   <!-- GWT logging -->
   <inherits name='com.google.gwt.logging.Logging' />    
   

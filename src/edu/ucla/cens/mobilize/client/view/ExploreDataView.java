@@ -1,6 +1,7 @@
 package edu.ucla.cens.mobilize.client.view;
 
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,15 @@ public interface ExploreDataView extends IsWidget {
   void addPromptY(String promptId, String displayString, boolean isSupported);
   void setSelectedPromptY(String prompt);
   String getSelectedPromptY(); // returns prompt_id
-  
+
+	// from date
+	void selectFromDate(Date fromDate);
+	Date getFromDate();
+	
+	// to date
+	void selectToDate(Date toDate);
+	Date getToDate();
+
   // plot type tree
   PlotType getSelectedPlotType();
   void setSelectedPlotType(PlotType plotType);
@@ -63,6 +72,9 @@ public interface ExploreDataView extends IsWidget {
   void setParticipantDropDownEnabled(boolean isEnabled);
   void setPromptXDropDownEnabled(boolean isEnabled);
   void setPromptYDropDownEnabled(boolean isEnabled);
+	void setDateRangeEnabled(boolean isEnabled);
+	void setStartDateRangeEnabled(boolean isEnabled);
+	void setEndDateRangeEnabled(boolean isEnabled);
   void setDataButtonsEnabled(boolean isEnabled);
   void disableAllDataControls();
   

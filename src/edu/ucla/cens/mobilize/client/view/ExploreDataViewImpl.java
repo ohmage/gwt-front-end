@@ -2,6 +2,7 @@ package edu.ucla.cens.mobilize.client.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +16,8 @@ import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -39,6 +42,7 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.DateBox;
 
 
 import com.google.gwt.maps.client.MapOptions;
@@ -58,6 +62,7 @@ import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserParticipationInfo;
 import edu.ucla.cens.mobilize.client.ui.ResponseWidgetPopup;
+import edu.ucla.cens.mobilize.client.utils.DateUtils;
 import edu.ucla.cens.mobilize.client.utils.MapUtils;
 
 @SuppressWarnings("deprecation")
@@ -95,6 +100,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
   @UiField ListBox participantListBox;
   @UiField ListBox promptXListBox;
   @UiField ListBox promptYListBox;
+	@UiField DateBox dateStartBox;
+	@UiField DateBox dateEndBox;
   @UiField Button drawPlotButton;
   //@UiField Button pdfButton;
   @UiField Button exportButton;
@@ -117,6 +124,32 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
     // these are required when enabled
     requiredFields = Arrays.asList(campaignListBox, participantListBox, promptXListBox, promptYListBox);
+    
+    // set up date pickers
+	final DateBox.Format fmt = new DateBox.DefaultFormat(DateUtils.getDateBoxDisplayFormat());
+
+	dateStartBox.setFormat(fmt);
+	dateEndBox.setFormat(fmt);
+	dateStartBox.addValueChangeHandler(new ValueChangeHandler<Date>() {
+		@Override
+		public void onValueChange(ValueChangeEvent<Date> event) {
+			Date s_new = event.getValue();
+			Date e_old = getToDate();
+			if (e_old == null || s_new.after(e_old)) {
+				selectToDate(s_new);
+			}
+		}
+	});
+	dateEndBox.addValueChangeHandler(new ValueChangeHandler<Date>() {
+		@Override
+		public void onValueChange(ValueChangeEvent<Date> event) {
+			Date e_new = event.getValue();
+			Date s_old = getFromDate();
+			if (s_old == null || e_new.before(s_old)) {
+				selectFromDate(e_new);
+			}
+		}
+	});
     
     // set up image to use as wait indicator
     spinner = new Image();
@@ -390,6 +423,29 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     setRequiredFlag(promptYListBox, isEnabled);
   }
 
+	@Override
+	public void setDateRangeEnabled(boolean isEnabled) {
+		setStartDateRangeEnabled(isEnabled);
+		setEndDateRangeEnabled(isEnabled);
+	}
+
+	@Override
+	public void setStartDateRangeEnabled(boolean isEnabled) {
+		dateStartBox.setVisible(isEnabled);
+		dateStartBox.setEnabled(isEnabled);
+		setRequiredFlag(dateStartBox, isEnabled);
+		if (isEnabled == false) {
+			dateStartBox.setValue(null);
+		}
+	}
+
+	@Override
+	public void setEndDateRangeEnabled(boolean isEnabled) {
+		dateEndBox.setVisible(isEnabled);
+		dateEndBox.setEnabled(isEnabled);
+		setRequiredFlag(dateEndBox, isEnabled);
+	}
+  
   @Override
   public void disableAllDataControls() {
     campaignListBox.setSelectedIndex(-1); // campaigns never change, just deselect
@@ -402,6 +458,8 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
     participantListBox.setEnabled(false);
     promptXListBox.setEnabled(false);
     promptYListBox.setEnabled(false);
+	dateStartBox.setEnabled(false);
+	dateEndBox.setEnabled(false);
     drawPlotButton.setEnabled(false);
     //pdfButton.setEnabled(false);
     exportButton.setEnabled(false);
@@ -749,5 +807,24 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
       items.getItem(itemIndex).setAttribute("disabled", "disabled");
     }    
   }
-    
+
+	@Override
+	public void selectFromDate(Date fromDate) {
+		dateStartBox.setValue(fromDate);
+	}
+
+	@Override
+	public Date getFromDate() {
+		return this.dateStartBox.getValue();
+	}
+
+	@Override
+	public void selectToDate(Date toDate) {
+		dateEndBox.setValue(toDate);
+	}
+
+	@Override
+	public Date getToDate() {
+		return this.dateEndBox.getValue();
+	}
 }

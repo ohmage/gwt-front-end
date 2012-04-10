@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,10 @@ public class ExploreDataPresenter implements Presenter {
     String selectedParticipant = params.containsKey("uid") ? params.get("uid") : null;
     String selectedX = params.containsKey("x") ? params.get("x") : null;
     String selectedY = params.containsKey("y") ? params.get("y") : null;
-    
+
+	Date startDate = view.getFromDate();
+	Date endDate = view.getToDate();
+	
     // fill campaign choices based on user's role and campaign privacy
     fillCampaignChoices(this.campaigns);
     // enable/disable filters based on plot selection
@@ -130,9 +134,9 @@ public class ExploreDataPresenter implements Presenter {
     
     if (PlotType.MAP.equals(selectedPlotType)) {
       // fetch points to match data filters
-      fetchResponseDataAndShowOnMap(selectedCampaign, selectedParticipant); // participant can be null
+      fetchResponseDataAndShowOnMap(selectedCampaign, selectedParticipant, startDate, endDate); // participant can be null
     } else if (PlotType.LEADER_BOARD.equals(selectedPlotType)) {
-      fetchAndShowLeaderBoard(selectedCampaign);
+      fetchAndShowLeaderBoard(selectedCampaign, startDate, endDate);
     } else {
       showPlot();
     }
@@ -153,15 +157,15 @@ public class ExploreDataPresenter implements Presenter {
   }
   
     
-  private void fetchResponseDataAndShowOnMap(String campaignId, String participantUsername) {
+  private void fetchResponseDataAndShowOnMap(String campaignId, String participantUsername, Date startDate, Date endDate) {
     final String campaignName = userInfo.getCampaigns().get(campaignId);
     Privacy privacy = AppConfig.exportAndVisualizeSharedResponsesOnly() ? Privacy.SHARED : null; // null shows everything
     view.showWaitIndicator();
     dataService.fetchSurveyResponses(participantUsername, campaignId, 
        null, //surveyName 
        privacy, 
-       null, //startDate 
-       null, //endDate 
+       startDate, //startDate 
+       endDate, //endDate 
        new AsyncCallback<List<SurveyResponse>>() {
           @Override
           public void onFailure(Throwable caught) {
@@ -184,7 +188,7 @@ public class ExploreDataPresenter implements Presenter {
   }
   
 
-  void fetchAndShowLeaderBoard(final String campaignId) {
+  void fetchAndShowLeaderBoard(final String campaignId, Date startDate, Date endDate) {
     // fetch responses and use them to generate counts
     SurveyResponseReadParams params = new SurveyResponseReadParams();
     params.campaignUrn = campaignId;
@@ -192,7 +196,11 @@ public class ExploreDataPresenter implements Presenter {
     params.columnList_opt.add("urn:ohmage:survey:privacy_state");
     params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
     params.userList.add(AwConstants.specialAllValuesToken);
-        
+    if (startDate != null && endDate != null) {
+		params.startDate_opt = (Date)startDate.clone();
+		params.endDate_opt = (Date)endDate.clone();
+	}
+    
     dataService.fetchSurveyResponses(params, new AsyncCallback<List<SurveyResponse>>() {
       @Override
       public void onFailure(Throwable caught) {
@@ -290,12 +298,14 @@ public class ExploreDataPresenter implements Presenter {
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
+			view.setDateRangeEnabled(true);
           break;
         case USER_TIMESERIES:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(true);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(false);
+			view.setDateRangeEnabled(true);
           break;
         case PROMPT_TIMESERIES:
         case PROMPT_DISTRIBUTION:
@@ -303,6 +313,7 @@ public class ExploreDataPresenter implements Presenter {
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(false);
+			view.setDateRangeEnabled(true);
           break;
         case SCATTER_PLOT:
         case DENSITY_PLOT:
@@ -310,12 +321,14 @@ public class ExploreDataPresenter implements Presenter {
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(true);
           view.setPromptYDropDownEnabled(true);
+			view.setDateRangeEnabled(true);
           break;
         case MAP:
           view.setCampaignDropDownEnabled(true);
           view.setParticipantDropDownEnabled(false);
           view.setPromptXDropDownEnabled(false);
           view.setPromptYDropDownEnabled(false);
+			view.setDateRangeEnabled(true);
           break;
         default:
           break;
@@ -434,7 +447,9 @@ public class ExploreDataPresenter implements Presenter {
     final String promptY = view.getSelectedPromptY();
     final int width = view.getPlotPanelWidth();
     final int height = view.getPlotPanelHeight();
-    
+	final Date startDate = view.getFromDate();
+	final Date endDate = view.getToDate();
+	
     // mobilize only shows shared responses for most plots but some installations 
     // may want to include private ones.
     boolean includePrivateResponsesInAllPlots = !AppConfig.exportAndVisualizeSharedResponsesOnly();
@@ -449,6 +464,8 @@ public class ExploreDataPresenter implements Presenter {
                                                  participantId,
                                                  promptX,
                                                  promptY,
+                                                 startDate,
+                                                 endDate,
                                                  includePrivateResponses);
     _logger.fine("Displaying plot url: " + url);
     view.setPlotUrl(url, new ErrorHandler() {
@@ -456,7 +473,7 @@ public class ExploreDataPresenter implements Presenter {
       public void onError(ErrorEvent event) {
         // if the image doesn't load, make an ajax call with the same params to retrieve the error message
         dataService.fetchVisualizationError(plotType, width, height, campaignId, 
-            participantId, promptX, promptY, includePrivateResponses,
+            participantId, promptX, promptY, startDate, endDate, includePrivateResponses,
           new AsyncCallback<String>() {
             @Override
             public void onFailure(Throwable caught) {

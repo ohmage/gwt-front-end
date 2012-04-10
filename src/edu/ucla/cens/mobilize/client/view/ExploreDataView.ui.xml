@@ -78,6 +78,9 @@
     	font-weight: bold;
     	padding: 5px 20px;
     }
+    .dateBox {
+    	width: 180px;
+    }
     .dataControlSideBar {
     	/*height: 100%;*/
     	padding: 10px;
@@ -170,6 +173,14 @@
 	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>PromptY:</g:InlineLabel>
 	             <g:ListBox ui:field='promptYListBox' addStyleNames='{style.dataControlListBox}' />
 	           </g:HTMLPanel>
+	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
+	             <g:InlineLabel addStyleNames='{style.dataControlLabel}'>Start Date:</g:InlineLabel>
+		         <dp:DateBox ui:field='dateStartBox' addStyleNames='{style.dateBox}' />
+		       </g:HTMLPanel>
+	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
+		         <g:InlineLabel addStyleNames='{style.dataControlLabel}'>End Date:</g:InlineLabel>
+		         <dp:DateBox ui:field='dateEndBox' addStyleNames='{style.dateBox}' />
+		       </g:HTMLPanel>
 	         </g:HTMLPanel>
          </g:CaptionPanel>
          <g:HTMLPanel addStyleNames='{style.buttonDiv}'>

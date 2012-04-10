@@ -1152,6 +1152,8 @@ public class AndWellnessDataService implements DataService {
                            String participantId, 
                            String promptX, 
                            String promptY, 
+                           Date startDate, 
+                           Date endDate, 
                            boolean includePrivateResponses) {
     assert plotType != null : "plotType is required";
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
@@ -1171,6 +1173,10 @@ public class AndWellnessDataService implements DataService {
     if (promptY != null && !promptY.isEmpty()) {
       params.put("prompt2_id", promptY);
     }
+    if (startDate != null && endDate != null) {
+        params.put("start_date", DateUtils.translateToApiRequestFormat(startDate));
+        params.put("end_date", DateUtils.translateToApiRequestFormat(DateUtils.addOneDay(endDate)));
+      }
     if (!includePrivateResponses) params.put("privacy_state", "shared");
     String baseUrl = AwConstants.getVisualizationUrl(plotType.toServerString()); 
     return baseUrl + "?" + MapUtils.translateToParameters(params);
@@ -1188,6 +1194,8 @@ public class AndWellnessDataService implements DataService {
                                       final String participantId, 
                                       final String promptX, 
                                       final String promptY,
+                                      final Date startDate, 
+                                      final Date endDate, 
                                       final boolean includePrivateResponses,
                                       final AsyncCallback<String> callback) {
     assert plotType != null : "plotType is required";
@@ -1208,6 +1216,10 @@ public class AndWellnessDataService implements DataService {
     if (promptY != null && !promptY.isEmpty()) {
       params.put("prompt2_id", promptY);
     }
+    if (startDate != null && endDate != null) {
+        params.put("start_date", DateUtils.translateToApiRequestFormat(startDate));
+        params.put("end_date", DateUtils.translateToApiRequestFormat(DateUtils.addOneDay(endDate)));
+      }
 
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Querying viz api to find cause of image load error: " + postParams);
@@ -1229,6 +1241,8 @@ public class AndWellnessDataService implements DataService {
                                  participantId, 
                                  promptX, 
                                  promptY,
+                                 startDate,
+                                 endDate,
                                  includePrivateResponses));
             } else { 
               getResponseTextOrThrowException(requestBuilder, response);
