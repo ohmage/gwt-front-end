@@ -2036,4 +2036,39 @@ public class AndWellnessDataService implements DataService {
 			throw new ServerException("Cannot contact server.");
 		}
 	}
+	
+	@Override
+	public void resetPassword(String username, String email, final AsyncCallback<String> callback) {
+		final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getUserResetPasswordUrl());
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("client", this.client);
+		params.put("username", username);
+		params.put("email_address", email);
+		String postParams = MapUtils.translateToParameters(params);
+		_logger.fine("Attempting to reset user password with parameters: " + postParams);
+		try {
+			requestBuilder.sendRequest(postParams, new RequestCallback() {
+				@Override
+				public void onResponseReceived(Request request, Response response) {
+					try {
+						getResponseTextOrThrowException(requestBuilder, response);
+						// no exception? then it was successful
+						callback.onSuccess("");
+					} catch (Exception exception) {
+						_logger.severe(exception.getMessage());
+						callback.onFailure(exception);
+					}
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					_logger.severe(exception.getMessage());
+					callback.onFailure(exception);
+				}
+			});
+		} catch (RequestException e) {
+			_logger.severe(e.getMessage());
+			throw new ServerException("Cannot contact server.");
+		}
+	}
 }

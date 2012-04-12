@@ -708,4 +708,11 @@ public void activateUser(String registration_id, AsyncCallback<String> callback)
 	
 }
 
+@Override
+public void resetPassword(String username, String email,
+		AsyncCallback<String> callback) {
+	// TODO Auto-generated method stub
+	
+}
+
 }

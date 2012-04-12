@@ -56,6 +56,7 @@ import edu.ucla.cens.mobilize.client.presenter.LoginPresenter;
 import edu.ucla.cens.mobilize.client.presenter.ResponsePresenter;
 import edu.ucla.cens.mobilize.client.ui.ErrorDialog;
 import edu.ucla.cens.mobilize.client.ui.Header;
+import edu.ucla.cens.mobilize.client.ui.LoginRecovery;
 import edu.ucla.cens.mobilize.client.ui.LoginSelfRegistration;
 import edu.ucla.cens.mobilize.client.utils.AwErrorUtils;
 import edu.ucla.cens.mobilize.client.utils.StopWatch;
@@ -112,6 +113,7 @@ public class MainApp implements EntryPoint, HistoryListener {
   LoginView loginView;
   LoginPresenter loginPresenter;
   LoginSelfRegistration loginSelfRegistrationView;
+  LoginRecovery loginRecovery;
   
   // data that's used throughout the app
   UserInfo userInfo;
@@ -197,6 +199,8 @@ public class MainApp implements EntryPoint, HistoryListener {
 		  // NOTE #1: These tokens need to be handled here because they are separate from the main dashboard tokens
 		  // NOTE #2: History will fire the initial token, so we call History.fireCurrentHistoryState() manually
 		  if (HistoryTokens.register().equals(extractView(initialToken))) {
+			  History.fireCurrentHistoryState();
+		  } else if (HistoryTokens.reset_password().equals(extractView(initialToken))) {
 			  History.fireCurrentHistoryState();
 		  } else if (HistoryTokens.activate().equals(extractView(initialToken))) {
 			  History.fireCurrentHistoryState();
@@ -284,6 +288,22 @@ public class MainApp implements EntryPoint, HistoryListener {
 			  Window.setTitle(AppConfig.getAppDisplayName());
 			  loginSelfRegistrationView = new LoginSelfRegistration(awDataService);
 			  RootLayoutPanel.get().add(loginSelfRegistrationView);
+		  }
+	  });
+  }
+  
+  private void initLoginRecovery() {
+	  this.awDataService.fetchAppConfig(new AsyncCallback<AppConfig>() {
+		  @Override
+		  public void onFailure(Throwable caught) {
+			  ErrorDialog.show("Could not obtain server app config data", "The server may be down or undergoing maintenance. Please try again at a later time.");
+		  }
+
+		  @Override
+		  public void onSuccess(AppConfig appConfig) {
+			  Window.setTitle(AppConfig.getAppDisplayName());
+			  loginRecovery = new LoginRecovery(awDataService);
+			  RootLayoutPanel.get().add(loginRecovery);
 		  }
 	  });
   }
@@ -727,7 +747,10 @@ public class MainApp implements EntryPoint, HistoryListener {
   }
   
   private void showSelfRegistration() {
+	  // TODO: TURN THIS INTO A LIST?
+	  // Remove all other views first
 	  if (loginView != null)	loginView.asWidget().removeFromParent();
+	  if (loginRecovery != null)	loginRecovery.removeFromParent();
 
 	  if (loginSelfRegistrationView == null) {
 		  initLoginSelfRegistration();
@@ -739,15 +762,34 @@ public class MainApp implements EntryPoint, HistoryListener {
 	  }
   }
   
-  private void showLogin(final String message) {
+  private void showLoginRecovery() {
+	  // TODO: TURN THIS INTO A LIST?
+	  // Remove all other views first
+	  if (loginView != null)	loginView.asWidget().removeFromParent();
 	  if (loginSelfRegistrationView != null)	loginSelfRegistrationView.removeFromParent();
+	  
+	  if (loginRecovery == null) {
+		  initLoginRecovery();
+	  } else {
+		  loginRecovery.resetAll();
+		  
+		  if (!loginRecovery.isAttached())
+			  RootLayoutPanel.get().add(loginRecovery);
+	  }
+  }
+  
+  private void showLogin(final String message) {
+	  // TODO: TURN THIS INTO A LIST?
+	  // Remove all other views first
+	  if (loginSelfRegistrationView != null)	loginSelfRegistrationView.removeFromParent();
+	  if (loginRecovery != null)	loginRecovery.removeFromParent();
 
 	  if (loginView == null || loginPresenter == null) {
 		  initLogin(message);
 	  } else {
 		  loginView.setNotificationMessage(message);
 		  
-		  loginView.asWidget().removeFromParent();
+		  loginView.asWidget().removeFromParent();	// Remove any old instances
 		  RootLayoutPanel.get().add(loginView);
 	  }
   }
@@ -842,6 +884,8 @@ public class MainApp implements EntryPoint, HistoryListener {
       logout();
     } else if (view.equals("register")) {
       showSelfRegistration();
+    } else if (view.equals("reset_password")) {
+      showLoginRecovery();
     } else if (view.equals("login")) {
       showLogin(null);
     } else if (view.equals("activate")) {

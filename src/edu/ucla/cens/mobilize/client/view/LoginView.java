@@ -30,4 +30,5 @@ public interface LoginView extends IsWidget {
     
     // Registration
     void setSelfRegistrationEnabled(boolean isEnabled);
+    void setLoginRecoveryEnabled(boolean isEnabled);
 }

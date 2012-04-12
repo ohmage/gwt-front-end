@@ -55,6 +55,11 @@
 		font-weight: bold;
 		text-shadow: 0px -1px 1px #FFF;
 	}
+	.wrapper h3 {
+		font-size: 10pt;
+		font-weight: normal;
+		text-shadow: 0px -1px 1px #FFF;
+	}
 	
 	/*** top panel ***/
 	.ohmage-header-bar {
@@ -97,26 +102,13 @@
 		height: 0;
 	}
 	
-	/*** registration panel ***/
-	.registration-panel {
+	/*** recovery panel ***/
+	.recovery-panel {
 		padding-bottom: 10px;
 	}
-	/*
-	.registration-box {
-		padding: 20px;
-		background: #f4f9fd;
-		border: 1px solid #d2eafd;
-		-moz-border-radius: 2px;
-		-webkit-border-radius: 2px;
-		-khtml-border-radius: 2px;
-		border-radius: 2px;
-		
-		margin-bottom: 10px;
-	}
-	*/
 	
 	/*** left panel ***/
-	.registration-left {
+	.recovery-left {
 		margin: 0 325px 0 0;
 		height: auto;
 		
@@ -130,7 +122,7 @@
 		margin-bottom: 10px;
 	}
 	/*** right panel ***/
-	.registration-right {
+	.recovery-right {
 		width: 280px;
 		height: auto;
 		float: right;
@@ -148,7 +140,7 @@
 		margin-bottom: 10px;
 	}
 	
-	/*** registration elements ***/
+	/*** recovery panel elements ***/
 	.error-box {
 		color: #FF4E10;
 		background-color: #FDFBFA;
@@ -201,10 +193,10 @@
 		padding: 4px 4px 4px 10px;
 	}
 	
-	.register-button, .register-loading {
+	.recovery-button, .recovery-loading {
 		height: 40px;
 	}
-	.register-button {
+	.recovery-button {
 		background-image: url(images/theme-ohmage/login-button-bg.png);
 		background-repeat: repeat-x;
 		
@@ -217,7 +209,7 @@
 		margin-bottom: 10px;
 		box-shadow: 0px 1px 16px rgba(4,180,246,0.6);
 	}
-	.register-loading {
+	.recovery-loading {
 		vertical-align: middle;
 		margin-left: 10px;
 	}
@@ -293,81 +285,44 @@
 			<!-- BACK TO LOGIN PAGE LINK -->
 			<g:Hyperlink targetHistoryToken='login'>&#8592; Back to ohmage login</g:Hyperlink>
 			
-			<!-- REGISTRATION PANEL -->
-			<g:HTMLPanel ui:field='registrationPanel' addStyleNames='{style.ohmage-fullwidth-panel} {style.registration-panel}'>
+			<!-- RECOVERY PANEL -->
+			<g:HTMLPanel ui:field='recoveryPanel' addStyleNames='{style.ohmage-fullwidth-panel} {style.recovery-panel}'>
 				<!-- TITLE TEXT -->
-				<h1>Create your ohmage account in seconds</h1>
-				<h2><g:Hyperlink targetHistoryToken='login'>Already have an account?</g:Hyperlink></h2>
+				<h1>Forgot your login?</h1>
+				<h3>We can reset your ohmage password if you have your <b>username and email address</b> associated with your account. If you did not provide an email address or forgot your username, please contact your supervisor for assistance.</h3>
+				<br/>
 				
-				<!-- REGISTRATION FORM -->
+				<!-- RECOVERY FORM -->
 				<g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.registration-right}'>
-						Your username must be 4 ~ 25 characters long and begin with a letter. You may use alphanumeric and special characters: 
-						<g:HTMLPanel addStyleNames='{style.helpPanelSpecialChars}'>
-							<g:Grid><g:row>
-								<g:cell>.</g:cell><g:cell>_</g:cell><g:cell>@</g:cell><g:cell>+</g:cell><g:cell>-</g:cell>
-							</g:row></g:Grid>
-						</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.recovery-right}'>
+						Your ohmage username is <b>case sensitive</b>.
 					</g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+					<g:HTMLPanel addStyleNames='{style.recovery-left}'>
 						<g:Label addStyleNames='{style.input-label}'>Username:</g:Label>
 						<g:TextBox ui:field='username' addStyleNames='{style.input-box}' />
 					</g:HTMLPanel>
 				</g:HTMLPanel>
 				<g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.registration-right}'>
-						Your password must be 8 ~ 16 characters long and contain at least:<br/>
-						- one lower case letter,<br/>
-						- one upper case letter,<br/>
-						- one number, AND<br/>
-						- one special character: 
-						<g:HTMLPanel addStyleNames='{style.helpPanelSpecialChars}'>
-							<g:Grid><g:row>
-								<g:cell>,</g:cell><g:cell>.</g:cell><g:cell>&#60;</g:cell><g:cell>&#62;</g:cell><g:cell>!</g:cell><g:cell>@</g:cell><g:cell>#</g:cell><g:cell>$</g:cell><g:cell>%</g:cell><g:cell>^</g:cell><g:cell>&amp;</g:cell><g:cell>*</g:cell><g:cell>+</g:cell><g:cell>-</g:cell><g:cell>:</g:cell>
-							</g:row></g:Grid>
-						</g:HTMLPanel>
+					<g:HTMLPanel addStyleNames='{style.recovery-right}'>
+						Your email address associated with your ohmage account. Not case sensitive.
 					</g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.registration-left}'>
-						<g:Label addStyleNames='{style.input-label}'>Password:</g:Label>
-						<g:PasswordTextBox ui:field='password' addStyleNames='{style.input-box}' />
-						<g:Label addStyleNames='{style.input-label}'>Confirm:</g:Label>
-						<g:PasswordTextBox ui:field='passwordConfirm' addStyleNames='{style.input-box}' />
-					</g:HTMLPanel>
-				</g:HTMLPanel>
-				<g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.registration-right}'>
-						Your email address (e.g. fake@example.com). We will send you a verification email to this address after you register.
-					</g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.registration-left}'>
+					<g:HTMLPanel addStyleNames='{style.recovery-left}'>
 						<g:Label addStyleNames='{style.input-label}'>Email Address:</g:Label>
 						<g:TextBox ui:field='email' addStyleNames='{style.input-box}' />
 					</g:HTMLPanel>
 				</g:HTMLPanel>
 				<g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.registration-right}'>
-						Type in the letters you see in the ReCaptcha image. If you have trouble, try refreshing the captcha to see another image.
+					<g:HTMLPanel addStyleNames='{style.recovery-right}'>
+						<!-- (intentionally blank) -->
 					</g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.registration-left}'>
-						<g:Label addStyleNames='{style.input-label}'>Are you human?</g:Label>
-						<g:HTMLPanel ui:field='recaptchaContainer' addStyleNames='{style.recaptcha-box}'></g:HTMLPanel>
-					</g:HTMLPanel>
-				</g:HTMLPanel>
-				<g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.registration-right}'>
-						Please review the terms of service carefully. You must agree to these terms in order to register.
-					</g:HTMLPanel>
-					<g:HTMLPanel addStyleNames='{style.registration-left}'>
-						<g:Label addStyleNames='{style.input-label}'>Terms of Service:</g:Label>
-						<g:TextArea ui:field='tos' height="200px" addStyleNames='{style.tos-box}'>Loading terms of service...</g:TextArea>
-						<br/><br/>
-						<g:CheckBox ui:field='agree' addStyleNames='{style.input-label}'> I agree to the terms of service</g:CheckBox>
-						<br/><br/>
-						
+					<g:HTMLPanel addStyleNames='{style.recovery-left}'>
 						<!-- ERROR MSG TEXT -->
 						<g:Label ui:field='errorText' addStyleNames='{style.error-box}'></g:Label>
+						
+						<!-- BUTTON -->
 						<g:HorizontalPanel verticalAlignment="middle">
-							<g:Button ui:field='submit' addStyleNames='{style.register-button}'>Create my account</g:Button>
-							<g:HTMLPanel ui:field='submitSpinner' addStyleNames='{style.register-loading}'>
+							<g:Button ui:field='submit' addStyleNames='{style.recovery-button}'>Recover my account</g:Button>
+							<g:HTMLPanel ui:field='submitSpinner' addStyleNames='{style.recovery-loading}'>
 								<img src="images/loading_small.gif" />
 							</g:HTMLPanel>
 						</g:HorizontalPanel>
@@ -378,14 +333,13 @@
 			<!-- SUBMISSION PANEL -->
 			<g:HTMLPanel ui:field='submissionPanel' addStyleNames='{style.ohmage-fullwidth-panel} {style.submission-panel}'>
 				<!-- TITLE TEXT -->
-				<h1>Just one more step...</h1>
+				<h1>Reset your ohmage password</h1>
 				
 				<!-- SUBMISSION TEXT -->
 				<g:HTMLPanel addStyleNames='{style.submission-box}'>
-					<h1>Please activate your account</h1>
-					<g:Label addStyleNames='{style.submission-text}'>We got your registration.</g:Label>
-					<g:Label addStyleNames='{style.submission-text}'>A confirmation link has been sent to the email address you provided (it may take a few minutes). Simply click that link to activate your account, and you're ready to go.</g:Label>
-					<g:Label addStyleNames='{style.submission-text}'>Thank you, and welcome to ohmage!</g:Label>
+					<g:Label addStyleNames='{style.submission-text}'>We've received your password recovery request.</g:Label>
+					<g:Label addStyleNames='{style.submission-text}'>If your username and email correspond to a valid ohmage account, you should receive an email containing instructions on how to reset your ohmage account password.</g:Label>
+					<g:Label addStyleNames='{style.submission-text}'>Welcome back!</g:Label>
 					<g:Label addStyleNames='{style.submission-text}'>- the ohmage team</g:Label>
 				</g:HTMLPanel>
 			</g:HTMLPanel>

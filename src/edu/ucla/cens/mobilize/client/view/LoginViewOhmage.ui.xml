@@ -248,6 +248,9 @@
 					<g:HTMLPanel ui:field='selfRegistrationText'>
 						<h2>Don't have an account? <g:InlineHyperlink ui:field="selfRegisterLink" targetHistoryToken='register'>Sign up</g:InlineHyperlink></h2>
 					</g:HTMLPanel>
+					<g:HTMLPanel ui:field='loginRecoveryText'>
+						<h2><g:InlineHyperlink ui:field="loginRecoveryLink" targetHistoryToken='reset_password'>Forgot your password?</g:InlineHyperlink></h2>
+					</g:HTMLPanel>
 				</g:HTMLPanel>
 			</g:HTMLPanel>
 

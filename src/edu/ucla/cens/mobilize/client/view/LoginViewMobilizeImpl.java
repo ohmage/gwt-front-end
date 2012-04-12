@@ -145,5 +145,11 @@ public class LoginViewMobilizeImpl extends Composite implements LoginView {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void setLoginRecoveryEnabled(boolean isEnabled) {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

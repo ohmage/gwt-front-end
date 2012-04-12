@@ -38,6 +38,7 @@ public class LoginViewOhmageImpl extends Composite implements LoginView {
     @UiField PasswordTextBox passwordTextBox;
     @UiField Button loginButton;
     @UiField HTMLPanel selfRegistrationText;
+    @UiField HTMLPanel loginRecoveryText;
     @UiField HTMLPanel messagePanel;
     @UiField HTMLPanel messageBox;
     @UiField InlineHyperlink selfRegisterLink;
@@ -51,6 +52,7 @@ public class LoginViewOhmageImpl extends Composite implements LoginView {
         // Defaults
         setNotificationMessage(null);
         setSelfRegistrationEnabled(false);
+        setLoginRecoveryEnabled(true);
         
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             public void execute () {
@@ -156,5 +158,10 @@ public class LoginViewOhmageImpl extends Composite implements LoginView {
 	@Override
 	public void setSelfRegistrationEnabled(boolean isEnabled) {
 		selfRegistrationText.setVisible(isEnabled);
+	}
+	
+	@Override
+	public void setLoginRecoveryEnabled(boolean isEnabled) {
+		loginRecoveryText.setVisible(isEnabled);
 	}
 }

@@ -25,6 +25,10 @@ public class HistoryTokens {
     return "register";
   }
   
+  public static String reset_password() {
+    return "reset_password";
+  }
+  
   public static String activate() {
     return "activate";
   }

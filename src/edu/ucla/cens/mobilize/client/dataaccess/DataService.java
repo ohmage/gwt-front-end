@@ -478,4 +478,12 @@ public interface DataService {
    * @param callback
    */
   void activateUser(String registration_id, AsyncCallback<String> callback);
+  
+  /**
+   * Submits a password recovery/reset request to the server. Note: Callback is always success as long as parameters are syntactically correct, even if no such login exists on the server.
+   * @param username
+   * @param email
+   * @param callback
+   */
+  void resetPassword(String username, String email, AsyncCallback<String> callback);
 }

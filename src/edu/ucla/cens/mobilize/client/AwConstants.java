@@ -51,6 +51,7 @@ public class AwConstants {
      USER_REGISTER("/app/user/register"),
      USER_SEARCH("/app/user/search"),
      USER_UPDATE("/app/user/update"),
+     USER_RESET_PASSWORD("/app/user/reset_password"),
      REGISTRATION_READ("/app/registration/read"),
      CAMPAIGN_READ("/app/campaign/read"),
      CAMPAIGN_CREATE("/app/campaign/create"),
@@ -156,6 +157,10 @@ public class AwConstants {
     
     public static String getUserChangePasswordUrl() {
       return getServerLocation() + AwUri.USER_CHANGE_PASSWORD;
+    }
+    
+    public static String getUserResetPasswordUrl() {
+      return getServerLocation() + AwUri.USER_RESET_PASSWORD;
     }
     
     public static String getCampaignReadUrl() {
