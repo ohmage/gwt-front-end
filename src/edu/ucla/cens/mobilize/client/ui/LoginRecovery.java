@@ -1,6 +1,5 @@
 package edu.ucla.cens.mobilize.client.ui;
 
-import com.claudiushauptmann.gwt.recaptcha.client.RecaptchaWidget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -34,7 +33,6 @@ public class LoginRecovery extends Composite {
 	@UiField HTMLPanel submitSpinner;
 
 	DataService dataService;
-	RecaptchaWidget captcha;
 	
 	// --- Init
 	
@@ -64,7 +62,7 @@ public class LoginRecovery extends Composite {
 	// --- Form submission
 
 	private void validateAndSubmitRecovery() {
-		// Get values from UI and captcha
+		// Get values from UI
 		final String username = this.getUsername();
 		final String email = this.getEmail();
 		
@@ -87,7 +85,6 @@ public class LoginRecovery extends Composite {
 			public void onFailure(Throwable caught) {
 				setSubmitSpinnerVisible(false);
 				displayRecoveryError(caught.getMessage());
-				captcha.reload();
 			}
 
 			@Override
