@@ -40,6 +40,7 @@ public class LoginSelfRegistration extends Composite {
 	@UiField TextArea tos;
 	@UiField CheckBox agree;
 	@UiField Button submit;
+	@UiField HTMLPanel submitSpinner;
 
 	DataService dataService;
 	RecaptchaWidget captcha;
@@ -71,6 +72,7 @@ public class LoginSelfRegistration extends Composite {
 		tos.setReadOnly(true);
 		agree.setValue(false);
 		setSuccessTextVisible(false);
+		setSubmitSpinnerVisible(false);
 	}
 	
 	private void loadRecaptchaAndTOS() {
@@ -127,16 +129,21 @@ public class LoginSelfRegistration extends Composite {
 			return;
 		}
 		
+		// Show loading spinner image
+		setSubmitSpinnerVisible(true);
+		
 		// Submit
 		dataService.registerUser(username, password, email, recaptcha_challenge_field, recaptcha_response_field, new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
+				setSubmitSpinnerVisible(false);
 				displayRegistrationError(caught.getMessage());
 				captcha.reload();
 			}
 
 			@Override
 			public void onSuccess(String result) {
+				setSubmitSpinnerVisible(false);
 				setSuccessTextVisible(true);
 			}
 		});
@@ -147,6 +154,10 @@ public class LoginSelfRegistration extends Composite {
 	public void setSuccessTextVisible(boolean isFinished) {
 		registrationPanel.setVisible(!isFinished);
 		submissionPanel.setVisible(isFinished);
+	}
+	
+	public void setSubmitSpinnerVisible(boolean isVisible) {
+		submitSpinner.setVisible(isVisible);
 	}
 	
 	public void displayRegistrationError(String msg) {

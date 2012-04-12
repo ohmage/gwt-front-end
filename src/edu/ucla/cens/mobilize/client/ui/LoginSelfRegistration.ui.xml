@@ -201,10 +201,13 @@
 		padding: 4px 4px 4px 10px;
 	}
 	
-	.signin-button {
+	.register-button, .register-loading {
+		height: 40px;
+	}
+	.register-button {
 		background-image: url(images/theme-ohmage/login-button-bg.png);
 		background-repeat: repeat-x;
-		height: 40px;
+		
 		width: 250px;
 		font-size: 16px;
 		font-weight: bold;
@@ -213,6 +216,10 @@
 		text-align: center;
 		margin-bottom: 10px;
 		box-shadow: 0px 1px 16px rgba(4,180,246,0.6);
+	}
+	.register-loading {
+		vertical-align: middle;
+		margin-left: 10px;
 	}
 	
 	/*** submission panel ***/
@@ -358,8 +365,12 @@
 						
 						<!-- ERROR MSG TEXT -->
 						<g:Label ui:field='errorText' addStyleNames='{style.error-box}'></g:Label>
-					
-						<g:Button ui:field='submit' addStyleNames='{style.signin-button}'>Create my account</g:Button>
+						<g:HorizontalPanel verticalAlignment="middle">
+							<g:Button ui:field='submit' addStyleNames='{style.register-button}'>Create my account</g:Button>
+							<g:HTMLPanel ui:field='submitSpinner' addStyleNames='{style.register-loading}'>
+								<img src="images/loading_small.gif" />
+							</g:HTMLPanel>
+						</g:HorizontalPanel>
 					</g:HTMLPanel>
 				</g:HTMLPanel>
 			</g:HTMLPanel>
