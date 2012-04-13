@@ -38,6 +38,7 @@
 		}
 	</ui:style>
 	<g:HTMLPanel addStyleNames='{style.header}'>
+		<!-- Header class only shows either logo or text only -->
 		<g:HTMLPanel addStyleNames='{style.appLogo}'>
 			<g:Image ui:field='appNameImage' addStyleNames='{style.appImage}' url="images/theme-ohmage/dashboard-header-logo.png"></g:Image>
 			<g:InlineLabel ui:field='appNameLabel' addStyleNames='{style.appName}'>ohmage</g:InlineLabel>
@@ -51,8 +52,6 @@
 					<g:InlineHyperlink targetHistoryToken='dashboard'>Home</g:InlineHyperlink>
 					|
 					<g:InlineHyperlink targetHistoryToken='account'>Account</g:InlineHyperlink>
-					|
-					<g:InlineHyperlink targetHistoryToken='help'>Help</g:InlineHyperlink>
 				</span>
 				<g:Button ui:field='logoutButton'>
 					Logout
