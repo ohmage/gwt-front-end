@@ -5,8 +5,12 @@
 		.accountMenu {
 			display: inline-block;
 			float: right;
-			font-size: 0.9em;
-			padding: 10px 5px 0px;
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 12px;
+			font-weight: bold;
+			text-shadow: 0px 1px 1px #FFF;
+			
+			height: 100%;
 		}
 		.appLogo {
 			float: left;
@@ -31,10 +35,10 @@
 			background-color: #d5d5d5;
 		}
 		.menu {
-			
+			height: 100%;
 		}
 		.userName {
-			font-weight: bold;
+			font-color: #333;
 		}
 	</ui:style>
 	<g:HTMLPanel addStyleNames='{style.header}'>
@@ -44,19 +48,13 @@
 			<g:InlineLabel ui:field='appNameLabel' addStyleNames='{style.appName}'>ohmage</g:InlineLabel>
 		</g:HTMLPanel>
 		
-		<span class='{style.accountMenu}'>
-			<div>
-				<span class='{style.menu}'>
+		<g:HTMLPanel addStyleNames='{style.accountMenu}'>
+				<g:HorizontalPanel addStyleNames='{style.menu}' verticalAlignment="middle" spacing="10">
 					<g:InlineLabel ui:field='userNameLabel' addStyleNames='{style.userName}' />
-					|
 					<g:InlineHyperlink targetHistoryToken='dashboard'>Home</g:InlineHyperlink>
-					|
 					<g:InlineHyperlink targetHistoryToken='account'>Account</g:InlineHyperlink>
-				</span>
-				<g:Button ui:field='logoutButton'>
-					Logout
-				</g:Button>
-			</div>
-		</span>
+					<g:Button ui:field='logoutButton'>Sign out</g:Button>
+				</g:HorizontalPanel>
+		</g:HTMLPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 

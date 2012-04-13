@@ -526,7 +526,8 @@ public class ExploreDataPresenter implements Presenter {
 				
 				// MOBILITY_MAP and MOBILITY_DASHBOARD are single day
 				if (view.getSelectedPlotType().equals(PlotType.MOBILITY_MAP) || view.getSelectedPlotType().equals(PlotType.MOBILITY_DASHBOARD)) {
-					toDate = view.getFromDate();
+					view.selectToDate(fromDate);
+					toDate = fromDate;
 				}
 
 				if (promptX != null && promptX.equals(promptY)) {	//FIXME: clean up this nasty nested 'if'

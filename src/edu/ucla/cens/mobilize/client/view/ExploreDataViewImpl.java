@@ -366,7 +366,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		String oldClassId = this.getSelectedClass();
 		
 		classListBox.clear();
-		classListBox.addItem("No class (self-only)","");
+		classListBox.addItem("No class (just you)","");
 		
 		if (classIds == null)
 			return;

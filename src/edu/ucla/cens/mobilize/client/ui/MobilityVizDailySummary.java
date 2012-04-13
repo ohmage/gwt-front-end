@@ -67,24 +67,12 @@ public class MobilityVizDailySummary extends Composite {
 	public MobilityVizDailySummary(List<MobilityInfo> data) {
 		// Init stuff
 		initWidget(uiBinder.createAndBindUi(this));
-		bind();
 
 		// Load and render charts
 		loadAndDisplayMobilityData(data);
 	}
 
-	private void bind() {
-		// Nothing to bind
-	}
-
-	public void clearData() {
-		// TODO: clears all set data
-		// TODO: show place-holder message? "No data loaded"
-	}
-
 	public void loadAndDisplayMobilityData(List<MobilityInfo> data) {
-		clearData();
-		
 		// --- (0) Set date
 		if (data.isEmpty())
 			date_label.setText("Daily summary for unknown date");
@@ -93,8 +81,6 @@ public class MobilityVizDailySummary extends Composite {
 			String day_str = format.format(data.get(0).getDate());
 			date_label.setText("Daily summary for " + day_str);
 		}
-		
-		Map<MobilityMode, List<Float>> speedsMap = MobilityUtils.getModeSpeeds(data);
 		
 		// --- (2) Temporal Summary
 		int interval = 5;
@@ -110,7 +96,7 @@ public class MobilityVizDailySummary extends Composite {
 		durationPlot.add(durationColumnViz);
 		// Set text info
 		setDurationInfo(durationMap);
-
+		
 		// --- (3b) Distance distribution
 		// Calculate miles of each mode & tabulate in a map
 		Map<MobilityMode, Float> distanceMap = getModeDistances(data);
@@ -119,31 +105,27 @@ public class MobilityVizDailySummary extends Composite {
 		distancePlot.add(distanceColumnViz);
 		// Set text info
 		setDistanceInfo(distanceMap);
-		
+
 		// --- (1) Stats Summary
-		setMobilityStats(durationMap, distanceMap, speedsMap);
+		setMobilityStats(durationMap, distanceMap);
 	}
 
-	private void setMobilityStats(Map<MobilityMode,Integer> durationMap, Map<MobilityMode,Float> distanceMap, Map<MobilityMode, List<Float>> speedsMap) {
-		// Display "mPulse" number
-		// Display sedentary/ambulatory % (one in big, one in small) --- for waking day?
-		// Display distance traveled -- by foot/bike
-		// Display avg walking speed
-		// Display avg running speed
-		
+	private void setMobilityStats(Map<MobilityMode,Integer> durationMap, Map<MobilityMode,Float> distanceMap) {
 		// (1 & 2) Ambulatory duration + of the total records available
 		int ambulatoryMin = 0;
 		int sedentaryMin = 0;
-		if (durationMap.containsKey(MobilityMode.STILL))
-			sedentaryMin += durationMap.get(MobilityMode.STILL);
-		if (durationMap.containsKey(MobilityMode.WALK))
-			ambulatoryMin += durationMap.get(MobilityMode.WALK);
-		if (durationMap.containsKey(MobilityMode.RUN))
-			ambulatoryMin += durationMap.get(MobilityMode.RUN);
-		if (durationMap.containsKey(MobilityMode.BIKE))
-			ambulatoryMin += durationMap.get(MobilityMode.BIKE);
-		if (durationMap.containsKey(MobilityMode.DRIVE))
-			sedentaryMin += durationMap.get(MobilityMode.DRIVE);
+		if (durationMap != null) {
+			if (durationMap.containsKey(MobilityMode.STILL))
+				sedentaryMin += durationMap.get(MobilityMode.STILL);
+			if (durationMap.containsKey(MobilityMode.WALK))
+				ambulatoryMin += durationMap.get(MobilityMode.WALK);
+			if (durationMap.containsKey(MobilityMode.RUN))
+				ambulatoryMin += durationMap.get(MobilityMode.RUN);
+			if (durationMap.containsKey(MobilityMode.BIKE))
+				ambulatoryMin += durationMap.get(MobilityMode.BIKE);
+			if (durationMap.containsKey(MobilityMode.DRIVE))
+				sedentaryMin += durationMap.get(MobilityMode.DRIVE);
+		}
 		
 		stat_total_time_ambulatory.setText(MobilityUtils.getPrettyHoursMinutesStr(ambulatoryMin));
 		stat_total_time_sedentary.setText(MobilityUtils.getPrettyHoursMinutesStr(sedentaryMin));
@@ -151,23 +133,14 @@ public class MobilityVizDailySummary extends Composite {
 		
 		// (3) Distanced traveled by foot
 		float distanceRunWalked = 0.0f;
-		if (distanceMap.containsKey(MobilityMode.WALK))
-			distanceRunWalked += distanceMap.get(MobilityMode.WALK);
-		if (distanceMap.containsKey(MobilityMode.RUN))
-			distanceRunWalked += distanceMap.get(MobilityMode.RUN);
-		
-		stat_total_foot_distance.setText(NumberFormat.getFormat("0").format(distanceRunWalked) + " meters");
-		
-		// (4) Average walking speed
-		float avgWalkingSpeed = 0.0f;
-		if (speedsMap.containsKey(MobilityMode.WALK)) {
-			for (Float f : speedsMap.get(MobilityMode.WALK)) {
-				avgWalkingSpeed += f;
-			}
-			avgWalkingSpeed /= (float)speedsMap.get(MobilityMode.WALK).size();
+		if (distanceMap != null) {
+			if (distanceMap.containsKey(MobilityMode.WALK))
+				distanceRunWalked += distanceMap.get(MobilityMode.WALK);
+			if (distanceMap.containsKey(MobilityMode.RUN))
+				distanceRunWalked += distanceMap.get(MobilityMode.RUN);
 		}
 		
-		stat_average_walking_speed.setText(NumberFormat.getFormat("0").format(avgWalkingSpeed) + " meters/sec");
+		stat_total_foot_distance.setText(NumberFormat.getFormat("0").format(distanceRunWalked) + " meters");
 	}
 	
 	private Map<MobilityMode, Integer> getModeDurations(final List<MobilityInfo> data) {
@@ -198,7 +171,6 @@ public class MobilityVizDailySummary extends Composite {
 			txt += MobilityUtils.getPrettyHoursMinutesStr(durationMap.get(mode));
 			label.setHTML(txt);
 			
-			//label.setStyleName(style.asdf());	//TODO: put this in the massive if statement above
 			durationInfo.add(label);
 		}
 	}
@@ -232,7 +204,6 @@ public class MobilityVizDailySummary extends Composite {
 				txt += NumberFormat.getFormat("0").format(distanceMap.get(mode)) + " meters";
 			label.setHTML(txt);
 			
-			//label.setStyleName(style.asdf());	//TODO: put this in the massive if statement above
 			distanceInfo.add(label);
 		}
 	}
