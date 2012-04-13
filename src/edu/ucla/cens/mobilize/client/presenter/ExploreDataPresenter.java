@@ -115,12 +115,12 @@ public class ExploreDataPresenter implements Presenter {
 		PlotType selectedPlotType = PlotType.fromHistoryTokenString(selectedPlotTypeString);
 		String selectedCampaign = params.containsKey("cid") ? params.get("cid") : null;
 		String selectedSurvey = params.containsKey("sid") ? params.get("sid") : null;
+		String selectedClass = params.containsKey("classid") ? params.get("classid") : null;
 		String selectedParticipant = params.containsKey("uid") ? params.get("uid") : null;
 		String selectedX = params.containsKey("x") ? params.get("x") : null;
 		String selectedY = params.containsKey("y") ? params.get("y") : null;
-
-		Date startDate = view.getFromDate();
-		Date endDate = view.getToDate();
+		Date startDate = params.containsKey("from") ? DateUtils.translateFromHistoryTokenFormat(params.get("from")) : null;
+		Date endDate = params.containsKey("to") ? DateUtils.translateFromHistoryTokenFormat(params.get("to")) : null;
 
 		// fill campaign choices based on user's role and campaign privacy
 		fillCampaignChoices(this.campaigns);
@@ -132,10 +132,14 @@ public class ExploreDataPresenter implements Presenter {
 		fetchAndFillPromptChoices(selectedCampaign, selectedPlotType, selectedX, selectedY, startDate, endDate);
 
 		view.setSelectedCampaign(selectedCampaign);
+		view.setSelectedSurvey(selectedSurvey);
+		view.setSelectedClass(selectedClass);
 		view.setSelectedParticipant(selectedParticipant);
 		view.setSelectedPlotType(selectedPlotType);
 		view.setSelectedPromptX(selectedX);
 		view.setSelectedPromptY(selectedY);
+		view.selectFromDate(startDate);
+		view.selectToDate(endDate);
 
 		if (PlotType.MAP.equals(selectedPlotType)) {
 			// Case 1: Survey Response Map
@@ -550,6 +554,7 @@ public class ExploreDataPresenter implements Presenter {
 			case LEADER_BOARD:
 				view.setCampaignDropDownEnabled(true);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(false);
 				view.setParticipantDropDownEnabled(false);
 				view.setPromptXDropDownEnabled(false);
 				view.setPromptYDropDownEnabled(false);
@@ -559,6 +564,7 @@ public class ExploreDataPresenter implements Presenter {
 			case USER_TIMESERIES:
 				view.setCampaignDropDownEnabled(true);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(false);
 				view.setParticipantDropDownEnabled(true);
 				view.setPromptXDropDownEnabled(true);
 				view.setPromptYDropDownEnabled(false);
@@ -569,6 +575,7 @@ public class ExploreDataPresenter implements Presenter {
 			case PROMPT_DISTRIBUTION:
 				view.setCampaignDropDownEnabled(true);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(false);
 				view.setParticipantDropDownEnabled(false);
 				view.setPromptXDropDownEnabled(true);
 				view.setPromptYDropDownEnabled(false);
@@ -579,6 +586,7 @@ public class ExploreDataPresenter implements Presenter {
 			case DENSITY_PLOT:
 				view.setCampaignDropDownEnabled(true);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(false);
 				view.setParticipantDropDownEnabled(false);
 				view.setPromptXDropDownEnabled(true);
 				view.setPromptYDropDownEnabled(true);
@@ -588,6 +596,7 @@ public class ExploreDataPresenter implements Presenter {
 			case MAP:
 				view.setCampaignDropDownEnabled(true);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(false);
 				view.setParticipantDropDownEnabled(true);
 				view.setPromptXDropDownEnabled(false);
 				view.setPromptYDropDownEnabled(false);
@@ -598,6 +607,7 @@ public class ExploreDataPresenter implements Presenter {
 			case MOBILITY_MAP:
 				view.setCampaignDropDownEnabled(false);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(true);
 				view.setParticipantDropDownEnabled(false);
 				view.setPromptXDropDownEnabled(false);
 				view.setPromptYDropDownEnabled(false);
@@ -609,6 +619,7 @@ public class ExploreDataPresenter implements Presenter {
 			case MOBILITY_TEMPORAL:
 				view.setCampaignDropDownEnabled(false);
 				view.setSurveyDropDownEnabled(false);
+				view.setClassDropDownEnabled(true);
 				view.setParticipantDropDownEnabled(false);
 				view.setPromptXDropDownEnabled(false);
 				view.setPromptYDropDownEnabled(false);
@@ -786,16 +797,22 @@ public class ExploreDataPresenter implements Presenter {
 		PlotType selectedPlotType = view.getSelectedPlotType();
 		String selectedCampaign = view.getSelectedCampaign();
 		String selectedSurvey = view.getSelectedSurvey();
+		String selectedClass = view.getSelectedClass();
 		String selectedParticipant = view.getSelectedParticipant();
 		String selectedPromptX = view.getSelectedPromptX();
 		String selectedPromptY = view.getSelectedPromptY();
-
+		Date selectedFromDate = view.getFromDate();
+		Date selectedToDate = view.getToDate();
+		
 		String token = HistoryTokens.exploreData(selectedPlotType, 
 				selectedCampaign,
 				selectedSurvey,
+				selectedClass,
 				selectedParticipant, 
 				selectedPromptX, 
-				selectedPromptY);
+				selectedPromptY,
+				selectedFromDate,
+				selectedToDate);
 
 		// NOTE: forces plot to be redrawn even if the history token params haven't
 		// changed. This way the user can keep clicking Draw Plot to refresh. 

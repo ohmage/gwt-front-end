@@ -231,16 +231,22 @@ public class HistoryTokens {
   public static String exploreData(PlotType plotType,
                                    String campaign,
                                    String survey,
+                                   String classId,
                                    String participant,
                                    String promptX,
-                                   String promptY) {
+                                   String promptY,
+                                   Date fromDate,
+                                   Date toDate) {
     Map<String, String> params = new HashMap<String, String>();
     if (plotType != null) params.put("plot", plotType.toHistoryTokenString());
     if (campaign != null) params.put("cid", campaign);
-    if (survey != null && !survey.isEmpty()) params.put("sid", survey);
+    if (classId != null) params.put("classid", classId);
+    if (survey != null) params.put("sid", survey);
     if (participant != null) params.put("uid", participant);
     if (promptX != null) params.put("x", promptX);
     if (promptY != null) params.put("y", promptY);
+    if (fromDate != null) params.put("from", DateUtils.translateToHistoryTokenFormat(fromDate));
+    if (toDate != null) params.put("to", DateUtils.translateToHistoryTokenFormat(toDate));
     return params.isEmpty() ? "explore_data" : "explore_data?" + MapUtils.translateToParameters(params);
   }
   

@@ -118,6 +118,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	@UiField Label requiredFieldMissingMsg;
 	@UiField Label campaignLabel;
 	@UiField Label surveyLabel;
+	@UiField Label classLabel;
 	@UiField Label participantLabel;
 	@UiField Label promptXLabel;
 	@UiField Label promptYLabel;
@@ -125,6 +126,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	@UiField Label endDateLabel;
 	@UiField ListBox campaignListBox;
 	@UiField ListBox surveyListBox;
+	@UiField ListBox classListBox;
 	@UiField ListBox participantListBox;
 	@UiField ListBox promptXListBox;
 	@UiField ListBox promptYListBox;
@@ -155,7 +157,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		sideBar.setCellVerticalAlignment(sideBar.getWidget(1), VerticalPanel.ALIGN_BOTTOM);
 
 		// these are required when enabled
-		requiredFields = Arrays.asList(campaignListBox, surveyListBox, participantListBox, promptXListBox, promptYListBox);
+		requiredFields = Arrays.asList(campaignListBox, surveyListBox, classListBox, participantListBox, promptXListBox, promptYListBox);
 
 		// set up date pickers
 		final DateBox.Format fmt = new DateBox.DefaultFormat(DateUtils.getDateBoxDisplayFormat());
@@ -359,6 +361,41 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	}
 
 	@Override
+	public void setClassList(List<String> classIds) {
+		classListBox.clear();
+
+		if (classIds == null)
+			return;
+
+		classListBox.addItem("No class (just you)","");
+		classListBox.setSelectedIndex(0);
+
+		for (String classId : classIds)
+			classListBox.addItem(classId, classId);	// FIXME: should be friendly class name
+	}
+
+	@Override
+	public void setSelectedClass(String classId) {
+		for (int i = 0; i < classListBox.getItemCount(); i++) {
+			if (classListBox.getValue(i).equals(classListBox)) {
+				classListBox.setSelectedIndex(i);
+				return;
+			}
+		}
+
+		// If not found, just select first item
+		classListBox.setSelectedIndex(0);
+	}
+
+	@Override
+	public String getSelectedClass() {
+		if (!classListBox.isEnabled())
+			return null;
+		int index = classListBox.getSelectedIndex();
+		return (index > -1) ? classListBox.getValue(index) : null;
+	}
+	
+	@Override
 	public void setParticipantList(List<String> participants) {
 		participantListBox.clear();
 
@@ -557,6 +594,14 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		surveyListBox.setEnabled(isEnabled);
 		setRequiredFlag(surveyListBox, isEnabled);
 	}
+	
+	@Override
+	public void setClassDropDownEnabled(boolean isEnabled) {
+		classLabel.setVisible(isEnabled);
+		classListBox.setVisible(isEnabled);
+		classListBox.setEnabled(isEnabled);
+		setRequiredFlag(classListBox, isEnabled);
+	}
 
 	@Override
 	public void setParticipantDropDownEnabled(boolean isEnabled) {
@@ -622,6 +667,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	public void disableAllDataControls() {
 		campaignListBox.setSelectedIndex(-1); // campaigns never change, just deselect
 		surveyListBox.clear();
+		classListBox.clear();
 		participantListBox.clear();
 		promptXListBox.clear();
 		promptYListBox.clear();
@@ -629,6 +675,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		// disable control
 		campaignListBox.setEnabled(false);
 		surveyListBox.setEnabled(false);
+		classListBox.setEnabled(false);
 		participantListBox.setEnabled(false);
 		promptXListBox.setEnabled(false);
 		promptYListBox.setEnabled(false);
@@ -660,6 +707,10 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		return campaignListBox;
 	}
 
+	@Override
+	public HasChangeHandlers getClassDropDown() {
+		return classListBox;
+	}
 
 	@Override
 	public HasClickHandlers getDrawPlotButton() {

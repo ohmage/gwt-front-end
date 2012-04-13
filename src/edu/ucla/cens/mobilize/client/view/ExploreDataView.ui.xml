@@ -185,6 +185,10 @@
 	             <g:ListBox ui:field='surveyListBox' addStyleNames='{style.dataControlListBox}' />
 	           </g:HTMLPanel>
 	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
+	             <g:InlineLabel ui:field='classLabel' addStyleNames='{style.dataControlLabel}'>Class:</g:InlineLabel>
+	             <g:ListBox ui:field='classListBox' addStyleNames='{style.dataControlListBox}' />
+	           </g:HTMLPanel>
+	           <g:HTMLPanel addStyleNames='{style.dataControlRow}'>
 	             <g:InlineLabel ui:field='participantLabel' addStyleNames='{style.dataControlLabel}'>Participant:</g:InlineLabel>
 	             <g:ListBox ui:field='participantListBox' addStyleNames='{style.dataControlListBox}' />
 	           </g:HTMLPanel>
