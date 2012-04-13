@@ -3,7 +3,6 @@ package edu.ucla.cens.mobilize.client.view;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -15,7 +14,8 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineHyperlink;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,24 +27,28 @@ import edu.ucla.cens.mobilize.client.ui.WaitIndicator;
 public class LoginViewMobilizeImpl extends Composite implements LoginView {
     @UiTemplate("LoginViewMobilize.ui.xml")
     interface LoginBoxViewUiBinder extends UiBinder<Widget, LoginViewMobilizeImpl> {}
-    private static LoginBoxViewUiBinder uiBinder =
-      GWT.create(LoginBoxViewUiBinder.class);
+    private static LoginBoxViewUiBinder uiBinder = GWT.create(LoginBoxViewUiBinder.class);
     
     // Fields defined in the ui XML
     @UiField TextBox userNameTextBox;
     @UiField PasswordTextBox passwordTextBox;
     @UiField Button loginButton;
-    // dynamically fill html here depending on the installation
-    @UiField Image logo;
-    @UiField UListElement linkList;
-    @UiField HTMLPanel linkListDiv;
-    @UiField HTMLPanel descriptionPanel;
+    @UiField HTMLPanel selfRegistrationText;
+    @UiField HTMLPanel loginRecoveryText;
+    @UiField HTMLPanel messagePanel;
+    @UiField HTMLPanel messageBox;
+    @UiField InlineHyperlink selfRegisterLink;
     
     private Presenter presenter;
     
     public LoginViewMobilizeImpl() {
         initWidget(uiBinder.createAndBindUi(this)); 
         initEventHandlers();
+        
+        // Defaults
+        setNotificationMessage(null);
+        setSelfRegistrationEnabled(false);
+        setLoginRecoveryEnabled(true);
         
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             public void execute () {
@@ -53,7 +57,8 @@ public class LoginViewMobilizeImpl extends Composite implements LoginView {
         });
     }
     
-    private void initEventHandlers() {
+    @SuppressWarnings("deprecation")
+	private void initEventHandlers() {
       // clicking login button submits (note: pressing enter
       //  while login has focus also submits)
       loginButton.addClickHandler(new ClickHandler() {
@@ -100,7 +105,7 @@ public class LoginViewMobilizeImpl extends Composite implements LoginView {
 
     @Override
     public void setLoginFailed(String msg) {
-      ErrorDialog.show("Invalid username or password", msg);
+      ErrorDialog.show("The login information you entered is incorrect", msg);
     }
 
     @Override
@@ -136,20 +141,23 @@ public class LoginViewMobilizeImpl extends Composite implements LoginView {
 
 	@Override
 	public void setNotificationMessage(String message) {
-		// TODO Auto-generated method stub
+		if (message == null || message.isEmpty()) {
+			messagePanel.setVisible(false);
+			return;
+		}
 		
+		messageBox.clear();
+		messageBox.add(new InlineLabel(message));
+		messagePanel.setVisible(true);
 	}
 
 	@Override
 	public void setSelfRegistrationEnabled(boolean isEnabled) {
-		// TODO Auto-generated method stub
-		
+		selfRegistrationText.setVisible(isEnabled);
 	}
-
+	
 	@Override
 	public void setLoginRecoveryEnabled(boolean isEnabled) {
-		// TODO Auto-generated method stub
-		
+		loginRecoveryText.setVisible(isEnabled);
 	}
-    
 }
