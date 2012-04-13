@@ -280,12 +280,12 @@ public interface DataService {
   Map<String, String> getSurveyResponseExportParams(String campaignId);
   
   /**
-   * @param classIds
+   * Fetches class details based on the classId list provided and privilege-only flag
+   * @param classIds List of class URNs to obtain class info
+   * @param privilegedOnly If true, only classes where the user is privileged is returned. Returns all class info otherwise.
    * @param callback
    */
-  void fetchClassList(List<String> classIds,
-                      final AsyncCallback<List<ClassInfo>> callback);
-  
+  void fetchClassList(List<String> classIds, boolean privilegedOnly, final AsyncCallback<List<ClassInfo>> callback);
   
   void fetchClassSearchResults(ClassSearchParams params, final AsyncCallback<List<ClassSearchInfo>> callback);
   

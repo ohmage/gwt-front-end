@@ -373,7 +373,7 @@ public class MockDataService implements DataService {
   }
 
   @Override
-  public void fetchClassList(List<String> schoolId,
+  public void fetchClassList(List<String> schoolId, boolean privilegedOnly,
       AsyncCallback<List<ClassInfo>> callback) {
     callback.onSuccess(this.classInfos);    
   }

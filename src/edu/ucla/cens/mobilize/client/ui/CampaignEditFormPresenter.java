@@ -149,7 +149,7 @@ public class CampaignEditFormPresenter {
         }
         
         // TODO: only reload data if class list has changed?
-        dataService.fetchClassList(campaignClasses, new AsyncCallback<List<ClassInfo>>() {
+        dataService.fetchClassList(campaignClasses, false, new AsyncCallback<List<ClassInfo>>() {
           @Override
           public void onFailure(Throwable caught) {
             _logger.severe(caught.getMessage());

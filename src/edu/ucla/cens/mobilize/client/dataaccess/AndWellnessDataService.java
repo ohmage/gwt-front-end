@@ -1162,12 +1162,13 @@ public class AndWellnessDataService implements DataService {
   }
   
   @Override
-  public void fetchClassList(List<String> classIds, final AsyncCallback<List<ClassInfo>> callback) {
+  public void fetchClassList(List<String> classIds, boolean privilegedOnly, final AsyncCallback<List<ClassInfo>> callback) {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     Map<String, String> params = new HashMap<String, String>();
     params.put("auth_token", this.authToken);
     params.put("client", this.client);
     params.put("class_urn_list", CollectionUtils.join(classIds, ","));
+    if (privilegedOnly)	params.put("class_role", "privileged");
     String postParams = MapUtils.translateToParameters(params);
     _logger.fine("Fetching class list with params: " + postParams);
     final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getClassReadUrl());
@@ -1284,7 +1285,7 @@ public class AndWellnessDataService implements DataService {
     assert this.isInitialized : "You must call init(username, auth_token) before any api calls";
     List<String> classIdList = new ArrayList<String>();
     classIdList.add(classId);
-    fetchClassList(classIdList, new AsyncCallback<List<ClassInfo>>() {
+    fetchClassList(classIdList, false, new AsyncCallback<List<ClassInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
         callback.onFailure(caught);

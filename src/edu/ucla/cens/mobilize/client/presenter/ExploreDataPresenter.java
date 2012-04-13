@@ -37,6 +37,7 @@ import edu.ucla.cens.mobilize.client.event.UserInfoUpdatedEventHandler;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
+import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.MobilityInfo;
 import edu.ucla.cens.mobilize.client.model.PromptInfo;
 import edu.ucla.cens.mobilize.client.model.SurveyResponse;
@@ -53,6 +54,7 @@ public class ExploreDataPresenter implements Presenter {
 	// data that's shared across presenters
 	UserInfo userInfo;
 	private List<CampaignShortInfo> campaigns;
+	private Map<String,List<String>> classUrnToUsersMap = new HashMap<String,List<String>>();
 	DataService dataService;
 	EventBus eventBus;
 
@@ -84,17 +86,21 @@ public class ExploreDataPresenter implements Presenter {
 		this.dataService = dataService;
 		this.eventBus = eventBus;
 		this.campaigns = campaigns;
+		fetchAndFillClassChoices();	// updates "classUrnsToMap"
 		bind();
 	}
 
 	private void bind() {
+		// Class update handler (class list is stored in UserInfo)
 		this.eventBus.addHandler(UserInfoUpdatedEvent.TYPE, new UserInfoUpdatedEventHandler() {
 			@Override
 			public void onUserInfoChanged(UserInfoUpdatedEvent event) {
 				userInfo = event.getUserInfo();
+				fetchAndFillClassChoices();	//NOTE: We need to do another class/read call to get privileged-only classes.
 			}
 		});
 
+		// Campaign update handler
 		this.eventBus.addHandler(CampaignInfoUpdatedEvent.TYPE, new CampaignInfoUpdatedEventHandler() {
 			@Override
 			public void onCampaignInfoUpdated(CampaignInfoUpdatedEvent event) {
@@ -127,10 +133,16 @@ public class ExploreDataPresenter implements Presenter {
 		// enable/disable filters based on plot selection
 		setEnabledFiltersForPlotType(selectedPlotType);
 		// fetch and fill participant choices based on selected campaign (if appropriate for plot)
-		fetchAndFillParticipantChoices(selectedCampaign, selectedParticipant);
+		if (selectedPlotType.toString().toLowerCase().startsWith("mobility") == false) {
+			// NOTE: Do not refresh for mobility plots
+			fetchAndFillParticipantChoicesForCampaign(selectedCampaign, selectedParticipant);
+		}
 		// fill prompt choices based on selected campaign (if appropriate for plot)
-		fetchAndFillPromptChoices(selectedCampaign, selectedPlotType, selectedX, selectedY, startDate, endDate);
+		fetchAndFillPromptChoices(selectedCampaign, selectedPlotType, selectedX, selectedY);
+		//fetchAndFillClassChoices();
 
+		// FIXME: This is a massive race condition here
+		
 		view.setSelectedCampaign(selectedCampaign);
 		view.setSelectedSurvey(selectedSurvey);
 		view.setSelectedClass(selectedClass);
@@ -145,25 +157,16 @@ public class ExploreDataPresenter implements Presenter {
 			// Case 1: Survey Response Map
 			fetchResponseDataAndShowOnMap(selectedCampaign, selectedParticipant, startDate, endDate); // participant, startDate, endDate can be null
 		} else if (PlotType.MOBILITY_MAP.equals(selectedPlotType)) {
-			// TODO: username
-			
 			// Case 2: Mobility Map
 			endDate = new Date(startDate.getTime());	// only uses 1 day, so just set end date as same day
-			fetchMobilityDataAndShowOnMap(startDate, endDate);
+			fetchMobilityDataAndShowOnMap(selectedParticipant, startDate, endDate);
 		} else if (PlotType.MOBILITY_TEMPORAL.equals(selectedPlotType)) {
-			// TODO: username
-			
 			// Case 3: Mobility Temporal Summary
-			fetchMobilityDataAndShowTemporalSummary(startDate, endDate);
+			fetchMobilityDataAndShowTemporalSummary(selectedParticipant, startDate, endDate);
 		} else if (PlotType.MOBILITY_DASHBOARD.equals(selectedPlotType)) {
-			// TODO: username
-			
 			// Case 4: Mobility Temporal Summary
-			fetchMobilityDataAndShowMobilityDashboard(startDate);
+			fetchMobilityDataAndShowMobilityDashboard(selectedParticipant, startDate);
 		} else if (PlotType.MOBILITY_HISTORICAL.equals(selectedPlotType)) {
-			// TODO: username
-			selectedParticipant = userInfo.getUserName();
-			
 			// Case 5: Mobility Historical Analysis
 			fetchMobilitySurveyDataAndShowHistoricalAnalysis(selectedParticipant, startDate, endDate);
 		} else if (PlotType.LEADER_BOARD.equals(selectedPlotType)) {
@@ -227,7 +230,36 @@ public class ExploreDataPresenter implements Presenter {
 				});
 	}
 
-	private void fetchMobilityDataAndShowOnMap(final Date startDate, final Date endDate) {
+	private void fetchMobilityDataAndShowMobilityDashboard(final String username, Date date) {
+		view.showWaitIndicator();
+
+		//list for aggregating all the data
+		final List<MobilityInfo> mdata = new ArrayList<MobilityInfo>();
+
+			dataService.fetchMobilityData(
+					date,
+					username,
+					new AsyncCallback<List<MobilityInfo>>() {
+						@Override
+						public void onFailure(Throwable caught) {
+							_logger.severe(caught.getMessage());
+							AwErrorUtils.logoutIfAuthException(caught);
+							ErrorDialog.show("Unable to retrieve mobility data with the selected parameters", caught.getMessage());
+							view.hideWaitIndicator();
+						}
+						@Override
+						public void onSuccess(List<MobilityInfo> result) {
+							mdata.addAll(result);
+
+							// show responses on map
+							view.showMobilityDashboard(mdata);
+							view.hideWaitIndicator();
+						}
+					}
+					);
+	}
+	
+	private void fetchMobilityDataAndShowOnMap(final String username, final Date startDate, final Date endDate) {
 		view.showWaitIndicator();
 
 		//list for aggregating all the data
@@ -236,7 +268,7 @@ public class ExploreDataPresenter implements Presenter {
 		for (Date curDate = new Date(startDate.getTime()); curDate.before(endDate) || (curDate.getDate() == endDate.getDate()); curDate = DateUtils.addOneDay(curDate)) {
 			dataService.fetchMobilityData(
 					curDate,
-					null, //TODO: username
+					username,
 					new AsyncCallback<List<MobilityInfo>>() {
 						@Override
 						public void onFailure(Throwable caught) {
@@ -257,7 +289,7 @@ public class ExploreDataPresenter implements Presenter {
 		}
 	}
 
-	private void fetchMobilityDataAndShowTemporalSummary(final Date startDate, final Date endDate) {
+	private void fetchMobilityDataAndShowTemporalSummary(final String username, final Date startDate, final Date endDate) {
 		view.showWaitIndicator();
 
 		// Create a list of Lists for synchronization
@@ -273,7 +305,7 @@ public class ExploreDataPresenter implements Presenter {
 
 			dataService.fetchMobilityData(
 					dateParam,
-					null,	//TODO: username
+					username,
 					new AsyncCallback<List<MobilityInfo>>() {
 						@Override
 						public void onFailure(Throwable caught) {
@@ -320,35 +352,6 @@ public class ExploreDataPresenter implements Presenter {
 					);
 		}
 	}
-	
-	private void fetchMobilityDataAndShowMobilityDashboard(Date date) {
-		view.showWaitIndicator();
-
-		//list for aggregating all the data
-		final List<MobilityInfo> mdata = new ArrayList<MobilityInfo>();
-
-			dataService.fetchMobilityData(
-					date,
-					null, //TODO: username
-					new AsyncCallback<List<MobilityInfo>>() {
-						@Override
-						public void onFailure(Throwable caught) {
-							_logger.severe(caught.getMessage());
-							AwErrorUtils.logoutIfAuthException(caught);
-							ErrorDialog.show("Unable to retrieve mobility data with the selected parameters", caught.getMessage());
-							view.hideWaitIndicator();
-						}
-						@Override
-						public void onSuccess(List<MobilityInfo> result) {
-							mdata.addAll(result);
-
-							// show responses on map
-							view.showMobilityDashboard(mdata);
-							view.hideWaitIndicator();
-						}
-					}
-					);
-	}
 
 	private void fetchMobilitySurveyDataAndShowHistoricalAnalysis(final String username, final Date startDate, final Date endDate) {
 		view.showWaitIndicator();
@@ -366,7 +369,7 @@ public class ExploreDataPresenter implements Presenter {
 
 			dataService.fetchMobilityData(
 					dateParam,
-					null,	//TODO: username
+					username,
 					new AsyncCallback<List<MobilityInfo>>() {
 						@Override
 						public void onFailure(Throwable caught) {
@@ -472,10 +475,19 @@ public class ExploreDataPresenter implements Presenter {
 
 				//preserve old choices, if valid. fetchAndFill... will reset any invalid choices in the list
 				String campaignId = view.getSelectedCampaign();
+				String classId = view.getSelectedClass();
 				PlotType plotType = view.getSelectedPlotType();
-				fetchAndFillPromptChoices(campaignId, plotType, view.getSelectedPromptX(), view.getSelectedPromptY(), view.getFromDate(), view.getToDate());
-				fetchAndFillParticipantChoices(campaignId, view.getSelectedParticipant());
-
+				fetchAndFillPromptChoices(campaignId, plotType, view.getSelectedPromptX(), view.getSelectedPromptY());
+				
+				if (plotType.equals(PlotType.MOBILITY_DASHBOARD) || 
+						plotType.equals(PlotType.MOBILITY_MAP) || 
+						plotType.equals(PlotType.MOBILITY_TEMPORAL) || 
+						plotType.equals(PlotType.MOBILITY_HISTORICAL)) {
+					fetchAndFillParticipantChoicesForClass(classId);
+				} else {
+					fetchAndFillParticipantChoicesForCampaign(campaignId, view.getSelectedParticipant());
+				}
+				
 				view.isMissingRequiredField();
 			}
 
@@ -489,8 +501,16 @@ public class ExploreDataPresenter implements Presenter {
 			public void onChange(ChangeEvent event) {
 				String campaignId = view.getSelectedCampaign();
 				PlotType plotType = view.getSelectedPlotType();
-				fetchAndFillPromptChoices(campaignId, plotType, null, null, null, null);
-				fetchAndFillParticipantChoices(campaignId, null);
+				fetchAndFillPromptChoices(campaignId, plotType, null, null);
+				fetchAndFillParticipantChoicesForCampaign(campaignId, null);
+			}
+		});
+		
+		view.getClassDropDown().addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent event) {
+				String classId = view.getSelectedClass();
+				fetchAndFillParticipantChoicesForClass(classId);
 			}
 		});
 
@@ -608,7 +628,7 @@ public class ExploreDataPresenter implements Presenter {
 				view.setCampaignDropDownEnabled(false);
 				view.setSurveyDropDownEnabled(false);
 				view.setClassDropDownEnabled(true);
-				view.setParticipantDropDownEnabled(false);
+				view.setParticipantDropDownEnabled(true);
 				view.setPromptXDropDownEnabled(false);
 				view.setPromptYDropDownEnabled(false);
 				view.setStartDateRangeEnabled(true);
@@ -620,7 +640,7 @@ public class ExploreDataPresenter implements Presenter {
 				view.setCampaignDropDownEnabled(false);
 				view.setSurveyDropDownEnabled(false);
 				view.setClassDropDownEnabled(true);
-				view.setParticipantDropDownEnabled(false);
+				view.setParticipantDropDownEnabled(true);
 				view.setPromptXDropDownEnabled(false);
 				view.setPromptYDropDownEnabled(false);
 				view.setDateRangeEnabled(true);
@@ -644,7 +664,7 @@ public class ExploreDataPresenter implements Presenter {
 		return retval;
 	}
 
-	private void fetchAndFillParticipantChoices(String campaignId, String participantToSelect) {
+	private void fetchAndFillParticipantChoicesForCampaign(String campaignId, String participantToSelect) {
 		if (campaignId == null) return;
 		this.selectedParticipant = participantToSelect; // participantFetchCallback needs this
 		CampaignShortInfo campaign = getCampaignInfo(campaignId);
@@ -663,6 +683,21 @@ public class ExploreDataPresenter implements Presenter {
 		}
 	}
 
+	private void fetchAndFillParticipantChoicesForClass(String classId) {
+		if (classId == null || classId.isEmpty()) {
+			// No class? Just put the current user only
+			view.setParticipantList(Arrays.asList(userInfo.getUserName()));
+		} else if (classUrnToUsersMap.containsKey(classId) == false) {
+			// Requested classId wasn't found in our preloaded Map? Just insert own username
+			// Note: This case could occur if user enters a class themselves in the URL params
+			view.setParticipantList(Arrays.asList(userInfo.getUserName()));
+		} else {
+			// Load the user list
+			List<String> users = classUrnToUsersMap.get(classId);
+			Collections.sort(users);
+			view.setParticipantList(users);
+		}
+	}
 
 	// callback that populates participant dialog
 	private AsyncCallback<List<String>> participantFetchCallback = new AsyncCallback<List<String>>() {
@@ -684,9 +719,7 @@ public class ExploreDataPresenter implements Presenter {
 	private void fetchAndFillPromptChoices(String campaignId, 
 			final PlotType plotType,
 			final String promptToSelectX, 
-			final String promptToSelectY,
-			final Date startDate,
-			final Date endDate) {
+			final String promptToSelectY) {
 		if (campaignId == null || plotType == null) return;
 		dataService.fetchCampaignDetail(campaignId, new AsyncCallback<CampaignDetailedInfo>() {
 			@Override
@@ -709,6 +742,35 @@ public class ExploreDataPresenter implements Presenter {
 				}
 				view.setSelectedPromptX(promptToSelectX);
 				view.setSelectedPromptY(promptToSelectY);
+			}
+		});
+	}
+	
+	private void fetchAndFillClassChoices() {
+		List<String> userClassUrns = new ArrayList<String>(userInfo.getClassIds());
+		
+		// Case 1 privilegedOnly == false: All user's classes, even if not a privileged user
+		// Case 2 privilegedOnly == true: Fetch privileged-only classes
+		final boolean privilegedOnly = true;	// Note: For explore data, only case 2 is possible for the time being
+		
+		dataService.fetchClassList(userClassUrns, privilegedOnly, new AsyncCallback<List<ClassInfo>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				_logger.severe("Could not load class list: " + caught.getMessage());
+				AwErrorUtils.logoutIfAuthException(caught);
+				
+				// Still load blank class, so user can still access their own user data in case class/read is broken
+				view.setClassList(new ArrayList<String>());
+			}
+
+			@Override
+			public void onSuccess(List<ClassInfo> result) {
+				classUrnToUsersMap.clear();
+				for (ClassInfo c : result) {
+					classUrnToUsersMap.put(c.getClassId(), c.getMemberLogins());
+				}
+				
+				view.setClassList(new ArrayList<String>(classUrnToUsersMap.keySet()));
 			}
 		});
 	}

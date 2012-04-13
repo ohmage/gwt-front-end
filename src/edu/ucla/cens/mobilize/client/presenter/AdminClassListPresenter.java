@@ -142,7 +142,7 @@ public class AdminClassListPresenter implements Presenter {
   };
   
   private void fetchAndShowClassListByUrn(final List<String> classUrns) {
-    dataService.fetchClassList(classUrns, new AsyncCallback<List<ClassInfo>>() {
+    dataService.fetchClassList(classUrns, false, new AsyncCallback<List<ClassInfo>>() {
       @Override
       public void onFailure(Throwable caught) {
         AwErrorUtils.logoutIfAuthException(caught);

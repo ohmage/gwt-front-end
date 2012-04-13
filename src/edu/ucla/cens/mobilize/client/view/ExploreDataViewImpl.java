@@ -362,22 +362,26 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 
 	@Override
 	public void setClassList(List<String> classIds) {
+		// Save old selection
+		String oldClassId = this.getSelectedClass();
+		
 		classListBox.clear();
-
+		classListBox.addItem("No class (self-only)","");
+		
 		if (classIds == null)
 			return;
-
-		classListBox.addItem("No class (just you)","");
-		classListBox.setSelectedIndex(0);
-
+		
 		for (String classId : classIds)
-			classListBox.addItem(classId, classId);	// FIXME: should be friendly class name
+			classListBox.addItem(classId, classId);
+		
+		// Try to set original class id
+		this.setSelectedClass(oldClassId);
 	}
-
+	
 	@Override
 	public void setSelectedClass(String classId) {
 		for (int i = 0; i < classListBox.getItemCount(); i++) {
-			if (classListBox.getValue(i).equals(classListBox)) {
+			if (classListBox.getValue(i).equals(classId)) {
 				classListBox.setSelectedIndex(i);
 				return;
 			}
@@ -397,13 +401,12 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	
 	@Override
 	public void setParticipantList(List<String> participants) {
+		// Save old selection
+		String oldSelection = this.getSelectedParticipant();
+		
 		participantListBox.clear();
 
 		if (participants == null) {
-			//participantListBox.addItem("(no users)", "");
-			//participantListBox.setSelectedIndex(0);
-			//NodeList<Element> items = participantListBox.getElement().getElementsByTagName("option");
-			//items.getItem(0).setAttribute("disabled", "disabled");
 			return;
 		}
 
@@ -411,9 +414,11 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 		if (this.getSelectedPlotType() == PlotType.MAP)
 			participantListBox.addItem("All Users", "");
 
-		for (String username : participants) {
+		for (String username : participants)
 			participantListBox.addItem(username, username);
-		}
+		
+		// Try to set original participant
+		this.setSelectedParticipant(oldSelection);
 	}
 
 
@@ -667,7 +672,7 @@ public class ExploreDataViewImpl extends Composite implements ExploreDataView {
 	public void disableAllDataControls() {
 		campaignListBox.setSelectedIndex(-1); // campaigns never change, just deselect
 		surveyListBox.clear();
-		classListBox.clear();
+		classListBox.setSelectedIndex(0);	// classes never change, just deselect
 		participantListBox.clear();
 		promptXListBox.clear();
 		promptYListBox.clear();
