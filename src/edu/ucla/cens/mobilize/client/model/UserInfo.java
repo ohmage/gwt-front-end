@@ -14,6 +14,7 @@ import edu.ucla.cens.mobilize.client.common.RoleCampaign;
  */
 public class UserInfo {
   private String userName; // login id
+  private String email;
   boolean isPrivileged = false; // true if user is privileged member of any class
   boolean isAdmin = false; // true if user is admin (can view/edit all classes and users)
   boolean canCreateCampaigns = false; // true if user is allowed to author campaigns
@@ -57,6 +58,14 @@ public class UserInfo {
   
   public void setUserName(String userName) {
     this.userName = userName;
+  }
+  
+  public String getEmail() {
+	  return (this.email != null) ? this.email : ""; 
+  }
+  
+  public void setEmail(String email) {
+	  this.email = email;
   }
   
   public Map<String, String> getClasses() {

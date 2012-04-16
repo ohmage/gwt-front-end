@@ -56,6 +56,10 @@
 	  <g:InlineLabel ui:field='loginLabel'></g:InlineLabel>
 	</g:HTMLPanel>
 	<g:HTMLPanel addStyleNames='{style.detailRow}'>
+	  <g:InlineLabel addStyleNames='{style.detailLabel}'>Email Address:</g:InlineLabel>
+	  <g:InlineLabel ui:field='emailLabel'></g:InlineLabel>
+	</g:HTMLPanel>
+	<g:HTMLPanel addStyleNames='{style.detailRow}'>
 	  <g:InlineLabel addStyleNames='{style.detailLabel}'>Can create campaigns:</g:InlineLabel>
 	  <g:InlineLabel ui:field='canCreateLabel'></g:InlineLabel>
 	</g:HTMLPanel>

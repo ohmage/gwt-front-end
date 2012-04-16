@@ -27,6 +27,10 @@ public class UserInfoAwData extends JavaScriptObject {
   // author, participant, supervisor, analyst
   private final native JsArrayString getCampaignRolesAsJsArray() /*-{ return this.campaign_roles }-*/;
 
+  // email address
+  public final native String getEmail() /*-{ 
+    return (this.email_address != undefined) ? this.email_address : ""; 
+  }-*/;
   
   public final native boolean getCanCreateFlag() /*-{ 
     return (this.permissions != undefined) ? this.permissions.can_create_campaigns : false; 

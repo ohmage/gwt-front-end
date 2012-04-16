@@ -11,6 +11,7 @@ public interface AccountView extends IsWidget {
   }
   
   void setUserName(String userName);
+  void setEmail(String email);
   void setCanCreate(boolean canCreate);
   void clearClassList();
   void addClass(String classId, String string);
@@ -32,6 +33,7 @@ public interface AccountView extends IsWidget {
   HasClickHandlers getPasswordChangeCancelButton();
 
   String getUserName();
+  String getEmail();
   String getOldPassword();
   String getNewPassword();
   String getNewPasswordConfirm();

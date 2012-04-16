@@ -307,6 +307,7 @@ public class AwDataTranslators {
           UserInfoAwData userDataJSObject = (UserInfoAwData)userJSONObject.getJavaScriptObject();
           boolean isAdmin = userDataJSObject.getIsAdminFlag();
           boolean canCreateFlag = userDataJSObject.getCanCreateFlag();
+          String email = userDataJSObject.getEmail();
           Map<String, String> campaignIdToNameMap = userDataJSObject.getCampaigns();
           Map<String, String> classIdToNameMap = userDataJSObject.getClasses();
           // get roles and translate to enum values          
@@ -321,6 +322,7 @@ public class AwDataTranslators {
           
           UserInfo userInfo = new UserInfo();
           userInfo.setUserName(username);
+          userInfo.setEmail(email);
           userInfo.setAdminFlag(isAdmin);
           userInfo.setPrivilegeFlag(isPrivileged);
           userInfo.setCanCreateFlag(canCreateFlag);
