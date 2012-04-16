@@ -399,7 +399,7 @@
 				</g:HTMLPanel>
 				<g:HTMLPanel addStyleNames='{style.footer-box}'>
 					<ul>
-						<li>Copyright &#169; 2012 MobilizeLab</li>
+						<li>Copyright &#169; 2012 MobilizeLabs</li>
 						<li>&#183;</li>
 						<li>All rights reserved</li>
 					</ul>
