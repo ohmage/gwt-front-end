@@ -160,8 +160,8 @@
 	.description-box {
 		line-height: 1.2;
 		padding: 20px;
-		background: #fdfbfb;
-		border: 1px solid #fde5d3;
+		background: #FAFEFF;
+		border: 1px solid #AEE7F4;
 		-moz-border-radius: 2px;
 		-webkit-border-radius: 2px;
 		-khtml-border-radius: 2px;
@@ -257,7 +257,7 @@
 			<!-- LEFT PANEL -->
 			<g:HTMLPanel addStyleNames='{style.left-panel}'>
 				<g:HTMLPanel addStyleNames='{style.description-box}'>
-					<h1><font color="#ff4e10">Mobilize</font> = <font color="#5ccf00">Computational Thinking</font> + <font color="#00bee7">Data for Social Awareness and Civil Engagement</font></h1>
+					<h1><font color="#00bee7">Mobilize = Computational Thinking + Data for Social Awareness and Civil Engagement</font></h1>
 					<h2>What is Mobilize?</h2>
 					<p>
 						Through Mobilize students use mobile phones and web services to systematically 
