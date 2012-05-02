@@ -4,7 +4,8 @@ public enum LocationStatus {
   UNAVAILABLE,
   VALID,
   STALE,
-  INACCURATE;
+  INACCURATE,
+  NETWORK;
   
   public static LocationStatus fromServerString(String statusInServerFormat) {
     LocationStatus status = null;
