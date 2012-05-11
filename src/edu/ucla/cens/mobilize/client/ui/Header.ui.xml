@@ -43,7 +43,8 @@
 		     |
 		     <g:InlineHyperlink targetHistoryToken='account'>My Account</g:InlineHyperlink>
 		     |
-		     <g:InlineHyperlink targetHistoryToken='help'>Help</g:InlineHyperlink>
+		     <!-- <g:InlineHyperlink targetHistoryToken='help'>Help</g:InlineHyperlink> -->
+		     <a href='http://mobilizingcs.wikispaces.com/help'>Help</a>
 	     </span>
 	     <g:Button ui:field='logoutButton'>
          Logout
