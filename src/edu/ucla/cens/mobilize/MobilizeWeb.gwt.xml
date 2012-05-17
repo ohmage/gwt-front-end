@@ -40,7 +40,16 @@
     <when-type-is class='edu.ucla.cens.mobilize.client.DeployStatus' />
     <when-property-is name='deployStatus' value='DEBUG' />
   </replace-with>
-
+  
+  <!-- 
+    ** IMPORTANT ** 
+  
+  	The HTTPS URLs for the Google JS need to be changed to HTTP 
+  	for deployment environments where client browsers sit behind
+  	a proxy server and the client browsers are not configured 
+  	with the root proxy certificate properly (e.g., many of the 
+  	LAUSD schools). 
+  -->
   <script src="https://www.google.com/recaptcha/api/js/recaptcha_ajax.js" />
   <script src="https://maps.google.com/maps/api/js?sensor=false" />
   <script src="js/markerclusterer_packed.js" />
