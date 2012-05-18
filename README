@@ -1,5 +1,8 @@
 Welcome to the AndWellness Frontend code!  
 
+
+BACKGROUND:
+
 The majority of this code is written in Java and compiled to
 JavaScript using the included GWT libraries.  To compile the code,
 make sure java and javac are installed and run ant build.  The
@@ -11,3 +14,21 @@ base dir> to automatically copy the files.  Once the files are in the
 andwellness server codebase, change to the andwellness server base
 directory and run 'ant clean dist'.  The GWT files will be zipped into
 a deployable war file.
+
+
+COLLABORATION POLICY:
+
+Please avoid pushing to master. Instead, please push to a development branch.
+
+
+CODING STANDARDS:
+
+4 space indents (no tabs)
+
+Always use curly braces even if the conditional or loop is one line
+
+Opening curly braces go on the same line of the loop or conditional declaration
+
+Comments anywhere can only be 80 chars per line
+
+For code, most of us have been going with 80 chars per line, but that is not a hard and fast rule.
