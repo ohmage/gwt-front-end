@@ -42,6 +42,7 @@
 		}
 	</ui:style>
 	<g:HTMLPanel addStyleNames='{style.header}'>
+
 		<!-- Header class only shows either logo or text only -->
 		<g:HTMLPanel addStyleNames='{style.appLogo}'>
 			<g:Image ui:field='appNameImage' addStyleNames='{style.appImage}' url="images/theme-ohmage/dashboard-header-logo.png"></g:Image>
@@ -53,8 +54,10 @@
 					<g:InlineLabel ui:field='userNameLabel' addStyleNames='{style.userName}' />
 					<g:InlineHyperlink targetHistoryToken='dashboard'>Home</g:InlineHyperlink>
 					<g:InlineHyperlink targetHistoryToken='account'>Account</g:InlineHyperlink>
+					<g:Anchor href='http://mobilizingcs.wikispaces.com/help'>Help</g:Anchor>
 					<g:Button ui:field='logoutButton'>Sign out</g:Button>
 				</g:HorizontalPanel>
 		</g:HTMLPanel>
+
 	</g:HTMLPanel>
 </ui:UiBinder> 
