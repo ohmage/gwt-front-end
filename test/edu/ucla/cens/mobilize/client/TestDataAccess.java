@@ -1,11 +1,11 @@
-package edu.ucla.cens.mobilize.client;
+package org.ohmage.mobilize.client;
 
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.Response;
-import edu.ucla.cens.mobilize.client.dataaccess.AndWellnessDataService;
-import edu.ucla.cens.mobilize.client.exceptions.ServerException;
+import org.ohmage.mobilize.client.dataaccess.AndWellnessDataService;
+import org.ohmage.mobilize.client.exceptions.ServerException;
 
 public class TestDataAccess extends GWTTestCase {
 
@@ -18,7 +18,7 @@ public class TestDataAccess extends GWTTestCase {
 
   @Override
   public String getModuleName() {
-    return "edu.ucla.cens.mobilize.MobilizeWebDebug";
+    return "org.ohmage.mobilize.MobilizeWebDebug";
   }
   
   public void testGetResponseText() {

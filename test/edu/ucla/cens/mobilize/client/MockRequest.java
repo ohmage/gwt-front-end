@@ -1,4 +1,4 @@
-package edu.ucla.cens.mobilize.client;
+package org.ohmage.mobilize.client;
 import com.google.gwt.http.client.RequestBuilder;
 
 public class MockRequest extends RequestBuilder {
