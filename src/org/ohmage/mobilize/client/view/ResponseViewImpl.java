@@ -37,7 +37,7 @@ import com.google.gwt.view.client.RangeChangeEvent;
 import com.google.gwt.view.client.RowCountChangeEvent;
 import com.google.gwt.view.client.RangeChangeEvent.Handler;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.common.Privacy;
 import org.ohmage.mobilize.client.model.SurveyResponse;
 import org.ohmage.mobilize.client.ui.MessageWidget;
@@ -287,7 +287,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
       singleParticipantLabel.setVisible(false);
       participantFilter.setVisible(true);
       participantFilter.clear();
-      if (makeFirstItemAll) participantFilter.addItem("All", AwConstants.specialAllValuesToken);
+      if (makeFirstItemAll) participantFilter.addItem("All", OhConstants.specialAllValuesToken);
       for (String name : participantNames) {
         participantFilter.addItem(name, name); 
       }
@@ -743,7 +743,7 @@ public class ResponseViewImpl extends Composite implements ResponseView {
   
   @Override
   public void showResponseCountInSectionHeader(String username, int responseCount) {
-    String userDisplayName = username.equals(AwConstants.specialAllValuesToken) ? "all users" : username;
+    String userDisplayName = username.equals(OhConstants.specialAllValuesToken) ? "all users" : username;
     setSectionHeader("Found " + Integer.toString(responseCount) + " responses by " + userDisplayName);
   }
   

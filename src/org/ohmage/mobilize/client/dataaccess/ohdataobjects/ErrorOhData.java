@@ -1,4 +1,4 @@
-package org.ohmage.mobilize.client.dataaccess.awdataobjects;
+package org.ohmage.mobilize.client.dataaccess.ohdataobjects;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -8,8 +8,8 @@ import com.google.gwt.core.client.JavaScriptObject;
  * @author jhicks
  *
  */
-public class ErrorAwData extends JavaScriptObject {
-    protected ErrorAwData() {};
+public class ErrorOhData extends JavaScriptObject {
+    protected ErrorOhData() {};
     
     public final native String getCode() /*-{ return this.code; }-*/;
     public final native String getText() /*-{ return this.text; }-*/;

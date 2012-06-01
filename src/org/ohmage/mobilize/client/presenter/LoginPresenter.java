@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 
 import org.ohmage.mobilize.client.common.TokenLoginManager;
 import org.ohmage.mobilize.client.dataaccess.DataService;
-import org.ohmage.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
+import org.ohmage.mobilize.client.dataaccess.ohdataobjects.AuthorizationTokenQueryAwData;
 import org.ohmage.mobilize.client.exceptions.AuthenticationException;
 import org.ohmage.mobilize.client.exceptions.ServerUnavailableException;
 import org.ohmage.mobilize.client.model.AppConfig;

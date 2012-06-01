@@ -14,13 +14,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.common.HistoryTokens;
 import org.ohmage.mobilize.client.dataaccess.DataService;
 import org.ohmage.mobilize.client.dataaccess.requestparams.CampaignReadParams;
 import org.ohmage.mobilize.client.model.DocumentInfo;
 import org.ohmage.mobilize.client.model.UserInfo;
-import org.ohmage.mobilize.client.utils.AwDataTranslators;
+import org.ohmage.mobilize.client.utils.OhDataTranslators;
 
 public class DocumentEditPresenter {
   private DocumentEditView view;
@@ -131,7 +131,7 @@ public class DocumentEditPresenter {
       if (result != null) {
         try {
           status = JSONParser.parseStrict(result).isObject().get("result").isString().stringValue();
-          errorCodeToDescriptionMap = AwDataTranslators.translateErrorResponse(result);
+          errorCodeToDescriptionMap = OhDataTranslators.translateErrorResponse(result);
         } catch (Exception e) {
           _logger.severe("Failed to parse json. Response was: " + result + ". Error was: " + e.getMessage());
         }
@@ -178,7 +178,7 @@ public class DocumentEditPresenter {
     view.setUploadPanelVisible(true);
     view.setDeletePanelVisible(false);
     view.setHiddenFieldsForCreate();
-    view.initializeForm(dataService.authToken(), AwConstants.getDocumentCreateUrl());
+    view.initializeForm(dataService.authToken(), OhConstants.getDocumentCreateUrl());
   }
   
   
@@ -189,7 +189,7 @@ public class DocumentEditPresenter {
     view.setUploadPanelVisible(false);
     view.setDeletePanelVisible(true);
     view.setHiddenFieldsForEdit();
-    view.initializeForm(dataService.authToken(), AwConstants.getDocumentUpdateUrl());
+    view.initializeForm(dataService.authToken(), OhConstants.getDocumentUpdateUrl());
   }
 
   public void deleteDocument(final String documentId, final String documentName) {

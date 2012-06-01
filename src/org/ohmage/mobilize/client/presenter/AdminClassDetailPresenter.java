@@ -14,7 +14,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.common.HistoryTokens;
 import org.ohmage.mobilize.client.dataaccess.DataService;
 import org.ohmage.mobilize.client.dataaccess.formpanel.AwFormPanel;
@@ -56,7 +56,7 @@ public class AdminClassDetailPresenter implements Presenter {
     view.getUploadRosterLink().addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        String requestUrl = AwConstants.getClassRosterUpdateUrl();
+        String requestUrl = OhConstants.getClassRosterUpdateUrl();
         String authToken = dataService.authToken();
         String client = dataService.client();
         SubmitCompleteHandler onSubmitComplete = new SubmitCompleteHandler() {
@@ -129,7 +129,7 @@ public class AdminClassDetailPresenter implements Presenter {
     Map<String, String> params = dataService.getClassRosterCsvDownloadParams(Arrays.asList(classUrn));
     _logger.fine("Doing form panel post to download roster with params: " + 
                  MapUtils.translateToParameters(params));
-    String requestUrl = AwConstants.getClassRosterReadUrl();
+    String requestUrl = OhConstants.getClassRosterReadUrl();
     AwFormPanel.post(requestUrl, params, true);
   }
   

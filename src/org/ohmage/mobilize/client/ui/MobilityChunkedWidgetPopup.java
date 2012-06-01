@@ -15,7 +15,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.common.LocationStatus;
 import org.ohmage.mobilize.client.common.MobilityMode;
 import org.ohmage.mobilize.client.model.MobilityChunkedInfo;

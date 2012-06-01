@@ -24,7 +24,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.view.client.RangeChangeEvent;
 import com.google.gwt.view.client.RangeChangeEvent.Handler;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.ui.ErrorDialog;
 import org.ohmage.mobilize.client.utils.AwErrorUtils;
 import org.ohmage.mobilize.client.utils.DateUtils;
@@ -152,7 +152,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     
     // if no username given, default to all
     if (selectedParticipant == null || selectedParticipant.isEmpty()) {
-      selectedParticipant = AwConstants.specialAllValuesToken;
+      selectedParticipant = OhConstants.specialAllValuesToken;
     }
     
     Date startDate = null;
@@ -963,7 +963,7 @@ public class ResponsePresenter implements ResponseView.Presenter, Presenter {
     if (participantName != null && !participantName.isEmpty()) {
       params.userList.add(participantName);
     } else {
-      params.userList.add(AwConstants.specialAllValuesToken);
+      params.userList.add(OhConstants.specialAllValuesToken);
     }
     params.campaignUrn = campaignId;
     if (surveyName != null && !surveyName.isEmpty()) params.surveyIdList_opt.add(surveyName);

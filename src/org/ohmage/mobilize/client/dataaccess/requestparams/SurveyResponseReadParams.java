@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.common.Privacy;
 import org.ohmage.mobilize.client.utils.CollectionUtils;
 import org.ohmage.mobilize.client.utils.DateUtils;
@@ -155,7 +155,7 @@ public class SurveyResponseReadParams implements RequestParams {
     if (optionalList != null && !optionalList.isEmpty()) {
       retval = CollectionUtils.join(optionalList, ",");
     } else {
-      retval = AwConstants.specialAllValuesToken;
+      retval = OhConstants.specialAllValuesToken;
     }
     return retval;
   }

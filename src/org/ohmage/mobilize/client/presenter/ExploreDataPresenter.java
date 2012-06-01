@@ -23,7 +23,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.common.HistoryTokens;
 import org.ohmage.mobilize.client.common.PlotType;
 import org.ohmage.mobilize.client.common.Privacy;
@@ -424,7 +424,7 @@ public class ExploreDataPresenter implements Presenter {
 		params.columnList_opt.add("urn:ohmage:user:id");
 		params.columnList_opt.add("urn:ohmage:survey:privacy_state");
 		params.outputFormat = SurveyResponseReadParams.OutputFormat.JSON_ROWS;
-		params.userList.add(AwConstants.specialAllValuesToken);
+		params.userList.add(OhConstants.specialAllValuesToken);
 		if (startDate != null && endDate != null) {
 			params.startDate_opt = (Date)startDate.clone();
 			params.endDate_opt = (Date)endDate.clone();
@@ -885,7 +885,7 @@ public class ExploreDataPresenter implements Presenter {
 
 	private void exportCsv(String campaignId) {
 		if (campaignId != null) {
-			view.doExportCsvFormPost(AwConstants.getSurveyResponseReadUrl(), 
+			view.doExportCsvFormPost(OhConstants.getSurveyResponseReadUrl(), 
 					dataService.getSurveyResponseExportParams(campaignId));
 		}
 	}

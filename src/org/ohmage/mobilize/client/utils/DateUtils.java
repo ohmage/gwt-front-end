@@ -22,7 +22,7 @@ public class DateUtils {
     public final static String displayFormat = "MMM dd, yyyy";
     public final static String historyTokenFormat = "yyyy-MM-dd";
     
-    private static Logger _logger = Logger.getLogger(AwDataTranslators.class.getName());
+    private static Logger _logger = Logger.getLogger(OhDataTranslators.class.getName());
     
     /**
      * Translates a String from server epoch long time format to a Date. New in 2.9

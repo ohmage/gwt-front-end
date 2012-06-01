@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.ui.DocumentDetail;
 import org.ohmage.mobilize.client.ui.DocumentEditView;
 import org.ohmage.mobilize.client.ui.DocumentList;

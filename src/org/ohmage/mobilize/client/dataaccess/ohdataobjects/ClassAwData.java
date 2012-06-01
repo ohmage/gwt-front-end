@@ -1,4 +1,4 @@
-package org.ohmage.mobilize.client.dataaccess.awdataobjects;
+package org.ohmage.mobilize.client.dataaccess.ohdataobjects;
 
 import java.util.HashMap;
 import java.util.Map;

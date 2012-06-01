@@ -1,4 +1,4 @@
-package org.ohmage.mobilize.client.dataaccess.awdataobjects;
+package org.ohmage.mobilize.client.dataaccess.ohdataobjects;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import com.google.gwt.core.client.JsArrayString;
  * @author jhicks
  *
  */
-public class AuthorizationTokenQueryAwData extends QueryAwData {
+public class AuthorizationTokenQueryAwData extends QueryOhData {
 
     protected AuthorizationTokenQueryAwData() {};
     

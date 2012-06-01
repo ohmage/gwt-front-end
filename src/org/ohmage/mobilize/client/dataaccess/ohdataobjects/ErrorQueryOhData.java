@@ -1,22 +1,25 @@
-package org.ohmage.mobilize.client.dataaccess.awdataobjects;
+package org.ohmage.mobilize.client.dataaccess.ohdataobjects;
 
 import com.google.gwt.core.client.JsArray;
 
-
 /**
- * Used to parse and interpret errors when a query from the AndWellness server
+ * Used to parse and interpret errors when a query from the Ohmage server
  * returns "result"="failure"
- * 
+ *
  * @author jhicks
  *
  */
-public class ErrorQueryAwData extends QueryAwData {
-    protected ErrorQueryAwData() {};
+public class ErrorQueryOhData extends QueryOhData {
+
+    protected ErrorQueryOhData() {
+    }
+
+    ;
     
     // Grab the array of errors
-    public final native JsArray<ErrorAwData> getErrors()  /*-{ return this.errors; }-*/;
-    
-    public static native ErrorQueryAwData fromJsonString(String jsonString) /*-{
-        return eval('(' + jsonString + ')'); 
-    }-*/;
+    public final native JsArray<ErrorOhData> getErrors() /*
+     * -{ return this.errors; }-
+     */;
+
+    public static native ErrorQueryOhData fromJsonString(String jsonString);
 }

@@ -1,4 +1,4 @@
-package org.ohmage.mobilize.client.dataaccess.awdataobjects;
+package org.ohmage.mobilize.client.dataaccess.ohdataobjects;
 
 /*
 "data":
@@ -21,7 +21,7 @@ package org.ohmage.mobilize.client.dataaccess.awdataobjects;
 ]
 */
 
-public class MobilityChunkedDataPointAwData extends QueryAwData {
+public class MobilityChunkedDataPointAwData extends QueryOhData {
 	protected MobilityChunkedDataPointAwData() {};
 	
 	public final native MobilityModeCountAwData getModesCountObj() /*-{

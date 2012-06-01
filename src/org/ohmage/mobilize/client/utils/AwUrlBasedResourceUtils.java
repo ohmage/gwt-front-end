@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.google.gwt.user.client.Cookies;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 
 public class AwUrlBasedResourceUtils {
   public enum ImageSize { ORIGINAL, SMALL }
@@ -23,12 +23,12 @@ public class AwUrlBasedResourceUtils {
     Map<String, String> params = new HashMap<String, String>();
     params.put("id", imageId);
     params.put("campaign_urn", campaignUrn);
-    params.put("auth_token", Cookies.getCookie(AwConstants.cookieAuthToken));
+    params.put("auth_token", Cookies.getCookie(OhConstants.cookieAuthToken));
     params.put("owner", imageOwnerId);
-    params.put("client", AwConstants.apiClientString);
+    params.put("client", OhConstants.apiClientString);
     if (size != null && size.equals(ImageSize.SMALL)) params.put("size", "small");
     String paramString = MapUtils.translateToParameters(params);
-    return AwConstants.getImageReadUrl() + "?" + paramString;
+    return OhConstants.getImageReadUrl() + "?" + paramString;
   }
   
   /**
@@ -37,10 +37,10 @@ public class AwUrlBasedResourceUtils {
    */
   public static String getDocumentUrl(String documentId) {
     Map<String, String> params = new HashMap<String, String>();
-    params.put("auth_token", Cookies.getCookie(AwConstants.cookieAuthToken));
-    params.put("client", AwConstants.apiClientString);
+    params.put("auth_token", Cookies.getCookie(OhConstants.cookieAuthToken));
+    params.put("client", OhConstants.apiClientString);
     params.put("document_id", documentId);
     String paramString = MapUtils.translateToParameters(params);
-    return AwConstants.getDocumentDownloadUrl() + "?" + paramString;
+    return OhConstants.getDocumentDownloadUrl() + "?" + paramString;
   }
 }

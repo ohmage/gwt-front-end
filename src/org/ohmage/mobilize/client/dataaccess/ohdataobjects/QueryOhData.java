@@ -1,4 +1,4 @@
-package org.ohmage.mobilize.client.dataaccess.awdataobjects;
+package org.ohmage.mobilize.client.dataaccess.ohdataobjects;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -9,9 +9,9 @@ import com.google.gwt.core.client.JavaScriptObject;
  * @author jhicks
  *
  */
-public abstract class QueryAwData extends JavaScriptObject {
+public abstract class QueryOhData extends JavaScriptObject {
     // Overlay types always have protected, zero-arg ctors
-    protected QueryAwData() {};
+    protected QueryOhData() {};
     
     // All responses have a result, grab it here
     public final native String getResult() /*-{ return this.result; }-*/;
@@ -24,8 +24,6 @@ public abstract class QueryAwData extends JavaScriptObject {
       return "failure".equals(getResult());
     }
     
-    public static native QueryAwData fromJsonString(String jsonString) /*-{
-        return eval('(' + jsonString + ')'); 
-    }-*/;
+    public static native QueryOhData fromJsonString(String jsonString);
     
 }

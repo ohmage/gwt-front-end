@@ -2,7 +2,7 @@ package org.ohmage.mobilize.client.model;
 
 import java.util.Date;
 
-import org.ohmage.mobilize.client.AwConstants.AwUri;
+import org.ohmage.mobilize.client.OhConstants.OhUri;
 import org.ohmage.mobilize.client.common.RequestType;
 import org.ohmage.mobilize.client.common.ResponseStatus;
 
@@ -14,7 +14,7 @@ public class AuditLogEntry implements Comparable<AuditLogEntry> {
   private double respondedMillis;
   private double receivedMillis;
   private double timeToFillRequest;
-  private AwUri uri;
+  private OhUri uri;
   private String requestParamsJson;
   private String extraDataJson;
   
@@ -60,13 +60,13 @@ public class AuditLogEntry implements Comparable<AuditLogEntry> {
   public void setTimeToFillRequest(double timeToFillRequest) {
     this.timeToFillRequest = timeToFillRequest;
   }
-  public AwUri getUri() {
+  public OhUri getUri() {
     return uri;
   }
   public void setUri(String uriString) {
-    this.uri = AwUri.fromString(uriString);
+    this.uri = OhUri.fromString(uriString);
   }
-  public void setUri(AwUri uri) {
+  public void setUri(OhUri uri) {
     this.uri = uri;
   }
   public String getRequestParamsJson() {

@@ -29,7 +29,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.common.HistoryTokens;
 import org.ohmage.mobilize.client.common.Privacy;
 import org.ohmage.mobilize.client.common.RunningState;
@@ -342,7 +342,7 @@ public class CampaignList extends Composite {
   private void exportCsv(String campaignId) {
     assert dataService != null : "DataService is null. Did you forget to call CampaignList.setDataService?";
     FormPanel exportForm = new FormPanel("_blank"); // target="_blank" to open new window
-    exportForm.setAction(AwConstants.getSurveyResponseReadUrl());
+    exportForm.setAction(OhConstants.getSurveyResponseReadUrl());
     exportForm.setMethod(FormPanel.METHOD_POST);
     FlowPanel innerContainer = new FlowPanel();
     

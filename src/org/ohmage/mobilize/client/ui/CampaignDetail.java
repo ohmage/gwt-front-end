@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.common.HistoryTokens;
 import org.ohmage.mobilize.client.common.Privacy;
 import org.ohmage.mobilize.client.common.RunningState;
@@ -158,7 +158,7 @@ public class CampaignDetail extends Composite {
   
   private void downloadXml(String campaignId) {
     FormPanel downloadForm = new FormPanel("_blank"); // _blank opens new window
-    downloadForm.setAction(AwConstants.getCampaignReadUrl());
+    downloadForm.setAction(OhConstants.getCampaignReadUrl());
     downloadForm.setMethod(FormPanel.METHOD_POST);
     FlowPanel innerContainer = new FlowPanel();
     Map<String, String> params = dataService.getCampaignXmlDownloadParams(campaignId);
@@ -177,7 +177,7 @@ public class CampaignDetail extends Composite {
   private void exportCsv(String campaignId) {
     assert dataService != null : "DataService is null. Did you forget to call CampaignDetail.setDataService?";
     FormPanel exportForm = new FormPanel("_blank"); // won't work in firefox without the "_blank"
-    exportForm.setAction(AwConstants.getSurveyResponseReadUrl()); 
+    exportForm.setAction(OhConstants.getSurveyResponseReadUrl()); 
     exportForm.setMethod(FormPanel.METHOD_POST);
     FlowPanel innerContainer = new FlowPanel();
     

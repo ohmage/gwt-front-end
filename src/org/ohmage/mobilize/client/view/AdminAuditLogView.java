@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.view.client.ListDataProvider;
 
-import org.ohmage.mobilize.client.AwConstants.AwUri;
+import org.ohmage.mobilize.client.OhConstants.OhUri;
 import org.ohmage.mobilize.client.model.AuditLogEntry;
 import org.ohmage.mobilize.client.resources.cellwidgets.CellTableResources;
 import org.ohmage.mobilize.client.ui.AdminMenu;
@@ -77,7 +77,7 @@ public class AdminAuditLogView extends Composite {
     // fill uri drop down
     this.uriListBox.addItem("All", "");
     List<String> uris = new ArrayList<String>();
-    for (AwUri uri : AwUri.values()) {
+    for (OhUri uri : OhUri.values()) {
       uris.add(uri.toString());
     }
     Collections.sort(uris);
@@ -203,7 +203,7 @@ public class AdminAuditLogView extends Composite {
        new Column<AuditLogEntry, String>(new TextCell()) {
         @Override
         public String getValue(AuditLogEntry logEntry) {
-          AwUri uri = logEntry.getUri();
+          OhUri uri = logEntry.getUri();
           return uri != null ? logEntry.getUri().toString() : "";
         }
      };

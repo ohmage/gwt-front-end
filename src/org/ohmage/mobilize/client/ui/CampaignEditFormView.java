@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.common.Privacy;
 import org.ohmage.mobilize.client.common.RunningState;
 import org.ohmage.mobilize.client.common.RoleCampaign;
@@ -475,7 +475,7 @@ public class CampaignEditFormView extends Composite {
 
   public void initializeForm(String authToken, String serverLocation) {
     this.authTokenHiddenField.setValue(authToken);
-    this.clientHiddenField.setValue(AwConstants.apiClientString);
+    this.clientHiddenField.setValue(OhConstants.apiClientString);
     this.formPanel.setAction(serverLocation);
     this.formPanel.setEncoding(FormPanel.ENCODING_MULTIPART); // needed for file upload 
     this.formPanel.setMethod(FormPanel.METHOD_POST);

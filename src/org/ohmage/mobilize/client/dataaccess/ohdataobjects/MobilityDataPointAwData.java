@@ -1,4 +1,4 @@
-package org.ohmage.mobilize.client.dataaccess.awdataobjects;
+package org.ohmage.mobilize.client.dataaccess.ohdataobjects;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
@@ -23,7 +23,7 @@ import com.google.gwt.core.client.JsArrayString;
 ]
 */
 
-public class MobilityDataPointAwData extends QueryAwData {
+public class MobilityDataPointAwData extends QueryOhData {
 	protected MobilityDataPointAwData() {};
 	
 	public final native String getMode() /*-{ return this.m; }-*/;

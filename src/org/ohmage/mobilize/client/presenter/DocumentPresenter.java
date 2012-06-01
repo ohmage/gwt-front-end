@@ -13,7 +13,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.common.HistoryTokens;
 import org.ohmage.mobilize.client.dataaccess.DataService;
 import org.ohmage.mobilize.client.dataaccess.requestparams.DocumentReadParams;
@@ -24,7 +24,7 @@ import org.ohmage.mobilize.client.model.DocumentInfo;
 import org.ohmage.mobilize.client.model.UserInfo;
 import org.ohmage.mobilize.client.ui.DocumentEditPresenter;
 import org.ohmage.mobilize.client.ui.ErrorDialog;
-import org.ohmage.mobilize.client.utils.AwDataTranslators;
+import org.ohmage.mobilize.client.utils.OhDataTranslators;
 import org.ohmage.mobilize.client.utils.AwErrorUtils;
 import org.ohmage.mobilize.client.utils.MapUtils;
 import org.ohmage.mobilize.client.view.DocumentView;
@@ -213,7 +213,7 @@ public class DocumentPresenter implements Presenter {
     _logger.fine("Attempting to download document from: " + url);
     Window.open(url, "_blank", ""); // download in a new window
     */
-    String url = AwConstants.getDocumentDownloadUrl();
+    String url = OhConstants.getDocumentDownloadUrl();
     Map<String, String> params = dataService.getDocumentDownloadParams(documentId);
     _logger.fine("Attempting to download document from url: " + url +
                  " with params: " + MapUtils.translateToParameters(params));
@@ -245,7 +245,7 @@ public class DocumentPresenter implements Presenter {
         try {
           status = JSONParser.parseStrict(result).isObject().get("result").isString().stringValue();
           if (!"success".equals(status)) {
-            errorCodeToDescriptionMap = AwDataTranslators.translateErrorResponse(result);
+            errorCodeToDescriptionMap = OhDataTranslators.translateErrorResponse(result);
           }
         } catch (Exception e) {
           _logger.severe("Failed to parse json. Response was: " + result + ". Error was: " + e.getMessage());

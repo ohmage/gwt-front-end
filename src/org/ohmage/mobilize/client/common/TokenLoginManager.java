@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Cookies;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.event.RequestLogoutEvent;
 import org.ohmage.mobilize.client.event.RequestLogoutEventHandler;
 import org.ohmage.mobilize.client.event.UserLoginEvent;
@@ -36,8 +36,8 @@ public class TokenLoginManager {
     private final EventBus eventBus;
     
     // Constant cookie names
-    private final static String AUTH_TOKEN_COOKIE = AwConstants.cookieAuthToken;
-    private final static String USER_NAME_COOKIE = AwConstants.cookieUserName;
+    private final static String AUTH_TOKEN_COOKIE = OhConstants.cookieAuthToken;
+    private final static String USER_NAME_COOKIE = OhConstants.cookieUserName;
     
     // Logging utility
     private static Logger _logger = Logger.getLogger(TokenLoginManager.class.getName());

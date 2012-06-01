@@ -1,11 +1,11 @@
-package org.ohmage.mobilize.client.dataaccess.awdataobjects;
+package org.ohmage.mobilize.client.dataaccess.ohdataobjects;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.JsArrayString;
 
-public class DocumentAwData extends QueryAwData {
+public class DocumentAwData extends QueryOhData {
   // Every overlay type must have precisely one constructor, 
   // and it must be protected, empty, and no-argument.
   protected DocumentAwData() {};

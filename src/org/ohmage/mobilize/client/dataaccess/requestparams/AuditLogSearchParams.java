@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ohmage.mobilize.client.AwConstants.ErrorCode;
+import org.ohmage.mobilize.client.OhConstants.ErrorCode;
 import org.ohmage.mobilize.client.common.RequestType;
 import org.ohmage.mobilize.client.common.ResponseStatus;
 import org.ohmage.mobilize.client.utils.DateUtils;
@@ -16,7 +16,7 @@ public class AuditLogSearchParams implements RequestParams {
   public String client;
   public RequestType requestType_opt;
   public ResponseStatus responseType_opt;
-  public String uri_opt; // should be one of the endpoints in AwConstants.AwUri
+  public String uri_opt; // should be one of the endpoints in OhConstants.AwUri
   public String clientValue_opt;
   public String deviceIdValue_opt;
   public ErrorCode errorCode_opt;

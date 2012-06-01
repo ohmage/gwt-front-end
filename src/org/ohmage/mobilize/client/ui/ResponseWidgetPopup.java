@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.ohmage.mobilize.client.AwConstants;
+import org.ohmage.mobilize.client.OhConstants;
 import org.ohmage.mobilize.client.model.PromptResponse;
 import org.ohmage.mobilize.client.model.SurveyResponse;
 import org.ohmage.mobilize.client.utils.AwUrlBasedResourceUtils;
@@ -88,7 +88,7 @@ public class ResponseWidgetPopup extends Composite {
           
           // Locking in the width and height here stops the Image from resizing on image
           // load which causes the InfoWindow to refresh and flicker
-          img.setPixelSize(AwConstants.MAPS_THUMBNAIL_WIDTH, AwConstants.MAPS_THUMBNAIL_HEIGHT);
+          img.setPixelSize(OhConstants.MAPS_THUMBNAIL_WIDTH, OhConstants.MAPS_THUMBNAIL_HEIGHT);
           
           // Let's the calling code do whatever with the image, specifically used to avoid dependencies
           // on the google maps API
