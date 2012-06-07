@@ -670,7 +670,7 @@ public class MockDataService implements DataService {
         // TODO Auto-generated method stub
     }
 
-    @Overrideho
+    @Override
     public void registerUser(String username, String password, String email,
             String recaptcha_challenge_field, String recaptcha_response_field,
             AsyncCallback<String> callback) {
