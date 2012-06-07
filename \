@@ -1,0 +1,9 @@
+pushd .
+ant clean build
+ant buildwar-nossl
+cp MobilizeWeb-nossl.war ~/Applications/tomcat/7/webapps/
+cd ~/Applications/tomcat/7/webapps
+rm -rf ROOT
+rm ROOT.war
+mv MobilizeWeb-nossl.war ROOT.war
+popd

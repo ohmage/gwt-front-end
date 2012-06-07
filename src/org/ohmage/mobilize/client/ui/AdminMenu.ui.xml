@@ -1,7 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style type='edu.ucla.cens.mobilize.client.ui.AdminMenu.AdminMenuStyles'>
+	<ui:style type='org.ohmage.mobilize.client.ui.AdminMenu.AdminMenuStyles'>
 		.container {
 			background-color: #EEE;
       border-right: solid 1px #CCC;

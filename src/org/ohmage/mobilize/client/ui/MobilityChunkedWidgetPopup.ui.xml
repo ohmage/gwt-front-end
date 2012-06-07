@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style type="edu.ucla.cens.mobilize.client.ui.MobilityChunkedWidgetPopup.MobilityChunkedWidgetPopupStyle">
+	<ui:style type="org.ohmage.mobilize.client.ui.MobilityChunkedWidgetPopup.MobilityChunkedWidgetPopupStyle">
 		.hidden {
 			/* use for hiding debug features */
 			height: 0px;

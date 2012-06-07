@@ -3,7 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
 	
-  <ui:style type="edu.ucla.cens.mobilize.client.view.ExploreDataViewImpl.ExploreDataStyles">
+  <ui:style type="org.ohmage.mobilize.client.view.ExploreDataViewImpl.ExploreDataStyles">
     .hidden {
 	  /* use for hiding debug features */
 	  height: 0px;

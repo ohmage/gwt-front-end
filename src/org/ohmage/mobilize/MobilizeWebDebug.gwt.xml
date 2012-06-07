@@ -20,13 +20,13 @@
   <set-property name="deployStatus" value="DEBUG" />
   
   <!-- Use different constant depending on whether or not we are debugging -->
-  <replace-with class='edu.ucla.cens.mobilize.client.DeployStatus.Release'>
-    <when-type-is class='edu.ucla.cens.mobilize.client.DeployStatus' />
+  <replace-with class='org.ohmage.mobilize.client.DeployStatus.Release'>
+    <when-type-is class='org.ohmage.mobilize.client.DeployStatus' />
     <when-property-is name='deployStatus' value='RELEASE' />
   </replace-with>
   
-  <replace-with class='edu.ucla.cens.mobilize.client.DeployStatus.Debug'>
-    <when-type-is class='edu.ucla.cens.mobilize.client.DeployStatus' />
+  <replace-with class='org.ohmage.mobilize.client.DeployStatus.Debug'>
+    <when-type-is class='org.ohmage.mobilize.client.DeployStatus' />
     <when-property-is name='deployStatus' value='DEBUG' />
   </replace-with>
 
@@ -44,7 +44,7 @@
 
 
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='edu.ucla.cens.mobilize.client.MainApp'/>
+  <entry-point class='org.ohmage.mobilize.client.MainApp'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>

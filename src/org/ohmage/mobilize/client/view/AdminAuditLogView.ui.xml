@@ -1,10 +1,10 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
-	xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui"
+	xmlns:w="urn:import:org.ohmage.mobilize.client.ui"
 	xmlns:c="urn:import:com.google.gwt.user.cellview.client"
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
-	<ui:style type="edu.ucla.cens.mobilize.client.view.AdminAuditLogView.AdminAuditLogViewStyles">
+	<ui:style type="org.ohmage.mobilize.client.view.AdminAuditLogView.AdminAuditLogViewStyles">
 	  .emptyLogMessage {
 	  	background-color: #EEE;
       border: solid thin #AAA;

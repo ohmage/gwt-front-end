@@ -2,7 +2,7 @@
 
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:d="urn:import:com.google.gwt.dom.client">
-  <ui:style type="edu.ucla.cens.mobilize.client.ui.CampaignDetail.CampaignDetailStyle">
+  <ui:style type="org.ohmage.mobilize.client.ui.CampaignDetail.CampaignDetailStyle">
     .actionLinks {
     	font-size: 0.9em;
     	padding: 20px;

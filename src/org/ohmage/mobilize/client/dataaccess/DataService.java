@@ -39,7 +39,7 @@ import org.ohmage.mobilize.client.model.UserShortInfo;
  * Defines the API to access each of the Ohmage query APIs. These include
  * /app/auth_token, /app/q/config, /app/q/upload_stat, /app/q/data_point, and
  * /app/q/binary. The service will parse the returned data into Models defined
- * in edu.ucla.cens.mobilize.client.model.
+ * in org.ohmage.mobilize.client.model.
  *
  * Throws a RequestException directly if the server cannot be contacted. Calls
  * AsyncCallback.onError() if the server returns an http status code error, or

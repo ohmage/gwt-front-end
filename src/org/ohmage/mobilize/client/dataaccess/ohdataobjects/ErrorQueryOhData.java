@@ -17,9 +17,10 @@ public class ErrorQueryOhData extends QueryOhData {
     ;
     
     // Grab the array of errors
-    public final native JsArray<ErrorOhData> getErrors() /*
-     * -{ return this.errors; }-
-     */;
+    public final native JsArray<ErrorOhData> getErrors() /*-{ 
+     return this.errors; 
+     }-*/;
 
-    public static native ErrorQueryOhData fromJsonString(String jsonString);
+    public static native ErrorQueryOhData fromJsonString(String jsonString)
+            /*-{return eval('(' + jsonString + ')');}-*/;
 }

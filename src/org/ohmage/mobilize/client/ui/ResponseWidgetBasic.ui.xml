@@ -1,7 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style type="edu.ucla.cens.mobilize.client.ui.ResponseWidgetBasic.ResponseWidgetStyle">
+	<ui:style type="org.ohmage.mobilize.client.ui.ResponseWidgetBasic.ResponseWidgetStyle">
 	  .container {
 	  	border-bottom: solid 1px #CCC;
 	  	padding: 0px 0px 5px 0px;

@@ -24,17 +24,17 @@
             </folders>
             <ide-actions>
                 <action name="build">
-                    <target>buildwar-nossl</target>
+                    <target>build</target>
                 </action>
                 <action name="clean">
                     <target>clean</target>
                 </action>
                 <action name="run">
-                    <target>deploy</target>
+                    <target>build</target>
                 </action>
                 <action name="rebuild">
                     <target>clean</target>
-                    <target>buildwar-nossl</target>
+                    <target>build</target>
                 </action>
             </ide-actions>
             <view>

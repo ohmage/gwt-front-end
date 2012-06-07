@@ -2,7 +2,7 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
-	<ui:style type="edu.ucla.cens.mobilize.client.ui.CampaignList.CampaignListStyle">
+	<ui:style type="org.ohmage.mobilize.client.ui.CampaignList.CampaignListStyle">
 	  .campaignGrid {
       width: 100%;
     }

@@ -12,13 +12,13 @@ INSTRUCTIONS FOR SETTING ECLIPSE TO USE DEBUG MODULE
 - Click on the arrow next to the Run icon in the Eclipse toolbar
 - Select Run Configurations
 - Under the GWT Application heading, select your run config (or create a new one)
-- Set the module to the debug module file (e.g., edu.ucla.cens.mobilize.MobilizeWebDebug)
+- Set the module to the debug module file (e.g., org.ohmage.mobilize.MobilizeWebDebug)
 
 DIFFERENCES BETWEEN THE MODULES:
 - Logging is enabled in *Debug and not release
 - *Debug keeps long css names to make troubleshooting in firebug/web inspector easier
 - In the *Debug module, the deployStatus variable is set to DEBUG instead of RELEASE.
-    The class edu.ucla.cens.mobilize.client.DeployStatus uses deployStatus
+    The class org.ohmage.mobilize.client.DeployStatus uses deployStatus
     when deciding which server to query for fetching data. This setup is useful,
     for instance, for running the gwt app in Eclipse and having it query a local
     version of the server running in tomcat. (Even though Eclipse and tomcat both

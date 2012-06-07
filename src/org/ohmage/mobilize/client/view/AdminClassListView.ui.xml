@@ -1,8 +1,8 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
   xmlns:g="urn:import:com.google.gwt.user.client.ui"
-  xmlns:w="urn:import:edu.ucla.cens.mobilize.client.ui">
-  <ui:style type="edu.ucla.cens.mobilize.client.view.AdminClassListView.AdminClassListViewStyle">
+  xmlns:w="urn:import:org.ohmage.mobilize.client.ui">
+  <ui:style type="org.ohmage.mobilize.client.view.AdminClassListView.AdminClassListViewStyle">
     .oddRow { /* stripe every other row for easier viewing */
       background-color: #EAEFF3; /* pale blue */
     }
