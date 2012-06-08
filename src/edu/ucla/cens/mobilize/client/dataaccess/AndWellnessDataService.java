@@ -1818,6 +1818,8 @@ public class AndWellnessDataService implements DataService {
 		if (username != null && !username.isEmpty()) {
 			params.put("username", username);
 		}
+		// Josh hack for grabbing the server-side classification
+		params.put("column_list", "mobility:id,mobility:time,mobility:timestamp,mobility:timezone,location,classification:mode");
 		
 		String postParams = MapUtils.translateToParameters(params);
 		_logger.fine("Fetching mobility data with params " + postParams);

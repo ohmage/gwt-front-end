@@ -26,7 +26,7 @@ import com.google.gwt.core.client.JsArrayString;
 public class MobilityDataPointAwData extends QueryAwData {
 	protected MobilityDataPointAwData() {};
 	
-	public final native String getMode() /*-{ return this.m; }-*/;
+	public final native String getMode() /*-{ return this.cd.m; }-*/;
 	public final native String getTimeStamp() /*-{ return this.ts; }-*/;
 	public final native double getTimeRaw() /*-{ return this.t; }-*/;	//needs to be cast to long
 	public final long getTime() { return (long)getTimeRaw(); }
