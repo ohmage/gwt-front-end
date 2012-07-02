@@ -10,7 +10,8 @@ public enum PromptType {
   SINGLE_CHOICE_CUSTOM,
   MULTI_CHOICE_CUSTOM,
   PHOTO,
-  REMOTE_ACTIVITY;
+  REMOTE_ACTIVITY,
+  VIDEO;
 
   
   /**
