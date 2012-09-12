@@ -69,6 +69,12 @@
         <servlet-name>jsp</servlet-name>
         <url-pattern>*.ico</url-pattern>
     </servlet-mapping>
+    
+    <!-- Hack to get IE to render CSS properly -->
+    <mime-mapping>
+        <extension>css</extension>
+        <mime-type>text/css</mime-type>
+    </mime-mapping>    
      
   <security-constraint>
     <web-resource-collection>
