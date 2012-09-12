@@ -59,6 +59,12 @@
         <servlet-name>jsp</servlet-name>
         <url-pattern>*.jsp</url-pattern>
     </servlet-mapping>
+    
+    <!-- Hack to get IE to render CSS properly -->
+    <mime-mapping>
+        <extension>css</extension>
+        <mime-type>text/css</mime-type>
+    </mime-mapping>  
 
   <!-- Default page to serve -->
   <welcome-file-list>
