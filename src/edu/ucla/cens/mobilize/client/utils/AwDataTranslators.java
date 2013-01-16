@@ -9,6 +9,13 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 
 import edu.ucla.cens.mobilize.client.common.LocationStatus;
 import edu.ucla.cens.mobilize.client.common.MobilityMode;
@@ -16,10 +23,10 @@ import edu.ucla.cens.mobilize.client.common.Privacy;
 import edu.ucla.cens.mobilize.client.common.PromptType;
 import edu.ucla.cens.mobilize.client.common.RequestType;
 import edu.ucla.cens.mobilize.client.common.ResponseStatus;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.common.RoleDocument;
 import edu.ucla.cens.mobilize.client.common.RunningState;
-import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AppConfigAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuditLogAwData;
@@ -36,10 +43,11 @@ import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.SurveyResponseAwDa
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserInfoAwData;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.UserSearchInfoAwData;
+import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.WhoAmIAwData;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.AuditLogEntry;
-import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
@@ -51,15 +59,7 @@ import edu.ucla.cens.mobilize.client.model.SurveyResponse;
 import edu.ucla.cens.mobilize.client.model.UserInfo;
 import edu.ucla.cens.mobilize.client.model.UserSearchInfo;
 import edu.ucla.cens.mobilize.client.model.UserShortInfo;
-
 // json
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONNumber;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.json.client.JSONValue;
 
 /**
  * A collection of translators to translate data from the AndWellness server to local
@@ -698,6 +698,10 @@ public class AwDataTranslators {
     	regInfo.setRecaptchaKey(awData.getRecaptchaKey());
     	regInfo.setTermsOfService(awData.getTermsOfService());
     	return regInfo;
+    }
+    
+    public static String translateWhoAmIDataFromJson(String result) {
+    	return WhoAmIAwData.fromJsonString(result).getUsername();
     }
     
     // {"result":"success","data":{"application_build":"55e80e9","application_name":"ohmage","application_version":"2.5","default_survey_response_sharing_state":"private"}}

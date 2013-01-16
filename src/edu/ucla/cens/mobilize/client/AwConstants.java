@@ -18,8 +18,8 @@ public class AwConstants {
     public final static DeployStatus status = GWT.create(DeployStatus.class);
 
     // login cookie management
-    public final static String cookieAuthToken = "authToken";
-    public final static String cookieUserName = "userName";
+    public final static String cookieAuthToken = "auth_token";
+    public final static String cookieUserName = "u";
     
     public final static String apiClientString = "ohmage-gwt";
     
@@ -40,6 +40,7 @@ public class AwConstants {
     // http://lecs.cs.ucla.edu/wikis/andwellness/index.php/Main_Page#2.9.2B_Server_APIs
     public enum AwUri {
      AUTHORIZATION("/app/user/auth_token"),
+     LOGOUT("/app/user/logout"),
      APP_CONFIG_READ("/app/config/read"),
      USER_ACTIVATE("/app/user/activate"),
      USER_AUTH("/app/user/auth"),
@@ -79,7 +80,8 @@ public class AwConstants {
      AUDIT_READ("/app/audit/read"),
      MOBILITY_READ("/app/mobility/read"),
      MOBILITY_READ_CHUNKED("/app/mobility/read/chunked"),
-     MOBILITY_DATES_READ("/app/mobility/dates/read");
+     MOBILITY_DATES_READ("/app/mobility/dates/read"),
+     WHO_AM_I("/app/user/whoami");
      
      private AwUri(String uri) {
        this.uriString = uri;
@@ -273,6 +275,14 @@ public class AwConstants {
     
     public static String getRegistrationReadUrl() {
       return getServerLocation() + AwUri.REGISTRATION_READ;
+    }
+    
+    public static String getWhoAmIUrl() {
+        return getServerLocation() + AwUri.WHO_AM_I;
+    }
+    
+    public static String getLogoutUrl() {
+        return getServerLocation() + AwUri.LOGOUT;
     }
     
     /**

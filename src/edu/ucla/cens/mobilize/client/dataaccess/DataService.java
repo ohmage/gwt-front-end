@@ -80,7 +80,7 @@ public interface DataService {
    * @param password Password to authorize.
    * @param callback Callback to call when the server responds.
    */
-  void fetchAuthorizationToken(String userName, String password, 
+  void fetchAuthorizationToken(String userName, String password, String redirect,
                                final AsyncCallback<AuthorizationTokenQueryAwData> callback);
   
   /**
@@ -486,4 +486,19 @@ public interface DataService {
    * @param callback
    */
   void resetPassword(String username, String email, AsyncCallback<String> callback);
+  
+  /**
+   * Determines the user's username using RPC and the auth_token cookie.
+   * 
+   * @param callback
+   */
+  void whoAmI(AsyncCallback<String> callback);
+
+  /**
+   * Logout the user.
+   * 
+   * @param callback
+   */
+  void logout(final AsyncCallback<String> callback);
+
 }

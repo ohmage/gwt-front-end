@@ -344,7 +344,7 @@ public class MockDataService implements DataService {
   }
   
   @Override
-  public void fetchAuthorizationToken(String userName, String password,
+  public void fetchAuthorizationToken(String userName, String password, String redirect,
       AsyncCallback<AuthorizationTokenQueryAwData> callback) {
     // TODO Auto-generated method stub
     
@@ -711,6 +711,16 @@ public void activateUser(String registration_id, AsyncCallback<String> callback)
 @Override
 public void resetPassword(String username, String email,
 		AsyncCallback<String> callback) {
+	// TODO Auto-generated method stub
+	
+}
+
+public void whoAmI(AsyncCallback<String> callback) {
+	// TODO Auto-generated method stub
+	
+}
+
+public void logout(AsyncCallback<String> callback) {
 	// TODO Auto-generated method stub
 	
 }

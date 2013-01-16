@@ -63,47 +63,52 @@ public class LoginPresenter implements Presenter,
         return;
       } 
       
+      // Check for the optional redirect param in the query params
+      String redirect = Window.Location.getParameter("redirect");
+      
       // don't let user submit again or you could end up in a bad state 
       // with different auth token on the app than on the server
       view.disableLoginForm();
-      login(username, password);
+      login(username, password, redirect);
     }
     
-    private void login(final String username, String password) {
-      dataService.fetchAuthorizationToken(username, password, new AsyncCallback<AuthorizationTokenQueryAwData>() {
-        
-        /**
-         * Notifies the View that the login failed
-         */
-        public void onFailure(Throwable caught) {
-           view.enableLoginForm();
-           _logger.warning("User login failed with reason: " + caught.getMessage());
-           if (caught.getClass().equals(ServerUnavailableException.class)) {
-             view.showError("There was a problem contacting the server. Please try again.");
-           } else if (caught.getClass().equals(AuthenticationException.class) &&
-                     ((AuthenticationException)caught).getErrorCode().equals("0202")) {
-             // New Account: open popup that requires user to enter a new password
-             promptUserToChangePassword(username);
-           } else {
-             view.setLoginFailed("Please check name and password and try again.");
-           }
-        }
+    private void login(final String username, String password, String redirect) {
+    	_logger.info("redirect: " + redirect);
+    	
+    	dataService.fetchAuthorizationToken(username, password, redirect, new AsyncCallback<AuthorizationTokenQueryAwData>() {
 
-        /**
-         * Informs the login manager upon successful login.
-         * 
-         * @param result The login data.
-         */
-        public void onSuccess(AuthorizationTokenQueryAwData result) {
-            _logger.info("Successfully logged in user: " + username);
-            
-            loginManager.loginWithAuthToken(result.getAuthorizationToken(), username);
-            
-            // reload to get logged in app
-            Window.Location.reload();
-        }
-        
-    });
+    		/**
+    		 * Notifies the View that the login failed
+    		 */
+    		public void onFailure(Throwable caught) {
+    			view.enableLoginForm();
+    			_logger.warning("User login failed with reason: " + caught.getMessage());
+    			if (caught.getClass().equals(ServerUnavailableException.class)) {
+    				view.showError("There was a problem contacting the server. Please try again.");
+    			} else if (caught.getClass().equals(AuthenticationException.class) &&
+    					((AuthenticationException)caught).getErrorCode().equals("0202")) {
+    				// New Account: open popup that requires user to enter a new password
+    				promptUserToChangePassword(username);
+    			} else {
+    				view.setLoginFailed("Please check name and password and try again.");
+    			}
+    		}
+
+    		/**
+    		 * Informs the login manager upon successful login.
+    		 * 
+    		 * @param result The login data.
+    		 */
+    		public void onSuccess(AuthorizationTokenQueryAwData result) {
+    			_logger.info("Successfully logged in user: " + username);
+    			
+    			loginManager.login(username);
+
+    			// reload to get logged in app
+    			// all state (except for cookies) will be lost
+    			Window.Location.reload(); 
+    		}
+    	});
     }
     
     private void promptUserToChangePassword(final String username) {
@@ -171,7 +176,7 @@ public class LoginPresenter implements Presenter,
             WaitIndicator.hide();
             passwordChangeDialog.hide();
             SuccessDialog.show("Password change successful.");
-            login(username, newPassword);
+            login(username, newPassword, null);
           }
         });
       }

@@ -240,22 +240,28 @@ public class AndWellnessDataService implements DataService {
    * @param password The password for the user name.
    * @param callback The interface to handle the server response.
    */
-  public void fetchAuthorizationToken(final String username, String password,
+  public void fetchAuthorizationToken(final String username, String password, String redirect,
           final AsyncCallback<AuthorizationTokenQueryAwData> callback) {
    
       // Setup the post parameters
       Map<String,String> parameters = new HashMap<String,String>();
-
+      
       // params 
       parameters.put("user", username);
       parameters.put("password", password);
+      
+// Waiting to implement this until 2.15      
+//      if(redirect != null) {
+//    	  parameters.put("redirect", redirect);
+//      }
+      
       parameters.put("client", this.client);  
       
       String postParams = MapUtils.translateToParameters(parameters);
       
-      // is it ok that this logs the password? (security?)
-      _logger.finest("Attempting authentication with parameters: " + postParams);
-      
+//      // is it ok that this logs the password? (security?)
+//      _logger.finest("Attempting authentication with parameters: " + postParams);
+//      
       // Send the username/password to the server.
       final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getAuthorizationUrl());
       try {
@@ -2059,6 +2065,76 @@ public class AndWellnessDataService implements DataService {
 						_logger.severe(exception.getMessage());
 						callback.onFailure(exception);
 					}
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					_logger.severe(exception.getMessage());
+					callback.onFailure(exception);
+				}
+			});
+		} catch (RequestException e) {
+			_logger.severe(e.getMessage());
+			throw new ServerException("Cannot contact server.");
+		}
+	}
+	
+	@Override
+	public void whoAmI(final AsyncCallback<String> callback) {
+		final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getWhoAmIUrl());
+		
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("client", this.client);
+		
+		String postParams = MapUtils.translateToParameters(params);
+		_logger.fine("Attempting a whoami request with parameters: " + postParams);
+		try {
+			requestBuilder.sendRequest(postParams, new RequestCallback() {
+				@Override
+				public void onResponseReceived(Request request, Response response) {
+					try {
+						String result = getResponseTextOrThrowException(requestBuilder, response);
+						String username = AwDataTranslators.translateWhoAmIDataFromJson(result);
+						callback.onSuccess(username);
+					} catch (Exception exception) {
+						_logger.severe(exception.getMessage());
+						callback.onFailure(exception);
+					}					
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					_logger.severe(exception.getMessage());
+					callback.onFailure(exception);
+				}
+			});
+		} catch (RequestException e) {
+			_logger.severe(e.getMessage());
+			throw new ServerException("Cannot contact server.");
+		}
+	}
+	
+	@Override
+	public void logout(final AsyncCallback<String> callback) {
+		final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getLogoutUrl());
+		
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("client", this.client);
+		
+		String postParams = MapUtils.translateToParameters(params);
+		_logger.fine("Attempting a logout request with parameters: " + postParams);
+		
+		try {
+			requestBuilder.sendRequest(postParams, new RequestCallback() {
+				@Override
+				public void onResponseReceived(Request request, Response response) {
+					try {
+						String result = getResponseTextOrThrowException(requestBuilder, response);
+						callback.onSuccess(result);
+					} catch (Exception exception) {
+						_logger.severe(exception.getMessage());
+						callback.onFailure(exception);
+					}					
 				}
 
 				@Override

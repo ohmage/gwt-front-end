@@ -1,6 +1,5 @@
 package edu.ucla.cens.mobilize.client.common;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -31,31 +30,25 @@ import edu.ucla.cens.mobilize.client.exceptions.NotLoggedInException;
  *
  */
 public class TokenLoginManager {
-    private boolean currentlyLoggedIn = false;
     
-    private final EventBus eventBus;
-    
-    // Constant cookie names
-    private final static String AUTH_TOKEN_COOKIE = AwConstants.cookieAuthToken;
-    private final static String USER_NAME_COOKIE = AwConstants.cookieUserName;
+    private final EventBus eventBus;   
     
     // Logging utility
     private static Logger _logger = Logger.getLogger(TokenLoginManager.class.getName());
     
     public TokenLoginManager(EventBus eventBus) {
         this.eventBus = eventBus;
-        
-        // Initialize the manager by checking the currently set cookies
         init();
     };
     
     /**
-     * Checks to see if any of our cookies are already set.  If the username
-     * and authtoken are set, switch to logged in and pass a UserLoginEvent
+     * Checks to see if any of our cookies are already set.  If the auth_token
+     * is set, switch to logged in and pass a UserLoginEvent
      */
     public void init() {
-        Collection<String> currentCookieNames = Cookies.getCookieNames();
         
+    	_logger.info("TokenLoginManager.init()");
+    	
         // Listen for RequestLogoutEvents to handle a module requesting a logout
         eventBus.addHandler(RequestLogoutEvent.TYPE, new RequestLogoutEventHandler() {
             public void requestLogout(RequestLogoutEvent event) {
@@ -64,51 +57,19 @@ public class TokenLoginManager {
                 logOut();
             }
         });
-        
-        if (currentCookieNames.contains(AUTH_TOKEN_COOKIE) &&
-                currentCookieNames.contains(USER_NAME_COOKIE)) {           
-            // Switch us to currently logged in
-            currentlyLoggedIn = true;
-            
-            _logger.info("Initialzing login manager with user name: " + Cookies.getCookie(USER_NAME_COOKIE));
-        }
-        else {
-            _logger.info("No login information found in cookies");
-            // Clear the cookies in case they are in a bad state
-            clearUserInformation();
-        }
-        
     }
-    
-    /**
-     * Call when a user successfully logs in and obtains an authorization token
-     * from the server.  Saves the user information into a cookie and
-     * fires a UserLoginEvent into the eventBus.
-     * 
-     * @param authToken 
-     * @param userName 
-     * @param campaignList 
-     */
-    public void loginWithAuthToken(String authToken, String userName) {
-        Cookies.setCookie(AUTH_TOKEN_COOKIE, authToken, null, null, "/", false);
-        Cookies.setCookie(USER_NAME_COOKIE, userName, null, null, "/", false);
         
-        _logger.fine("Logging in as user: " + authToken);
-        
-        currentlyLoggedIn = true;
-        
-        eventBus.fireEvent(new UserLoginEvent(userName));
-    }
-    
     /**
      * Clears all user information and fires a UserLogoutEvent.
      */
     public void logOut() {
-        currentlyLoggedIn = false;
-        
         _logger.fine("Logging out");
         
-        clearUserInformation();
+        // removeCookie() does not seem to work, so here the cookie expiration 
+        // is set to now
+        // Cookies.removeCookie(AwConstants.cookieUserName);
+        Cookies.setCookie(AwConstants.cookieUserName, null, new Date(), null, "/", false);
+        
         
         eventBus.fireEvent(new UserLogoutEvent());
     }
@@ -119,9 +80,10 @@ public class TokenLoginManager {
      * @return The authorization token.  Throws NotLoggedInException if not logged in.
      */
     public String getAuthorizationToken() {
-        String authToken = Cookies.getCookie(AUTH_TOKEN_COOKIE);
+        String authToken = Cookies.getCookie(AwConstants.cookieAuthToken);
         
         if (authToken == null) {
+        	_logger.fine("could not find auth_token cookie");
             throw new NotLoggedInException("Cannot find the authorization token.");
         }
         else {
@@ -130,46 +92,13 @@ public class TokenLoginManager {
     }
     
     /**
-     * Returns whether the user is logged in or not.
-     * @return true if the user is logged in, false if not.
+     * Call when a user successfully logs in and obtains an authorization token
+     * from the server. Fires a UserLoginEvent into the eventBus.
+     *  
+     * @param userName The logged-in user's username. 
      */
-    public boolean isCurrentlyLoggedIn() {
-        return currentlyLoggedIn;
-    }
-    
-      
-    /**
-     * Returns the current user name if logged in, null otherwise.
-     * 
-     * @return The currently logged in user name.
-     */
-    public String getLoggedInUserName() {
-        // First check if we are logged in
-        if (!isCurrentlyLoggedIn()) {
-            _logger.warning("Cannot get user name if not logged in.");
-            return null;
-        }
+    public void login(String userName) {
         
-        // Next check if the user name cookie is set (it should be if we are logged in
-        // but check anyway for debugging)
-        Collection<String> currentCookieNames = Cookies.getCookieNames();
-        if (!currentCookieNames.contains(USER_NAME_COOKIE)) {
-            _logger.severe("Logged in but no user name found.");
-            return null;
-        }
-        
-        // Now return the user name
-        return Cookies.getCookie(USER_NAME_COOKIE);
-    }
-    
-    /**
-     * Clears all currently stored user info from the cookies.
-     */
-    private void clearUserInformation() {
-        // removeCookie call doesn't seem to work, instead settings cookies to expire now
-        Date removeExpire = new Date();
-        
-        Cookies.setCookie(AUTH_TOKEN_COOKIE, null, removeExpire, null, "/", false);
-        Cookies.setCookie(USER_NAME_COOKIE, null, removeExpire, null, "/", false);
+    	eventBus.fireEvent(new UserLoginEvent(userName));
     }
 }
