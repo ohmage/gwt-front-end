@@ -65,13 +65,10 @@ public class TokenLoginManager {
     public void logOut() {
         _logger.fine("Logging out");
         
-        // removeCookie() does not seem to work, so here the cookie expiration 
-        // is set to now
-        // Cookies.removeCookie(AwConstants.cookieUserName);
-        Cookies.setCookie(AwConstants.cookieUserName, null, new Date(), null, "/", false);
+        // Remove the username cookie that we set
+        Cookies.removeCookie(AwConstants.cookieUserName);
         
-        
-        eventBus.fireEvent(new UserLogoutEvent());
+        // eventBus.fireEvent(new UserLogoutEvent());
     }
     
     /**

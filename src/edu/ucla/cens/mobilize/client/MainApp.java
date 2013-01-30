@@ -203,9 +203,6 @@ public class MainApp implements EntryPoint, HistoryListener {
 				@Override
 				public void onFailure(Throwable caught) {
 					
-					_logger.info("whoami did not recognize the auth_token cookie - removing it");
-					
-					Cookies.removeCookie(AwConstants.cookieAuthToken);
 					Cookies.removeCookie(AwConstants.cookieUserName);
 
 					// NOTE #1: These tokens need to be handled here because they are separate from the main dashboard tokens
@@ -954,19 +951,31 @@ public class MainApp implements EntryPoint, HistoryListener {
 
 	private void logout() {
 		
-		this.awDataService.logout(new AsyncCallback<String>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				// TODO 
-			}
-
-			@Override
-			public void onSuccess(String result) {
-				loginManager.logOut();
-				History.newItem("login", false); // logging in again will show dashboard
-				Window.Location.reload(); // reload to clear state
-			}
-		});
+		// awDataService.logout() is now a synchronous call (i.e., the
+		// JavaScript will block on this next line of code). This is done
+		// to avoid duplicating code in the onSuccess and onFailure methods
+		// and because its OK for logout to block.
+		this.awDataService.logout();
+		loginManager.logOut();
+		History.newItem("login", false); // logging in again will show dashboard
+		Window.Location.reload(); // reload to clear state
+		
+//		this.awDataService.logout(new AsyncCallback<String>() {
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				_logger.info("FAILLLLLLLLLLLLLLLLLLLLLLLLL");
+//				loginManager.logOut();
+//				History.newItem("login", false); // logging in again will show dashboard
+//				Window.Location.reload(); // reload to clear state 
+//			}
+//
+//			@Override
+//			public void onSuccess(String result) {
+//				loginManager.logOut();
+//				History.newItem("login", false); // logging in again will show dashboard
+//				Window.Location.reload(); // reload to clear state
+//			}
+//		});
 	}
 
 	private String extractView(String historyToken) {

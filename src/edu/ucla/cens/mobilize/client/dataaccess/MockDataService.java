@@ -720,7 +720,7 @@ public void whoAmI(AsyncCallback<String> callback) {
 	
 }
 
-public void logout(AsyncCallback<String> callback) {
+public void logout(/*AsyncCallback<String> callback*/) {
 	// TODO Auto-generated method stub
 	
 }
