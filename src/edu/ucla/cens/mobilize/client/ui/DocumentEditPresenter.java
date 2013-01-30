@@ -130,6 +130,11 @@ public class DocumentEditPresenter {
       // so you must deploy a compiled version to test this error handling
       if (result != null) {
         try {
+          
+          // hacky fix to remove the <pre> tag that wraps the JSON for 
+          // a currently unknown reason
+          result = result.replace("<pre style=\"word-wrap: break-word; white-space: pre-wrap;\">", "").replace("</pre>", "");
+          	
           status = JSONParser.parseStrict(result).isObject().get("result").isString().stringValue();
           errorCodeToDescriptionMap = AwDataTranslators.translateErrorResponse(result);
         } catch (Exception e) {
