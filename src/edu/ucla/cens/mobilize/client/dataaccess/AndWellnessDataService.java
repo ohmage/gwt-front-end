@@ -2115,7 +2115,7 @@ public class AndWellnessDataService implements DataService {
 	}
 	
 	@Override
-	public void logout(/*final AsyncCallback<String> callback*/) {
+	public void logout(final AsyncCallback<String> callback) {
 		final RequestBuilder requestBuilder = getAwRequestBuilder(AwConstants.getLogoutUrl());
 		
 		Map<String, String> params = new HashMap<String, String>();
@@ -2129,22 +2129,21 @@ public class AndWellnessDataService implements DataService {
 				@Override
 				public void onResponseReceived(Request request, Response response) {
 					try {
-						// String result = getResponseTextOrThrowException(requestBuilder, response);
-						// callback.onSuccess(result);
+						String result = getResponseTextOrThrowException(requestBuilder, response);
+						callback.onSuccess(result);
 					} catch (Exception exception) {
-						//_logger.severe("onResponseReceived");
 						_logger.severe(exception.getMessage());
-						// callback.onFailure(exception);
+						callback.onFailure(exception);
 					}					
 				}
 
 				@Override
 				public void onError(Request request, Throwable exception) {
-					//_logger.severe("onError");
 					_logger.severe(exception.getMessage());
-					//callback.onFailure(exception);
+					callback.onFailure(exception);
 				}
 			});
+		
 		} catch (RequestException e) {
 			_logger.severe(e.getMessage());
 			throw new ServerException("Cannot contact server.");

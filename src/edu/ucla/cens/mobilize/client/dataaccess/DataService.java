@@ -499,6 +499,6 @@ public interface DataService {
    * 
    * @param callback
    */
-  void logout(/*final AsyncCallback<String> callback*/);
+  void logout(final AsyncCallback<String> callback);
 
 }

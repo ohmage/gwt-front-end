@@ -14,10 +14,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import edu.ucla.cens.mobilize.client.common.PlotType;
 import edu.ucla.cens.mobilize.client.common.Privacy;
+import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.RoleClass;
 import edu.ucla.cens.mobilize.client.common.RoleDocument;
 import edu.ucla.cens.mobilize.client.common.RunningState;
-import edu.ucla.cens.mobilize.client.common.RoleCampaign;
 import edu.ucla.cens.mobilize.client.common.UserRoles;
 import edu.ucla.cens.mobilize.client.common.UserStats;
 import edu.ucla.cens.mobilize.client.dataaccess.awdataobjects.AuthorizationTokenQueryAwData;
@@ -720,7 +720,7 @@ public void whoAmI(AsyncCallback<String> callback) {
 	
 }
 
-public void logout(/*AsyncCallback<String> callback*/) {
+public void logout(AsyncCallback<String> callback) {
 	// TODO Auto-generated method stub
 	
 }
