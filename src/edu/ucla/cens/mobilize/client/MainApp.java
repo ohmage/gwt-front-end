@@ -20,6 +20,8 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.WindowCloseListener;
+import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
@@ -234,6 +236,14 @@ public class MainApp implements EntryPoint, HistoryListener {
 					initDataService(userName, loginManager.getAuthorizationToken());
 					loadAppConfigAndInitApp();
 					bind();
+					
+					Window.addWindowClosingHandler(new Window.ClosingHandler() {
+						
+						@Override
+						public void onWindowClosing(ClosingEvent event) {
+							logout();
+						}
+					});										
 				}
 			});
 		} 
