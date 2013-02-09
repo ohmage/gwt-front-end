@@ -76,6 +76,9 @@ public class CampaignPresenter implements Presenter {
     // hide any leftover notifications
     this.view.hideMsg();
     
+    // show or hide the campaign creation button
+    this.view.setCanCreate(canCreate);
+    
     // display any new notifications
     if (userInfo.hasInfoMessage()) this.view.showMsg(userInfo.getInfoMessage());
     if (userInfo.hasErrorMessage()) this.view.showError(userInfo.getErrorMessage(), null);
