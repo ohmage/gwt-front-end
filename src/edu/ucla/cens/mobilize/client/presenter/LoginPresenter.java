@@ -3,6 +3,7 @@ package edu.ucla.cens.mobilize.client.presenter;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -102,11 +103,22 @@ public class LoginPresenter implements Presenter,
     		public void onSuccess(AuthorizationTokenQueryAwData result) {
     			_logger.info("Successfully logged in user: " + username);
     			
-    			loginManager.login(username);
-
-    			// reload to get logged in app
-    			// all state (except for cookies) will be lost
-    			Window.Location.reload(); 
+    			// Check to see if there is a local referrer and redirect
+    			// if so
+    			Document document = Document.get();
+    			
+    			if(document.getReferrer() != null && ! "".equals(document.getReferrer())) {
+    			
+    				Window.Location.replace(document.getReferrer());
+    				
+    			} 
+    			else {
+	    			loginManager.login(username);
+	    			
+	    			// reload to get logged in app
+	    			// all state (except for cookies) will be lost
+	    			Window.Location.reload();
+    			}
     		}
     	});
     }
