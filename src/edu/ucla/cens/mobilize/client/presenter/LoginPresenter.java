@@ -7,6 +7,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -110,8 +111,15 @@ public class LoginPresenter implements Presenter,
     			if(document.getReferrer() != null && ! "".equals(document.getReferrer())) {
     			
     				Window.Location.replace(document.getReferrer());
+    			
+    			// Hack-tastic :(	
+    		    // Check for a cookie set by trialist	
+    			} else if(Cookies.getCookie("trialist_redirect") != null) {
     				
-    			} 
+    				String redirectCookie = Cookies.getCookie("trialist_redirect"); 
+    				Window.Location.replace(redirectCookie);
+    				
+    			}
     			else {
 	    			loginManager.login(username);
 	    			
