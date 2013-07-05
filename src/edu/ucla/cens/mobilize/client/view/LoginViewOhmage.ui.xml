@@ -260,7 +260,7 @@
 					<h1><font color="#00bee7">PARTICIPATE. VISUALIZE. CHANGE.</font></h1>
 					<h2>What is ohmage?</h2>
 					<p>
-						<b>ohmage</b> is an open-source participatory sensing technology platform. It
+						<b>ohmage</b> is an open source participatory sensing technology platform. It
 						supports expressive campaign authoring; mobile phone-based data
 						capture through both inquiry-based surveys and automated data
 						capture as well as temporally/spatially triggered reminders, data
@@ -270,12 +270,11 @@
 						visualization.
 					</p>
 					<p>
-						This platform is used in pilot health studies (<a href="http://www.andwellness.org/">www.andwellness.org</a>) 
-						and will be used as a pedagogical tool in LAUSD schools for learning data representation, collection and analysis 
-						(<a href="http://www.mobilizingcs.org/">www.mobilizingcs.org</a>).
+						This platform is used in pilot health studies  
+						and as a pedagogical tool in LAUSD schools for learning data representation, collection and analysis.
 					</p>
 					<h2>
-						For more information, visit <a href="http://www.ohmage.org/">www.ohmage.org</a>
+						For more information, visit <a href="http://www.ohmage.org/">www.ohmage.org</a>, <a href="http://demo.ohmage.org/">demo.ohmage.org</a> and <a href="http://www.mobilizingcs.org/">http://www.mobilizingcs.org/</a>. 
 					</h2>
 				</g:HTMLPanel>
 			</g:HTMLPanel>
@@ -287,7 +286,6 @@
 					<ul>
 						<li><a href="http://www.exploringcs.org/about/related-grants/mobilize" title="Mobilize Project"><img src="images/theme-ohmage/link_mobilize.png" /></a></li>
 						<li><a href="http://www.exploringcs.org/" title="Exploring Computer Science Educational Initiative"><img src="images/theme-ohmage/link_exploringcs.png" /></a></li>
-						<!-- <li><a href="http://research.cens.ucla.edu/" title="UCLA Center for Embedded Networked Sensing"><img src="images/theme-ohmage/link_cens.png" /></a></li> -->
 					</ul>
 				</g:HTMLPanel>
 			</g:HTMLPanel>
@@ -301,10 +299,8 @@
 				</g:HTMLPanel>
 				<g:HTMLPanel addStyleNames='{style.footer-box}'>
 					<ul>
-						<li>Copyright &#169; 2012 MobilizeLabs</li>
-						<li>&#183;</li>
-						<li>All rights reserved</li>
-						<li>&#183;</li>
+					    <li><a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0; float: left; margin-right: 10px;" src="http://i.creativecommons.org/l/by/3.0/80x15.png"></img></a></li>
+					    <li>&#183;</li>
 						<li><a href="http://mobilizingcs.wikispaces.com/help">Help</a></li>
 						<li>&#183;</li>
 						<li><a href="http://mobilizingcs.wikispaces.com/contact">Contact Us</a></li>

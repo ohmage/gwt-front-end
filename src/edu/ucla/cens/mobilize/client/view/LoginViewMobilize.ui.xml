@@ -290,7 +290,6 @@
 					<ul>
 						<li><a href="http://www.exploringcs.org/about/related-grants/mobilize" title="Mobilize Project"><img src="images/theme-ohmage/link_mobilize.png" /></a></li>
 						<li><a href="http://www.exploringcs.org/" title="Exploring Computer Science Educational Initiative"><img src="images/theme-ohmage/link_exploringcs.png" /></a></li>
-						<!-- <li><a href="http://research.cens.ucla.edu/" title="UCLA Center for Embedded Networked Sensing"><img src="images/theme-ohmage/link_cens.png" /></a></li> -->
 					</ul>
 				</g:HTMLPanel>
 			</g:HTMLPanel>
@@ -304,10 +303,8 @@
 				</g:HTMLPanel>
 				<g:HTMLPanel addStyleNames='{style.footer-box}'>
 					<ul>
-						<li>Copyright &#169; 2012 MobilizeLabs</li>
-						<li>&#183;</li>
-						<li>All rights reserved</li>
-						<li>&#183;</li>
+					    <li><a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0; float: left; margin-right: 10px;" src="http://i.creativecommons.org/l/by/3.0/80x15.png"></img></a></li>
+					    <li>&#183;</li>
 						<li><a href="http://mobilizingcs.wikispaces.com/help">Help</a></li>
 						<li>&#183;</li>
 						<li><a href="http://mobilizingcs.wikispaces.com/contact">Contact Us</a></li>
