@@ -102,15 +102,36 @@ public class LoginPresenter implements Presenter,
     		 * @param result The login data.
     		 */
     		public void onSuccess(AuthorizationTokenQueryAwData result) {
-    			_logger.info("Successfully logged in user: " + username);
+    			// _logger.info("Successfully logged in user: " + username);
     			
     			// Check to see if there is a local referrer and redirect
     			// if so
     			Document document = Document.get();
+    			String referrer = document.getReferrer();
     			
-    			if(document.getReferrer() != null && ! "".equals(document.getReferrer())) {
-    			
-    				Window.Location.replace(document.getReferrer());
+    			if(referrer != null && ! "".equals(referrer)) {
+    			    
+    				// Do not allow offsite redirects via the referrer header
+    				
+    				// Get the hostname from the referrer
+    				String referrerHost = document.getReferrer().split("\\/")[2];
+    				
+    				// Remove the port number if one exists
+    				if(referrerHost.contains(":")) {
+    					referrerHost = referrerHost.substring(0, referrerHost.indexOf(":"));
+    				}
+    				
+    				if(referrerHost.equals(Window.Location.getHostName())) {
+    					
+    					Window.Location.replace(document.getReferrer());
+    					
+    				} else {
+    					loginManager.login(username);
+    	    			
+    	    			// reload to get logged in app
+    	    			// all state (except for cookies) will be lost
+    	    			Window.Location.reload();
+    				}
     			
     			// Hack-tastic :(	
     		    // Check for a cookie set by trialist	
