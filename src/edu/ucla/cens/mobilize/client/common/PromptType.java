@@ -11,9 +11,9 @@ public enum PromptType {
   MULTI_CHOICE_CUSTOM,
   PHOTO,
   REMOTE_ACTIVITY,
-  VIDEO;
+  VIDEO,
+  AUDIO;
 
-  
   /**
    * @param promptTypeString
    * @return matching enum value or null if none match

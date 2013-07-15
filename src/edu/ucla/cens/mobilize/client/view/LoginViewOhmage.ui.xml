@@ -299,11 +299,11 @@
 				</g:HTMLPanel>
 				<g:HTMLPanel addStyleNames='{style.footer-box}'>
 					<ul>
-					    <li><a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0; float: left; margin-right: 10px;" src="http://i.creativecommons.org/l/by/3.0/80x15.png"></img></a></li>
+					    <li><a rel="license" href="https://creativecommons.org/licenses/by/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0; float: left; margin-right: 10px;" src="https://i.creativecommons.org/l/by/3.0/80x15.png"></img></a></li>
 					    <li>&#183;</li>
-						<li><a href="http://mobilizingcs.wikispaces.com/help">Help</a></li>
+						<li><a href="https://wiki.mobilizingcs.org/">Help</a></li>
 						<li>&#183;</li>
-						<li><a href="http://mobilizingcs.wikispaces.com/contact">Contact Us</a></li>
+						<li><a href="https://wiki.mobilizingcs.org/contact">Contact Us</a></li>
 					</ul>
 				</g:HTMLPanel>
 			</g:HTMLPanel>
