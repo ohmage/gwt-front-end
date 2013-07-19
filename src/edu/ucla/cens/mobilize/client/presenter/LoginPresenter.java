@@ -137,8 +137,7 @@ public class LoginPresenter implements Presenter,
     		    // Check for a cookie set by trialist	
     			} else if(Cookies.getCookie("trialist_redirect") != null) {
     				
-    				String redirectCookie = Cookies.getCookie("trialist_redirect"); 
-    				Window.Location.replace(redirectCookie);
+    				Window.Location.replace(Cookies.getCookie("trialist_redirect"));
     				
     			}
     			else {
