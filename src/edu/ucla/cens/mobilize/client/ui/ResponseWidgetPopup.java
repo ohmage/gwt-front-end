@@ -71,7 +71,7 @@ public class ResponseWidgetPopup extends Composite {
       switch (promptResponse.getPromptType()) {
       case PHOTO:
         String raw = promptResponse.getResponseRaw();
-        if (raw.equals("SKIPPED") || raw.equals("NOT_DISPLAYED")) {
+        if (raw.equals("SKIPPED") || raw.equals("NOT_DISPLAYED") || raw.equals("IMAGE_NOT_UPLOADED"))  {
           responseDisplayWidget = new HTML(raw);
         } else {
           // generate urls for thumbnail and full sized photo and pass to widget
