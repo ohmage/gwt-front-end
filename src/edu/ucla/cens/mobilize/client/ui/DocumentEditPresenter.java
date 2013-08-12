@@ -131,12 +131,20 @@ public class DocumentEditPresenter {
       if (result != null) {
         try {
           
-          // hacky fix to remove the <pre> tag that wraps the JSON for 
-          // a currently unknown reason
-          result = result.replace("<pre style=\"word-wrap: break-word; white-space: pre-wrap;\">", "").replace("</pre>", "");
-          	
+          // An older version of FF used to wrap the JSON in a pre tag with a style:
+          // result = result.replace("<pre style=\"word-wrap: break-word; white-space: pre-wrap;\">", "").replace("</pre>", "");
+          // However, newer versions just use a plain pre tag.
+        	
+          if(result.startsWith("<pre")) {
+        	  int closingBracketIndex = result.indexOf(">") + 1; 
+        	  result = result.substring(closingBracketIndex);
+          }
+          
+          result = result.replace("</pre>", "");
+          
           status = JSONParser.parseStrict(result).isObject().get("result").isString().stringValue();
           errorCodeToDescriptionMap = AwDataTranslators.translateErrorResponse(result);
+          
         } catch (Exception e) {
           _logger.severe("Failed to parse json. Response was: " + result + ". Error was: " + e.getMessage());
         }
