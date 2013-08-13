@@ -205,7 +205,11 @@ public class AdminUserDetailPresenter implements Presenter {
                                       @Override
                                       public void onSuccess(String result) {
                                         WaitIndicator.hide();
-                                        SuccessDialog.show("Password change successful.");
+                                        if("".equals(result)) {
+                                        	SuccessDialog.show("Password change successful.");
+                                        } else {
+                                        	ErrorDialog.show(result);
+                                        }
                                       }
     });
   }

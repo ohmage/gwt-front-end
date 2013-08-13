@@ -296,6 +296,7 @@ public class AwConstants {
         E0200("0200", "authentication failed"),
         E0201("0201", "disabled user"),
         E0202("0202", "new account attempting to access a service without changing default password first"),
+        E0203("0203", "an incorrect password was supplied for the old password value"),
         E0300("0300", "missing JSON data"),
         E0301("0301", "unknown request type"),
         E0302("0302", "unknown phone version"),

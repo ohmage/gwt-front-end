@@ -38,13 +38,14 @@ import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserSearchParams;
 import edu.ucla.cens.mobilize.client.dataaccess.requestparams.UserUpdateParams;
 import edu.ucla.cens.mobilize.client.exceptions.ApiException;
 import edu.ucla.cens.mobilize.client.exceptions.AuthenticationException;
+import edu.ucla.cens.mobilize.client.exceptions.ChangePasswordException;
 import edu.ucla.cens.mobilize.client.exceptions.NotLoggedInException;
 import edu.ucla.cens.mobilize.client.exceptions.ServerException;
 import edu.ucla.cens.mobilize.client.exceptions.ServerUnavailableException;
 import edu.ucla.cens.mobilize.client.model.AppConfig;
 import edu.ucla.cens.mobilize.client.model.AuditLogEntry;
-import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.CampaignDetailedInfo;
+import edu.ucla.cens.mobilize.client.model.CampaignShortInfo;
 import edu.ucla.cens.mobilize.client.model.ClassInfo;
 import edu.ucla.cens.mobilize.client.model.ClassSearchInfo;
 import edu.ucla.cens.mobilize.client.model.DocumentInfo;
@@ -133,6 +134,10 @@ public class AndWellnessDataService implements DataService {
             case E0201:
             case E0202:
                 returnError = new AuthenticationException(errorCode.getErrorCode(),
+                                                          errorCode.getErrorDesc());   
+                break;
+            case E0203:
+                returnError = new ChangePasswordException(errorCode.getErrorCode(),
                                                           errorCode.getErrorDesc());
                 break;
             case E0300:
@@ -429,7 +434,11 @@ public class AndWellnessDataService implements DataService {
             getResponseTextOrThrowException(requestBuilder, response);
             // no exception? then it was successful
             callback.onSuccess("");
-          } catch (Exception exception) {
+          } 
+          catch(ChangePasswordException invalidPassword) {
+        	  callback.onSuccess("Please enter your correct password.");  
+          }
+          catch (Exception exception) {
             _logger.severe(exception.getMessage());
             callback.onFailure(exception);
           }
