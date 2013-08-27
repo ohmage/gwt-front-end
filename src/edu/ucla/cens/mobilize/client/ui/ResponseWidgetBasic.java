@@ -141,7 +141,7 @@ public class ResponseWidgetBasic extends Composite implements ResponseDisplayWid
     switch (prompt.getPromptType()) {
     case PHOTO:
       String raw = prompt.getResponseRaw();
-      if (raw.equals("SKIPPED") || raw.equals("NOT_DISPLAYED") || raw.equals("IMAGE_NOT_UPLOADED")) {
+      if (raw.equals("SKIPPED") || raw.equals("NOT_DISPLAYED") || raw.equals("MEDIA_NOT_UPLOADED")) {
         responseDisplayWidget = new HTML(raw);
       } else {
         // generate urls for thumbnail and full sized photo and pass to widget
