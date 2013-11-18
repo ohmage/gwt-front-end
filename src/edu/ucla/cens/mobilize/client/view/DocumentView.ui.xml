@@ -71,9 +71,9 @@
     
     <g:north size='25'>
       <g:HTMLPanel addStyleNames='{style.topNav}'>
-		      <g:InlineHyperlink ui:field='myDocumentsLink'>My Documents</g:InlineHyperlink>
+		      <g:InlineHyperlink ui:field='myDocumentsLink'>All Documents</g:InlineHyperlink>
 		      <span class='{style.separator}'>|</span>
-		      <g:InlineHyperlink ui:field='browseDocumentsLink'>All Documents</g:InlineHyperlink>
+		      <g:InlineHyperlink ui:field='browseDocumentsLink'>Shared Documents</g:InlineHyperlink>
 	        <span class='{style.separator}'>|</span>
 	        <g:InlineHyperlink ui:field='uploadLink'>Upload</g:InlineHyperlink>
       </g:HTMLPanel>
