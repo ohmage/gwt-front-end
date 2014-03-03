@@ -278,8 +278,16 @@
 						as lessons in Statistics, from visualization to basic inference.
 					</p>
 					<h2>
-						For more information, visit Mobilize at <a href="http://www.mobilizingcs.org/">www.mobilizingcs.org</a>
+						For more information, visit Mobilize at <a href="http://www.mobilizingcs.org/">www.mobilizingcs.org</a>, 
+						and <a href="http://wiki.mobilizingcs.org/">wiki.mobilizingcs.org</a>
+						
 					</h2>
+					<p>     
+					        This material is based upon work supported by the National Science Foundation under 
+					        Grant Number 0962919. Any opinions, findings, and conclusions or recommendations 
+					        expressed in this material are those of the author(s) and do not necessarily reflect 
+					        the views of the National Science Foundation.
+					</p>
 				</g:HTMLPanel>
 			</g:HTMLPanel>
 
