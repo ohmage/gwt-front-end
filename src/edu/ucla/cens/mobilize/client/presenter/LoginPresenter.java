@@ -130,7 +130,7 @@ public class LoginPresenter implements Presenter,
     				}
     				//SN - if sent here from the unified navbar, return to it by full page reloading
     				if(document.getReferrer().contains("?login")){
-    					topWindowReload;
+    					topWindowReload();
     				//SN - avoid reverting to the referrer page if in the unified navbar scenario, it does weird things.
     				}else if(referrerHost.equals(Window.Location.getHostName()) && !document.getReferrer().contains("?web")) {
     					Window.Location.replace(document.getReferrer());
