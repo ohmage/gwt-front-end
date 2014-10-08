@@ -1,7 +1,7 @@
 This is the ohmage browser front end.  For the associated server application, check out the ohmage server repo [here](https://github.com/cens/ohmageServer).
 
 The majority of this code is written in Java and compiled to JavaScript using the included GWT libraries.
-To compile the code, make sure java and javac are installed and run `ant clean dist buildwar`. 
+To compile the code, make sure java and javac are installed and run `ant clean build buildwar`. 
 This creates a Java EE war file which can then be placed into a Servlet container. The app has been tested in Tomcat and developed
 using Eclipse and the associated Eclipse GWT tools.
 
