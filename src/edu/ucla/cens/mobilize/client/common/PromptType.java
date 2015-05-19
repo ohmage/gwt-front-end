@@ -12,7 +12,8 @@ public enum PromptType {
   PHOTO,
   REMOTE_ACTIVITY,
   VIDEO,
-  AUDIO;
+  AUDIO,
+  DOCUMENT;
 
   /**
    * @param promptTypeString
