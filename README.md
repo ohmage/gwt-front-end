@@ -1,3 +1,7 @@
+# [DEPRECATED] ohmage 2.x gwt front end
+As of ohmage 2.17, this tool is now considered legacy.  It is suggested instead that you instead use the [navbar](https://github.com/mobilizingcs/navbar)-based setup and include micro-frontends (most are available at github.com/mobilizingcs) as you see fit.
+
+
 This is the ohmage browser front end.  For the associated server application, check out the ohmage server repo [here](https://github.com/cens/ohmageServer).
 
 The majority of this code is written in Java and compiled to JavaScript using the included GWT libraries.
